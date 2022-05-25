@@ -31,4 +31,6 @@ qt_add_translations(mytetra
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     install(TARGETS mytetra DESTINATION "${CMAKE_INSTALL_BINDIR}")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    install(TARGETS mytetra DESTINATION "${WIN_INSTALL_DIR}")
 endif()
