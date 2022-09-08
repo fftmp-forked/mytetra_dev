@@ -84,7 +84,7 @@ void DatabasesManagementScreen::setupUI(void)
 
 void DatabasesManagementScreen::setupShortcuts(void)
 {
-    qDebug() << "Setup shortcut for" << this->metaObject()->className();
+    qDebug() << "Setup shortcut for" << staticMetaObject.className();
 
     shortcutManager.initAction("actionLog-copy", actionCopy );
 }

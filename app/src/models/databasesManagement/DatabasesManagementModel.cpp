@@ -154,7 +154,7 @@ void DatabasesManagementModel::scanDirectoriesFromKnownbasesConfig()
 
 void DatabasesManagementModel::scanDirectories(const QList< DatabasesDirsInfo > &dbDirs)
 {
-    for(auto currentDbDirs : dbDirs)
+    for(const auto & currentDbDirs : dbDirs)
     {
         QString dbPath=currentDbDirs.dbPath;
         QString trashPath=currentDbDirs.trashPath;

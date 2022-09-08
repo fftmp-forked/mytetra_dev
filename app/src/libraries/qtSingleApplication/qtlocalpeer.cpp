@@ -79,7 +79,8 @@ QtLocalPeer::QtLocalPeer(QObject* parent, const QString &appId)
 #endif
         prefix = id.section(QLatin1Char('/'), -1);
     }
-    prefix.remove(QRegularExpression("[^a-zA-Z]"));
+    static const QRegularExpression alpha_regex("[^a-zA-Z]");
+    prefix.remove(alpha_regex);
     prefix.truncate(6);
 
 #if QT_VERSION > 0x060000

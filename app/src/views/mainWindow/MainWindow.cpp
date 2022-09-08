@@ -608,10 +608,10 @@ void MainWindow::initPreferencesMenu(QMenu *menu)
     map[tr("History")]   = &actionDirectPreferencesHistory;
     map[tr("Misc")]      = &actionDirectPreferencesMisc;
 
-    for(auto pageName : map.keys())
+    for(auto kv = map.constKeyValueBegin(); kv != map.constKeyValueEnd(); ++kv)
     {
-        *map[pageName] = new QAction(pageName, this);
-        menu->addAction( *map[pageName] );
+        *kv->second = new QAction(kv->first, this);
+        menu->addAction(*kv->second);
     }
 }
 
@@ -632,11 +632,11 @@ void MainWindow::runDirectPreferences(QAction *action)
 
     AppConfigDialog *dialog=nullptr;
 
-    for(auto pageName : map.keys())
+    for(auto kv = map.constKeyValueBegin(); kv != map.constKeyValueEnd(); ++kv)
     {
-        if( map[pageName]==action )
+        if(kv->second == action)
         {
-            dialog=new AppConfigDialog(pageName, this);
+            dialog=new AppConfigDialog(kv->first, this);
             break;
         }
     }

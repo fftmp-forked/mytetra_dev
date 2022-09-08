@@ -63,8 +63,8 @@ void DatabasesManagementTable::setupSignals(void)
 
   // Соединение сигнал-слот чтобы показать контекстное меню по долгому нажатию
   // (пока долгое нажатие не обрабатывается и сигнал не эмитируется)
-  connect(this, SIGNAL(tapAndHoldGestureFinished(const QPoint &)),
-          this, SLOT(onCustomContextMenuRequested(const QPoint &)));
+  connect(this, SIGNAL(tapAndHoldGestureFinished(QPoint)),
+          this, SLOT(onCustomContextMenuRequested(QPoint)));
 }
 
 
