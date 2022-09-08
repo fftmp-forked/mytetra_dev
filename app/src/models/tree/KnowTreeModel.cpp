@@ -115,7 +115,7 @@ bool KnowTreeModel::checkFormat(QDomElement elementFormat)
     if(updateSubVersionFrom1To2()==false) // Смена формата с 1.1 на 1.2
       return false;
 
-  // На будущее, для перехода с подверии 2 на подверсию 3, эти строки надо добавлять к существующим (а не заменять)
+  // На будущее, для перехода с подверсии 2 на подверсию 3, эти строки надо добавлять к существующим (а не заменять)
   // if(baseSubVersion<=2)
   //  if(updateSubVersionFrom2To3()==false)
   //   return false;

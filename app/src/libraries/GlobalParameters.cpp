@@ -71,7 +71,7 @@ void GlobalParameters::init(void)
 
 // Инициализация рабочей директории
 // Если рабочая директория уже существует, она будет установлена как рабочая
-// Если ребочая директория не будет найдена, будут создана новая рабочая директория
+// Если рабочая директория не будет найдена, будет создана новая рабочая директория
 // с начальными файлами и она будет установлена как рабочая
 void GlobalParameters::initWorkDirectory(void)
 {
@@ -155,7 +155,7 @@ void GlobalParameters::createStandartProgramFiles(void)
   }
  else
   {
-   criticalError("Can not created directory \""+dataDirName+"\" in user directory \""+QDir::homePath()+"\"");
+   criticalError("Can not create directory \""+dataDirName+"\" in user directory \""+QDir::homePath()+"\"");
   }
 }
 

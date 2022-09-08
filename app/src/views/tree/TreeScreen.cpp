@@ -277,7 +277,7 @@ void TreeScreen::onCustomContextMenuRequested(const QPoint &pos)
   menu.addAction(actionList["pasteBranch"]);
   menu.addAction(actionList["pasteSubbranch"]);
 
-  // Если в буфере есть ветки, соответсвующие пункты становятся активными
+  // Если в буфере есть ветки, соответствующие пункты становятся активными
   bool isBranch=false;
   const QMimeData *mimeData=QApplication::clipboard()->mimeData();
    if(mimeData!=nullptr)
