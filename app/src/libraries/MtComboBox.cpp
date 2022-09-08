@@ -1,4 +1,3 @@
-#include "main.h"
 #include "MtComboBox.h"
 
 MtComboBox::MtComboBox(QWidget *parent) : QComboBox(parent)

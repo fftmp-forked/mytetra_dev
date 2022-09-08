@@ -15,10 +15,8 @@
 #include <QScrollerProperties>
 #include <QScrollBar>
 
-#include "main.h"
 #include "views/mainWindow/MainWindow.h"
 #include "models/appConfig/AppConfig.h"
-#include "libraries/ClipboardRecords.h"
 #include "libraries/TrashMonitoring.h"
 #include "libraries/FixedParameters.h"
 #include "libraries/GlobalParameters.h"
@@ -37,7 +35,6 @@
 #include "libraries/PeriodicSynchro.h"
 #include "libraries/IconSelectDialog.h"
 #include "libraries/helpers/DebugHelper.h"
-#include "libraries/helpers/MessageHelper.h"
 #include "libraries/helpers/CssHelper.h"
 
 

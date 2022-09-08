@@ -5,7 +5,6 @@
 #include <QDesktopServices>
 #include <QDialogButtonBox>
 
-#include "main.h"
 #include "AttachTableController.h"
 #include "views/attachTable/AttachTableView.h"
 #include "models/attachTable/AttachTableModel.h"
