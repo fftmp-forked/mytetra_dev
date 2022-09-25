@@ -164,9 +164,6 @@ void MainWindow::setupSignals(void)
         connect(actionDirectPreferencesAppearance, &QAction::triggered,
                 this, [this](){ runDirectPreferences(actionDirectPreferencesAppearance); } );
 
-        connect(actionDirectPreferencesCrypt, &QAction::triggered,
-                this, [this](){ runDirectPreferences(actionDirectPreferencesCrypt); } );
-
         connect(actionDirectPreferencesSyncro, &QAction::triggered,
                 this, [this](){ runDirectPreferences(actionDirectPreferencesSyncro); } );
 
@@ -421,23 +418,6 @@ void MainWindow::setTreePosition(QStringList path)
 }
 
 
-bool MainWindow::isTreePositionCrypt()
-{
-    QStringList path=mytetraConfig.get_tree_position();
-
-    if(treeScreen->knowTreeModel->isItemValid(path)==false)
-        return false;
-
-    // Получаем указатель на элемент вида TreeItem, используя путь
-    TreeItem *item =treeScreen->knowTreeModel->getItem(path);
-
-    if(item->getField("crypt")=="1")
-        return true;
-    else
-        return false;
-}
-
-
 void MainWindow::restoreRecordTablePosition(void)
 {
     QString id=mytetraConfig.get_recordtable_selected_record_id();
@@ -600,7 +580,6 @@ void MainWindow::initPreferencesMenu(QMenu *menu)
 
     map[tr("Main")]      = &actionDirectPreferencesMain;
     map[tr("Appearance")]= &actionDirectPreferencesAppearance;
-    map[tr("Crypt")]     = &actionDirectPreferencesCrypt;
     map[tr("Syncro")]    = &actionDirectPreferencesSyncro;
     map[tr("Note Area")] = &actionDirectPreferencesRecordTable;
     map[tr("Attaches")]  = &actionDirectPreferencesAttach;
@@ -622,7 +601,6 @@ void MainWindow::runDirectPreferences(QAction *action)
 
     map["pageMain"]       = actionDirectPreferencesMain;
     map["pageAppearance"] = actionDirectPreferencesAppearance;
-    map["pageCrypt"]      = actionDirectPreferencesCrypt;
     map["pageSynchro"]    = actionDirectPreferencesSyncro;
     map["pageRecordTable"]= actionDirectPreferencesRecordTable;
     map["pageAttach"]     = actionDirectPreferencesAttach;

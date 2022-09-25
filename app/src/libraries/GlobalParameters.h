@@ -51,9 +51,6 @@ public:
     void setWindowSwitcher(WindowSwitcher *point);
     WindowSwitcher *getWindowSwitcher();
 
-    void setCryptKey(QByteArray hash);
-    QByteArray getCryptKey(void);
-
     QString getInstallAutodetectLang();
 
     // Файл стилей может создаваться и после развертывания начальных файлов MyTetra
@@ -93,8 +90,6 @@ private:
 
     QString mainProgramFile;
     QString workDirectory;
-
-    QByteArray passwordHash;
 
     //! Язык, который был автоопределен если запускалась инсталляция базы знаний.
     //! Если автоинсталляция не запускалась, это значение будет пустой строкой

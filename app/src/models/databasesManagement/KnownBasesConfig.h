@@ -25,9 +25,6 @@ public:
     int getConfigVersion(void);
     void setConfigVersion(int i);
 
-    // int get_crypt_mode(void);
-    // void set_crypt_mode(int mode);
-
     int getDbCount();
     QString getDbParameter(const int &num, const QString &name);
     void setDbParameter(const int &num, const QString &name, const QString &value);

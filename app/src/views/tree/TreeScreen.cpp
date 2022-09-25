@@ -21,7 +21,6 @@
 #include "views/record/MetaEditor.h"
 #include "libraries/GlobalParameters.h"
 #include "libraries/FixedParameters.h"
-#include "libraries/crypt/Password.h"
 #include "libraries/WindowSwitcher.h"
 #include "libraries/helpers/DiskHelper.h"
 #include "controllers/recordTable/RecordTableController.h"
@@ -134,16 +133,6 @@ void TreeScreen::setupActions(void)
  connect(ac, &QAction::triggered, this, &TreeScreen::pasteSubbranch);
  actionList["pasteSubbranch"]=ac;
 
- // Шифрование ветки (пока нет иконки)
- ac = new QAction(this);
- connect(ac, &QAction::triggered, this, &TreeScreen::encryptBranch);
- actionList["encryptBranch"]=ac;
-
- // Расшифровка ветки, т. е. снятие пароля (пока нет иконки)
- ac = new QAction(this);
- connect(ac, &QAction::triggered, this, &TreeScreen::decryptBranch);
- actionList["decryptBranch"]=ac;
-
  // Добавление иконки к ветке
  ac = new QAction(this);
  ac->setIcon(QIcon(":/resource/pic/set_icon.svg"));
@@ -175,8 +164,6 @@ void TreeScreen::setupShortcuts(void)
     shortcutManager.initAction("tree-copyBranch", actionList["copyBranch"] );
     shortcutManager.initAction("tree-pasteBranch", actionList["pasteBranch"] );
     shortcutManager.initAction("tree-pasteSubbranch", actionList["pasteSubbranch"] );
-    shortcutManager.initAction("tree-encryptBranch", actionList["encryptBranch"] );
-    shortcutManager.initAction("tree-decryptBranch", actionList["decryptBranch"] );
     shortcutManager.initAction("tree-setIcon", actionList["setIcon"] );
 }
 
@@ -221,8 +208,6 @@ void TreeScreen::setupUI(void)
  insertActionAsButton(toolsLine, actionList["pasteBranch"], false);
  insertActionAsButton(toolsLine, actionList["pasteSubbranch"], false);
 
- insertActionAsButton(toolsLine, actionList["encryptBranch"], false);
- insertActionAsButton(toolsLine, actionList["decryptBranch"], false);
  insertActionAsButton(toolsLine, actionList["setIcon"], false);
 
 
@@ -291,69 +276,23 @@ void TreeScreen::onCustomContextMenuRequested(const QPoint &pos)
   menu.addAction(actionList["copyBranch"]);
   menu.addAction(actionList["pasteBranch"]);
   menu.addAction(actionList["pasteSubbranch"]);
-  menu.addSeparator();
-  menu.addAction(actionList["encryptBranch"]);
-  menu.addAction(actionList["decryptBranch"]);
 
-  // Получение индекса выделенной ветки
-  QModelIndex index=getCurrentItemIndex();
+  // Если в буфере есть ветки, соответсвующие пункты становятся активными
+  bool isBranch=false;
+  const QMimeData *mimeData=QApplication::clipboard()->mimeData();
+   if(mimeData!=nullptr)
+    if(mimeData->hasFormat(FixedParameters::appTextId+"/branch"))
+      isBranch=true;
 
-  // Выясняется, зашифрована ли ветка или нет
-  QString cryptFlag=knowTreeModel->getItem(index)->getField("crypt");
-
-  // Выясняется, зашифрована ли родительская ветка
-  QString parentCryptFlag=knowTreeModel->getItem(index)->parent()->getField("crypt");
-
-  // Если ветка не зашифрована
-  // Или ветка зашифрована, но пароль успешно введен
-  if(cryptFlag!="1" ||
-     (cryptFlag=="1" && globalParameters.getCryptKey().length()>0))
+   if( isBranch )
    {
-
-    // Если в буфере есть ветки, соответсвующие пункты становятся активными
-    bool isBranch=false;
-    const QMimeData *mimeData=QApplication::clipboard()->mimeData();
-     if(mimeData!=nullptr)
-      if(mimeData->hasFormat(FixedParameters::appTextId+"/branch"))
-        isBranch=true;
-
-     if( isBranch )
-     {
-      actionList["pasteBranch"]->setEnabled(true);
-      actionList["pasteSubbranch"]->setEnabled(true);
-     }
-    else
-     {
-      actionList["pasteBranch"]->setEnabled(false);
-      actionList["pasteSubbranch"]->setEnabled(false);
-     }
-
-
-    // ----------------------------
-    // Подсветка пунктов шифрования
-    // ----------------------------
-
-    // Если ветка незашифрована
-    if(cryptFlag!="1")
-     {
-      // Шифровать можно
-      // Дешифровать нельзя
-      actionList["encryptBranch"]->setEnabled(true);
-      actionList["decryptBranch"]->setEnabled(false);
-     }
-    else
-     {
-      // Ветка зашифрована
-
-      // Шифровать нельзя
-      actionList["encryptBranch"]->setEnabled(false);
-
-      // Дешифровать можно только если верхнележащая ветка незашифрована
-      if(parentCryptFlag!="1")
-       actionList["decryptBranch"]->setEnabled(true);
-      else
-       actionList["decryptBranch"]->setEnabled(false);
-     }
+    actionList["pasteBranch"]->setEnabled(true);
+    actionList["pasteSubbranch"]->setEnabled(true);
+   }
+  else
+   {
+    actionList["pasteBranch"]->setEnabled(false);
+    actionList["pasteSubbranch"]->setEnabled(false);
    }
 
   
@@ -381,12 +320,6 @@ void TreeScreen::setupSignals(void)
  if(mytetraConfig.getInterfaceMode()=="mobile")
    connect(knowTreeView, &KnowTreeView::clicked,
            this,         &TreeScreen::onKnowtreeClicked);
-
- // Сигнал что ветка выбрана мышкой
- // используется для возможности ввести пароль, если в базе одна корневая ветка, и она зашифрована
- connect(knowTreeView, &KnowTreeView::pressed,
-         this,         &TreeScreen::checkIfOneRootCryptItem);
-
 
  // Сигнал чтобы открыть на редактирование параметры записи при двойном клике
  // connect(knowTreeView, SIGNAL(doubleClicked(const QModelIndex &)),
@@ -648,11 +581,6 @@ void TreeScreen::editBranch(void)
  
  // Получение ссылки на узел, который соответствует выделенной строке
  TreeItem *item=knowTreeModel->getItem(index);
-
- // Если ветка зашифрована и пароль не был введен
- if(item->getField("crypt")=="1" &&
-    globalParameters.getCryptKey().length()==0)
-  return;
  
  // Получение имени ветки
  QString name=item->getField("name");
@@ -703,58 +631,6 @@ void TreeScreen::delBranch(QString mode)
    branchesName << item->getField("name");
   }
 
- 
- // Если системный пароль не установлен, зашифрованные ветки удалять нельзя
- if(globalParameters.getCryptKey().size()==0)
-  {
-   bool disableFlag=false;
-
-   // Перебираются удаляемые ветки
-   for(int i = 0; i < selectItems.size(); ++i)
-    {
-     QModelIndex index=selectItems.at(i);
-     TreeItem *item=knowTreeModel->getItem(index);
-     
-     // Если у ветки установлен флаг шифрования
-     if(item->getField("crypt")=="1")
-      {
-       disableFlag=true;
-       break;
-      }
-
-     // Проверяется наличие флага шифрования у всех подветок
-     QList<QStringList> cryptFlagsList=item->getAllChildrenPathAsField("crypt");
-     foreach(QStringList cryptFlags, cryptFlagsList)
-      if(cryptFlags.contains("1"))
-       {
-        disableFlag=true;
-        break;
-       }
-
-     if(disableFlag)
-      break;
-
-    } // Закрылся цикл перебора всех выделенных для удаления веток
-
-
-   // Если в какой-то ветке обнаружено шифрование
-   if(disableFlag)
-    {
-     QMessageBox messageBox(this);
-     messageBox.setWindowTitle(tr("Unavailable action"));
-     messageBox.setText(tr("In your selected data found closed item. Action canceled."));
-     messageBox.addButton(tr("OK"), QMessageBox::AcceptRole);
-     messageBox.exec();
-
-     // Разблокируется главное окно
-     find_object<MainWindow>("mainwindow")->setEnabled(true);
-     find_object<MainWindow>("mainwindow")->blockSignals(false);
-
-     return;
-    }
-
-  } // Закрылось условие что системный пароль не установлен
- 
 
  // Перебираются ветки, которые нужно удалить, и в них проверяется наличие заблокированных записей
  bool isSelectionContainBlockRecords=false;
@@ -852,7 +728,6 @@ void TreeScreen::delBranch(QString mode)
  find_object<MainWindow>("mainwindow")->blockSignals(false);
 
  treeEmptyControl();
- treeCryptControl();
 }
 
 
@@ -900,37 +775,6 @@ bool TreeScreen::copyBranch(void)
 
     // Получение путей ко всем подветкам
     QList<QStringList> subbranchespath=item->getAllChildrenPath();
-
-
-    // Проверка, содержит ли данная ветка как шифрованные
-    // так и незашифрованные данные
-    bool nocryptPresence=false;
-    bool encryptPresence=false;
-
-    // Флаги на основе состояния текущей ветки
-    if(knowTreeModel->getItem(path)->getField("crypt")=="1")
-        encryptPresence=true;
-    else
-        nocryptPresence=true;
-
-    // Флаги на основе состояния подветок
-    foreach(QStringList currPath, subbranchespath)
-        if(knowTreeModel->getItem(currPath)->getField("crypt")=="1")
-            encryptPresence=true;
-        else
-            nocryptPresence=true;
-
-    // Если ветка содержит как шифрованные так и нешифрованные данные
-    // то такую ветку копировать в буфер нельзя
-    if(nocryptPresence==true && encryptPresence==true)
-    {
-        QMessageBox messageBox(this);
-        messageBox.setWindowTitle(tr("Unavailable action"));
-        messageBox.setText(tr("This item contains both unencrypted and encrypted data. Copy/paste operation is possible only for item that contain similar type data."));
-        messageBox.addButton(tr("OK"),QMessageBox::AcceptRole);
-        messageBox.exec();
-        return false;
-    }
 
 
     // -------------------
@@ -1078,91 +922,6 @@ void TreeScreen::pasteBranchSmart(bool is_branch)
 }
 
 
-// Шифрование ветки
-void TreeScreen::encryptBranch(void)
-{
- // Если пароль в данной сессии не вводился
- if(globalParameters.getCryptKey().size()==0)
-  {
-   // Запрашивается пароль
-   Password password;
-   if(password.retrievePassword()==true) // Если пароль введен правильно
-    encryptBranchItem(); // Ветка шифруется
-  }
- else
-  {
-   // Иначе считается, что шифрующий ключ уже был задан и он правильный
- 
-   encryptBranchItem(); // Ветка шифруется
-  }
-}
-
-
-
-// Расшифровка ветки
-void TreeScreen::decryptBranch(void)
-{
- // Если пароль в данной сессии не вводился
- if(globalParameters.getCryptKey().size()==0)
-  {
-   // Запрашивается пароль
-   Password password;
-   if(password.retrievePassword()==true) // Если пароль введен правильно
-    decryptBranchItem(); // Ветка расшифровывается
-  }
- else
-  {
-   // Иначе пароль в данной сессии вводился и он правильный
-
-   decryptBranchItem(); // Ветка расшифровывается
-  }
-}
-
-
-void TreeScreen::encryptBranchItem(void)
-{
- // Получаем указатель на текущую выбранную ветку дерева
- TreeItem *item = knowTreeModel->getItem( getCurrentItemIndex() );
-
- // Шифрация ветки и всех подветок
- item->switchToEncrypt();
-
- // Объект редактора оповещается, что теперь идет работа с зашифрованными данными
- // Это необходимо делать для предотвращения бага,
- // когда запись начинала редактироваться незашифрованной, потом произошло шифрование, и редактирование записи было продолжено
- find_object<MetaEditor>("editorScreen")->setMiscField("crypt", "1");
-
- // Сохранение дерева веток
- find_object<TreeScreen>("treeScreen")->saveKnowTree();
-
- // Обновляеются на экране ветка и ее подветки
- updateBranchOnScreen( getCurrentItemIndex() );
-}
-
-
-void TreeScreen::decryptBranchItem(void)
-{
- // Получаем указатель на текущую выбранную ветку дерева
- TreeItem *item = knowTreeModel->getItem( getCurrentItemIndex() );
-
- // Расшифровка ветки и всех подветок
- item->switchToDecrypt();
-
- // Объект редактора оповещается, что теперь идет работа с расшифрованными данными
- find_object<MetaEditor>("editorScreen")->setMiscField("crypt", "0");
-
- // Сохранение дерева веток
- find_object<TreeScreen>("treeScreen")->saveKnowTree();
-
- // Обновляеются на экране ветка и ее подветки
- updateBranchOnScreen( getCurrentItemIndex() );
-
- // Проверяется, остались ли в дереве зашифрованные данные
- // если зашифрованных данных нет, будет предложено сбросить пароль
- treeCryptControl();
-}
-
-
 // Установка иконки для ветки
 void TreeScreen::setIcon(void)
 {
@@ -1236,30 +995,6 @@ void TreeScreen::exportBranchToDirectory(QString exportDir)
 
   TreeItem *startItem=knowTreeModel->getItem( getCurrentItemIndex() );
 
-
-  // ---------------------------------------------
-  // Запрос пароля, если есть зашифрованные данные
-  // ---------------------------------------------
-
-  // Выясняется, есть ли в выбранной ветке или подветках есть шифрование
-  bool isCryptPresent=false;
-  if( knowTreeModel->isItemContainsCryptBranches(startItem) )
-    isCryptPresent=true;
-
-  // Если есть шифрование в выгружаемых данных, надо запросить пароль даже если он уже был введен в текущей сессии
-  // Это необходимо для того, чтобы не было возможности выгрузить скопом все зашифрованные данные, если
-  // пользователь отошел от компьютера
-  if( isCryptPresent )
-  {
-    showMessageBox(tr("Exported tree item contains encrypted data.\nPlease click OK and enter the password.\nAll data will be exported unencrypted."));
-
-    // Запрашивается пароль
-    Password password;
-    if(password.enterExistsPassword()==false) // Если пароль введен неверно, выгрузка работать не должна
-      return;
-  }
-
-
   // Экспорт данных
   bool result=knowTreeModel->exportBranchToDirectory(startItem, exportDir);
 
@@ -1280,23 +1015,6 @@ void TreeScreen::importBranchFromDirectory(QString importDir)
   }
 
   TreeItem *startItem=knowTreeModel->getItem( getCurrentItemIndex() );
-
-
-  // -----------------------------------------------
-  // Запрос пароля при импорте в зашифрованную ветку
-  // -----------------------------------------------
-
-  // Если импорт происходит в зашифрованную ветку, но пароль не был введен
-  if(startItem->getField("crypt")=="1" && globalParameters.getCryptKey().length()==0)
-  {
-    showMessageBox(tr("You are importing into an encrypted item.\nPlease click Ok and enter the password.\nAll data imported will be encrypted."));
-
-    // Запрашивается пароль
-    Password password;
-    if(password.enterExistsPassword()==false) // Если пароль введен неверно, импорт работать не должен
-      return;
-  }
-
 
   // Импорт данных
   QString importNodeId=knowTreeModel->importBranchFromDirectory(startItem, importDir);
@@ -1330,24 +1048,6 @@ void TreeScreen::updateBranchOnScreen(const QModelIndex &index)
   // Для подветки дается команда чтобы модель сообщила о своем изменении
   knowTreeModel->emitSignalDataChanged(currentIndex);
  }
-}
-
-
-// Вспомогательный слот, позволяющий ввести пароль на ветку в случае,
-// если в базе только одна корневая ветка и она зашифрована
-void TreeScreen::checkIfOneRootCryptItem(const QModelIndex &index)
-{
-    // Если пароль доступа к зашифрованным данным не вводился в этой сессии
-    if(globalParameters.getCryptKey().length()==0) {
-
-        // Указатель на текущую выбранную ветку дерева
-        TreeItem *item = knowTreeModel->getItem(index);
-
-        // Проверяется, происходит ли клик по зашифрованной ветке
-        if(item->getField("crypt")=="1") {
-            onKnowtreeClicked(index); // Вызывается стандартный клик по ветке, он запустит процедуру ввода пароля
-        }
-    }
 }
 
 
@@ -1386,34 +1086,6 @@ void TreeScreen::onKnowtreeClicked(const QModelIndex &index)
     while (i.hasNext()) {
         i.next();
         i.value()->setEnabled(true);
-    }
-
-    // Проверяется, происходит ли клик по зашифрованной ветке
-    if(item->getField("crypt")=="1")
-    {
-        // Если пароль доступа к зашифрованным данным не вводился в этой сессии
-        if(globalParameters.getCryptKey().length()==0)
-        {
-            // Запрашивается пароль
-            Password password;
-            if(password.retrievePassword()==false)
-            {
-                // Устанавливаем пустые данные для отображения таблицы конечных записей
-                find_object<RecordTableController>("recordTableController")->setTableData(nullptr);
-
-                // Все инструменты работы с веткой отключаются
-                QMapIterator<QString, QAction *> i(actionList);
-                while (i.hasNext())
-                {
-                    i.next();
-                    i.value()->setEnabled(false);
-                }
-
-                isThisSlotWork=false;
-
-                return; // Программа дальше не идет, доделать...
-            }
-        }
     }
 
 
@@ -1550,20 +1222,6 @@ void TreeScreen::treeEmptyControl(void)
    qDebug() << "treescreen::tree_empty_control() : Tree empty, create blank item";
 
    insBranchProcess(QModelIndex(), tr("Rename me"), false);
-  }
-}
-
-
-// Метод, следящий, не стало ли дерево содержать только незашифрованные записи
-// Если в дереве нет шифрования, задается вопрос, нужно ли сбросить пароль
-void TreeScreen::treeCryptControl(void)
-{
- // Если в дереве нет шифрования
- if(knowTreeModel->isContainsCryptBranches()==false)
-  {
-   // Запускается диалог сброса пароля шифрования
-   Password pwd;
-   pwd.resetPassword();
   }
 }
 

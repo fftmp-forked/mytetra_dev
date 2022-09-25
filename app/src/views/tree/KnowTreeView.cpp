@@ -174,28 +174,9 @@ void KnowTreeView::dropEvent(QDropEvent *event)
    // Исходная ветка в момент Drop (откуда переностся запись) - это выделенная курсором ветка
    QModelIndex indexFrom = find_object<TreeScreen>("treeScreen")->getCurrentItemIndex();
 
-   // Выясняется ссылка на элемент дерева (на ветку), откуда переностся запись
-   TreeItem *treeItemDrag=parentPointer->knowTreeModel->getItem(indexFrom);
-
    // Если перенос происходит в ту же самую ветку
    if(indexFrom==index)
     return;
-
-   // Если перенос происходит из не зашифрованной ветки в зашифрованную, а пароль не установлен
-   if(treeItemDrag->getField("crypt")!="1" &&
-      treeItemDrop->getField("crypt")=="1" &&
-      globalParameters.getCryptKey().length()==0)
-   {
-     // Выводится уведомление что невозможен перенос без пароля
-     QMessageBox msgBox;
-     msgBox.setWindowTitle(tr("Warning!"));
-     msgBox.setText( tr("Unable to move the item to an encrypted item. You have to enter the password for this action.") );
-     msgBox.setIcon(QMessageBox::Information);
-     msgBox.exec();
-
-     return;
-   }
-
 
    // Перенос записей, хранящихся в MimeData
    // В настоящий момент в MimeData попадает только одна запись,

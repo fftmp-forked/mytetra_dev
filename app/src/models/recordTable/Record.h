@@ -15,12 +15,6 @@
 #include "../attachTable/AttachTableData.h"
 
 // Класс одной записи в таблице записей
-
-// В полях записей с crypt=0 хранятся незашифрованные данные
-// В полях записей с crypt=1 хранятся зашифрованные данные
-// Это необходимо, чтобы дерево знаний генерировалось в/из XML быстро и без шифрации
-
-
 class Record
 {
 
@@ -65,14 +59,6 @@ public:
   void switchToLite();
   void switchToFat();
 
-  // Шифрация
-  void switchToEncryptAndSaveLite(void);
-  void switchToEncryptAndSaveFat(void);
-
-  // Расшифровка
-  void switchToDecryptAndSaveLite(void);
-  void switchToDecryptAndSaveFat(void);
-
   void pushFatAttributes();
 
   static void replaceInternalReferenceByTranslateTable(QString recordFileName, QMap<QString, QString> idRecordTranslate);
@@ -111,9 +97,6 @@ protected:
 
   QString getFullTextFileName() const;
   QString getFullFileName(QString fileName) const;
-
-  void switchToEncryptFields(void);
-  void switchToDecryptFields(void);
 
   void checkAndFillFileDir(QString &nameDirFull, QString &nameFileFull);
   void checkAndCreateTextFile() const;

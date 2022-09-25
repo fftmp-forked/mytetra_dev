@@ -97,12 +97,6 @@ class TreeItem
     // Получение иконки ветки
     QIcon getIcon();
 
-    // Шифрация данной ветки и всех подветок
-    void switchToEncrypt(void);
-    
-    // Расшифровка данной ветки и всех подветок
-    void switchToDecrypt(void);
-
     // Первичное заполнение таблицы конечных записей, "промежуточный" метод
     void recordtableInit(QDomElement domModel);
 

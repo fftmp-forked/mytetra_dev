@@ -250,15 +250,9 @@ bool DatabasesManagementModel::isDbDirectory(const QString &path)
 {
     // Формальными признаками каталога с БД являются:
     // - Существование в нем файла mytetra.xml
-    // - Существование в нем файла настроек database.ini
     // - Существование в нем подкаталога /base
 
     if( !QFileInfo(path+"/mytetra.xml").isFile() )
-    {
-        return false;
-    }
-
-    if( !QFileInfo(path+"/database.ini").isFile() )
     {
         return false;
     }

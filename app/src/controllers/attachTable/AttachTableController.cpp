@@ -11,8 +11,6 @@
 #include "models/attachTable/AttachTableData.h"
 #include "models/appConfig/AppConfig.h"
 #include "libraries/GlobalParameters.h"
-#include "libraries/crypt/CryptService.h"
-#include "libraries/helpers/DiskHelper.h"
 #include "views/tree/TreeScreen.h"
 #include "views/dialog/ReduceMessageBox.h"
 #include "libraries/Downloader.h"
@@ -230,23 +228,11 @@ bool AttachTableController::addAttach(QString attachType, QString currFullFileNa
   else
     criticalError("Unsupport adding mode");
 
-
-  // Если запись, к которой добавляется аттач, зашифрована
-  if( attachTableData->isRecordCrypt() )
-    attach.encrypt();
-
-
   if(result)
-  {
-    // Данные аттача добавляются в таблицу приаттаченных файлов
-    attachTableData->addAttach(attach);
-    return true;
-  }
+    attachTableData->addAttach(attach); // Данные аттача добавляются в таблицу приаттаченных файлов
   else
-  {
     showMessageBox(tr("Error copying file(s). Unable to attach file(s)."));
-    return false;
-  }
+  return result;
 }
 
 
@@ -339,7 +325,6 @@ void AttachTableController::onSaveAsAttach(void)
     // В диалоге устанавливается имя файла выбранного аттача
     QString id=selectedId.at(0);
     AttachTableData *attachTableData=getAttachTableData();
-    QString attachType=attachTableData->getAttach(id).getField("type");
     QString fileName=attachTableData->getFileNameById(id);
     QString fullFileName=attachTableData->getAbsoluteInnerFileNameById(id);
     fileSelectDialog.selectFile(fileName);
@@ -368,7 +353,7 @@ void AttachTableController::onSaveAsAttach(void)
     QString targetFileName=selectFiles.at(0);
 
     // Непосредственное сохранение файла
-    saveAttachToUserPlace(fullFileName, targetFileName, attachType, attachTableData->isRecordCrypt());
+    saveAttachToUserPlace(fullFileName, targetFileName);
   }
   else if(selectedId.size()>1) // Если выбрано несколько аттачей
   {
@@ -401,19 +386,18 @@ void AttachTableController::onSaveAsAttach(void)
     // Перебор выбранных для сохранения аттачей
     foreach(QString id, selectedId)
     {
-      QString attachType=attachTableData->getAttach(id).getField("type");
       QString fileName=attachTableData->getFileNameById(id);
       QString fromFullFileName=attachTableData->getAbsoluteInnerFileNameById(id);
       QString toFullFileName=toDir+"/"+fileName;
 
       // Непосредственное сохранение файла
-      saveAttachToUserPlace(fromFullFileName, toFullFileName, attachType, attachTableData->isRecordCrypt());
+      saveAttachToUserPlace(fromFullFileName, toFullFileName);
     }
   }
 }
 
 
-void AttachTableController::saveAttachToUserPlace(QString fromFullFileName, QString toFullFileName, QString attachType, bool isAttachCrypt)
+void AttachTableController::saveAttachToUserPlace(QString fromFullFileName, QString toFullFileName)
 {
   // Проверка наличия исходного файла (ведь по каким-то причинам его может не быть, например после какого-нибудь сбоя)
   QFile file(fromFullFileName);
@@ -432,10 +416,6 @@ void AttachTableController::saveAttachToUserPlace(QString fromFullFileName, QStr
     showMessageBox(tr("Unable to save the file: file %1 input/output error.").arg(toFullFileName));
     return;
   }
-
-  // Расшифровка файла, если он был зашифрован и данные хранились в базе (то есть, это именно тип file, а не линк на файл)
-  if(isAttachCrypt && attachType=="file")
-    CryptService::decryptFile(globalParameters.getCryptKey(), toFullFileName);
 }
 
 
@@ -535,21 +515,6 @@ void AttachTableController::onOpenAttach(void)
   foreach( QString id, selectedId )
   {
     QString fullFileName=attachTableData->getAbsoluteInnerFileNameById(id);
-
-    // Если запись зашифрована и открывается файл (не линк), аттач надо скопировать в директорию корзины и расшифровать
-    if( attachTableData->isRecordCrypt() && attachTableData->getAttach(id).getField("type")=="file")
-    {
-      if(mytetraConfig.getEnableDecryptFileToTrashDirectory())
-      {
-        fullFileName=DiskHelper::copyFileToTrash(fullFileName); // Копирование
-        CryptService::decryptFile(globalParameters.getCryptKey(), fullFileName); // Расшифровка
-      }
-      else
-      {
-        showMessageBox(tr("Unable to preview the encrypted attached file %1.\nPlease, use «Save As...» button, or\nenable «Decrypt to a temporary file» option in Settings.").arg(fullFileName));
-        continue;
-      }
-    }
 
     qDebug() << "Open file: "+fullFileName;
 

@@ -76,7 +76,6 @@ public:
  void restoreDockableWindowsState(void);
 
  void setTreePosition(QStringList path);
- bool isTreePositionCrypt();
 
  void setRecordtablePositionById(QString id);
 
@@ -187,7 +186,6 @@ private:
  // Напрямую вызываемые настройки, используются в мобильном интерфейсе
  QAction *actionDirectPreferencesMain       =nullptr;
  QAction *actionDirectPreferencesAppearance =nullptr;
- QAction *actionDirectPreferencesCrypt      =nullptr;
  QAction *actionDirectPreferencesSyncro     =nullptr;
  QAction *actionDirectPreferencesRecordTable=nullptr;
  QAction *actionDirectPreferencesAttach     =nullptr;

@@ -50,7 +50,7 @@ protected:
   bool addAttach(QString attachType, QString currFullFileName, QString currShortFileName);
   void saveState();
   QStringList selectFilesForAdding(QString attachType);
-  void saveAttachToUserPlace(QString fromFullFileName, QString toFullFileName, QString attachType, bool isAttachCrypt);
+  void saveAttachToUserPlace(QString fromFullFileName, QString toFullFileName);
   void updateAttachListInEditor(void);
 
   AttachTableView *view;

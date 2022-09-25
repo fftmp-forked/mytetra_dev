@@ -20,11 +20,9 @@ public:
   static const QStringList recordFieldAvailableList;
   static const QStringList recordNaturalFieldAvailableList;
   static const QStringList recordCalculableFieldAvailableList;
-  static const QStringList recordFieldCryptedList;
 
   // Поля для веток
   static const QStringList itemFieldAvailableList;
-  static const QStringList itemFieldCryptedList;
 
   // Директория относительно XML-файла, в которой хранятся директории с иконками
   static const QString iconsRelatedDirectory;

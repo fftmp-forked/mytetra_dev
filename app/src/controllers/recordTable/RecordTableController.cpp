@@ -164,19 +164,8 @@ void RecordTableController::initMetaEditorAtClickToRecord(const int pos)
   edView->setWorkDirectory(fullDir);
   edView->setFileName(currentFile);
 
-  // Если идет работа с зашифрованной записью
-  // И если имя директории или имя файла пусты, то это означает что
-  // запись не была расшифрована, и редактор должен просто показывать пустой текст
-  // ничего не сохранять и не считывать
   qDebug() << "initMetaEditorAtClickToRecord() : id " << table->getField("id", pos);
   qDebug() << "initMetaEditorAtClickToRecord() : name " << table->getField("name", pos);
-  qDebug() << "initMetaEditorAtClickToRecord() : crypt " << table->getField("crypt", pos);
-  if(table->getField("crypt", pos)=="1")
-    if(fullDir.length()==0 || currentFile.length()==0)
-      edView->setDirFileEmptyReaction(MetaEditor::DIRFILEEMPTY_REACTION_SUPPRESS_ERROR);
-
-  // В редактор заносится информация, идет ли работа с зашифрованным текстом
-  edView->setMiscField("crypt", table->getField("crypt", pos));
 
   // В редакторе устанавливается функция обратного вызова для чтения данных
   edView->setLoadCallback(table->editorLoadCallback);
@@ -362,8 +351,7 @@ void RecordTableController::setSelectionToId(QString id)
   RecordTableData *table=recordSourceModel->getTableData();
 
   // Если таблица конечных данных задана
-  // (Не задана таблица может быть по причине если ветка зашифрована и введен неверный пароль, или при вводе пароля была нажата отмена)
-  if(table!=nullptr)
+  if(table)
   {
     // Номер записи в Source данных
     int pos=table->getPosById(id);
@@ -593,7 +581,7 @@ void RecordTableController::addNewRecord(int mode)
   // Временная директория с картинками и приаттаченными файлами удаляется
   DiskHelper::removeDirectory(directory);
 
-  // Введенные данные добавляются (все только что введенные данные передаются в функцию addNew() незашифрованными)
+  // Введенные данные добавляются
   addNew(mode, record);
 
   // После добавления новой записи редактор всегда должен переключаться на слой текста

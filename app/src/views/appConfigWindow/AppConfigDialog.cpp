@@ -7,7 +7,6 @@
 #include "ConfigDialog.h"
 #include "AppConfigDialog.h"
 #include "AppConfigPage_Main.h"
-#include "AppConfigPage_Crypt.h"
 #include "AppConfigPage_Misc.h"
 #include "AppConfigPage_Synchro.h"
 #include "AppConfigPage_RecordTable.h"
@@ -43,8 +42,6 @@ AppConfigDialog::AppConfigDialog(const QString &firstPageName, QWidget *parent)
                                             QObject::tr("Main"));
     pageAppearance=configDialog->addWidget(new AppConfigPage_Appearance( parent ),
                                             QObject::tr("Appearance"));
-    pageCrypt      =configDialog->addWidget(new AppConfigPage_Crypt( parent ),
-                                            QObject::tr("Crypt"));
     pageSynchro    =configDialog->addWidget(new AppConfigPage_Synchro( parent ),
                                             QObject::tr("Synchro"));
     pageRecordTable=configDialog->addWidget(new AppConfigPage_RecordTable( parent ),
@@ -90,7 +87,6 @@ void AppConfigDialog::changePage(QString name)
 
     if(name=="pageMain") item=pageMain;
     if(name=="pageAppearance") item=pageAppearance;
-    if(name=="pageCrypt") item=pageCrypt;
     if(name=="pageSynchro") item=pageSynchro;
     if(name=="pageRecordTable") item=pageRecordTable;
     if(name=="pageAttach") item=pageAttach;

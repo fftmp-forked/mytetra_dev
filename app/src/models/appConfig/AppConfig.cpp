@@ -406,49 +406,6 @@ void AppConfig::set_findscreen_show(bool isShow)
 }
 
 
-QString AppConfig::get_howpassrequest(void)
-{
-    return get_parameter("howpassrequest");
-}
-
-
-void AppConfig::set_howpassrequest(QString mode)
-{
-    if(mode=="atClickOnCryptBranch" || mode=="atStartProgram")
-    {
-        conf->setValue("howpassrequest", mode);
-    }
-    else
-    {
-        criticalError("Set unavailable value for howpassrequest "+mode);
-    }
-}
-
-
-bool AppConfig::get_autoClosePasswordEnable(void)
-{
-    return conf->value("autoClosePasswordEnable",0).toBool();
-}
-
-
-void AppConfig::set_autoClosePasswordEnable(bool flag)
-{
-    conf->setValue("autoClosePasswordEnable", flag);
-}
-
-
-int AppConfig::get_autoClosePasswordDelay(void)
-{
-    return conf->value("autoClosePasswordDelay",0).toInt();
-}
-
-
-void AppConfig::set_autoClosePasswordDelay(int delay)
-{
-    conf->setValue("autoClosePasswordDelay", delay);
-}
-
-
 bool AppConfig::get_runinminimizedwindow(void)
 {
     return conf->value("runinminimizedwindow").toBool();
@@ -530,31 +487,6 @@ int AppConfig::getEditorScrollBarPosition(void)
 void AppConfig::setEditorScrollBarPosition(int n)
 {
     conf->setValue("editorScrollBarPosition", n);
-}
-
-
-QString AppConfig::getPasswordMiddleHash(void)
-{
-    return get_parameter("passwordMiddleHash");
-}
-
-
-void AppConfig::setPasswordMiddleHash(QString hash)
-{
-    conf->setValue("passwordMiddleHash", hash);
-}
-
-
-// Нужно ли локально хранить пароль (точнее, промежуточный хеш пароля)
-bool AppConfig::getPasswordSaveFlag(void)
-{
-    return conf->value("passwordSaveFlag").toBool();
-}
-
-
-void AppConfig::setPasswordSaveFlag(bool flag)
-{
-    conf->setValue("passwordSaveFlag", flag);
 }
 
 
@@ -771,18 +703,6 @@ QString AppConfig::getAttachSaveAsDir(void)
 void AppConfig::setAttachSaveAsDir(QString dir)
 {
     conf->setValue("attachSaveAsDir", dir);
-}
-
-
-// Разрешать ли для просмотра расшифровывать зашифрованные файлы в директорию корзины MyTetra
-bool AppConfig::getEnableDecryptFileToTrashDirectory(void)
-{
-    return conf->value("enableDecryptFileToTrashDirectory").toBool();
-}
-
-void AppConfig::setEnableDecryptFileToTrashDirectory(bool state)
-{
-    conf->setValue("enableDecryptFileToTrashDirectory", state);
 }
 
 
@@ -1016,18 +936,13 @@ void AppConfig::update_version_process(void)
         case 5:  conf->remove("lastidnum");
                  conf->remove("lastnotenum");
                  conf->remove("lastprefixnum"); [[fallthrough]];
-        case 6:  add_default_param("howpassrequest", "atClickOnCryptBranch"); [[fallthrough]];
         case 7:  add_default_param("runinminimizedwindow", false); [[fallthrough]];
         case 8:  add_default_param("synchrocommand", "");
                  add_default_param("synchroonstartup", false);
                  add_default_param("synchroonexit", false); [[fallthrough]];
         case 9:  add_default_param("syncroConsoleDetails", false); [[fallthrough]];
-        case 10: add_default_param("autoClosePasswordEnable", false);
-                 add_default_param("autoClosePasswordDelay", 10); [[fallthrough]];
         case 11: add_default_param("editorCursorPosition", 0);
                  add_default_param("editorScrollBarPosition", 0); [[fallthrough]];
-        case 12: add_default_param("passwordMiddleHash", "");
-                 add_default_param("passwordSaveFlag", false); [[fallthrough]];
         case 13: add_default_param("rememberCursorAtHistoryNavigation", true);
                  add_default_param("rememberCursorAtOrdinarySelection", true); [[fallthrough]];
         case 14: add_default_param("findScreenTreeSearchArea", 0); [[fallthrough]];
@@ -1057,7 +972,6 @@ void AppConfig::update_version_process(void)
                  add_default_param("customDateTimeFormat", ""); [[fallthrough]];
         case 25: add_default_param("attachAppendDir", "");
                  add_default_param("attachSaveAsDir", ""); [[fallthrough]];
-        case 26: add_default_param("enableDecryptFileToTrashDirectory", false); [[fallthrough]];
         case 27: add_default_param("actionLogMaximumSize", 1/*Мб*/); [[fallthrough]];
         case 28: add_default_param("enableLogging", false); [[fallthrough]];
         case 29: add_default_param("enableRecordWithAttachHighlight", true);

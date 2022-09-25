@@ -483,21 +483,7 @@ WindowSwitcher *GlobalParameters::getWindowSwitcher()
 }
 
 
-void GlobalParameters::setCryptKey(QByteArray hash)
-{
-    passwordHash=hash;
-}
-
-
-QByteArray GlobalParameters::getCryptKey(void)
-{
-    return passwordHash;
-}
-
-
 QString GlobalParameters::getInstallAutodetectLang()
 {
     return installAutodetectLang;
 }
-
-

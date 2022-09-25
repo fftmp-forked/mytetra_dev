@@ -78,16 +78,6 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
       // Если иконка существует, она выводится
       if( !resultIcon.isNull() )
         return resultIcon;
-
-      // Если ветка зашифрована
-      if(item->getField("crypt")=="1")
-      {
-        // Если пароль не введен, доступа к ветке нет
-        if(globalParameters.getCryptKey().length()==0)
-         return QIcon(":/resource/pic/branch_closed.svg");
-        else
-         return QIcon(":/resource/pic/branch_opened.svg");
-      }
     }
 
     return QVariant();

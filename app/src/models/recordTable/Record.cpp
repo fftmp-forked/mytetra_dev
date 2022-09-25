@@ -1,15 +1,14 @@
-#include <QObject>
-#include <QMessageBox>
 #include <QDomElement>
+#include <QMessageBox>
+#include <QObject>
+#include <QRegularExpression>
 
-#include "main.h"
 #include "Record.h"
 
 #include "models/appConfig/AppConfig.h"
 #include "libraries/FixedParameters.h"
 #include "libraries/GlobalParameters.h"
 #include "models/attachTable/AttachTableData.h"
-#include "libraries/crypt/CryptService.h"
 #include "libraries/helpers/DiskHelper.h"
 #include "libraries/helpers/DebugHelper.h"
 
@@ -188,7 +187,6 @@ QString Record::getIdAndNameAsString() const
 
 
 // Получение значения поля
-// Метод возвращает расшифрованные данные, если запись была зашифрована
 QString Record::getField(const QString &name) const
 {
   // Если имя поля недопустимо
@@ -213,40 +211,10 @@ QString Record::getNaturalField(QString name) const
 {
   QString result="";
 
-  // Если запись зашифрована, но ключ не установлен (т.е. человек не вводил пароль)
-  // то расшифровка невозможна
-  if(FixedParameters::recordFieldCryptedList.contains(name))
-    if(fieldList.contains("crypt"))
-      if(fieldList["crypt"]=="1")
-        if(globalParameters.getCryptKey().length()==0)
-          return QString();
-
-
   // Если поле с таким названием есть
   if(fieldList.contains(name))
   {
-    // Нужно определить, зашифровано поле или нет
-
-    bool isCrypt=false;
-
-    // Если имя поля принадлежит списку полей, которые могут шифроваться
-    // и в наборе полей есть поле crypt
-    // и поле crypt установлено в 1
-    // и запрашиваемое поле не пустое (пустые данные невозможно расшифровать)
-    if(FixedParameters::recordFieldCryptedList.contains(name))
-      if(fieldList.contains("crypt"))
-        if(fieldList["crypt"]=="1")
-          if(fieldList[name].length()>0)
-            isCrypt=true;
-
-    // Если поле не подлежит шифрованию
-    if(isCrypt==false)
       result=fieldList[name]; // Возвращается значение поля
-    else
-    {
-      // Поле расшифровывается
-      result=CryptService::decryptString(globalParameters.getCryptKey(), fieldList[name]);
-    }
   }
 
   // qDebug() << "RecordTableData::get_field : pos" << pos <<"name"<<name<<"value"<<result;
@@ -282,33 +250,8 @@ void Record::setField(const QString &name, const QString &value)
   if(FixedParameters::isRecordFieldNatural(name)==false)
     criticalError("In RecordTableData::setField() unavailable field name "+name+" try set to "+value);
 
-  bool isCrypt=false;
+  fieldList.insert(name, value);
 
-  // Если имя поля принадлежит списку полей, которые могут шифроваться
-  // и в наборе полей есть поле crypt
-  // и поле crypt установлено в 1
-  // и поле не пустое (пустые данные не нужно шифровать)
-  if(FixedParameters::recordFieldCryptedList.contains(name))
-    if(fieldList.contains("crypt"))
-      if(fieldList["crypt"]=="1")
-        if(value.length()>0)
-        {
-          if(globalParameters.getCryptKey().length()>0)
-            isCrypt=true;
-          else
-            criticalError("In RecordTableData::setField() can not set data to crypt field "+name+". Password not setted");
-        }
-
-  // Устанавливается значение поля
-  if(!isCrypt)
-  {
-      fieldList.insert(name, value);
-  }
-  else
-  {
-      // Если нужно шифровать, поле шифруется
-      fieldList.insert(name, CryptService::encryptString(globalParameters.getCryptKey(), value) );
-  }
 }
 
 
@@ -345,21 +288,12 @@ void Record::setNaturalFieldSource(QString name, QString value)
 
 // Получение значений всех натуральных (невычислимых) полей
 // Поля, которые могут быть у записи, но не заданы, не передаются
-// Поля, которые зашифрованы, расшифровываются
 QMap<QString, QString> Record::getNaturalFieldList() const
 {
   // Список имен инфополей
   QStringList fieldNames=FixedParameters::recordNaturalFieldAvailableList;
 
   QMap<QString, QString> resultFieldList;
-
-  // Проверяется, используется ли шифрование
-  bool isCrypt=false;
-
-  if(fieldList.contains("crypt"))
-    if(fieldList["crypt"]=="1")
-      isCrypt=true;
-
 
   // Перебираются названия полей
   for(int i=0;i<fieldNames.size();++i)
@@ -368,26 +302,8 @@ QMap<QString, QString> Record::getNaturalFieldList() const
 
     // Если поле с таким именем существует
     if(fieldList.contains( currName ))
-    {
-      QString result="";
+      resultFieldList[currName]=fieldList[currName];
 
-      if(isCrypt==false)
-        result=fieldList[currName]; // Напрямую значение поля
-      else
-      {
-        // Присутствует шифрование
-
-        // Если поле не подлежит шифрованию (не все поля в зашифрованной ветке шифруются. Например, не шифруется ID записи)
-        if(FixedParameters::recordFieldCryptedList.contains(currName)==false)
-          result=fieldList[currName]; // Напрямую значение поля
-        else
-          if(globalParameters.getCryptKey().length()>0 &&
-             FixedParameters::recordFieldCryptedList.contains(currName))
-            result=CryptService::decryptString(globalParameters.getCryptKey(), fieldList[currName]); // Расшифровывается значение поля
-      }
-
-      resultFieldList[currName]=result;
-    }
   }
 
   qDebug() << "Record::getFieldList() : " << resultFieldList;
@@ -424,28 +340,13 @@ void Record::setAttachTable(AttachTableData iAttachTable)
 
 
 // Получение текста записи из памяти
-// Если запись зашифрована, возвращаемый текст будет расшифрован
 QString Record::getText() const
 {
   // У легкого объекта невозможно запросить текст из памяти, если так происходит - это ошибка вызывающей логики
   if(liteFlag==true)
     criticalError("Can't get text from lite record object"+getIdAndNameAsString());
 
-  // Если запись зашифрована, но ключ не установлен (т.е. человек не вводил пароль)
-  // то расшифровка невозможна
-  if(fieldList.value("crypt")=="1" &&
-     globalParameters.getCryptKey().length()==0)
-    return "";
-
-  // Если шифровать не нужно
-  if(fieldList.value("crypt").length()==0 || fieldList.value("crypt")=="0")
-    return QString(text); // Текст просто преобразуется из QByteArray
-  else if(fieldList.value("crypt")=="1") // Если нужно шифровать
-    return CryptService::decryptStringFromByteArray(globalParameters.getCryptKey(), text);
-  else
-    criticalError("Record::getText() : Unavailable crypt field value \""+fieldList.value("crypt")+"\"");
-
-  return "";
+  return QString(text); // Текст просто преобразуется из QByteArray
 }
 
 
@@ -455,12 +356,6 @@ QString Record::getTextDirect() const
   // У тяжелого объекта невозможно получить текст записи из файла (у тяжелого объекта текст записи хранится в памяти)
   if(liteFlag==false)
     criticalError("Can't run Record::getTextDirect() for non lite record "+getIdAndNameAsString());
-
-  // Если запись зашифрована, но ключ не установлен (т.е. человек не вводил пароль)
-  // то расшифровка невозможна
-  if(fieldList.value("crypt")=="1" &&
-     globalParameters.getCryptKey().length()==0)
-    return "";
 
   // Выясняется полное имя файла с текстом записи
   QString fileName=getFullTextFileName();
@@ -473,19 +368,8 @@ QString Record::getTextDirect() const
   if(!f.open(QIODevice::ReadOnly))
     criticalError("File "+fileName+" not readable. Check permission.");
 
-  // Если незашифровано
-  if(fieldList.value("crypt").length()==0 || fieldList.value("crypt")=="0")
-  {
-    qDebug() << "Record::getTextDirect() : return direct data";
-    return QString::fromUtf8( f.readAll() );
-  }
-  else
-  {
-    qDebug() << "Record::getTextDirect() : return direct data after decrypt";
-    return CryptService::decryptStringFromByteArray(globalParameters.getCryptKey(), f.readAll()); // Если зашифровано
-  }
-
-  return "";
+  qDebug() << "Record::getTextDirect() : return direct data";
+  return QString::fromUtf8( f.readAll() );
 }
 
 
@@ -514,56 +398,28 @@ QSharedPointer<QTextDocument> Record::getTextDocument() const
 
 
 // Установка текста записи как свойства объекта
-// Принимает незашифрованные данные, сохраняет их в памяти, при записи шифрует если запись шифрованная
 void Record::setText(const QString &iText)
 {
   // Легкому объекту невозможно установить текст, если так происходит - это ошибка вызывающей логики
   if(liteFlag==true)
     criticalError("Can't set text for lite record object"+getIdAndNameAsString());
-
-  // Если шифровать не нужно
-  if(fieldList.value("crypt").length()==0 || fieldList.value("crypt")=="0")
-    text=iText.toUtf8(); // Текст просто запоминается в виде QByteArray
-  else if(fieldList.value("crypt")=="1") // Если нужно шифровать
-    text=CryptService::encryptStringToByteArray(globalParameters.getCryptKey(), iText);
-  else
-    criticalError("Record::setText() : Unavailable crypt field value \""+fieldList.value("crypt")+"\"");
+  text=iText.toUtf8(); // Текст просто запоминается в виде QByteArray
 }
 
 
 // Сохранение текста записи на диск без установки текста записи как свойства
-// Принимает незашифрованные данные, сохраняет в файл, при записи шифрует если запись зашифрована
 void Record::saveTextDirect(QString iText) const
 {
   QString fileName=getFullTextFileName();
 
-  // Если шифровать не нужно
-  if(fieldList.value("crypt").length()==0 || fieldList.value("crypt")=="0")
-  {
-    // Текст сохраняется в файл
-    QFile wfile(fileName);
+  // Текст сохраняется в файл
+  QFile wfile(fileName);
 
-    if(!wfile.open(QIODevice::WriteOnly | QIODevice::Text))
-      criticalError("Can't open text file "+fileName+" for write.");
+  if(!wfile.open(QIODevice::WriteOnly | QIODevice::Text))
+    criticalError("Can't open text file "+fileName+" for write.");
 
-    QTextStream out(&wfile);
-    out << iText;
-  }
-  else if(fieldList.value("crypt")=="1")
-  {
-    // Текст шифруется
-    QByteArray encryptData=CryptService::encryptStringToByteArray(globalParameters.getCryptKey(), iText);
-
-    // В файл сохраняются зашифрованные данные
-    QFile wfile(fileName);
-
-    if(!wfile.open(QIODevice::WriteOnly))
-      criticalError("Can't open binary file "+fileName+" for write.");
-
-    wfile.write(encryptData);
-  }
-  else
-    criticalError("Record::saveTextDirect() : Unavailable crypt field value \""+fieldList.value("crypt")+"\"");
+  QTextStream out(&wfile);
+  out << iText;
 }
 
 
@@ -576,7 +432,7 @@ void Record::saveText()
   if(!wfile.open(QIODevice::WriteOnly))
     criticalError("Record::saveText() : Can't open binary file "+fileName+" for write.");
 
-  // Сохраняется QByteArray с текстом записи (в QByteArray могут быть как зашифрованные, так и не зашифрованные данные)
+  // Сохраняется QByteArray с текстом записи
   wfile.write(text);
 }
 
@@ -602,171 +458,12 @@ void Record::setPictureFiles(QMap<QString, QByteArray> iPictureFiles)
 }
 
 
-// Приватная функция, шифрует только поля
-void Record::switchToEncryptFields(void)
-{
-  if(fieldList.value("crypt")=="1")
-    return;
-
-  // Устанавливается поле (флаг) что запись зашифрована
-  fieldList["crypt"]="1";
-
-  // Для шифрации просто переустанавливаются поля.
-  // В момент, когда поле переустанавливается, оно получит зашифрованное значение так как у записи установлен флаг шифрования
-
-  // Выбираются поля, разрешенные для шифрования
-  foreach(QString fieldName, FixedParameters::recordFieldCryptedList)
-  {
-    // Если в полях записей присутствует очередное разрешенное имя поля
-    // И это поле непустое
-    // Поле шифруется
-    if(fieldList.contains(fieldName))
-      if(fieldList[fieldName].length()>0)
-        setField(fieldName, fieldList.value(fieldName) ); // Устанавливаются значения, при установке произойдет шифрация
-  }
-}
-
-
-// Приватная функция, расшифровывает только поля
-void Record::switchToDecryptFields(void)
-{
-  // Нельзя расшифровать незашифрованную запись
-  if(fieldList.value("crypt")!="1")
-    return;
-
-  // Выбираются поля, разрешенные для шифрования
-  foreach(QString fieldName, FixedParameters::recordFieldCryptedList)
-  {
-    // Если в полях записей присутствует очередное разрешенное имя поля
-    // И это поле непустое
-    // Поле расшифровывается
-    if(fieldList.contains(fieldName))
-      if(fieldList[fieldName].length()>0)
-        setNaturalFieldSource(fieldName, getField(fieldName) );
-  }
-
-  // Устанавливается поле (флаг) что запись не зашифрована
-  fieldList["crypt"]="0";
-}
-
-
-// Шифрование записи с легкими данными
-void Record::switchToEncryptAndSaveLite(void)
-{
-  // Метод обрабатывает только легкий объект
-  if(liteFlag==false)
-    criticalError("Can't call switchToEncryptAndSaveLite() for non lite record object "+getIdAndNameAsString());
-
-  // Нельзя шифровать уже зашифрованную запись
-  if(fieldList.value("crypt")=="1")
-    criticalError("Can't call switchToEncryptAndSaveLite() for crypt record object "+getIdAndNameAsString());
-
-  // В легком объекте данные не из полей находятся в файлах
-
-  // Шифрация файла с текстом записи на диске
-  QString dirName;
-  QString fileName;
-  checkAndFillFileDir(dirName, fileName);
-  CryptService::encryptFile(globalParameters.getCryptKey(), fileName);
-
-  // Шифрование приаттаченных файлов на диске
-  attachTableData.encrypt(Attach::areaFile);
-
-  // Зашифровываются поля записи (здесь же устанавливается флаг crypt)
-  switchToEncryptFields();
-}
-
-
-// Шифрование записи с полновесными данными
-void Record::switchToEncryptAndSaveFat(void)
-{
-  // Метод обрабатывает только тяжелый объект
-  if(liteFlag==true)
-    criticalError("Can't call switchToEncryptFat() for non fat record object "+getIdAndNameAsString());
-
-  // Нельзя шифровать уже зашифрованную запись
-  if(fieldList.value("crypt")=="1")
-    criticalError("Can't call switchToEncryptAndSaveFat() for crypt record object "+getIdAndNameAsString());
-
-  // Зашифровывается текст записи в памяти
-  text=CryptService::encryptByteArray(globalParameters.getCryptKey(), text);
-
-  // Зашифровываются аттачи в памяти
-  attachTableData.encrypt(Attach::areaMemory);
-
-  // Зашифровываются поля записи (здесь же устанавливается флаг crypt)
-  switchToEncryptFields();
-
-  // Тяжелые данные записываются в хранилище
-  pushFatAttributes();
-}
-
-
-// Расшифровка записи с легкими данными
-void Record::switchToDecryptAndSaveLite(void)
-{
-  // Метод обрабатывает только легкий объект
-  if(liteFlag==false)
-    criticalError("Can't call switchToDecryptAndSaveLite() for non lite record object "+getIdAndNameAsString());
-
-  // Нельзя расшифровать не зашифрованную запись
-  if(fieldList.value("crypt")!="1")
-    criticalError("Can't call switchToDecryptAndSaveLite() for non crypt record object "+getIdAndNameAsString());
-
-  // Расшифровка файла с текстом записи на диске
-  QString dirName;
-  QString fileName;
-  checkAndFillFileDir(dirName, fileName);
-  CryptService::decryptFile(globalParameters.getCryptKey(), fileName);
-
-  // Расшифровка приаттаченных файлов на диске
-  attachTableData.decrypt(Attach::areaFile);
-
-  // Расшифровка полей (здесь же происходит установка флага crypt в конечное значение)
-  switchToDecryptFields(); // Ранее было fieldList=getNaturalFieldList(); (имеено так, так как getNaturalFieldList() возвращает расшифрованные данные)
-
-  // Устанавливается флаг что шифрации нет
-  // fieldList["crypt"]="0"; // Похоже, что команда не нужна, так как в switchToDecryptFields() флаг уже установлен
-}
-
-
-void Record::switchToDecryptAndSaveFat(void)
-{
-  // Метод обрабатывает только тяжелый объект
-  if(liteFlag==true)
-    criticalError("Can't call switchToDecryptAndSaveFat() for non fat record object "+getIdAndNameAsString());
-
-  // Нельзя расшифровать не зашифрованную запись
-  if(fieldList.value("crypt")!="1")
-    criticalError("Can't call switchToDecryptAndSaveFat() for non crypt record object "+getIdAndNameAsString());
-
-  // Расшифровывается текст записи в памяти
-  text=CryptService::decryptByteArray(globalParameters.getCryptKey(), text);
-
-  // Расшифровываются аттачи в памяти
-  attachTableData.decrypt(Attach::areaMemory);
-
-  // Расшифровываются поля записи (здесь же происходит установка флага crypt в конечное значение)
-  switchToDecryptFields();
-
-  // Тяжелые данные записываются в хранилище
-  pushFatAttributes();
-}
-
-
 // Запись "тяжелых" атрибутов (текста, картинок и приаттаченных файлов) на диск
-// Запись происходит в явном виде, то, что хранится в Fat-атрибутах, без шифрации-дешифрации
 void Record::pushFatAttributes()
 {
   // Легкий объект невозможно сбросить на диск, потому что он не содержит данных, сбрасываемых в файлы
   if(liteFlag==true)
     criticalError("Can't push lite record object"+getIdAndNameAsString());
-
-  // Если запись зашифрована, но ключ не установлен (т.е. человек не вводил пароль)
-  // то зашифровать текст невозможно
-  if(fieldList.value("crypt")=="1" &&
-     globalParameters.getCryptKey().length()==0)
-    criticalError("Record::pushFatAttributes() : Try save text for crypt record while password not setted.");
 
   // Заполняются имена директории и полей
   // Директория при проверке создается если ее не было

@@ -8,7 +8,6 @@
 #include "Attach.h"
 #include "AttachTableData.h"
 #include "models/recordTable/Record.h"
-#include "libraries/crypt/CryptService.h"
 #include "libraries/GlobalParameters.h"
 #include "libraries/helpers/DiskHelper.h"
 #include "libraries/helpers/DebugHelper.h"
@@ -60,16 +59,8 @@ void Attach::setParentTable(AttachTableData *iParentTable)
 // Допустимые имена полей
 QStringList Attach::fieldAvailableList(void)
 {
-  return QStringList() << "id" << "fileName" << "link" << "type" << "crypt";
+  return QStringList() << "id" << "fileName" << "link" << "type";
 }
-
-
-// Имена полей, которые шифруются
-QStringList Attach::fieldCryptedList(void)
-{
-  return QStringList() << "fileName" << "link";
-}
-
 
 // Допустимые типы аттачей
 QStringList Attach::typeAvailableList(void)
@@ -152,7 +143,6 @@ void Attach::switchToFat()
 
 
 // Получение значения поля
-// Метод возвращает расшифрованные данные, если запись была зашифрована
 QString Attach::getField(QString name) const
 {
   // Если имя поля недопустимо
@@ -169,41 +159,11 @@ QString Attach::getField(QString name) const
     if(fields["type"]!="link") // И тип аттача не является линком
       criticalError("Attach::getField() : Can't get link from non-link attach.");
 
-
-  // -----------------------
-  // Получение значения поля
-  // -----------------------
-
-  // Если запись зашифрована, но ключ не установлен (т.е. человек не вводил пароль)
-  // то расшифровка невозможна
-  if(fieldCryptedList().contains(name))
-    if(fields.contains("crypt"))
-      if(fields["crypt"]=="1")
-        if(globalParameters.getCryptKey().length()==0)
-          return QString();
-
-  bool isCrypt=false;
-
-  // Если имя поля принадлежит списку полей, которые могут шифроваться
-  // и в наборе полей есть поле crypt
-  // и поле crypt установлено в 1
-  // и запрашиваемое поле не пустое (пустые данные невозможно расшифровать)
-  if(fieldCryptedList().contains(name))
-    if(fields.contains("crypt"))
-      if(fields["crypt"]=="1")
-        if(fields[name].length()>0)
-          isCrypt=true;
-
-  // Если поле не подлежит шифрованию
-  if(isCrypt==false)
-    return fields[name]; // Возвращается значение поля
-  else
-    return CryptService::decryptString(globalParameters.getCryptKey(), fields[name]); // Поле расшифровывается
+  return fields[name]; // Возвращается значение поля
 }
 
 
 // Установка значения поля
-// Метод принимает незашифрованные данные, и шфирует их если запись является зашифрованой
 void Attach::setField(QString name, QString value)
 {
   // Если имя поля недопустимо
@@ -242,46 +202,6 @@ void Attach::setField(QString name, QString value)
       return;
     }
   }
-
-
-  // -----------------------
-  // Установка значения поля
-  // -----------------------
-
-  bool isCrypt=false;
-
-  // Если имя поля принадлежит списку полей, которые могут шифроваться
-  // и в наборе полей есть поле crypt
-  // и поле crypt установлено в 1
-  // и поле не пустое (пустые данные не нужно шифровать)
-  if(fieldCryptedList().contains(name))
-    if(fields.contains("crypt"))
-      if(fields["crypt"]=="1")
-        if(value.length()>0)
-        {
-          if(globalParameters.getCryptKey().length()>0)
-            isCrypt=true;
-          else
-            criticalError("In Attach::setField() can not set data to crypt field "+name+". Password not setted");
-        }
-
-  // Если нужно шифровать, значение поля шифруется
-  if(isCrypt==true)
-    value=CryptService::encryptString(globalParameters.getCryptKey(), value);
-
-  // Устанавливается значение поля
-  fields.insert(name, value);
-}
-
-
-// Защищенный метод - Установка значения поля напрямую
-// Используеся при шифрации-дешифрации данных аттача
-// todo: подумать, может быть отказаться от этого метода
-void Attach::setFieldSource(QString name, QString value)
-{
-  // Если имя поля недопустимо
-  if(fieldAvailableList().contains(name)==false)
-    criticalError("Attach::setField() : set unavailable field "+name);
 
   // Устанавливается значение поля
   fields.insert(name, value);
@@ -486,99 +406,6 @@ qint64 Attach::getFileSize() const
     return 0;
   else
     return tempFile.size();
-}
-
-
-// Шифрация аттача на диске и в памяти
-void Attach::encrypt(unsigned int area)
-{
-  // В этом методе важна последовательность действий,
-  // чтобы не получилась ситуации, когда часть данных зашифрована,
-  // а другая пытается их использовать, а флаг шифрации еще не установлен
-
-  // Если аттач уже зашифрован, значит есть какая-то ошибка в логике выше
-  if(getField("crypt")=="1")
-    criticalError("Attach::encrypt() : Can't encrypt already encrypted attach.");
-
-
-  // Шифруется файл
-  if(area & areaFile)
-    if(getField("type")=="file")
-      CryptService::encryptFile(globalParameters.getCryptKey(), getFullInnerFileName());
-
-  // Шифруется содержимое файла в памяти, если таковое есть
-  if(area & areaMemory)
-    if(liteFlag==false && fileContent.length()>0)
-      fileContent=CryptService::encryptByteArray(globalParameters.getCryptKey(), fileContent);
-
-
-  // Шифруются поля, которые подлежат шифрованию
-  foreach( QString fieldName, fieldCryptedList() )
-  {
-    // У аттача с типом file не должно быть обращений к полю link (оно не должно использоваться)
-    if(getField("type")=="file" && fieldName=="link")
-      continue;
-
-    // Если поле с указанным именем существует
-    if(getField(fieldName).length()>0)
-      setFieldSource(fieldName, CryptService::encryptString( globalParameters.getCryptKey(), getField(fieldName)));
-  }
-
-  // Устанавливается флаг, что запись зашифрована
-  setField("crypt", "1");
-}
-
-
-// Расшифровка аттача на диске и в памяти
-void Attach::decrypt(unsigned int area)
-{
-  // Если аттач не зашифрован, и происходит расшифровка, значит есть какая-то ошибка в логике выше
-  if(getField("crypt")!="1")
-    criticalError("Attach::decrypt() : Can't decrypt unencrypted attach.");
-
-  // Расшифровывается файл
-  if(area & areaFile)
-    if(getField("type")=="file")
-      CryptService::decryptFile(globalParameters.getCryptKey(), getFullInnerFileName());
-
-  // Расшифровывается содержимое файла в памяти, если таковое есть
-  if(area & areaMemory)
-    if(liteFlag==false && fileContent.length()>0)
-      fileContent=CryptService::decryptByteArray(globalParameters.getCryptKey(), fileContent);
-
-  // Расшифровываются поля, которые подлежат шифрованию
-  foreach( QString fieldName, fieldCryptedList() )
-  {
-    // У аттача с типом file не должно быть обращений к полю link (оно не должно использоваться)
-    if(getField("type")=="file" && fieldName=="link")
-      continue;
-
-    // Если поле с указанным именем существует и содержит данные, оно расшифровывается из исходных зашифрованных данных
-    if(getField(fieldName).length()>0)
-      setFieldSource(fieldName, CryptService::decryptString( globalParameters.getCryptKey(), fields[fieldName]));
-  }
-
-  // Устанавливается флаг, что запись не зашифрована
-  setField("crypt", ""); // Отсутствие значения предпочтительней, так как тогда в XML-данные не будет попадать атрибут crypt="0"
-}
-
-
-// Расшифровка переданного DOM-элемента
-// Метод статический, он не изменяет сам объект Attach
-void Attach::decryptDomElement(QDomElement &iDomElement)
-{
-  if(iDomElement.hasAttribute("crypt") && iDomElement.attribute("crypt")=="1")
-  {
-    const auto fields = fieldCryptedList();
-    for(const auto & fieldName : fields ) // Перебираются зашифрованные поля
-      if(iDomElement.hasAttribute(fieldName) && iDomElement.attribute(fieldName).length()>0)
-      {
-        QString decryptAttribute=CryptService::decryptString( globalParameters.getCryptKey(), iDomElement.attribute(fieldName));
-
-        iDomElement.setAttribute(fieldName, decryptAttribute);
-      }
-  }
-  iDomElement.setAttribute("crypt", "0");
 }
 
 

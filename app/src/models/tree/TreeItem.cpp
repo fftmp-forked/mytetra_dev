@@ -6,7 +6,6 @@
 #include "main.h"
 #include "libraries/GlobalParameters.h"
 #include "libraries/FixedParameters.h"
-#include "libraries/crypt/CryptService.h"
 #include "models/appConfig/AppConfig.h"
 #include "libraries/helpers/DebugHelper.h"
 
@@ -92,17 +91,6 @@ QString TreeItem::getField(QString name)
         // Имя ветки
         QString itemName=fieldsTable["name"];
 
-        // Если есть шифрование в этой ветке
-        // и поле является зашифрованным
-        if(fieldsTable.contains("crypt"))
-            if(fieldsTable["crypt"]=="1")
-            {
-                if(globalParameters.getCryptKey().length()>0)
-                    itemName=CryptService::decryptString(globalParameters.getCryptKey(), itemName);
-                else
-                    itemName=QString(QObject::tr("Closed"));
-            }
-
         // Выясняется, есть ли у текущего элемента конечные записи
         int recordCount=this->recordtableGetRowCount();
 
@@ -125,24 +113,7 @@ QString TreeItem::getField(QString name)
     {
         // Если поле с таким именем существует
         if(fieldsTable.contains(name))
-        {
-            QString value=fieldsTable[name];
-
-            // Если есть шифрование
-            // и поле является зашифрованным
-            if(fieldsTable.contains("crypt"))
-                if(fieldsTable["crypt"]=="1")
-                    if(FixedParameters::itemFieldCryptedList.contains(name))
-                    {
-                        if(globalParameters.getCryptKey().length()>0 &&
-                                value!="")
-                            value=CryptService::decryptString(globalParameters.getCryptKey(), value);
-                        else
-                            value="";
-                    }
-
-            return value;
-        }
+            return fieldsTable[name];
         else
             return QString(""); // Если поле не существует, возвращается пустая строка
     }
@@ -176,7 +147,6 @@ QMap<QString, QString> TreeItem::getAllFields()
 
 
 // Получение всех установленных полей "имя_поля"->"значение"
-// Напрямую, без преобразований, без расшифровки
 QMap<QString, QString> TreeItem::getAllFieldsDirect()
 {
   return fieldsTable;
@@ -200,21 +170,6 @@ void TreeItem::setField(QString name, QString value)
         icon=QIcon(); // Изображение иконки обнуляется
     }
 
-    // Если поле нужно шифровать
-    if(fieldsTable["crypt"]=="1")
-      if(FixedParameters::itemFieldCryptedList.contains(name))
-      {
-        // Если установлен пароль
-        if(globalParameters.getCryptKey().length()>0)
-        {
-          // Если поле непустое, поле зашифровывается
-          if(value!="")
-            value=CryptService::encryptString(globalParameters.getCryptKey(), value);
-        }
-        else // Иначе пароль не установлен
-          criticalError("TreeItem::setField() : Can not encrypt field \""+name+"\". Password not setted.");
-      }
-
     // qDebug() << "Set to item data " << name << value;
     fieldsTable[name]=value;
   }
@@ -224,7 +179,6 @@ void TreeItem::setField(QString name, QString value)
 
 
 // Установка данных напрямую - какие данные переданы, те и запомнятся
-// без всяких преобразований, без шифрации
 // Метод используется в одном месте - при инициализации дерева из XML файла
 void TreeItem::setAllFieldDirect(const QMap<QString, QString> nameAndValue)
 {
@@ -235,9 +189,8 @@ void TreeItem::setAllFieldDirect(const QMap<QString, QString> nameAndValue)
   // Устанавливаются значения полей
   fieldsTable=nameAndValue; // Qt сам должен правильно сделать привязку к переданным данным и оставить их в памяти
 
-  // Если есть иконка и нет шифрования, изображение иконки кешируется
-  if(nameAndValue.value("icon").length()>0 &&
-     nameAndValue.value("crypt")!="1")
+  // Если есть иконка, изображение иконки кешируется
+  if(nameAndValue.value("icon").length()>0)
     icon=QIcon(mytetraConfig.get_tetradir()+"/"+FixedParameters::iconsRelatedDirectory+"/"+nameAndValue.value("icon"));
 
   if(nameAndValue.value("icon").length()==0)
@@ -247,33 +200,7 @@ void TreeItem::setAllFieldDirect(const QMap<QString, QString> nameAndValue)
 
 QIcon TreeItem::getIcon()
 {
-  // Если ветка не зашифрована
-  if( fieldsTable["crypt"]!="1" )
     return icon; // Просто возвращается иконка, не важно, пустая или с рисунком
-  else
-  {
-    // Иначе ветка зашифрована
-
-    // Если иконка уже была закеширована
-    if(!icon.isNull())
-      return icon;
-    else
-    {
-      // Иначе иконка не закеширована
-
-      // Если есть возможность закешировать (введен пароль и он правильный)
-      if(globalParameters.getCryptKey().length()>0)
-      {
-        QString iconFileName=getField("icon");
-
-        // Если иконка была задана
-        if(iconFileName.length()>0)
-          icon=QIcon(mytetraConfig.get_tetradir()+"/"+FixedParameters::iconsRelatedDirectory+"/"+iconFileName);
-      }
-
-      return icon;
-    }
-  }
 }
 
 
@@ -533,59 +460,6 @@ QList<QStringList> TreeItem::getAllChildrenPathAsFieldRecurse(TreeItem *item, QS
 
   if(mode==1)return pathList;
   else return QList<QStringList>();
-}
-
-
-// Переключение ветки и всех подветок в зашифрованное состояние
-void TreeItem::switchToEncrypt(void)
-{
-  qDebug() << "TreeItem::switchToEncrypt() : Crypt tree item " << fieldsTable["name"] << "id" << fieldsTable["id"];
-
-  // Если ветка оказалось заашифрованной ее нельзя зашифровывать второй раз
-  if(fieldsTable["crypt"]=="1")
-    return;
-
-  // Устанавливается поле, что ветка зашифрована
-  fieldsTable["crypt"]="1";
-
-  // Шифруются поля ветки, подлежащие шифрованию
-  foreach(QString fieldName, FixedParameters::itemFieldCryptedList)
-    fieldsTable[fieldName]=CryptService::encryptString(globalParameters.getCryptKey(), fieldsTable[fieldName]);
-
-  // Шифрация конечных записей для этой ветки
-  recordsTable.switchToEncrypt();
-
-
-  // Шифрация подветок
-  for(int i=0; i<childCount(); i++)
-    child(i)->switchToEncrypt();
-}
-
-
-// Переключение ветки и всех подветок в расшифрованное состояние
-void TreeItem::switchToDecrypt(void)
-{
-  qDebug() << "TreeItem::switchToDecrypt() : Decrypt tree item" << fieldsTable["name"] << "id" << fieldsTable["id"];
-
-  // Если ветка оказалось незашифрованной, нечего расшифровывать
-  if(fieldsTable["crypt"].length()==0 ||
-     fieldsTable["crypt"]=="0")
-    return;
-
-  // Устанавливается поле, что ветка не зашифрована
-  fieldsTable["crypt"]="0";
-
-  // Расшифровка полей ветки, подлежащих шифрованию
-  foreach(QString fieldName, FixedParameters::itemFieldCryptedList)
-    fieldsTable[fieldName]=CryptService::decryptString(globalParameters.getCryptKey(), fieldsTable[fieldName]);
-
-  // Дешифрация конечных записей для этой ветки
-  recordsTable.switchToDecrypt();
-
-
-  // Дешифрация подветок
-  for(int i=0; i<childCount(); i++)
-    child(i)->switchToDecrypt();
 }
 
 

@@ -17,8 +17,6 @@ class Attach
 
 public:
 
-  enum EncryptDecryptArea{areaMemory=0x1, areaFile=0x2, areaAll=0xFF};
-
   Attach(AttachTableData *iParentTable);
   Attach(QString iType, AttachTableData *iParentTable);
   virtual ~Attach();
@@ -53,12 +51,6 @@ public:
 
   bool copyFileToBase(QString iFileName);
   void removeFile();
-
-  void encrypt(unsigned int area=areaAll);
-  void decrypt(unsigned int area=areaAll);
-
-  // Расшифровка переданного DOM-элемента, полученного из тега <file> и его атрибутов
-  static void decryptDomElement(QDomElement &iDomElement);
   
   void renameFile(QString newFileName);
 protected:
@@ -66,10 +58,7 @@ protected:
   void init(AttachTableData *iParentTable);
   void setParentTable(AttachTableData *iParentTable); // Защищенный метод, который может вызвать только этот класс и AttachTableData
 
-  void setFieldSource(QString name, QString value);
-
   static QStringList fieldAvailableList(void);
-  static QStringList fieldCryptedList(void);
   static QStringList typeAvailableList(void);
 
   bool liteFlag;

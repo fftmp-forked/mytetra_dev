@@ -64,10 +64,6 @@ public:
 
   void print();
 
-  bool isRecordCrypt();
-  void encrypt(unsigned int area);
-  void decrypt(unsigned int area);
-
   void saveAttachFilesToDirectory(QString dirName);
 
   // Обновление ссылок на таблицу аттачей внутри аттачей

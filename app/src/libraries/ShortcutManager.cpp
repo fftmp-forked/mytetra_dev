@@ -95,8 +95,6 @@ void ShortcutManager::initDefaultKeyTable()
     defaultKeyTable.insert("tree-copyBranch",           Data{ QKeySequence("Ctrl+Shift+F3"), tr("Copy item"), tr("Copy item including sub items") });
     defaultKeyTable.insert("tree-pasteBranch",          Data{ QKeySequence("Ctrl+Shift+F5"), tr("Paste item"), tr("Paste sibling item after selected") });
     defaultKeyTable.insert("tree-pasteSubbranch",       Data{ QKeySequence("Ctrl+F5"), tr("Paste as sub item"), tr("Paste item as sub item for selected") });
-    defaultKeyTable.insert("tree-encryptBranch",        Data{ QKeySequence("Ctrl+Shift+1"), tr("Encrypt item"), tr("Encrypt item and all subitem") });
-    defaultKeyTable.insert("tree-decryptBranch",        Data{ QKeySequence("Ctrl+Shift+0"), tr("Decrypt item"), tr("Decrypt item and all subitem") });
     defaultKeyTable.insert("tree-setIcon",              Data{ QKeySequence("Ctrl+Shift+O"), tr("Set icon"), tr("Set item icon") });
 
     defaultKeyTable.insert("editor-selectAll",           Data{ QKeySequence("Ctrl+A"), tr("Select all"), tr("") });

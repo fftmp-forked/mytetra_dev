@@ -24,12 +24,8 @@
 
 #include "libraries/qtSingleApplication/qtsingleapplication.h"
 
-#include "models/dataBaseConfig/DataBaseConfig.h"
 #include "libraries/WalkHistory.h"
 #include "libraries/WindowSwitcher.h"
-#include "libraries/crypt/RC5Simple.h"
-#include "libraries/crypt/Password.h"
-#include "libraries/TraceLogger.h"
 #include "libraries/ShortcutManager.h"
 #include "libraries/PeriodicCheckBase.h"
 #include "libraries/PeriodicSynchro.h"
@@ -51,9 +47,6 @@ GlobalParameters globalParameters;
 
 // Конфигурация программы (считанная из файла конфигурации)
 AppConfig mytetraConfig;
-
-// Конфигурация хранилища данных
-DataBaseConfig dataBaseConfig;
 
 // Объект слежения за состоянием корзины
 TrashMonitoring trashMonitoring;
@@ -231,9 +224,6 @@ int main(int argc, char ** argv)
      mytetraConfig.set_interfacelanguage( globalParameters.getInstallAutodetectLang() );
  }
 
- // Инициализация переменных, отвечающих за хранилище данных
- dataBaseConfig.init();
-
  // Проверяется наличие коллекции прикрепляемых к веткам иконок (и иконки создаются если они отсутствуют)
  IconSelectDialog::iconsCollectionCheck();
 
@@ -320,38 +310,6 @@ int main(int argc, char ** argv)
  if(mytetraConfig.get_synchroonstartup())
   if(mytetraConfig.get_synchrocommand().trimmed().length()>0)
    win.synchronization();
-
-
- // Если настроено в конфиге, сразу запрашивается пароль доступа
- // к зашифрованным данным
- // И если есть хоть какие-то зашифрованные данные
- if(mytetraConfig.get_howpassrequest()=="atStartProgram")
-  if(globalParameters.getCryptKey().length()==0)
-   if(dataBaseConfig.get_crypt_mode()>0)
-    {
-     // Запрашивается пароль только в том случае, если ветка,
-     // на которую установливается курсор при старте, незашифрована
-     // Если ветка зашифрована, пароль и так будет запрошен автоматически
-     if(win.isTreePositionCrypt()==false)
-      {
-       Password password;
-       password.retrievePassword();
-      }
-    }
-
-
- // Если в общем конфиге стоит опция хранения пароля
- // И хранимый пароль (точнее его хеш) заполнен
- if(globalParameters.getCryptKey().length()==0)
-  if(dataBaseConfig.get_crypt_mode()>0)
-   if(mytetraConfig.getPasswordSaveFlag())
-    if(mytetraConfig.getPasswordMiddleHash().length()>0)
-     {
-      // При запросе пароля ключ шифрования будет восстановлен автоматически,
-      // если он правильный и подходит для текущих данных
-      Password password;
-      password.retrievePassword();
-     }
 
  // Распечатывается дерево сгенерированных объектов
  // print_object_tree();

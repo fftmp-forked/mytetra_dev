@@ -95,17 +95,8 @@ public:
     bool get_findscreen_show(void);
     void set_findscreen_show(bool isShow);
 
-    QString get_howpassrequest(void);
-    void set_howpassrequest(QString mode);
-
     bool get_runinminimizedwindow(void);
     void set_runinminimizedwindow(bool flag);
-
-    bool get_autoClosePasswordEnable(void);
-    void set_autoClosePasswordEnable(bool flag);
-
-    int  get_autoClosePasswordDelay(void);
-    void set_autoClosePasswordDelay(int delay);
 
     QString get_synchrocommand(void);
     void set_synchrocommand(QString command);
@@ -124,12 +115,6 @@ public:
 
     int  getEditorScrollBarPosition(void);
     void setEditorScrollBarPosition(int n);
-
-    QString getPasswordMiddleHash(void);
-    void setPasswordMiddleHash(QString hash);
-
-    bool getPasswordSaveFlag(void);
-    void setPasswordSaveFlag(bool flag);
 
 
     bool getRememberCursorAtHistoryNavigation(void);
@@ -191,10 +176,6 @@ public:
     // Путь на диске по которому пользователь сохранял (Сохранить как...) приаттаченные файлы
     QString getAttachSaveAsDir(void);
     void setAttachSaveAsDir(QString dir);
-
-    // Разрешать ли для просмотра расшифровывать зашифрованные файлы в директорию корзины MyTetra
-    bool getEnableDecryptFileToTrashDirectory(void);
-    void setEnableDecryptFileToTrashDirectory(bool state);
 
     // Размер файла лога дейсвтвий
     unsigned int getActionLogMaximumSize();

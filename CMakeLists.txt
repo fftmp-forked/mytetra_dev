@@ -101,5 +101,4 @@ include(CPack)
 # TODO:
 # more warnings check
 # static analyzer
-# option for build crypto
 # packages. rpm/deb is supported, some windows packages also. Don't know about MacOs/android.

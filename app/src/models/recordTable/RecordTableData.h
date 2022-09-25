@@ -87,9 +87,6 @@ public:
     void moveUp(int pos);
     void moveDn(int pos);
 
-    void switchToEncrypt(void);
-    void switchToDecrypt(void);
-
     static void editorLoadCallback(QObject *editor,
                                      QString &loadText);
 

@@ -6,14 +6,12 @@
 
 
 // Поля для записей
-const QStringList FixedParameters::recordFieldAvailableList=       {"id", "name", "author", "url", "tags", "ctime", "dir", "file", "crypt", "block", "hasAttach", "attachCount"};
-const QStringList FixedParameters::recordNaturalFieldAvailableList={"id", "name", "author", "url", "tags", "ctime", "dir", "file", "crypt", "block"};
+const QStringList FixedParameters::recordFieldAvailableList=       {"id", "name", "author", "url", "tags", "ctime", "dir", "file", "block", "hasAttach", "attachCount"};
+const QStringList FixedParameters::recordNaturalFieldAvailableList={"id", "name", "author", "url", "tags", "ctime", "dir", "file", "block"};
 const QStringList FixedParameters::recordCalculableFieldAvailableList={"hasAttach", "attachCount"};
-const QStringList FixedParameters::recordFieldCryptedList={"name", "author", "url", "tags"};
 
 // Поля для веток
-const QStringList FixedParameters::itemFieldAvailableList={"id", "name", "ctime", "crypt", "icon"};
-const QStringList FixedParameters::itemFieldCryptedList={"name", "icon"};
+const QStringList FixedParameters::itemFieldAvailableList={"id", "name", "ctime", "icon"};
 
 // Директория относительно XML-файла, в которой хранятся директории с иконками
 const QString FixedParameters::iconsRelatedDirectory="icons";
@@ -81,7 +79,6 @@ QMap<QString, QString> FixedParameters::recordFieldDescription(QStringList list)
   names["ctime"]=tr("Create time");
   names["dir"]=tr("Directory name");
   names["file"]=tr("File name");
-  names["crypt"]=tr("Is crypt");
   names["hasAttach"]=tr("Has attaches");
   names["attachCount"]=tr("Attaches count");
   names["block"]=tr("Block");

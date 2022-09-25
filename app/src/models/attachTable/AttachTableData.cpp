@@ -390,29 +390,6 @@ void AttachTableData::switchToFat()
 }
 
 
-bool AttachTableData::isRecordCrypt()
-{
-  if( record->getField("crypt")=="1" )
-    return true;
-  else
-    return false;
-}
-
-
-void AttachTableData::encrypt(unsigned int area)
-{
-  for(int i=0; i<attachTable.size(); ++i)
-    attachTable[i].encrypt(area);
-}
-
-
-void AttachTableData::decrypt(unsigned int area)
-{
-  for(int i=0; i<attachTable.size(); ++i)
-    attachTable[i].decrypt(area);
-}
-
-
 void AttachTableData::saveAttachFilesToDirectory(QString dirName)
 {
   for(int i=0; i<attachTable.size(); ++i)

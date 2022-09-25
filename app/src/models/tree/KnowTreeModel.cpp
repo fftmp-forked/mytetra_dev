@@ -13,8 +13,6 @@
 #include "models/attachTable/Attach.h"
 #include "models/recordTable/Record.h"
 #include "views/tree/TreeScreen.h"
-#include "libraries/crypt/Password.h"
-#include "libraries/crypt/CryptService.h"
 #include "libraries/helpers/DiskHelper.h"
 #include "libraries/GlobalParameters.h"
 #include "libraries/FixedParameters.h"
@@ -241,7 +239,7 @@ void KnowTreeModel::exportFullModelDataToStreamWriter(QXmlStreamWriter *xmlWrite
 
 
 // Выгрузка ветки и ее подветок в отдельную директорию
-// todo: Подумать, и сделать выгрузку через режим StreamWriter. Похоже, что пока что мешает расшифровка выгружаемых данных
+// todo: Подумать, и сделать выгрузку через режим StreamWriter.
 bool KnowTreeModel::exportBranchToDirectory(TreeItem *startItem, QString exportDir)
 {
   // Полный путь до создаваемого файла с деревом
@@ -281,11 +279,6 @@ bool KnowTreeModel::exportBranchToDirectory(TreeItem *startItem, QString exportD
   // Добавление корневого элемента в DOM документ
   doc.appendChild(rootElement);
 
-  // Выгрузка всех связанных данных с расшифровкой (если это необходимо)
-  // и одновременная расшифровка всех атрибутов (если это необходимо)
-  exportRelatedDataAndDecryptIfNeed(doc, exportDir);
-
-
   // Запись DOM данных в файл
   QFile wfile(mytetraXmlFile);
   if (!wfile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -302,105 +295,6 @@ bool KnowTreeModel::exportBranchToDirectory(TreeItem *startItem, QString exportD
   delete tempRootItem; // Удаляется корневой элемент
 
   return true;
-}
-
-
-void KnowTreeModel::exportRelatedDataAndDecryptIfNeed(QDomDocument &doc, QString exportDir)
-{
-  QDomElement contentRootNode=doc.documentElement().firstChildElement("content").firstChildElement("node");
-
-  exportRelatedDataAndDecryptIfNeedRecurse(contentRootNode, exportDir);
-
-  return;
-}
-
-
-// Выгрузка в директорию выгрузки связанных с записью данных + расшифровка переданного элемента
-// Связанные с записью данные это:
-// - файл с текстом самой записи
-// - файлы картинок
-// - прикрепленные к записи файлы
-// все эти данные выгружаются в поддиректорию, записанную в атрибуте dir
-void KnowTreeModel::exportRelatedDataAndDecryptIfNeedRecurse(QDomElement &element, QString exportDir)
-{
-  QStringList cryptFieldNames;
-
-  // Если это ветка
-  if(element.nodeName()=="node")
-    cryptFieldNames=FixedParameters::itemFieldCryptedList;
-
-  // Если это запись
-  if(element.nodeName()=="record")
-    cryptFieldNames=FixedParameters::recordFieldCryptedList;
-
-  // Расшифровка атрибутов
-  foreach(QString cryptFieldName, cryptFieldNames)
-    if(element.attribute("crypt")=="1")
-      if(element.hasAttribute(cryptFieldName))
-        element.setAttribute(cryptFieldName, CryptService::decryptString(globalParameters.getCryptKey(), element.attribute(cryptFieldName)));
-
-
-   // Если это запись, надо скопировать связанные данные (с расшифровкой, если это необходимо)
-   if(element.nodeName()=="record")
-   {
-     if( element.attribute("dir").length()==0 )
-       criticalError("Bad data structure. For record with ID "+element.attribute("id")+" not setted attribute \"dir\"");
-
-     QString fromDir=mytetraConfig.get_tetradir()+"/base/"+element.attribute("dir");
-     QString toDir=exportDir+"/base/"+element.attribute("dir");
-
-     // Создание директории
-     if( !QDir().mkpath(toDir) )
-       criticalError("Can't create directory "+toDir);
-
-     // Копирование всех файлов из директории записи в директорию экспортируемой записи
-     DiskHelper::copyDirectory(fromDir, toDir);
-
-     // Расшифровка файлов
-     if(element.attribute("crypt")=="1")
-     {
-       // Расшифровка текста записи
-       CryptService::decryptFile(globalParameters.getCryptKey(), toDir+"/"+element.attribute("file"));
-
-       // Расшифровка приаттаченных файлов
-       QDomNodeList list=element.elementsByTagName("file");
-       for(int i=0; i<list.count(); i++) // Цикл foreach в Qt до сих пор не работает с QDomNodeList
-       {
-         QDomElement fileElement=list.at(i).toElement();
-
-         if(fileElement.hasAttribute("crypt") && fileElement.attribute("crypt")=="1")
-         {
-           // Данные внутри DOM-объекта расшифровываются
-           Attach::decryptDomElement(fileElement);
-
-           // На диске расшифровываются только аттачи с типом file
-           if(fileElement.attribute("type")=="file")
-           {
-             // Выясняется внутрисистемное имя прикрепленного файла
-             QString fileName=Attach::constructFileName( fileElement.attribute("type"),
-                                                         fileElement.attribute("id"),
-                                                         fileElement.attribute("fileName") );
-
-             // Файл на диске расшифровывается
-             CryptService::decryptFile(globalParameters.getCryptKey(), toDir+"/"+fileName);
-           }
-         }
-       }
-     }
-   }
-
-  // Здесь считается, что все данные расшифрованы
-  if(element.hasAttribute("crypt"))
-    element.setAttribute("crypt", "0");
-
-  // Рекурсивный вызов дочерних элементов
-  QDomNodeList childList=element.childNodes();
-  for(int i=0; i<childList.count(); i++)
-    if(childList.at(i).isElement())
-    {
-      QDomElement childElement=childList.at(i).toElement();
-      exportRelatedDataAndDecryptIfNeedRecurse( childElement, exportDir);
-    }
 }
 
 
@@ -452,15 +346,6 @@ QString KnowTreeModel::importBranchFromDirectory(TreeItem *startItem, QString im
   QDomNodeList nodeList=xmlt.getDomModel()->elementsByTagName("node");
   if(nodeList.count()>0)
     importItemId=nodeList.at(0).toElement().attribute("id");
-
-  // Если импорт шел в зашифрованную ветку, данные зашифровываются
-  if(startItem->getField("crypt")=="1")
-  {
-    TreeItem *importItem=getItemById( importItemId );
-
-    importItem->switchToEncrypt(); // Шифрация импортируемой ветки и всех подветок
-  }
-
 
   // После завершения экспорта дерево знаний записывается
   save();
@@ -791,9 +676,6 @@ void KnowTreeModel::addNewBranch(TreeItem *parent, QMap<QString, QString> branch
   // Перебираются поля новой ветки и их значения
   foreach(QString fieldName, branchFields.keys())
   {
-    // Ветка будет обычной или шифрованной в зависимости от типа ветки, куда она вставляется, это определяется дальше по коду
-    if(fieldName=="crypt")
-      continue;
 
     // Добавляются только поля, разрешенные для ветки. Вспомогательные поля отбрасываются
     if(!FixedParameters::itemFieldAvailableList.contains(fieldName))
@@ -805,13 +687,6 @@ void KnowTreeModel::addNewBranch(TreeItem *parent, QMap<QString, QString> branch
 
   // Инициализируется таблица конечных записей
   newBranch->recordtableGetTableData()->init(newBranch, QDomElement());
-
-  // Определяется, является ли родительская ветка зашифрованной
-  if(parent->getField("crypt")=="1")
-  {
-    // Новая ветка превращается в зашифрованную
-    newBranch->switchToEncrypt();
-  }
 }
 
 
@@ -1331,40 +1206,6 @@ QString KnowTreeModel::pasteSubbranchRecurse(TreeItem *item,
 }
 
 
-// Перешифрование базы с новым паролем
-void KnowTreeModel::reEncrypt(QString previousPassword, QString currentPassword)
-{
-  // Получение путей ко всем подветкам дерева
-  QList<QStringList> subbranchespath=rootItem->getAllChildrenPath();
-
-  // Перебираются подветки
-  foreach(QStringList currPath, subbranchespath)
-  {
-    // Перешифровываются только те подветки, которые имеют
-    // флаг шифрования, и у которых родительская ветка нешифрована
-    TreeItem *currBranch=getItem(currPath);
-    TreeItem *currBranchParent=currBranch->parent();
-    
-    if(currBranch->getField("crypt")=="1" &&
-       currBranchParent->getField("crypt")!="1")
-    {
-      Password pwd;
-
-      pwd.setCryptKeyToMemory(previousPassword);
-      currBranch->switchToDecrypt();
-
-      pwd.setCryptKeyToMemory(currentPassword);
-      currBranch->switchToEncrypt();
-    }
-    
-  } // Закончился перебор подветок
-
-
-  // Сохранение дерева веток
-  find_object<TreeScreen>("treeScreen")->saveKnowTree();
-}
-
-
 // Функция ищет ветку с указанным ID и возвращает ссылку не неё в виде TreeItem *
 // Если ветка с указанным ID не будет найдена, возвращается NULL
 TreeItem *KnowTreeModel::getItemById(const QString &id)
@@ -1463,47 +1304,6 @@ QStringList KnowTreeModel::getRecordPathRecurse(TreeItem *item,
     }
 
     return findPath;
-}
-
-
-// Метод определяющий есть ли в дереве зашифрованные ветки
-bool KnowTreeModel::isContainsCryptBranches(void)
-{
-  isContainsCryptBranchesRecurse(rootItem, 0);
-
-  return isContainsCryptBranchesRecurse(rootItem, 1);
-}
-
-
-// Метод определяющий есть ли в элементе зашифрованные ветки или подветки
-bool KnowTreeModel::isItemContainsCryptBranches(TreeItem *item)
-{
-  isContainsCryptBranchesRecurse(item, 0);
-
-  return isContainsCryptBranchesRecurse(item, 1);
-}
-
-
-bool KnowTreeModel::isContainsCryptBranchesRecurse(TreeItem *item, int mode)
-{
-  static bool isCrypt=false;
-
-  if(mode==0)
-  {
-    isCrypt=false;
-    return isCrypt;
-  }
-
-  if(item->getField("crypt")=="1")
-  {
-    isCrypt=true;
-    return isCrypt;
-  }
-
-  for(int i=0; i < item->childCount(); i++)
-    isContainsCryptBranchesRecurse(item->child(i), 1);
-
-  return isCrypt;
 }
 
 

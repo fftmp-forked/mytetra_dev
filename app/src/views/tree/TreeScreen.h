@@ -75,12 +75,8 @@ private slots:
  void pasteBranch(void);
  void pasteSubbranch(void);
 
- void encryptBranch(void);
- void decryptBranch(void);
-
  // Действия при клике на ветку дерева
  void onKnowtreeClicked(const QModelIndex &index);
- void checkIfOneRootCryptItem(const QModelIndex &index);
 
  // Открытие контекстного меню
  void onCustomContextMenuRequested(const QPoint &pos);
@@ -115,10 +111,6 @@ private:
  void pasteBranchSmart(bool is_branch);
 
  void treeEmptyControl(void);
- void treeCryptControl(void);
-
- void encryptBranchItem(void);
- void decryptBranchItem(void);
 
  void updateLastKnowTreeData(QFileInfo fileInfo, bool fileInfoValid);
 };

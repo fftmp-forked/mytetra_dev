@@ -3,7 +3,6 @@ add_subdirectory("libraries/qtSingleApplication")
 file(GLOB SRC_1 "libraries/*.cpp")
 file(GLOB_RECURSE SRC_2
     "controllers/*.cpp"
-    "libraries/crypt/*.cpp"
     "libraries/helpers/*.cpp"
     "libraries/wyedit/*.cpp"
     "models/*.cpp"

@@ -3,7 +3,6 @@
 #include "ActionLogger.h"
 #include "models/appConfig/AppConfig.h"
 #include "libraries/GlobalParameters.h"
-#include "libraries/crypt/CryptService.h"
 #include "libraries/helpers/DebugHelper.h"
 #include "libraries/helpers/HtmlHelper.h"
 
@@ -24,13 +23,10 @@ ActionLogger::ActionLogger(QObject *pobj)
   actionStructure["stopProgram"];
 
   actionStructure["createRecord"]         =(QStringList() << "recordId" << "recordName" << "branchId" << "branchName");
-  actionStructure["createCryptRecord"]    =(QStringList() << "recordId" << "recordName" << "branchId" << "branchName");
 
   actionStructure["editRecord"]           =(QStringList() << "recordId" << "recordName" ); // Редактирование полей записи
-  actionStructure["editCryptRecord"]      =(QStringList() << "recordId" << "recordName" );
 
   actionStructure["editRecordText"]       =(QStringList() << "recordId" << "recordName" ); // Редактирование текста записи
-  actionStructure["editCryptRecordText"]  =(QStringList() << "recordId" << "recordName" );
 
   actionStructure["moveRecordUp"]         =(QStringList() << "recordId" << "recordName" );
   actionStructure["moveRecordDown"]       =(QStringList() << "recordId" << "recordName" );
@@ -233,52 +229,11 @@ QString ActionLogger::getFullDescription(QMap<QString, QString> iData)
   else if( iData["a"] == "createRecord")
     line=tr("Create note \"%1\" with ID %2 in tree item \"%3\" with ID %4").arg(iData["recordName"], iData["recordId"], iData["branchName"], iData["branchId"]);
 
-  else if( iData["a"] == "createCryptRecord")
-  {
-    // Если пароль не введен, зашифрованные данные не расшифровываются и не показываются
-    if(globalParameters.getCryptKey().length()==0)
-    {
-      iData["recordName"]="***";
-      iData["branchName"]="***";
-    }
-    else
-    {
-      iData["recordName"]=CryptService::decryptString(globalParameters.getCryptKey(), iData["recordName"]);
-      iData["branchName"]=CryptService::decryptString(globalParameters.getCryptKey(), iData["branchName"]);
-    }
-
-    line=tr("Create crypt note \"%1\" with ID %2 in tree item \"%3\" with ID %4").arg(iData["recordName"], iData["recordId"], iData["branchName"], iData["branchId"]);
-  }
-
   else if( iData["a"] == "editRecord")
     line=tr("Edit fields of note \"%1\" with ID %2").arg( iData["recordName"], iData["recordId"] );
 
-  else if( iData["a"] == "editCryptRecord")
-  {
-    // Если пароль не введен, зашифрованные данные не расшифровываются и не показываются
-    if(globalParameters.getCryptKey().length()==0)
-      iData["recordName"]="***";
-    else
-      iData["recordName"]=CryptService::decryptString(globalParameters.getCryptKey(), iData["recordName"]);
-
-    line=tr("Edit fields of crypt note \"%1\" with ID %2").arg(iData["recordName"], iData["recordId"]);
-  }
-
-
   else if( iData["a"] == "editRecordText")
     line=tr("Edit text of note \"%1\" with ID %2").arg(iData["recordName"], iData["recordId"]);
-
-  else if( iData["a"] == "editCryptRecordText")
-  {
-    // Если пароль не введен, зашифрованные данные не расшифровываются и не показываются
-    if(globalParameters.getCryptKey().length()==0)
-      iData["recordName"]="***";
-    else
-      iData["recordName"]=CryptService::decryptString(globalParameters.getCryptKey(), iData["recordName"]);
-
-    line=tr("Edit text of crypt note \"%1\" with ID %2").arg(iData["recordName"], iData["recordId"]);
-  }
-
 
   else if( iData["a"] == "moveRecordUp")
     line=tr("Move up note \"%1\" with ID %2").arg(iData["recordName"], iData["recordId"]);

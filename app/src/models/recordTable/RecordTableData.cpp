@@ -4,18 +4,15 @@
 #include <QDir>
 #include <QMessageBox>
 
-#include "main.h"
 #include "Record.h"
 #include "RecordTableData.h"
 
 #include "models/appConfig/AppConfig.h"
-#include "views/mainWindow/MainWindow.h"
 #include "libraries/GlobalParameters.h"
 #include "models/tree/TreeItem.h"
 #include "libraries/WalkHistory.h"
 #include "models/tree/KnowTreeModel.h"
 #include "views/tree/KnowTreeView.h"
-#include "libraries/crypt/CryptService.h"
 #include "libraries/helpers/DiskHelper.h"
 #include "libraries/ActionLogger.h"
 
@@ -83,7 +80,6 @@ void RecordTableData::setField(QString name, QString value, int pos)
 
 
 // Получение значения текста указанной записи
-// Метод возвращает расшифрованные данные
 // Если возникнет проблема, что файла с текстом записи нет, будет создан пустой файл
 QString RecordTableData::getText(int pos)
 {
@@ -108,20 +104,6 @@ void RecordTableData::editorLoadCallback(QObject *editor,
     // Ссылка на объект редактора
     Editor *currEditor=qobject_cast<Editor *>(editor);
 
-    // Нужно ли дешифровать данные при чтении
-    bool workWithCrypt=false;
-    if(currEditor->getMiscField("crypt")=="1")
-    {
-        // Если не установлено ключа шифрации
-        if(globalParameters.getCryptKey().length()==0)
-        {
-            loadText="";
-            return;
-        }
-
-        workWithCrypt=true;
-    }
-
     // Файл, с которым работает редактор
     QString fileName=currEditor->getWorkDirectory()+"/"+currEditor->getFileName();
 
@@ -135,11 +117,7 @@ void RecordTableData::editorLoadCallback(QObject *editor,
     if(!f.open(QIODevice::ReadOnly))
         criticalError("File "+fileName+" not readable. Check permission.");
 
-    // Если незашифровано
-    if(workWithCrypt==false)
-        loadText=QString::fromUtf8( f.readAll() );
-    else
-        loadText=CryptService::decryptStringFromByteArray(globalParameters.getCryptKey(), f.readAll()); // Если зашифровано
+    loadText=QString::fromUtf8( f.readAll() );
 }
 
 
@@ -156,65 +134,27 @@ void RecordTableData::editorSaveCallback(QObject *editor,
     // Ссылка на объект редактора
     Editor *currEditor=qobject_cast<Editor *>(editor);
 
-    // Нужно ли шифровать записываемый текст
-    bool workWithCrypt=false;
-    if(currEditor->getMiscField("crypt")=="1")
-    {
-        // Если не установлено ключа шифрации
-        if(globalParameters.getCryptKey().length()==0)
-            return;
-
-        workWithCrypt=true;
-    }
-
     QString fileName=currEditor->getWorkDirectory()+"/"+currEditor->getFileName();
 
-    // Если шифровать не нужно
-    if(workWithCrypt==false)
-    {
-        // Текст сохраняется в файл
-        QFile wfile(fileName);
+    // Текст сохраняется в файл
+    QFile wfile(fileName);
 
-        if(!wfile.open(QIODevice::WriteOnly | QIODevice::Text))
-            criticalError("RecordTableData::editor_save_callback() : Can't open text file "+fileName+" for write.");
+    if(!wfile.open(QIODevice::WriteOnly | QIODevice::Text))
+        criticalError("RecordTableData::editor_save_callback() : Can't open text file "+fileName+" for write.");
 
-        QTextStream out(&wfile);
-        out << saveText;
-    }
-    else
-    {
-        // Текст шифруется
-        QByteArray encryptData=CryptService::encryptStringToByteArray(globalParameters.getCryptKey(), saveText);
-
-        // В файл сохраняются зашифрованные данные
-        QFile wfile(fileName);
-
-        if(!wfile.open(QIODevice::WriteOnly))
-            criticalError("RecordTableData::editor_save_callback() : Can't open binary file "+fileName+" for write.");
-
-        wfile.write(encryptData);
-    }
-
+    QTextStream out(&wfile);
+    out << saveText;
 
     // Вызывается сохранение картинок
-    // В данной реализации картинки сохраняются незашифрованными
     currEditor->saveTextareaImages(Editor::SAVE_IMAGES_REMOVE_UNUSED);
 
 
     // Запись в лог о редактировании текста записи
     QMap<QString, QString> data;
     data["recordId"]=currEditor->getMiscField("id");
-    if(workWithCrypt==false)
-    {
-        data["recordName"]=currEditor->getMiscField("title");
-        actionLogger.addAction("editRecordText", data);
-    }
-    else
-    {
-        data["recordName"]=CryptService::encryptString(globalParameters.getCryptKey(), currEditor->getMiscField("title"));
-        actionLogger.addAction("editCryptRecordText", data);
-    }
 
+    data["recordName"]=currEditor->getMiscField("title");
+    actionLogger.addAction("editRecordText", data);
 }
 
 
@@ -235,7 +175,7 @@ Record RecordTableData::getRecordLite(int pos)
 
 
 // Получение копии полного образа записи
-// Возвращается запись с "сырыми" данными. Если запись была зашифрована, метод вернет зашифрованные данные
+// Возвращается запись с "сырыми" данными.
 Record RecordTableData::getRecordFat(int pos)
 {
     // Копия записи из дерева
@@ -386,7 +326,6 @@ void RecordTableData::exportDataToStreamWriter(QXmlStreamWriter *xmlWriter) cons
 // ADD_BEFORE - перед указанной позицией, pos - номер позиции
 // ADD_AFTER - после указанной позиции, pos - номер позиции
 // Метод принимает "тяжелый" объект записи
-// Объект для вставки приходит как незашифрованным, так и зашифрованным
 int RecordTableData::insertNewRecord(int mode,
                                      int pos,
                                      Record record)
@@ -430,24 +369,7 @@ int RecordTableData::insertNewRecord(int mode,
         record.setField("ctime", ctime);
     }
 
-    // Выясняется в какой ветке вставляется запись - в зашифрованной или нет
-    bool isCrypt=false;
-    if(treeItem!=nullptr)
-        if(treeItem->getField("crypt")=="1")
-        {
-            if(globalParameters.getCryptKey().length()>0)
-                isCrypt=true;
-            else
-                criticalError("RecordTableData::insertNewRecord() : Can not insert data to crypt tree item. Password not setted.");
-        }
-
-    // Запись полновесных данных с учетом шифрации
-    if(isCrypt && record.getField("crypt")!="1") // В зашифрованную ветку незашифрованную запись
-        record.switchToEncryptAndSaveFat();
-    else if (!isCrypt && record.getField("crypt")=="1") // В незашифрованную ветку зашифрованную запись
-        record.switchToDecryptAndSaveFat();
-    else
-        record.pushFatAttributes();
+    record.pushFatAttributes();
 
     // Запись переключается в легкий режим чтобы быть добавленной в таблицу конечных записей
     record.switchToLite();
@@ -483,11 +405,7 @@ int RecordTableData::insertNewRecord(int mode,
         data["branchId"]=fields["id"];
         data["branchName"]=fields["name"];
     }
-    if(!isCrypt)
-        actionLogger.addAction("createRecord", data);
-    else
-        actionLogger.addAction("createCryptRecord", data);
-
+    actionLogger.addAction("createRecord", data);
 
     // В историю перемещений по записям добавляется только что созданная запись
     walkHistory.add(record.getNaturalFieldSource("id"), 0, 0);
@@ -513,16 +431,9 @@ void RecordTableData::editRecordFields(int pos,
     // Запись в лог о редактировании полей записи
     QMap<QString, QString> data;
     data["recordId"]=getField("id", pos);
-    if(getField("crypt", pos)!="1")
-    {
-        data["recordName"]=getField("name", pos);
-        actionLogger.addAction("editRecord", data);
-    }
-    else
-    {
-        data["recordName"]=CryptService::encryptString(globalParameters.getCryptKey(), getField("name", pos));
-        actionLogger.addAction("editCryptRecord", data);
-    }
+
+    data["recordName"]=getField("name", pos);
+    actionLogger.addAction("editRecord", data);
 
     // changePersistentIndex(QModelIndex(), QModelIndex());
 }
@@ -658,40 +569,6 @@ void RecordTableData::moveDn(int pos)
         // QModelIndex from=index(pos);
         // QModelIndex to=index(pos+1);
         // emit dataChanged(from,to); // Посылается сигнал что данные были изменены
-    }
-}
-
-
-// Переключение таблицы в зашифрованное состояние
-// todo: Добавить шифрацию имени приаттаченных файлов и содержимого файлов
-void RecordTableData::switchToEncrypt(void)
-{
-    // Перебор записей
-    for(unsigned int i=0; i<size(); i++)
-    {
-        // Если запись уже зашифрована, ее шифровать не нужно
-        if(getField("crypt", i)=="1")
-            continue;
-
-        // Шифрация записи
-        tableData[i].switchToEncryptAndSaveLite(); // В таблице конечных записей хранятся легкие записи
-    }
-}
-
-
-// Переключение таблицы в расшифрованное состояние
-// todo: добавить расшифрацию имени приаттаченных файлов и содержимого файлов
-void RecordTableData::switchToDecrypt(void)
-{
-    // Перебор записей
-    for(unsigned int i=0; i<size(); i++)
-    {
-        // Если запись не зашифрована, ее не нужно расшифровывать
-        if(getField("crypt", i)=="" || getField("crypt", i)=="0")
-            continue;
-
-        // Расшифровка записи
-        tableData[i].switchToDecryptAndSaveLite(); // В таблице конечных записей хранятся легкие записи
     }
 }
 

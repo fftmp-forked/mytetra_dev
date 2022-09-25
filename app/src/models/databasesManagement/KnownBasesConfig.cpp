@@ -40,7 +40,6 @@ KnownBasesConfig::~KnownBasesConfig()
 void KnownBasesConfig::init(void)
 {
  // Создается имя файла конфигурации
- // QString configFileName=globalParameters.getWorkDirectory()+"/"+mytetraConfig.get_tetradir()+"/database.ini";
  QString configFileName=globalParameters.getWorkDirectory()+"/knownbases.ini";
 
  // Проверяется, есть ли файл конфигурации
@@ -80,20 +79,6 @@ QString KnownBasesConfig::getParameter(QString name)
 
  return t;
 }
-
-
-/*
-int KnownBasesConfig::get_crypt_mode(void)
-{
- return conf->value("crypt_mode", 0).toInt();
-}
-
-
-void KnownBasesConfig::set_crypt_mode(int mode)
-{
- conf->setValue("crypt_mode", mode);
-}
-*/
 
 
 // --------------------

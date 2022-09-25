@@ -64,11 +64,6 @@ public:
     QString pasteNewChildBranch(const QModelIndex &index, ClipboardBranch *subbranch);
     QString pasteNewSiblingBranch(const QModelIndex &index, ClipboardBranch *subbranch);
 
-    void reEncrypt(QString previousPassword, QString currentPassword);
-
-    bool isContainsCryptBranches(void);
-    bool isItemContainsCryptBranches(TreeItem *item);
-
     bool isItemContainsBlockRecords(TreeItem *item);
 
     QStringList getRecordPath(const QString &recordId);
@@ -129,10 +124,6 @@ private:
 
     // Стандартный root-элемент с информацией о версии формата данных
     QDomElement createStandartRootElement(QDomDocument &doc);
-
-    // Расшифровка зашифрованных атрибутов документа
-    void exportRelatedDataAndDecryptIfNeed(QDomDocument &doc, QString exportDir);
-    void exportRelatedDataAndDecryptIfNeedRecurse(QDomElement &element, QString exportDir);
     
     // Перемещение ветки вверх или вниз
     QModelIndex moveUpDownBranch(const QModelIndex &index,int direction);
@@ -144,8 +135,6 @@ private:
                                   ClipboardBranch *subbranch);
 
     TreeItem *getItemByIdRecurse(TreeItem *item, const QString &id, int mode);
-
-    bool isContainsCryptBranchesRecurse(TreeItem *item, int mode);
 
     bool isContainsBlockRecordsRecurse(TreeItem *item, int mode);
 
