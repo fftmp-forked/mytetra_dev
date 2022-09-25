@@ -1,3 +1,4 @@
+#include <QComboBox>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QToolButton>
@@ -25,7 +26,6 @@
 #include "views/record/MetaEditor.h"
 #include "libraries/GlobalParameters.h"
 #include "views/tree/TreeScreen.h"
-#include "libraries/MtComboBox.h"
 #include "views/tree/KnowTreeView.h"
 #include "libraries/helpers/ObjectHelper.h"
 #include "libraries/helpers/CssHelper.h"
@@ -94,19 +94,19 @@ void FindScreen::assemblyFindTextAndButton(void)
 void FindScreen::setupComboOption(void)
 {
   // Выбор "Любое слово" - "Все слова"
-  wordRegard=new MtComboBox();
+  wordRegard=new QComboBox();
   wordRegard->addItem(QIcon(":/resource/pic/find_in_base_any.svg"), tr("Any word"));
   wordRegard->addItem(QIcon(":/resource/pic/find_in_base_all.svg"), tr("All words"));
   wordRegard->setCurrentIndex(mytetraConfig.get_findscreen_wordregard());
 
   // Выбор "Только целые слова" - "Подстрока"
-  howExtract=new MtComboBox();
+  howExtract=new QComboBox();
   howExtract->addItem(QIcon(":/resource/pic/find_in_base_separate.svg"), tr("Whole words"));
   howExtract->addItem(QIcon(":/resource/pic/find_in_base_substring.svg"), tr("Substring"));
   howExtract->setCurrentIndex(mytetraConfig.get_findscreen_howextract());
 
   // Выбор "Во всей базе" - "В текущей ветке"
-  treeSearchArea=new MtComboBox();
+  treeSearchArea=new QComboBox();
   treeSearchArea->addItem(QIcon(":/resource/pic/find_in_base_search_all.svg"), tr("Entire base")); // Вся база
   treeSearchArea->addItem(QIcon(":/resource/pic/find_in_base_search_branch.svg"), tr("Current tree item")); // Текущая ветка
   treeSearchArea->setCurrentIndex(mytetraConfig.getFindScreenTreeSearchArea());
@@ -262,13 +262,13 @@ void FindScreen::setupSignals(void)
           this,        &FindScreen::widgetHide);
 
   // Сигналы для запоминания состояния интерфейса
-  connect(wordRegard, qOverload<int>(&MtComboBox::currentIndexChanged),
+  connect(wordRegard, qOverload<int>(&QComboBox::currentIndexChanged),
           this,       &FindScreen::changedWordRegard);
 
-  connect(howExtract, qOverload<int>(&MtComboBox::currentIndexChanged),
+  connect(howExtract, qOverload<int>(&QComboBox::currentIndexChanged),
           this,       &FindScreen::changedHowExtract);
 
-  connect(treeSearchArea, qOverload<int>(&MtComboBox::currentIndexChanged),
+  connect(treeSearchArea, qOverload<int>(&QComboBox::currentIndexChanged),
           this,           &FindScreen::changedTreeSearchArea);
 
   connect(findInName, &QCheckBox::stateChanged,

@@ -1,6 +1,7 @@
 #ifndef _APPCONFIGPAGE_MAIN_H_
 #define	_APPCONFIGPAGE_MAIN_H_
 
+#include <QComboBox>
 #include <QWidget>
 #include <QLineEdit>
 #include <QSpinBox>
@@ -10,7 +11,6 @@
 #include <QToolButton>
 
 #include "ConfigPage.h"
-#include "libraries/MtComboBox.h"
 
 
 class AppConfigPage_Main : public ConfigPage
@@ -54,7 +54,7 @@ private:
   QLabel *trashmaxfilecountFlexion;
 
   QLabel *interfaceLanguageLabel;
-  MtComboBox *interfaceLanguage;
+  QComboBox *interfaceLanguage;
 
   // Настройки отображения даты и времени
   QGroupBox *dateTimeFormatBox;

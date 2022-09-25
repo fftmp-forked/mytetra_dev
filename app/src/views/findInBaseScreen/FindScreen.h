@@ -1,6 +1,7 @@
 #ifndef _FINDSCREEN_H_
 #define	_FINDSCREEN_H_
 
+#include <QComboBox>
 #include <QMap>
 #include <QWidget>
 
@@ -18,8 +19,6 @@ class KnowTreeModel;
 class TreeItem;
 
 class FindTableWidget;
-
-class MtComboBox;
 
 // Виджет поиска по базе
 
@@ -74,9 +73,9 @@ private:
  QToolButton *closeButton;
 
  QHBoxLayout *toolsAreaComboOption;
- MtComboBox *wordRegard;
- MtComboBox *howExtract;
- MtComboBox *treeSearchArea;
+ QComboBox *wordRegard;
+ QComboBox *howExtract;
+ QComboBox *treeSearchArea;
 
  QHBoxLayout *whereFindLine;
  QLabel *whereFindLabel;

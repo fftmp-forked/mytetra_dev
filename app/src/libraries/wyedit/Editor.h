@@ -2,6 +2,7 @@
 #define MYTETRA_EDITOR
 
 #include <QBoxLayout>
+#include <QComboBox>
 #include <QToolButton>
 #include <QFontComboBox>
 #include <QSpinBox>
@@ -23,9 +24,6 @@
 #include "formatters/ImageFormatter.h"
 #include "formatters/MathExpressionFormatter.h"
 #include "formatters/ReferenceFormatter.h"
-
-// Fix ugly Qt QSS bug
-#include "libraries/MtComboBox.h"
 
 
 // ----------------------------------------------------------

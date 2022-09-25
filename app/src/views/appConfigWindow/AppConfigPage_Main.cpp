@@ -80,7 +80,7 @@ void AppConfigPage_Main::setupUi(void)
  interfaceLanguageLabel=new QLabel(this);
  interfaceLanguageLabel->setText(tr("Language"));
 
- interfaceLanguage=new MtComboBox(this);
+ interfaceLanguage=new QComboBox(this);
  interfaceLanguage->setMinimumContentsLength(2);
  interfaceLanguage->addItem("en");
  interfaceLanguage->setItemIcon(interfaceLanguage->count()-1, QIcon(":/resource/pic/countryFlags/United-Kingdom.png"));

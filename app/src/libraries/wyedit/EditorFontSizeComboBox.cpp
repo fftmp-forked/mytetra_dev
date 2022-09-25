@@ -5,7 +5,7 @@
 
 
 EditorFontSizeComboBox::EditorFontSizeComboBox(QWidget *parent) :
-    MtComboBox(parent),
+    QComboBox(parent),
     toolFocus(this)
 {
     Q_UNUSED(parent)
