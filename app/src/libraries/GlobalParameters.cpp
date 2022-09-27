@@ -87,8 +87,7 @@ void GlobalParameters::initWorkDirectory(void)
  bool enablePortable=false;
 
  // Путь к директории, где лежит бинарник
- QFileInfo mainProgramFileInfo(mainProgramFile);
- QString fullCurrentPath=mainProgramFileInfo.absolutePath();
+ QString fullCurrentPath=QFileInfo(mainProgramFile).absolutePath();
 
  // Проверяется, можно ли читать и писать файлы в этой директории
  QDir currentBinaryDir(fullCurrentPath);
@@ -165,8 +164,7 @@ void GlobalParameters::createPortableProgramFiles(void)
  qDebug() << "Create portable program files";
 
  // Путь к директории, где лежит бинарник
- QFileInfo mainProgramFileInfo(mainProgramFile);
- QString createFilePath=mainProgramFileInfo.absolutePath();
+ QString createFilePath=QFileInfo(mainProgramFile).absolutePath();
 
  createFirstProgramFiles(createFilePath);
 }
@@ -228,8 +226,7 @@ bool GlobalParameters::findWorkDirectory(void)
  // mainProgramFile - содержит путь к бинарнику относительно директории запуска
 
  // Директория, где была выполнена команда запуска
- QFileInfo mainProgramFileInfo(mainProgramFile);
- QString fullCurrentPath=mainProgramFileInfo.absolutePath();
+ QString fullCurrentPath=QFileInfo(mainProgramFile).absolutePath();
 
  qDebug() << "Check full current path " << fullCurrentPath;
 
@@ -237,9 +234,6 @@ bool GlobalParameters::findWorkDirectory(void)
   {
    qDebug() << "Work directory set to path " << fullCurrentPath;
 
-   // QDir dir=QDir("./");
-   // QDir dir=QDir(QDir::currentPath());
-   // workDirectory=dir.absolutePath();
    workDirectory=fullCurrentPath;
   }
  else
@@ -323,9 +317,6 @@ bool GlobalParameters::isMytetraIniConfig(QString fileName)
    qDebug() << "Config directory name " << dirName;
 
    // Открывается хранилище настроек
-   // todo: Странность в Qt - если указать третьим параметром this в качестве
-   // родителя, то считывание из файла конфигурации работать не будет. Разобраться
-   // Вроде как это был баг одной из версий Qt, теперь считывание работает нормально
    QScopedPointer<QSettings> conf( new QSettings(fileName, QSettings::IniFormat, this) );
 
    // Если есть переменная version

@@ -1,11 +1,3 @@
-
-// Баг в Qt, Q_OS_ANDROID not defined for MOC. Его исправили, но он снова есть
-// Поэтому приходится работать через TARGET_OS
-#if TARGET_OS!=ANDROID_OS
-#include <sys/timeb.h>
-#endif
-
-
 #include <QTranslator>
 #include <QToolButton>
 #include <QSplashScreen>

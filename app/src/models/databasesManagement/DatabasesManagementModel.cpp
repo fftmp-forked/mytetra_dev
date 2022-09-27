@@ -42,32 +42,16 @@ void DatabasesManagementModel::scanDirectoriesDirect()
     QList< DatabasesDirsInfo > dbDirs;
     DatabasesDirsInfo dbDirsInfo;
     QString workingPath;
-
-    // Каталог БД относительно бинарника программы
-    QFileInfo mainProgramFileInfo( globalParameters.getMainProgramFile() );
-    workingPath=mainProgramFileInfo.absolutePath();
-    dbDirsInfo.dbPath   =workingPath+"/data";
-    dbDirsInfo.trashPath=workingPath+"/trash";
-    dbDirsInfo.descript =tr("Knowledge base in executable binary file directory %1").arg(workingPath);
-    dbDirsInfo.isCurrentConfigPath=false;
-    dbDirs << dbDirsInfo;
-
-    // Каталог БД в пользовательском каталоге в директории ~/.имяПрограммы
-    workingPath=QDir::homePath()+"/."+globalParameters.getApplicationName();
-    dbDirsInfo.dbPath   =workingPath+"/data";
-    dbDirsInfo.trashPath=workingPath+"/trash";
-    dbDirsInfo.descript =tr("Knowledge base in user directory %1").arg(workingPath);
-    dbDirsInfo.isCurrentConfigPath=false;
-    dbDirs << dbDirsInfo;
-
-    // Каталог БД в пользовательском каталоге в директории ~/.config/имяПрограммы
-    workingPath=QDir::homePath()+"/.config/"+globalParameters.getApplicationName();
-    dbDirsInfo.dbPath   =workingPath+"/data";
-    dbDirsInfo.trashPath=workingPath+"/trash";
-    dbDirsInfo.descript =tr("Knowledge base in user directory %1").arg(workingPath);
-    dbDirsInfo.isCurrentConfigPath=false;
-    dbDirs << dbDirsInfo;
-
+    QStringList cand = {QFileInfo(globalParameters.getMainProgramFile()).absolutePath(),
+                        QDir::homePath() + "/." + globalParameters.getApplicationName(),
+                        QDir::homePath() + "/.config/" + globalParameters.getApplicationName()};
+    for(const auto & p : cand) {
+        dbDirsInfo.dbPath   =p+"/data";
+        dbDirsInfo.trashPath=p+"/trash";
+        dbDirsInfo.descript =tr("Knowledge base in %1").arg(workingPath);
+        dbDirsInfo.isCurrentConfigPath=false;
+        dbDirs << dbDirsInfo;
+    }
     this->scanDirectories(dbDirs);
 }
 

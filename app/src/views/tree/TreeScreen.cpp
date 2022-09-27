@@ -280,9 +280,8 @@ void TreeScreen::onCustomContextMenuRequested(const QPoint &pos)
   // Если в буфере есть ветки, соответствующие пункты становятся активными
   bool isBranch=false;
   const QMimeData *mimeData=QApplication::clipboard()->mimeData();
-   if(mimeData!=nullptr)
-    if(mimeData->hasFormat(FixedParameters::appTextId+"/branch"))
-      isBranch=true;
+  if(mimeData && mimeData->hasFormat(FixedParameters::appTextId+"/branch"))
+    isBranch=true;
 
    if( isBranch )
    {
