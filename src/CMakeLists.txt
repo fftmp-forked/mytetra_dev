@@ -9,7 +9,7 @@ file(GLOB_RECURSE SRC_2
     "views/*.cpp"
 )
 
-add_executable(mytetra "main.cpp" "../bin/mytetra.qrc" "../bin/icons.qrc" ${SRC_1} ${SRC_2})
+add_executable(mytetra "main.cpp" "../resource/mytetra.qrc" "../resource/icons.qrc" ${SRC_1} ${SRC_2})
 
 target_include_directories(mytetra PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -24,7 +24,7 @@ target_compile_definitions(mytetra PRIVATE APPLICATION_VERSION="${APP_VERSION}")
 
 # require Qt 6.2
 qt_add_translations(mytetra
-    TS_FILES "../bin/resource/translations/mytetra_fr.ts" "../bin/resource/translations/mytetra_ru.ts"
+    TS_FILES "../resource/translations/mytetra_fr.ts" "../resource/translations/mytetra_ru.ts"
     RESOURCE_PREFIX "resource/translations"
 )
 

@@ -48,12 +48,12 @@ option(USE_SYSTEM_MIMETEX "If off, build own version of mimetex. Major linux dis
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     include(GNUInstallDirs)
     set(CMAKE_INSTALL_PREFIX "/usr")
-    install(FILES "app/desktop/any/mytetra.desktop" DESTINATION "${CMAKE_INSTALL_DATADIR}/applications/")
-    install(FILES "app/desktop/mytetra.png" DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/48x48/apps/")
-    install(FILES "app/desktop/mytetra.svg" DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/scalable/apps/")
+    install(FILES "icons/mytetra.desktop" DESTINATION "${CMAKE_INSTALL_DATADIR}/applications/")
+    install(FILES "icons/mytetra.png" DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/48x48/apps/")
+    install(FILES "icons/mytetra.svg" DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/scalable/apps/")
 endif()
 
-add_subdirectory("app/src")
+add_subdirectory("src")
 if (NOT USE_SYSTEM_MIMETEX)
     add_subdirectory("thirdParty/mimetex")
 endif()
@@ -61,7 +61,7 @@ endif()
 find_package(Doxygen OPTIONAL_COMPONENTS dot)
 if (DOXYGEN_FOUND)
     # output inside "${CMAKE_CURRENT_BINARY_DIR}/html/"
-    doxygen_add_docs(doc ".." WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/app/doc")
+    doxygen_add_docs(doc ".." WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/doc")
 endif()
 
 
