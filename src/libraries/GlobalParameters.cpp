@@ -10,7 +10,6 @@
 #include <QStringList>
 #include <QInputDialog>
 
-#include "main.h"
 #include "GlobalParameters.h"
 
 #include "views/tree/TreeScreen.h"

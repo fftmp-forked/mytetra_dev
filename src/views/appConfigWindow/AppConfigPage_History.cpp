@@ -3,10 +3,8 @@
 
 #include "AppConfigPage_History.h"
 #include "models/appConfig/AppConfig.h"
-#include "libraries/GlobalParameters.h"
 
 extern AppConfig mytetraConfig;
-extern GlobalParameters globalParameters;
 
 
 AppConfigPage_History::AppConfigPage_History(QWidget *parent) : ConfigPage(parent)

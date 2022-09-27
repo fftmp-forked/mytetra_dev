@@ -3,7 +3,6 @@
 #include <QtDebug>
 
 #include "IndentSlider.h"
-#include "../Editor.h"
 
 
 IndentSlider::IndentSlider(int width, int height, QWidget *parent) : QWidget(parent)

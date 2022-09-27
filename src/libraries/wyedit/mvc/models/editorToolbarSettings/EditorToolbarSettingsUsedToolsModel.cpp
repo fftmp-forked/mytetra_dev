@@ -1,15 +1,13 @@
 #include "EditorToolbarSettingsUsedToolsModel.h"
 
-#include "main.h"
-#include "libraries/wyedit/EditorConfig.h"
-#include "libraries/wyedit/EditorToolBarAssistant.h"
+#include "../../../EditorConfig.h"
+#include "../../../EditorToolBarAssistant.h"
 #include "views/record/MetaEditor.h"
 #include "libraries/ShortcutManager.h"
 #include "libraries/helpers/ObjectHelper.h"
 
 
 extern ShortcutManager shortcutManager;
-extern GlobalParameters globalParameters;
 
 
 EditorToolbarSettingsUsedToolsModel::EditorToolbarSettingsUsedToolsModel(QObject *parent) :

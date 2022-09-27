@@ -23,7 +23,6 @@
 #include "views/databasesManagement/DatabasesManagementScreen.h"
 #include "libraries/ShortcutManager.h"
 #include "libraries/helpers/ObjectHelper.h"
-#include "libraries/wyedit/EditorTextArea.h"
 #include "libraries/wyedit/EditorShowTextDispatcher.h"
 
 

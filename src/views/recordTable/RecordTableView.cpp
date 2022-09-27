@@ -4,7 +4,6 @@
 #include <QVector>
 #include <QHeaderView>
 
-#include "main.h"
 #include "views/mainWindow/MainWindow.h"
 #include "views/tree/TreeScreen.h"
 #include "libraries/ClipboardRecords.h"
@@ -12,7 +11,6 @@
 #include "views/recordTable/RecordTableScreen.h"
 #include "views/tree/KnowTreeView.h"
 #include "models/recordTable/RecordTableModel.h"
-#include "models/recordTable/RecordTableProxyModel.h"
 #include "models/appConfig/AppConfig.h"
 #include "models/tree/KnowTreeModel.h"
 #include "libraries/GlobalParameters.h"

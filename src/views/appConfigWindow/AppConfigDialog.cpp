@@ -3,7 +3,6 @@
 #include <QDialog>
 #include <QDebug>
 
-#include "main.h"
 #include "ConfigDialog.h"
 #include "AppConfigDialog.h"
 #include "AppConfigPage_Main.h"
@@ -38,22 +37,14 @@ AppConfigDialog::AppConfigDialog(const QString &firstPageName, QWidget *parent)
 
     // Наполнение диалога виджетами
     // В качестве родителя надо указывать parent а не configDialog (разобраться почему)
-    pageMain       =configDialog->addWidget(new AppConfigPage_Main( parent ),
-                                            QObject::tr("Main"));
-    pageAppearance=configDialog->addWidget(new AppConfigPage_Appearance( parent ),
-                                            QObject::tr("Appearance"));
-    pageSynchro    =configDialog->addWidget(new AppConfigPage_Synchro( parent ),
-                                            QObject::tr("Synchro"));
-    pageRecordTable=configDialog->addWidget(new AppConfigPage_RecordTable( parent ),
-                                            QObject::tr("Note area"));
-    pageAttach     =configDialog->addWidget(new AppConfigPage_Attach( parent ),
-                                            QObject::tr("Attaches"));
-    pageKeyboard   =configDialog->addWidget(new AppConfigPage_Keyboard( parent ),
-                                            QObject::tr("Keyboard"));
-    pageHistory    =configDialog->addWidget(new AppConfigPage_History( parent ),
-                                            QObject::tr("History"));
-    pageMisc       =configDialog->addWidget(new AppConfigPage_Misc( parent ),
-                                            QObject::tr("Misc"));
+    pageMain       =configDialog->addWidget(new AppConfigPage_Main( parent ), QObject::tr("Main"));
+    pageAppearance=configDialog->addWidget(new AppConfigPage_Appearance( parent ), QObject::tr("Appearance"));
+    pageSynchro    =configDialog->addWidget(new AppConfigPage_Synchro( parent ), QObject::tr("Synchro"));
+    pageRecordTable=configDialog->addWidget(new AppConfigPage_RecordTable( parent ), QObject::tr("Note area"));
+    pageAttach     =configDialog->addWidget(new AppConfigPage_Attach( parent ), QObject::tr("Attaches"));
+    pageKeyboard   =configDialog->addWidget(new AppConfigPage_Keyboard( parent ), QObject::tr("Keyboard"));
+    pageHistory    =configDialog->addWidget(new AppConfigPage_History( parent ),  QObject::tr("History"));
+    pageMisc       =configDialog->addWidget(new AppConfigPage_Misc( parent ), QObject::tr("Misc"));
 
 
     configDialog->updateListWidth();

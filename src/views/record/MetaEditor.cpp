@@ -4,10 +4,8 @@
 #include <QSplitter>
 #include <QtDebug>
 
-#include "main.h"
 #include "MetaEditor.h"
 
-#include "libraries/wyedit/Editor.h"
 #include "libraries/wyedit/EditorTextArea.h"
 #include "libraries/wyedit/EditorIndentSliderAssistant.h"
 #include "libraries/wyedit/EditorToolBarAssistant.h"

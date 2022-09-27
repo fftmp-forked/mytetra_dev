@@ -1,13 +1,7 @@
 #include "TreeItem.h"
 #include "TreeModel.h"
-#include "main.h"
-#include "models/recordTable/RecordTableData.h"
-#include "libraries/GlobalParameters.h"
-#include "models/appConfig/AppConfig.h"
 #include "libraries/helpers/DebugHelper.h"
 
-extern GlobalParameters globalParameters;
-extern AppConfig mytetraConfig;
 
 
 // TreeModel - Это модель данных, которая работает с видом TreeScreen

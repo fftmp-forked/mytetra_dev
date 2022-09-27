@@ -7,14 +7,12 @@
 
 #include "models/appConfig/AppConfig.h"
 #include "libraries/FixedParameters.h"
-#include "libraries/GlobalParameters.h"
 #include "models/attachTable/AttachTableData.h"
 #include "libraries/helpers/DiskHelper.h"
 #include "libraries/helpers/DebugHelper.h"
 
 
 extern AppConfig mytetraConfig;
-extern GlobalParameters globalParameters;
 
 
 Record::Record() : attachTableData(this)

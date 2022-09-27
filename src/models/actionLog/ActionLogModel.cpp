@@ -3,7 +3,6 @@
 #include <QCommonStyle>
 #include <QLocale>
 
-#include "main.h"
 #include "ActionLogModel.h"
 #include "models/appConfig/AppConfig.h"
 #include "libraries/ActionLogger.h"

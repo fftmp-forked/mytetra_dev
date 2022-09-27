@@ -2,10 +2,9 @@
 
 #include "EditorToolbarSettingsAvailableToolsModel.h"
 
-#include "main.h"
 #include "views/record/MetaEditor.h"
-#include "libraries/wyedit/EditorToolBarAssistant.h"
-#include "libraries/wyedit/EditorConfig.h"
+#include "../../../EditorToolBarAssistant.h"
+#include "../../../EditorConfig.h"
 #include "libraries/ShortcutManager.h"
 #include "libraries/helpers/ObjectHelper.h"
 

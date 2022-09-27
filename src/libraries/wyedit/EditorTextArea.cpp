@@ -1,3 +1,4 @@
+#include <QApplication>
 #include <QPainter>
 #include <QRect>
 #include <QTextCursor>
@@ -5,13 +6,9 @@
 #include <QScrollBar>
 #include <QUrl>
 
-#include "../../main.h"
-#include "../TraceLogger.h"
-#include "views/mainWindow/MainWindow.h"
 #include "libraries/GlobalParameters.h"
 #include "libraries/helpers/UniqueIdHelper.h"
 
-#include "Editor.h"
 #include "EditorTextArea.h"
 
 

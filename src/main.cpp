@@ -293,19 +293,6 @@ int main(int argc, char ** argv)
   if(mytetraConfig.get_synchrocommand().trimmed().length()>0)
    win.synchronization();
 
- // Распечатывается дерево сгенерированных объектов
- // print_object_tree();
-
-
- // Проверяется наличие системного трея
- /*
- if(!QSystemTrayIcon::isSystemTrayAvailable()) {
-  QMessageBox::critical(0, QObject::tr("Systray"),
-                        QObject::tr("I couldn't detect any system tray on this system."));
-  exit(1);
- }
- */
-
  // Инициалиация периодической проверки изменения базы сторонними программами
  periodicCheckBase.init();
  periodicCheckBase.setDelay( mytetraConfig.getCheckBasePeriod() );

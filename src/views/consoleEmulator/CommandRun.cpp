@@ -8,13 +8,10 @@
 #include "CommandRun.h"
 #include "ConsoleEmulator.h"
 #include "views/mainWindow/MainWindow.h"
-#include "main.h"
 #include "libraries/ActionLogger.h"
-#include "libraries/GlobalParameters.h"
 #include "libraries/helpers/ObjectHelper.h"
 
 extern ActionLogger actionLogger;
-extern GlobalParameters globalParameters;
 
 
 CommandRun::CommandRun(QObject *parent) : QObject(parent)

@@ -10,7 +10,6 @@
 #include "views/mainWindow/MainWindow.h"
 #include "views/record/MetaEditor.h"
 #include "models/appConfig/AppConfig.h"
-#include "views/findInBaseScreen/FindScreen.h"
 #include "libraries/WindowSwitcher.h"
 #include "libraries/GlobalParameters.h"
 #include "libraries/FixedParameters.h"

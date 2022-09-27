@@ -7,9 +7,7 @@
 #include "TableFormatter.h"
 
 #include "../Editor.h"
-#include "../EditorConfig.h"
 #include "../EditorTextArea.h"
-
 #include "../EditorSplitCellForm.h"
 #include "../EditorAbsTable.h"
 #include "../EditorAddTableForm.h"

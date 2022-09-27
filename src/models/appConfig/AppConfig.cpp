@@ -1,7 +1,6 @@
 #include <functional>
 #include <QRect>
 
-#include "main.h"
 #include "AppConfig.h"
 
 #include "libraries/GlobalParameters.h"

@@ -1,9 +1,6 @@
 #pragma once
 
-#include <QtGlobal>
 #include <QObject>
-#include <QDebug>
-#include <QString>
 #include <QStringList>
 #include <QMap>
 
@@ -44,10 +41,6 @@ protected:
   bool dropFlag;
 
   void print(void);
-
-  // Эти методы видимо ненужны, подумать
-  // void switchToPrevious(void);
-  // void switchToNext(void);
 
   void checkId(QString id);
 

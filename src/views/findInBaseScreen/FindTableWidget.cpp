@@ -14,7 +14,6 @@
 #include <QStyledItemDelegate>
 
 #include "FindTableWidget.h"
-#include "main.h"
 #include "views/mainWindow/MainWindow.h"
 #include "views/record/MetaEditor.h"
 #include "models/appConfig/AppConfig.h"

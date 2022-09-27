@@ -31,9 +31,7 @@
 #include "EditorCursorPositionDetector.h"
 #include "EditorShowTextDispatcher.h"
 
-#include "../../main.h"
 #include "../../views/mainWindow/MainWindow.h"
-#include "../TraceLogger.h"
 #include "libraries/helpers/DiskHelper.h"
 #include "libraries/helpers/ObjectHelper.h"
 

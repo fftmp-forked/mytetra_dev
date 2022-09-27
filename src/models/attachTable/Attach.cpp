@@ -3,17 +3,12 @@
 #include <QMessageBox>
 #include <QDebug>
 
-#include "main.h"
-
 #include "Attach.h"
 #include "AttachTableData.h"
 #include "models/recordTable/Record.h"
-#include "libraries/GlobalParameters.h"
 #include "libraries/helpers/DiskHelper.h"
 #include "libraries/helpers/DebugHelper.h"
 #include "libraries/helpers/MessageHelper.h"
-
-extern GlobalParameters globalParameters;
 
 
 // Конструктор прикрепляемого файла

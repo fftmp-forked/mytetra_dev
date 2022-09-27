@@ -1,6 +1,5 @@
-#include "main.h"
 #include "EditorToolbarSettingsAbstractModel.h"
-#include "libraries/wyedit/EditorConfig.h"
+#include "../../../EditorConfig.h"
 #include "libraries/helpers/ObjectHelper.h"
 
 

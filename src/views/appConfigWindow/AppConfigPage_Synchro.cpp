@@ -2,7 +2,6 @@
 #include <QBoxLayout>
 #include <QLabel>
 
-#include "main.h"
 #include "AppConfigPage_Synchro.h"
 #include "models/appConfig/AppConfig.h"
 #include "libraries/PeriodicCheckBase.h"

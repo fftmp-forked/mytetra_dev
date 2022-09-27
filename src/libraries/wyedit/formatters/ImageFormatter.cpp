@@ -11,12 +11,10 @@
 #include "ImageFormatter.h"
 
 #include "../Editor.h"
-#include "../EditorConfig.h"
 #include "../EditorTextArea.h"
 #include "../EditorImageProperties.h"
 #include "../EditorCursorPositionDetector.h"
 
-#include "main.h"
 #include "libraries//Downloader.h"
 #include "libraries/helpers/UniqueIdHelper.h"
 

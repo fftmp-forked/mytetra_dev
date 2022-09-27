@@ -2,7 +2,6 @@
 #include <QDateTime>
 #include <QCommonStyle>
 
-#include "main.h"
 #include "DatabasesManagementModel.h"
 #include "models/appConfig/AppConfig.h"
 #include "libraries/GlobalParameters.h"

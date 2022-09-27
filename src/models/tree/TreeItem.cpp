@@ -3,13 +3,10 @@
 #include <QMap>
 
 #include "TreeItem.h"
-#include "main.h"
-#include "libraries/GlobalParameters.h"
 #include "libraries/FixedParameters.h"
 #include "models/appConfig/AppConfig.h"
 #include "libraries/helpers/DebugHelper.h"
 
-extern GlobalParameters globalParameters;
 extern AppConfig mytetraConfig;
 
 

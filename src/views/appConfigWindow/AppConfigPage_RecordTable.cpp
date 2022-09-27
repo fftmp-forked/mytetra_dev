@@ -4,11 +4,9 @@
 #include <QStringList>
 #include <QMessageBox>
 
-#include "main.h"
 #include "AppConfigPage_RecordTable.h"
 #include "models/appConfig/AppConfig.h"
 #include "libraries/FixedParameters.h"
-#include "models/recordTable/RecordTableModel.h"
 #include "controllers/recordTable/RecordTableController.h"
 #include "libraries/helpers/ObjectHelper.h"
 

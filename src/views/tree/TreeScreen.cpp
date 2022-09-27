@@ -18,7 +18,6 @@
 #include "models/tree/TreeItem.h"
 #include "models/tree/KnowTreeModel.h"
 #include "libraries/ClipboardBranch.h"
-#include "views/record/MetaEditor.h"
 #include "libraries/GlobalParameters.h"
 #include "libraries/FixedParameters.h"
 #include "libraries/WindowSwitcher.h"

@@ -1,3 +1,4 @@
+#include <QApplication>
 #include <QTextBlock>
 #include <QDebug>
 #include <QColorDialog>
@@ -7,13 +8,11 @@
 
 #include "TypefaceFormatter.h"
 
-#include "main.h"
 #include "../Editor.h"
 #include "../EditorConfig.h"
 #include "../EditorTextArea.h"
 #include "../EditorToolBarAssistant.h"
 #include "../EditorCursorPositionDetector.h"
-#include "../../TraceLogger.h"
 #include "libraries/helpers/MessageHelper.h"
 
 

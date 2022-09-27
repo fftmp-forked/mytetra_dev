@@ -16,22 +16,18 @@
 #include <QByteArray>
 #include <QtGlobal>
 
-#include "main.h"
 #include "views/mainWindow/MainWindow.h"
 #include "FindScreen.h"
 #include "FindTableWidget.h"
 #include "models/tree/KnowTreeModel.h"
 #include "models/appConfig/AppConfig.h"
 #include "models/tree/TreeItem.h"
-#include "views/record/MetaEditor.h"
-#include "libraries/GlobalParameters.h"
 #include "views/tree/TreeScreen.h"
 #include "views/tree/KnowTreeView.h"
 #include "libraries/helpers/ObjectHelper.h"
 #include "libraries/helpers/CssHelper.h"
 
 extern AppConfig mytetraConfig;
-extern GlobalParameters globalParameters;
 
 
 FindScreen::FindScreen(QWidget *parent) : QWidget(parent)
@@ -113,14 +109,6 @@ void FindScreen::setupComboOption(void)
 
   if(mytetraConfig.getInterfaceMode()=="mobile")
   {
-    // wordRegard->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
-    // howExtract->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
-    // treeSearchArea->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
-
-    // wordRegard->showMinimized();
-    // howExtract->showMinimized();
-    // treeSearchArea->showMinimized();
-
     wordRegard->setMinimumContentsLength(1);
     wordRegard->setMaximumWidth(CssHelper::getCalculateIconSizePx()*2);
     wordRegard->setMinimumWidth(CssHelper::getCalculateIconSizePx()*2);

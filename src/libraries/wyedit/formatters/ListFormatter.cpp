@@ -4,7 +4,6 @@
 #include "ListFormatter.h"
 
 #include "../Editor.h"
-#include "../EditorConfig.h"
 #include "../EditorTextArea.h"
 #include "../EditorCursorPositionDetector.h"
 

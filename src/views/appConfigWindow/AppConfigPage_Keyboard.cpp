@@ -3,14 +3,8 @@
 #include <QDir>
 #include <QLineEdit>
 
-#include "main.h"
 #include "AppConfigPage_Keyboard.h"
-#include "models/appConfig/AppConfig.h"
 #include "views/shortcutSettings/ShortcutSettingsScreen.h"
-#include "libraries/GlobalParameters.h"
-
-extern AppConfig mytetraConfig;
-extern GlobalParameters globalParameters;
 
 
 AppConfigPage_Keyboard::AppConfigPage_Keyboard(QWidget *parent) : ConfigPage(parent)
@@ -81,11 +75,5 @@ int AppConfigPage_Keyboard::applyChanges(void)
 {
   qDebug() << "Apply changes keyboard";
 
-  int result=0;
-
-  // Сохраняется настройка отображения отладочных сообщений в консоли
-//  if(mytetraConfig.get_printdebugmessages()!=printDebugMessages->isChecked())
-//    mytetraConfig.set_printdebugmessages(printDebugMessages->isChecked());
-
-  return result;
+  return 0;
 }

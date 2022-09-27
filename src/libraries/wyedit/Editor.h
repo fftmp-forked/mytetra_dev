@@ -12,9 +12,7 @@
 #include <QSlider>
 #include <QStringList>
 
-#include "EditorToolBar.h"
 #include "EditorFindDialog.h"
-#include "EditorShowText.h"
 #include "formatters/Formatter.h"
 #include "formatters/PlacementFormatter.h"
 #include "formatters/TypefaceFormatter.h"

@@ -3,12 +3,10 @@
 
 #include "AppConfigPage_Appearance.h"
 #include "models/appConfig/AppConfig.h"
-#include "libraries/GlobalParameters.h"
 #include "libraries/wyedit/EditorShowTextDispatcher.h"
 
 
 extern AppConfig mytetraConfig;
-extern GlobalParameters globalParameters;
 
 
 AppConfigPage_Appearance::AppConfigPage_Appearance(QWidget *parent) : ConfigPage(parent)

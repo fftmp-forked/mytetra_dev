@@ -1,3 +1,5 @@
+#include <QApplication>
+#include <QClipboard>
 #include <QObject>
 #include <QHeaderView>
 #include <QFileDialog>
@@ -6,18 +8,8 @@
 #include <QDialogButtonBox>
 #include <algorithm>
 
-#include "main.h"
 #include "ActionLogController.h"
 #include "views/actionLog/ActionLogView.h"
-#include "models/appConfig/AppConfig.h"
-#include "libraries/GlobalParameters.h"
-#include "views/record/MetaEditor.h"
-#include "views/tree/TreeScreen.h"
-#include "views/dialog/ReduceMessageBox.h"
-
-
-extern GlobalParameters globalParameters;
-extern AppConfig mytetraConfig;
 
 
 ActionLogController::ActionLogController(QObject *parent) : QObject(parent)

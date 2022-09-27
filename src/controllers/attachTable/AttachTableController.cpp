@@ -10,7 +10,6 @@
 #include "models/attachTable/AttachTableModel.h"
 #include "models/attachTable/AttachTableData.h"
 #include "models/appConfig/AppConfig.h"
-#include "libraries/GlobalParameters.h"
 #include "views/tree/TreeScreen.h"
 #include "views/dialog/ReduceMessageBox.h"
 #include "libraries/Downloader.h"
@@ -19,7 +18,6 @@
 #include "libraries/helpers/UniqueIdHelper.h"
 
 
-extern GlobalParameters globalParameters;
 extern AppConfig mytetraConfig;
 
 
@@ -402,20 +400,11 @@ void AttachTableController::saveAttachToUserPlace(QString fromFullFileName, QStr
   // Проверка наличия исходного файла (ведь по каким-то причинам его может не быть, например после какого-нибудь сбоя)
   QFile file(fromFullFileName);
 
-  if(file.exists()==false)
-  {
-    showMessageBox(tr("Unable to save the file: file %1 not found in the database.").arg(fromFullFileName));
-    return;
-  }
-
-  // Сохранение
-  bool result=file.copy( toFullFileName );
-
-  if(!result)
-  {
-    showMessageBox(tr("Unable to save the file: file %1 input/output error.").arg(toFullFileName));
-    return;
-  }
+  if(file.exists()) {
+    if(!file.copy( toFullFileName ))
+      showMessageBox(tr("Unable to save the file: file %1 input/output error.").arg(toFullFileName));
+   } else
+      showMessageBox(tr("Unable to save the file: file %1 not found in the database.").arg(fromFullFileName));
 }
 
 

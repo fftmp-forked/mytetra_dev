@@ -1,13 +1,11 @@
 #include <QDateTime>
 
 #include "ActionLogger.h"
-#include "models/appConfig/AppConfig.h"
 #include "libraries/GlobalParameters.h"
 #include "libraries/helpers/DebugHelper.h"
 #include "libraries/helpers/HtmlHelper.h"
 
 
-extern AppConfig mytetraConfig;
 extern GlobalParameters globalParameters;
 
 

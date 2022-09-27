@@ -4,8 +4,7 @@
 
 #include "EditorShowTextContextMenu.h"
 #include "Editor.h"
-#include "EditorCursorPositionDetector.h"
-#include "libraries/ShortcutManager.h"
+#include "EditorShowText.h"
 
 
 EditorShowTextContextMenu::EditorShowTextContextMenu(QWidget *parent) : QMenu(parent)

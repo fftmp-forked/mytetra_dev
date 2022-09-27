@@ -1,7 +1,6 @@
 #include <QObject>
 #include <QHeaderView>
 
-#include "main.h"
 #include "RecordTableController.h"
 #include "controllers/attachTable/AttachTableController.h"
 #include "views/record/MetaEditor.h"

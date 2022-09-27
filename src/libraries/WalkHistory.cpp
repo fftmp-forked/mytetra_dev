@@ -1,6 +1,3 @@
-#include <QString>
-
-#include "main.h"
 #include "WalkHistory.h"
 #include "models/tree/KnowTreeModel.h"
 #include "views/tree/KnowTreeView.h"
@@ -32,18 +29,8 @@ void WalkHistory::clear(void)
 }
 
 
-void WalkHistory::add(QString id,
-                      int cursorPosition,
-                      int scrollBarPosition,
-                      int mode)
+void WalkHistory::add(QString id, int cursorPosition, int scrollBarPosition, int mode)
 {
-  /*
-  qDebug() << "WalkHistory::add() : id " << id;
-  qDebug() << "WalkHistory::add() : mode " << mode;
-  qDebug() << "WalkHistory::add() start status:";
-  print();
-  */
-
   if(id.length()==0)
     return;
 
@@ -185,28 +172,6 @@ void WalkHistory::add(QString id,
 
   print();
 }
-
-
-/*
-void WalkHistory::switchToPrevious(void)
-{
- if(historyPoint>0)
-  historyPoint--;
-
- qDebug() << "WalkHistory::switchToPrevious() :";
- // print();
-}
-
-
-void WalkHistory::switchToNext(void)
-{
- if( historyPoint < (historyId.length()-1) )
-  historyPoint++;
-
- qDebug() << "WalkHistory::switchToNext() :";
- // print();
-}
-*/
 
 
 QString WalkHistory::getId()

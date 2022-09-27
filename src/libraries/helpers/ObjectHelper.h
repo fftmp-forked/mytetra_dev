@@ -8,8 +8,8 @@
 
 
 // Поиск объекта от корня по имени
-template <class X> inline X *find_object(QString objectName)
-{
+template <typename X>
+X *find_object(QString objectName) {
     QObject *findObj;
 
     extern QObject *pMainWindow;

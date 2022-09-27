@@ -3,16 +3,11 @@
 #include <QObject>
 #include <QModelIndexList>
 
-#include "models/attachTable/Attach.h"
 #include "views/attachTable/AttachTableView.h"
 #include "models/attachTable/AttachTableModel.h"
 #include "models/attachTable/AttachTableData.h"
 #include "views/record/MetaEditor.h"
 
-// class Attach;
-// class AttachTableView;
-// class AttachTableModel;
-// class AttachTableData;
 
 class AttachTableController : public QObject
 {

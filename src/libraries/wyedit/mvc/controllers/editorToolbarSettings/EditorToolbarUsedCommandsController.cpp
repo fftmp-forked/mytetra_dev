@@ -2,8 +2,6 @@
 
 #include "EditorToolbarUsedCommandsController.h"
 
-extern GlobalParameters globalParameters;
-
 
 EditorToolbarUsedCommandsController::EditorToolbarUsedCommandsController(GlobalParameters::EditorToolbar tb, QObject *parent) : QObject(parent)
 {

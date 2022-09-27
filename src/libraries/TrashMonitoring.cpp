@@ -2,7 +2,6 @@
 #include <QDateTime>
 #include <QFileInfo>
 
-#include "main.h"
 #include "TrashMonitoring.h"
 #include "models/appConfig/AppConfig.h"
 #include "libraries/helpers/DebugHelper.h"

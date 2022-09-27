@@ -4,7 +4,6 @@
 #include "EditorToolbarSettingsScreen.h"
 #include "../../controllers/editorToolbarSettings/EditorToolbarAvailableCommandsController.h"
 #include "../../controllers/editorToolbarSettings/EditorToolbarUsedCommandsController.h"
-#include "main.h"
 #include "views/mainWindow/MainWindow.h"
 #include "libraries/wyedit/EditorConfig.h"
 #include "libraries/wyedit/EditorToolBarAssistant.h"

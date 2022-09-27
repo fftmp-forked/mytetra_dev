@@ -12,16 +12,13 @@
 #include "MathExpressionFormatter.h"
 
 #include "../Editor.h"
-#include "../EditorConfig.h"
 #include "../EditorTextArea.h"
 #include "../EditorCursorPositionDetector.h"
 #include "../EditorMathExpressionDialog.h"
 
-#include "main.h"
 #include "libraries/helpers/DiskHelper.h"
 #include "libraries/FixedParameters.h"
 #include "views/consoleEmulator/CommandRun.h"
-#include "libraries/helpers/DebugHelper.h"
 #include "libraries/helpers/UniqueIdHelper.h"
 
 

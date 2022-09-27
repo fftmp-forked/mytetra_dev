@@ -9,7 +9,6 @@
 #include <QKeyEvent>
 
 #include "AddNewRecord.h"
-#include "main.h"
 #include "InfoFieldEnter.h"
 #include "models/appConfig/AppConfig.h"
 #include "libraries/GlobalParameters.h"

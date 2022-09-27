@@ -3,7 +3,6 @@
 #include <QDir>
 #include <QLineEdit>
 
-#include "main.h"
 #include "AppConfigPage_Misc.h"
 #include "models/appConfig/AppConfig.h"
 #include "libraries/GlobalParameters.h"

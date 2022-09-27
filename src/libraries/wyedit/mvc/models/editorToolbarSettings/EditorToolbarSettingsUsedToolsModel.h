@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QObject>
-#include <QStandardItemModel>
 
 #include "libraries/GlobalParameters.h"
 #include "EditorToolbarSettingsAbstractModel.h"

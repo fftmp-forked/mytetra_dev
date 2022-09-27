@@ -1,22 +1,18 @@
+#include <algorithm>
+#include <QAbstractButton>
+#include <QApplication>
+#include <QClipboard>
 #include <QObject>
 #include <QHeaderView>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QDialogButtonBox>
-#include <algorithm>
 #include <QModelIndexList>
 
-#include "main.h"
 #include "DatabasesManagementController.h"
+#include "qclipboard.h"
 #include "views/databasesManagement/DatabasesManagementTable.h"
-#include "models/appConfig/AppConfig.h"
-#include "libraries/GlobalParameters.h"
-#include "views/dialog/ReduceMessageBox.h"
-
-
-extern GlobalParameters globalParameters;
-extern AppConfig mytetraConfig;
 
 
 DatabasesManagementController::DatabasesManagementController(QObject *parent) : QObject(parent)

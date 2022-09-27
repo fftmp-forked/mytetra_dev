@@ -2,9 +2,7 @@
 #include <QWidget>
 
 #include "ConsoleEmulator.h"
-#include "main.h"
 #include "models/appConfig/AppConfig.h"
-#include "views/findInBaseScreen/FindScreen.h"
 #include "libraries/ActionLogger.h"
 
 extern AppConfig mytetraConfig;
@@ -132,14 +130,6 @@ void ConsoleEmulator::closeEvent(QCloseEvent *event)
 // Переопределенный метод, вызываемый для обработки событий
 bool ConsoleEmulator::event(QEvent *event)
 {
-  // qDebug() << "ConsoleEmulator::event:" << event->type();
-
-  // if(event->type()==QEvent::Hide)
-  // {
-  //  qDebug() << "Emit custom signal dialogHide";
-  //  emit dialogHide();
-  // }
-
   return QDialog::event(event);
 }
 

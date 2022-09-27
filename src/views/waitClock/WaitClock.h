@@ -2,7 +2,6 @@
 
 #include <QWidget>
 #include <QHBoxLayout>
-#include <QIcon>
 #include <QTimer>
 #include <QLabel>
 #include <QPixmap>
