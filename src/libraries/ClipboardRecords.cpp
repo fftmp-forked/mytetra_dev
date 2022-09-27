@@ -168,11 +168,7 @@ QStringList ClipboardRecords::formats() const
  return clipbRecordsFormat;
 }
 
-#if QT_VERSION > 0x060000
-  QVariant ClipboardRecords::retrieveData(const QString &format, QMetaType preferredType) const
-#else
-  QVariant ClipboardRecords::retrieveData(const QString &format, QVariant::Type preferredType) const
-#endif
+QVariant ClipboardRecords::retrieveData(const QString &format, QMetaType preferredType) const
 {
  Q_UNUSED(preferredType);
 

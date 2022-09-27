@@ -198,12 +198,6 @@ int main(int argc, char ** argv)
  // Обработка консольных опций
  parseConsoleOption(app);
 
-#if QT_VERSION < 0x060000
- // Установка увеличенного разрешения для дисплеев с большим DPI (Retina)
- if( qApp->devicePixelRatio() > 1.0 )
-   qApp->setAttribute(Qt::AA_UseHighDpiPixmaps);
-#endif
-
  // Инициализация глобальных параметров,
  // внутри происходит установка рабочей директории, настройка кодеков для локали и консоли
  globalParameters.init();
@@ -246,11 +240,7 @@ int main(int argc, char ** argv)
  //Загрузка переводов стандартных диалогов и кнопок
  QTranslator qtTranslator;
  if(qtTranslator.load("qt_" + mytetraConfig.get_interfacelanguage(),
-#if QT_VERSION > 0x060000
                       QLibraryInfo::path(QLibraryInfo::TranslationsPath)
-#else
-                      QLibraryInfo::location(QLibraryInfo::TranslationsPath)
-#endif
                       ))
  {
      if(!app.installTranslator(&qtTranslator))

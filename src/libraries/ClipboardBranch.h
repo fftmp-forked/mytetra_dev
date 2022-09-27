@@ -67,11 +67,7 @@ public:
 
 protected:
  // Этот метод QMimeData надо переопределить, так как он виртуальный
-#if QT_VERSION > 0x060000
   QVariant retrieveData(const QString &format, QMetaType preferredType) const;
-#else
-  QVariant retrieveData(const QString &format, QVariant::Type preferredType) const;
-#endif
 
 private:
 

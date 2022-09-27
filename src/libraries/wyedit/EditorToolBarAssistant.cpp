@@ -151,9 +151,7 @@ void EditorToolBarAssistant::onChangeFontselectOnDisplay(QString fontName)
         {
             // Иначе шрифт с указанным названием не найден в списке шрифтов,
             // и надо попробовать выставить комбобоксе стандартный похожий шрифт
-#if QT_VERSION < 0x060000
-            QFontDatabase database; // База всех установленных шрифтов
-#endif
+
             // Вывод в консоль полного списка шифтов
             /*
             foreach (const QString &family, database.families()) {
@@ -175,11 +173,7 @@ void EditorToolBarAssistant::onChangeFontselectOnDisplay(QString fontName)
             {
                 // Если входящий шрифт имеет похожий шрифт в базе установленных шрифтов
                 if(fontName==currentFontPair->first and
-#if QT_VERSION > 0x060000
                    QFontDatabase::families().contains(currentFontPair->second)
-#else
-                   database.families().contains(currentFontPair->second)
-#endif
                   )
                 {
                     updateFontFamily=currentFontPair->second;
