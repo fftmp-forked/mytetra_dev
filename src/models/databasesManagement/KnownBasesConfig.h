@@ -1,4 +1,4 @@
-﻿#ifndef KNOWNBASESCONFIG_H
+#ifndef KNOWNBASESCONFIG_H
 #define KNOWNBASESCONFIG_H
 
 #include <QObject>
