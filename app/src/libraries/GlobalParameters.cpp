@@ -182,7 +182,7 @@ void GlobalParameters::createFirstProgramFiles(QString dirName)
  dir.mkdir("trash");
 
  // Создаются файлы конфигурации
- QString targetOs=getTargetOs(); // "any" или "meego" или "android"
+ auto targetOs=getOsStr();
 
  QFile::copy(":/resource/standartconfig/"+targetOs+"/conf.ini", dirName+"/conf.ini");
  QFile::setPermissions(dirName+"/conf.ini", QFile::ReadUser | QFile::WriteUser);
@@ -210,8 +210,7 @@ void GlobalParameters::createFirstProgramFiles(QString dirName)
 
 void GlobalParameters::createStyleSheetFile(QString dirName)
 {
-  QString targetOs=getTargetOs();
-  QFile::copy(":/resource/standartconfig/"+targetOs+"/stylesheet.css", dirName+"/stylesheet.css");
+  QFile::copy(":/resource/standartconfig/"+getOsStr()+"/stylesheet.css", dirName+"/stylesheet.css");
   QFile::setPermissions(dirName+"/stylesheet.css", QFile::ReadUser | QFile::WriteUser);
 }
 
@@ -366,44 +365,6 @@ QString GlobalParameters::getActionLogFileName(void)
 QString GlobalParameters::getActionLogPrevFileName(void)
 {
     return workDirectory+"/actionLogPrev.txt";
-}
-
-
-QString GlobalParameters::getTargetOs(void)
-{
-#if TARGET_OS==ANY_OS
-    return "any";
-#endif
-
-#if TARGET_OS==MEEGO_OS
-    return "meego";
-#endif
-
-#if TARGET_OS==ANDROID_OS
-    return "android";
-#endif
-}
-
-
-// Имя программы в системе
-// Используется для создания и поиска каталога с данными пользователя
-QString GlobalParameters::getApplicationName(void)
-{
-    // todo: Подумать и заменить этот код на значения, полученные из PRO-файла
-    QString appName="";
-
-    if(getTargetOs()=="any")
-        appName=FixedParameters::appTextId;
-
-    if(getTargetOs()=="meego")
-        appName="ru.webhamster."+FixedParameters::appTextId;
-
-    if(getTargetOs()=="android")
-        appName="ru.webhamster."+FixedParameters::appTextId;
-
-    // qDebug() << "In getApplicationName() return \"" << appName << "\"";
-
-    return appName;
 }
 
 

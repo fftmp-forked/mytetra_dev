@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QStatusBar>
 
+#include "FixedParameters.h"
+
 class TreeScreen;
 class MetaEditor;
 class RecordTableScreen;
@@ -30,8 +32,26 @@ public:
     QString getActionLogFileName();
     QString getActionLogPrevFileName();
 
-    QString getTargetOs(void);
-    QString getApplicationName(void);
+    enum class OS_type {Android, Desktop};
+    static constexpr OS_type getOs(void) {
+        // see also QOperatingSystemVersionBase::currentType()
+        #if defined(Q_OS_ANDROID)
+            return GlobalParameters::OS_type::Android;
+        #else
+            return GlobalParameters::OS_type::Desktop;
+        #endif
+    }
+
+    static QString getOsStr(void) { return (getOs() == OS_type::Android ? "android" : "any"); }
+
+
+    static QString getApplicationName(void) {
+        if(getOs() == OS_type::Desktop)
+            return FixedParameters::appTextId;
+        else
+            return QString("ru.webhamster.") + FixedParameters::appTextId;
+    }
+
 
     void setTreeScreen(TreeScreen *point);
     TreeScreen *getTreeScreen();

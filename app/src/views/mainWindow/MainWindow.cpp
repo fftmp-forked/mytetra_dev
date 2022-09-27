@@ -342,7 +342,7 @@ void MainWindow::messageHandler(QString message)
 // Восстанавливается геометрия окна и позиции основных разделителей
 void MainWindow::restoreWindowGeometry(void)
 {
-    if(globalParameters.getTargetOs()=="android")
+    if(globalParameters.getOs() == GlobalParameters::OS_type::Android)
         setWindowState(Qt::WindowMaximized); // Для Андроида окно просто разворачивается на весь экран
     else
         restoreGeometry( mytetraConfig.get_mainwingeometry() );
@@ -902,7 +902,7 @@ void MainWindow::onClickHelpTechnicalInfo(void)
     QString infoPhysicalDpiX;
     QString infoPhysicalDpiY;
 
-    infoTargetOs="Target OS: "+globalParameters.getTargetOs()+"<br/>";
+    infoTargetOs="Target OS type: " + globalParameters.getOsStr() +"<br/>";
     infoProgramFile="Program file: "+globalParameters.getMainProgramFile()+"<br/>";
     infoWorkDirectory="Work directory: "+globalParameters.getWorkDirectory()+"<br/>";
 

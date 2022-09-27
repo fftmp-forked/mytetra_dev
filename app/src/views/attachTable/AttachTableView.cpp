@@ -144,7 +144,7 @@ void AttachTableView::tapAndHoldGestureTriggered(QTapAndHoldGesture *gesture)
   qDebug() << "In tapAndHoldGestureTriggered()" << gesture;
 
   if(gesture->state()==Qt::GestureFinished)
-    if(globalParameters.getTargetOs()=="android")
+    if(globalParameters.getOs() == GlobalParameters::OS_type::Android)
       emit tapAndHoldGestureFinished( mapFromGlobal(gesture->position().toPoint()) );
 }
 

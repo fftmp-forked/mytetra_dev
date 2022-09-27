@@ -83,9 +83,6 @@
         <file>resource/standartconfig/any/conf.ini</file>
         <file>resource/standartconfig/any/editorconf.ini</file>
         <file>resource/standartconfig/any/stylesheet.css</file>
-        <file>resource/standartconfig/meego/conf.ini</file>
-        <file>resource/standartconfig/meego/editorconf.ini</file>
-        <file>resource/standartconfig/meego/stylesheet.css</file>
         <file>resource/standartconfig/android/conf.ini</file>
         <file>resource/standartconfig/android/editorconf.ini</file>
         <file>resource/standartconfig/android/stylesheet.css</file>

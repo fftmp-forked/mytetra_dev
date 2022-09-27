@@ -272,7 +272,7 @@ int main(int argc, char ** argv)
 
  // Настройка объекта главного окна
  win.setWindowTitle("MyTetra");
- if(globalParameters.getTargetOs()=="android")
+ if(globalParameters.getOs() == GlobalParameters::OS_type::Android)
    win.show(); // В Андроиде нет десктопа, на нем нельзя сворачивать окно
  else
  {

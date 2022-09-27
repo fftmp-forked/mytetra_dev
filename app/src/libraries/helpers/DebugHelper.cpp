@@ -43,9 +43,7 @@ void criticalError(QString message)
 
 void smartPrintDebugMessage(QString msg)
 {
-    if(globalParameters.getTargetOs()=="any" ||
-       globalParameters.getTargetOs()=="meego")
-    {
+    if(globalParameters.getOs() == GlobalParameters::OS_type::Desktop) {
         QTime currTime = QTime::currentTime();
         QString timeText=currTime.toString("hh:mm:ss");
         msg=timeText+" "+msg;
@@ -100,13 +98,11 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 void setDebugMessageHandler()
 {
- qDebug() << "Debug message before set message handler for target OS: " << globalParameters.getTargetOs();
+ qDebug() << "Debug message before set message handler for target OS: " << globalParameters.getOsStr();
 
  // Для десктопных операционок можно переустановить обработчик qDebug()
  // Для Андроида переустановка qDebug() приводит к невозможности получения отладочных сообщений в удаленном отладчике
- if(globalParameters.getTargetOs()=="any" ||
-    globalParameters.getTargetOs()=="meego")
-  {
+ if(globalParameters.getOs() == GlobalParameters::OS_type::Desktop) {
    qDebug() << "Set alternative handler myMessageOutput() for debug message";
 
     qInstallMessageHandler(myMessageOutput);

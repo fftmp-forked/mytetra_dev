@@ -20,7 +20,7 @@ void GestureHelper::setKineticScrollArea(QAbstractItemView *object)
   if(object==nullptr)
     return;
 
-  if(globalParameters.getTargetOs()=="android")
+  if(globalParameters.getOs() == GlobalParameters::OS_type::Android)
   {
     // Настройка жестов прокрутки
     QScroller *scroller = QScroller::scroller(object);

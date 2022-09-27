@@ -947,14 +947,14 @@ void AppConfig::update_version_process(void)
                  add_default_param("rememberCursorAtOrdinarySelection", true); [[fallthrough]];
         case 14: add_default_param("findScreenTreeSearchArea", 0); [[fallthrough]];
         case 15: // Так как не все параметры можно стилизовать через QSS, здесь задается высота ячейки таблицы
-                 add_default_param("uglyQssReplaceHeightForTableView", globalParameters.getTargetOs()=="android" ? 35 : 0); [[fallthrough]];
+                 add_default_param("uglyQssReplaceHeightForTableView", globalParameters.getOs() == GlobalParameters::OS_type::Android ? 35 : 0); [[fallthrough]];
         case 16: add_default_param("recordTableShowFields", "name,tags");
                  add_default_param("recordTableFieldsWidth", "256,128");
                  add_default_param("recordTableShowHorizontalHeaders", true);
                  add_default_param("recordTableShowVerticalHeaders", false); [[fallthrough]];
         case 17: // В Android долгий запуск, нужно показывать сплешскрин, а на десктопе быстрый запуск, сплешскрин только мешает
-                 add_default_param("showSplashScreen", globalParameters.getTargetOs()=="android" ? true : false); [[fallthrough]];
-        case 18: add_default_param("interfaceMode", globalParameters.getTargetOs()=="android" ? "mobile" : "desktop"); [[fallthrough]];
+                 add_default_param("showSplashScreen", globalParameters.getOs() == GlobalParameters::OS_type::Android); [[fallthrough]];
+        case 18: add_default_param("interfaceMode", globalParameters.getOs() == GlobalParameters::OS_type::Android ? "mobile" : "desktop"); [[fallthrough]];
         case 19: add_default_param("focusWidget", ""); [[fallthrough]];
         case 20: {
                     // В Android прячутся инструменты сложного форматирования текста
@@ -962,7 +962,7 @@ void AppConfig::update_version_process(void)
                                  "numericlist,dotlist,indentplus,indentminus,showformatting,showhtml,fontcolor,"
                                  "backgroundcolor,expand_edit_area,save,createtable,table_add_row,table_remove_row,"
                                  "table_add_col,table_remove_col,table_merge_cells,table_split_cell";
-                    add_default_param("hideEditorTools", globalParameters.getTargetOs()=="android" ? a : "");
+                    add_default_param("hideEditorTools", globalParameters.getOs() == GlobalParameters::OS_type::Android ? a : "");
                     [[fallthrough]];
                  }
         case 21: add_default_param("findInBaseExpand", true); [[fallthrough]];
