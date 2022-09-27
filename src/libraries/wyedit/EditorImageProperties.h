@@ -1,5 +1,4 @@
-#ifndef _EDITORIMAGEPROPERTIES_H_
-#define	_EDITORIMAGEPROPERTIES_H_
+#pragma once
 
 #include <QtGlobal>
 #include <QWidget>
@@ -65,5 +64,4 @@ private:
  bool isRelateSizeSetted;
 };
 
-#endif	/* _EDITORIMAGEPROPERTIES_H_ */
 

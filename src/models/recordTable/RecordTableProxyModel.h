@@ -1,5 +1,4 @@
-#ifndef __RECORDTABLEPROXYMODEL_H__
-#define __RECORDTABLEPROXYMODEL_H__
+#pragma once
 
 #include <QSortFilterProxyModel>
 
@@ -15,4 +14,3 @@ public:
 
 };
 
-#endif // __RECORDTABLEPROXYMODEL_H__

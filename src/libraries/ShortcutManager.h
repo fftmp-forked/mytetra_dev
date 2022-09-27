@@ -1,5 +1,4 @@
-#ifndef SHORTCUTMANAGER_H
-#define SHORTCUTMANAGER_H
+#pragma once
 
 #include <QObject>
 #include <QKeySequence>
@@ -83,4 +82,3 @@ protected:
     QString configFileName;
 };
 
-#endif // SHORTCUTMANAGER_H

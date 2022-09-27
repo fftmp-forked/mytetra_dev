@@ -1,5 +1,4 @@
-#ifndef DATABASESMANAGEMENTCONTROLLER_H
-#define DATABASESMANAGEMENTCONTROLLER_H
+#pragma once
 
 #include <QObject>
 
@@ -32,4 +31,3 @@ protected:
 
 };
 
-#endif // DATABASESMANAGEMENTCONTROLLER_H

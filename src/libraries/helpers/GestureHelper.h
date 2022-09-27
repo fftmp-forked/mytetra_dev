@@ -1,5 +1,4 @@
-#ifndef GESTUREHELPER_H
-#define GESTUREHELPER_H
+#pragma once
 
 class QAbstractItemView;
 
@@ -11,4 +10,3 @@ public:
     static void setKineticScrollArea(QAbstractItemView *object);
 };
 
-#endif // GESTUREHELPER_H

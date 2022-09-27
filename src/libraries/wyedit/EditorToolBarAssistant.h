@@ -1,5 +1,4 @@
-#ifndef EDITORTOOLBARASSISTANT_H
-#define EDITORTOOLBARASSISTANT_H
+#pragma once
 
 #include <QWidget>
 #include "EditorToolBar.h"
@@ -99,4 +98,3 @@ protected:
 
 };
 
-#endif // EDITORTOOLBARASSISTANT_H

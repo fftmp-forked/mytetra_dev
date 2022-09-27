@@ -1,5 +1,4 @@
-#ifndef MYTETRA_MAIN_H
-#define MYTETRA_MAIN_H
+#pragma once
 
 #include <stdio.h>
 
@@ -49,4 +48,3 @@
 [[noreturn]] __forceinline void __builtin_unreachable() {__assume(false);}
 #endif
 
-#endif // MYTETRA_MAIN_H

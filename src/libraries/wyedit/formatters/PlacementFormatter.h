@@ -1,5 +1,4 @@
-#ifndef PLACEMENTFORMATTER_H
-#define PLACEMENTFORMATTER_H
+#pragma once
 
 #include "Formatter.h"
 
@@ -35,4 +34,3 @@ protected:
 
 };
 
-#endif // PLACEMENTFORMATTER_H

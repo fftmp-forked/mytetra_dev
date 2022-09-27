@@ -1,5 +1,4 @@
-#ifndef __APPCONFIG_H__
-#define __APPCONFIG_H__
+#pragma once
 
 #include <QObject>
 #include <QDir>
@@ -246,4 +245,3 @@ private:
     bool is_init_flag;
 };
 
-#endif // __APPCONFIG_H__

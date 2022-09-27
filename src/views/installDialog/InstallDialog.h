@@ -1,5 +1,4 @@
-#ifndef INSTALLDIALOG_H
-#define INSTALLDIALOG_H
+#pragma once
 
 #include <QDialog>
 #include <QTranslator>
@@ -58,4 +57,3 @@ protected:
     QString m_portableFullCurrentPath;
 };
 
-#endif // INSTALLDIALOG_H

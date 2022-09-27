@@ -1,5 +1,4 @@
-#ifndef EDITORTOOLBAR_H
-#define EDITORTOOLBAR_H
+#pragma once
 
 #include <QWidget>
 #include <QToolButton>
@@ -151,4 +150,3 @@ protected:
 
 };
 
-#endif // EDITORTOOLBAR_H

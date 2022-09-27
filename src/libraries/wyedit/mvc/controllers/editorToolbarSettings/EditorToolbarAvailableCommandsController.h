@@ -1,5 +1,4 @@
-#ifndef EDITORTOOLBARALLBUTTONSCONTROLLER
-#define EDITORTOOLBARALLBUTTONSCONTROLLER
+#pragma once
 
 #include <QObject>
 
@@ -38,4 +37,3 @@ protected:
 
 };
 
-#endif // EDITORTOOLBARALLBUTTONSCONTROLLER

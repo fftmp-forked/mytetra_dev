@@ -1,5 +1,4 @@
-#ifndef FORMATTER_H
-#define FORMATTER_H
+#pragma once
 
 #include <QObject>
 
@@ -37,4 +36,3 @@ protected:
 
 };
 
-#endif // FORMATTER_H

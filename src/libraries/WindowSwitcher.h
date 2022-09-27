@@ -1,5 +1,4 @@
-#ifndef WINDOWSWITCHER_H
-#define WINDOWSWITCHER_H
+#pragma once
 
 #include <QObject>
 
@@ -36,4 +35,3 @@ private:
 
 };
 
-#endif // WINDOWSWITCHER_H

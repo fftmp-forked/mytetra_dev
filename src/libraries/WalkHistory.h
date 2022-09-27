@@ -1,5 +1,4 @@
-#ifndef _WALKHISTORY_H_
-#define _WALKHISTORY_H_
+#pragma once
 
 #include <QtGlobal>
 #include <QObject>
@@ -69,4 +68,3 @@ protected:
   QMap<QString, WALK_HISTORY_DATA> data;
 };
 
-#endif // _WALKHISTORY_H_

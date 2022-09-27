@@ -1,5 +1,4 @@
-#ifndef __ATTACH_H__
-#define __ATTACH_H__
+#pragma once
 
 #include <QString>
 #include <QMap>
@@ -70,4 +69,3 @@ protected:
   QByteArray fileContent; // Содержимое файла, используется в режиме полных данных
 };
 
-#endif // __ATTACH_H__

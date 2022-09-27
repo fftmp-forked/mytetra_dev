@@ -1,5 +1,4 @@
-#ifndef _EDITORABSTABLECELL_H_
-#define _EDITORABSTABLECELL_H_
+#pragma once
 
 #include <QObject>
 #include <QTextDocumentFragment>
@@ -66,4 +65,3 @@ private:
  bool superCellSizeIsModify;
 };
 
-#endif // _EDITORABSTABLECELL_H_

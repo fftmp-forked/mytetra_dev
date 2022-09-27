@@ -1,5 +1,4 @@
-#ifndef EDITORTOOLBARSETTINGSABSTRACTMODEL_H
-#define EDITORTOOLBARSETTINGSABSTRACTMODEL_H
+#pragma once
 
 #include <QObject>
 #include <QStandardItemModel>
@@ -39,4 +38,3 @@ protected:
 
 };
 
-#endif // EDITORTOOLBARSETTINGSABSTRACTMODEL_H

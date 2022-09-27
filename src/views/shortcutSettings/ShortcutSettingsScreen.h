@@ -1,5 +1,4 @@
-#ifndef SHORTCUTSETTINGSSCREEN_H
-#define SHORTCUTSETTINGSSCREEN_H
+#pragma once
 
 #include <QDialog>
 #include <QWidget>
@@ -69,4 +68,3 @@ protected:
 
 };
 
-#endif // SHORTCUTSETTINGSSCREEN_H

@@ -1,5 +1,4 @@
-#ifndef ATTACHTABLEDATA_H
-#define ATTACHTABLEDATA_H
+#pragma once
 
 #include <QList>
 #include <QMetaType>
@@ -89,4 +88,3 @@ Q_DECLARE_METATYPE(AttachTableData);
 typedef AttachTableData *AttachTableDataPointer;
 Q_DECLARE_METATYPE(AttachTableDataPointer);
 
-#endif // ATTACHTABLEDATA_H

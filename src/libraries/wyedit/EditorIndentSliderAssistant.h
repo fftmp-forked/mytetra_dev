@@ -1,5 +1,4 @@
-#ifndef EDITORINDENTSLIDERASSISTANT_H
-#define EDITORINDENTSLIDERASSISTANT_H
+#pragma once
 
 #include <QObject>
 
@@ -48,4 +47,3 @@ protected:
   void setupSignals();
 };
 
-#endif // EDITORINDENTSLIDERASSISTANT_H

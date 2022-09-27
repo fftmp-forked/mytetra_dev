@@ -1,5 +1,4 @@
-#ifndef DOWNLOADER_H
-#define DOWNLOADER_H
+#pragma once
 
 #include <QDialog>
 #include <QTableWidget>
@@ -88,4 +87,3 @@ protected:
   void reconnectSignalsNetworkReply(QNetworkReply *networkReply);
 };
 
-#endif // DOWNLOADER_H

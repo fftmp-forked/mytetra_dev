@@ -1,5 +1,4 @@
-#ifndef DATABASESMANAGEMENTMODEL_H
-#define DATABASESMANAGEMENTMODEL_H
+#pragma once
 
 #include <QObject>
 #include <QAbstractTableModel>
@@ -82,4 +81,3 @@ private:
   KnownBasesConfig mKnownBasesConfig;
 };
 
-#endif // DATABASESMANAGEMENTMODEL_H

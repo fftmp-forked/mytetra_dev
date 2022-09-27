@@ -1,5 +1,4 @@
-#ifndef _EDITORADDTABLEFORM_H_
-#define _EDITORADDTABLEFORM_H_
+#pragma once
 
 #include <QDialog>
 
@@ -33,4 +32,3 @@ class EditorAddTableForm : public QDialog
 
 };
 
-#endif // _EDITORADDTABLEFORM_H_

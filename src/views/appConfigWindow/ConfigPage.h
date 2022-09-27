@@ -1,5 +1,4 @@
-#ifndef CONFIGPAGE_H
-#define CONFIGPAGE_H
+#pragma once
 
 #include <QWidget>
 
@@ -16,4 +15,3 @@ public:
 };
 
 
-#endif // CONFIGPAGE_H

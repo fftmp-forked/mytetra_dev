@@ -1,5 +1,4 @@
-#ifndef EDITORSHOWTEXTDISPATCHER_H
-#define EDITORSHOWTEXTDISPATCHER_H
+#pragma once
 
 #include <QObject>
 #include <QThread>
@@ -66,4 +65,3 @@ protected:
 
 };
 
-#endif // EDITORSHOWTEXTDISPATCHER_H

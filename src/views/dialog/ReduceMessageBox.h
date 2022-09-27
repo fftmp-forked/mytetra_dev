@@ -1,5 +1,4 @@
-#ifndef __REDUCEMESSAGEBOX_H__
-#define __REDUCEMESSAGEBOX_H__
+#pragma once
 
 #include <QDialog>
 #include <QLabel>
@@ -38,4 +37,3 @@ protected:
 
 };
 
-#endif // __REDUCEMESSAGEBOX_H__

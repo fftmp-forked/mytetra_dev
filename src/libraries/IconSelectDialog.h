@@ -1,5 +1,4 @@
-#ifndef ICONSELECTDIALOG_H
-#define ICONSELECTDIALOG_H
+#pragma once
 
 #include <QDialog>
 #include <QListWidget>
@@ -63,4 +62,3 @@ protected:
   QString currentFileName;
 };
 
-#endif // ICONSELECTDIALOG_H

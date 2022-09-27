@@ -1,5 +1,4 @@
-#ifndef MYTETRA_EDITOR
-#define MYTETRA_EDITOR
+#pragma once
 
 #include <QBoxLayout>
 #include <QComboBox>
@@ -275,4 +274,3 @@ private:
  int dirFileEmptyReaction;
 };
 
-#endif /* MYTETRA_EDITOR */

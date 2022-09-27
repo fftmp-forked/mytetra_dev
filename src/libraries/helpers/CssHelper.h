@@ -1,5 +1,4 @@
-#ifndef CSSHELPER_H
-#define CSSHELPER_H
+#pragma once
 
 #include <QtGlobal>
 
@@ -18,4 +17,3 @@ protected:
 
 };
 
-#endif // CSSHELPER_H

@@ -1,5 +1,4 @@
-#ifndef ATTACHTABLESCREEN_H
-#define ATTACHTABLESCREEN_H
+#pragma once
 
 #include <QWidget>
 #include <QToolBar>
@@ -58,4 +57,3 @@ protected:
 
 };
 
-#endif // ATTACHTABLESCREEN_H

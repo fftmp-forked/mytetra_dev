@@ -1,5 +1,4 @@
-#ifndef _EDITORABSTABLE_H_
-#define _EDITORABSTABLE_H_
+#pragma once
 
 #include <QObject>
 
@@ -51,5 +50,4 @@ private:
 
 };
 
-#endif // _EDITORABSTABLE_H_
 

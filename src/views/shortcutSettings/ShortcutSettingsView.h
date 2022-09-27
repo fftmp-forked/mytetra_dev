@@ -1,5 +1,4 @@
-#ifndef SHORTCUTSETTINGSVIEW_H
-#define SHORTCUTSETTINGSVIEW_H
+#pragma once
 
 #include <QTreeView>
 
@@ -21,4 +20,3 @@ protected slots:
 
 };
 
-#endif // SHORTCUTSETTINGSVIEW_H

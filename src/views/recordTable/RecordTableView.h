@@ -1,5 +1,4 @@
-#ifndef RECORDLISTSCREEN_H_
-#define RECORDLISTSCREEN_H_
+#pragma once
 
 #include <QWidget>
 #include <QTableView>
@@ -124,4 +123,3 @@ private:
 
 };
 
-#endif /* RECORDLISTSCREEN_H_ */

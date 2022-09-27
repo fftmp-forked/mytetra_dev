@@ -1,5 +1,4 @@
-#ifndef DEBUGHELPER_H
-#define DEBUGHELPER_H
+#pragma once
 
 // Функции, используемые при отладке
 
@@ -15,4 +14,3 @@ void printObjectTree(void);
 
 void setDebugMessageHandler();
 
-#endif // DEBUGHELPER_H

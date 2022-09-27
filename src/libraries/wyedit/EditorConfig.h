@@ -1,5 +1,4 @@
-#ifndef EDITORCONFIG_H
-#define EDITORCONFIG_H
+#pragma once
 
 #include <QObject>
 #include <QWidget>
@@ -133,4 +132,3 @@ private:
 
 };
 
-#endif // EDITORCONFIG_H

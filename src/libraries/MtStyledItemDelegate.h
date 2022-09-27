@@ -1,5 +1,4 @@
-#ifndef __MTSTYLEDITEMDELEGATE_H__
-#define __MTSTYLEDITEMDELEGATE_H__
+#pragma once
 
 #include <QStyledItemDelegate>
 
@@ -19,4 +18,3 @@ public slots:
 
 };
 
-#endif // __MTSTYLEDITEMDELEGATE_H__

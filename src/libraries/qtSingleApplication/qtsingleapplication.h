@@ -38,8 +38,7 @@
 **
 ****************************************************************************/
 
-#ifndef QTSINGLEAPPLICATION_H
-#define QTSINGLEAPPLICATION_H
+#pragma once
 
 #include <QApplication>
 
@@ -93,4 +92,3 @@ private:
     QWidget *actWin;
 };
 
-#endif // QTSINGLEAPPLICATION_H

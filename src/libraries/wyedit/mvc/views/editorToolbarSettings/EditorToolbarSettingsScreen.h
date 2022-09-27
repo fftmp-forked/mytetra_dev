@@ -1,5 +1,4 @@
-#ifndef EDITORTOOLBARSETTINGSSCREEN_H
-#define EDITORTOOLBARSETTINGSSCREEN_H
+#pragma once
 
 #include <QDialog>
 #include <QWidget>
@@ -115,4 +114,3 @@ private:
 
 };
 
-#endif // EDITORTOOLBARSETTINGSSCREEN_H

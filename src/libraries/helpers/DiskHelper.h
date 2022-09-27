@@ -1,5 +1,4 @@
-#ifndef DISKHELPER_H
-#define DISKHELPER_H
+#pragma once
 
 #include <QString>
 #include <QStringList>
@@ -25,4 +24,3 @@ public:
   static bool isDirectoryEmpty(QString dirName);
 };
 
-#endif // DISKHELPER_H

@@ -1,5 +1,4 @@
-#ifndef INFOFIELDENTER_H_
-#define INFOFIELDENTER_H_
+#pragma once
 
 #include <QDialog>
 #include <QWidget>
@@ -66,4 +65,3 @@ private:
 
 };
 
-#endif /* INFOFIELDENTER_H_ */

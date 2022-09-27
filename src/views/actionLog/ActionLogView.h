@@ -1,5 +1,4 @@
-#ifndef __ACTIONLOGVIEW_H__
-#define __ACTIONLOGVIEW_H__
+#pragma once
 
 #include <QObject>
 #include <QWidget>
@@ -45,4 +44,3 @@ protected:
 
 };
 
-#endif // __ACTIONLOGVIEW_H__

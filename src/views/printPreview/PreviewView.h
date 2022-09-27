@@ -1,5 +1,4 @@
-#ifndef _PREVIEWVIEW_H_
-#define _PREVIEWVIEW_H_
+#pragma once
 
 #include <QAbstractScrollArea>
 #include <QTextDocument>
@@ -34,4 +33,3 @@ private:
     QPoint scrollBarValuesOnMousePress;
 };
 
-#endif // _PREVIEWVIEW_H_

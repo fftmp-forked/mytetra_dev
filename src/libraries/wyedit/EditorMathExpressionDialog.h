@@ -1,5 +1,4 @@
-#ifndef EDITORMATHEXPRESSIONDIALOG_H
-#define EDITORMATHEXPRESSIONDIALOG_H
+#pragma once
 
 #include <QWidget>
 #include <QDialog>
@@ -150,4 +149,3 @@ private:
     MathExpressionFormatter *mathExpressionFormatter; // Класс для работы с математическими выражениями
 };
 
-#endif // EDITORMATHEXPRESSIONDIALOG_H

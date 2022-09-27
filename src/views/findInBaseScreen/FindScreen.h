@@ -1,5 +1,4 @@
-#ifndef _FINDSCREEN_H_
-#define	_FINDSCREEN_H_
+#pragma once
 
 #include <QComboBox>
 #include <QMap>
@@ -134,5 +133,4 @@ private:
  int cancelFlag;
 };
 
-#endif	/* _FINDSCREEN_H_ */
 

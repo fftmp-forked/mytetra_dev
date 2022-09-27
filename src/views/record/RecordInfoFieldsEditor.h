@@ -1,5 +1,4 @@
-#ifndef __RECORDINFOFIELDSEDITOR_H__
-#define __RECORDINFOFIELDSEDITOR_H__
+#pragma once
 
 #include <QDialog>
 #include <QLabel>
@@ -46,4 +45,3 @@ private:
   void assembly(void);
 };
 
-#endif // __RECORDINFOFIELDSEDITOR_H__

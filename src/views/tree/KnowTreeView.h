@@ -1,5 +1,4 @@
-#ifndef __KNOWTREEVIEW_H__
-#define __KNOWTREEVIEW_H__
+#pragma once
 
 #include <QWidget>
 #include <QTreeView>
@@ -38,5 +37,4 @@ protected:
 
 };
 
-#endif // __KNOWTREEVIEW_H__
 

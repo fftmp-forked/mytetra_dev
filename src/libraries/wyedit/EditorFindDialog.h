@@ -1,5 +1,4 @@
-#ifndef _EDITORFINDDIALOG_H_
-#define	_EDITORFINDDIALOG_H_
+#pragma once
 
 #include <QWidget>
 #include <QDialog>
@@ -40,5 +39,4 @@ private:
  void showEvent(QShowEvent *event);
 };
 
-#endif	/* _EDITORFINDDIALOG_H_ */
 

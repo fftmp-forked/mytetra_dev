@@ -1,5 +1,4 @@
-#ifndef EDITORCONTEXTMENU_H
-#define EDITORCONTEXTMENU_H
+#pragma once
 
 #include <QMenu>
 
@@ -82,4 +81,3 @@ protected slots:
 
 };
 
-#endif // EDITORCONTEXTMENU_H

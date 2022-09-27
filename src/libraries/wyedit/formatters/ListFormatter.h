@@ -1,5 +1,4 @@
-#ifndef LISTFORMATTER_H
-#define LISTFORMATTER_H
+#pragma once
 
 #include <QTextListFormat>
 
@@ -26,4 +25,3 @@ protected:
 
 };
 
-#endif // LISTFORMATTER_H

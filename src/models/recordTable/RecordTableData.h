@@ -1,5 +1,4 @@
-#ifndef __RECORDTABLEDATA_H__
-#define	__RECORDTABLEDATA_H__
+#pragma once
 
 #include <QAbstractListModel>
 #include <QModelIndex>
@@ -115,4 +114,3 @@ private:
 };
 
 
-#endif /* __RECORDTABLEDATA_H__ */

@@ -1,5 +1,4 @@
-#ifndef _EDITORTEXTAREA_H_
-#define _EDITORTEXTAREA_H_
+#pragma once
 
 #include <QTextEdit>
 #include <QPaintEvent>
@@ -92,4 +91,3 @@ private:
   void switchReferenceClickMode(bool flag);
 };
 
-#endif // _EDITORTEXTAREA_H_

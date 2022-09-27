@@ -1,5 +1,4 @@
-#ifndef TREEITEM_H
-#define TREEITEM_H
+#pragma once
 
 #include <QList>
 #include <QVariant>
@@ -137,4 +136,3 @@ private:
     QIcon icon; // Иконка ветки
 };
 
-#endif

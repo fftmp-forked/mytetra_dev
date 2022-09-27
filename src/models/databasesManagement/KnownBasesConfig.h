@@ -1,5 +1,4 @@
-#ifndef KNOWNBASESCONFIG_H
-#define KNOWNBASESCONFIG_H
+#pragma once
 
 #include <QObject>
 #include <QSettings>
@@ -42,4 +41,3 @@ private:
     bool isInitFlag;
 };
 
-#endif // KNOWNBASESCONFIG_H

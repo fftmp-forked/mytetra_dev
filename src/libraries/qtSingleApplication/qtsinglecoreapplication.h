@@ -38,8 +38,7 @@
 **
 ****************************************************************************/
 
-#ifndef QTSINGLECOREAPPLICATION_H
-#define QTSINGLECOREAPPLICATION_H
+#pragma once
 
 #include <QCoreApplication>
 
@@ -68,4 +67,3 @@ private:
     QtLocalPeer* peer;
 };
 
-#endif // QTSINGLECOREAPPLICATION_H

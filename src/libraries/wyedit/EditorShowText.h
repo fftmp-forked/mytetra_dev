@@ -1,5 +1,4 @@
-#ifndef EDITORSHOWTEXT_H
-#define EDITORSHOWTEXT_H
+#pragma once
 
 #include <QDialog>
 #include <QTextEdit>
@@ -60,4 +59,3 @@ private:
     void showEvent(QShowEvent *event);
 };
 
-#endif // EDITORSHOWTEXT_H

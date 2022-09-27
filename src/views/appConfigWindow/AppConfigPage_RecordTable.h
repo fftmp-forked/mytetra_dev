@@ -1,5 +1,4 @@
-#ifndef APPCONFIGPAGE_RECORDTABLE_H
-#define APPCONFIGPAGE_RECORDTABLE_H
+#pragma once
 
 #include <QWidget>
 #include <QCheckBox>
@@ -37,4 +36,3 @@ protected:
 };
 
 
-#endif // APPCONFIGPAGE_RECORDTABLE_H

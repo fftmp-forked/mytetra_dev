@@ -1,5 +1,4 @@
-#ifndef APPCONFIGPAGE_APPEARANCE_H
-#define APPCONFIGPAGE_APPEARANCE_H
+#pragma once
 
 #include <QWidget>
 #include <QGroupBox>
@@ -31,4 +30,3 @@ public:
     QCheckBox *dockableWindowsBehavior; // Поведение открепляемых окон
 };
 
-#endif // APPCONFIGPAGE_APPEARANCE_H

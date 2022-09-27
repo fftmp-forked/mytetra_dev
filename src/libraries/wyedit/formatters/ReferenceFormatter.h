@@ -1,5 +1,4 @@
-#ifndef REFERENCEFORMATTER_H
-#define REFERENCEFORMATTER_H
+#pragma once
 
 #include "Formatter.h"
 
@@ -28,4 +27,3 @@ protected:
 };
 
 
-#endif // REFERENCEFORMATTER_H

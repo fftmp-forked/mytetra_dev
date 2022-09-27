@@ -1,5 +1,4 @@
-#ifndef IMAGEFORMATTER_H
-#define IMAGEFORMATTER_H
+#pragma once
 
 #include <QTextImageFormat>
 #include <QTextDocumentFragment>
@@ -39,4 +38,3 @@ public slots:
 
 };
 
-#endif // IMAGEFORMATTER_H

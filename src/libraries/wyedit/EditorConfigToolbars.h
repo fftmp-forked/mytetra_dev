@@ -1,5 +1,4 @@
-#ifndef EDITORCONFIGTOOLBARS_H
-#define	EDITORCONFIGTOOLBARS_H
+#pragma once
 
 #include <QWidget>
 #include <QLineEdit>
@@ -52,5 +51,4 @@ private:
 };
 
 
-#endif	// EDITORCONFIGTOOLBARS_H
 

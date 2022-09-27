@@ -1,5 +1,4 @@
-#ifndef TRACELOGGER_H
-#define TRACELOGGER_H
+#pragma once
 
 #include <QString>
 
@@ -18,4 +17,3 @@ private:
     static QString indent;
 };
 
-#endif // TRACELOGGER_H

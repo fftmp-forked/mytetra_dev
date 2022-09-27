@@ -1,5 +1,4 @@
-#ifndef CONFIGPAGE_SYNCHRO_H
-#define	CONFIGPAGE_SYNCHRO_H
+#pragma once
 
 #include <QWidget>
 #include <QCheckBox>
@@ -66,5 +65,4 @@ protected:
 };
 
 
-#endif	// CONFIGPAGE_SYNCHRO_H
 

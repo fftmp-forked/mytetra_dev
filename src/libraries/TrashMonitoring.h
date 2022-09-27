@@ -1,5 +1,4 @@
-#ifndef _TRASHMONITORING_H_
-#define	_TRASHMONITORING_H_
+#pragma once
 
 #include <QWidget>
 #include <QDir>
@@ -38,5 +37,4 @@ private:
 
 };
 
-#endif	/* _TRASHMONITORING_H_ */
 

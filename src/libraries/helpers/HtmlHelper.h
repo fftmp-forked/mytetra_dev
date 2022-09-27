@@ -1,5 +1,4 @@
-#ifndef HTMLHELPER_H
-#define HTMLHELPER_H
+#pragma once
 
 class QString;
 
@@ -14,4 +13,3 @@ public:
 
 };
 
-#endif // HTMLHELPER_H

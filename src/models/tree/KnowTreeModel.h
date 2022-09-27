@@ -1,5 +1,4 @@
-#ifndef TREENODE_H
-#define TREENODE_H
+#pragma once
 
 #include <QAbstractItemModel>
 #include <QModelIndex>
@@ -171,4 +170,3 @@ private:
     void translateImportDomData(QDomDocument &doc, QString elementName, QString elementAttribute, QMap<QString, QString> translateTable );
 };
 
-#endif // TREENODE_H

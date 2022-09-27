@@ -38,8 +38,7 @@
 **
 ****************************************************************************/
 
-#ifndef QTLOCKEDFILE_H
-#define QTLOCKEDFILE_H
+#pragma once
 
 #include <QFile>
 #ifdef Q_OS_WIN
@@ -94,4 +93,3 @@ private:
     LockMode m_lock_mode;
 };
 }
-#endif

@@ -1,5 +1,4 @@
-#ifndef _EDITORCONFIGFONT_H_
-#define	_EDITORCONFIGFONT_H_
+#pragma once
 
 #include <QWidget>
 #include <QLineEdit>
@@ -61,5 +60,4 @@ private:
 };
 
 
-#endif	// _EDITORCONFIGFONT_H_
 

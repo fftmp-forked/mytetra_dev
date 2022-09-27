@@ -1,5 +1,4 @@
-#ifndef PERIODICCHECKBASE_H
-#define PERIODICCHECKBASE_H
+#pragma once
 
 #include "TimerMonitoring.h"
 
@@ -23,5 +22,4 @@ protected:
 
 };
 
-#endif	/* PERIODICCHECKBASE_H */
 

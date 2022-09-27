@@ -1,5 +1,4 @@
-#ifndef GLOBALPARAMETERS_H
-#define	GLOBALPARAMETERS_H
+#pragma once
 
 #include <QObject>
 #include <QStatusBar>
@@ -116,5 +115,4 @@ private:
     QString installAutodetectLang;
 };
 
-#endif	/* GLOBALPARAMETERS_H */
 

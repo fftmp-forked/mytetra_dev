@@ -1,5 +1,4 @@
-#ifndef EDITORFONTABSTRACTCOMBOBOX_H
-#define EDITORFONTABSTRACTCOMBOBOX_H
+#pragma once
 
 #include <QWidget>
 #include <QAction>
@@ -25,4 +24,3 @@ protected:
     QAction selectAction; // Действие для активации (выбора) данного виджета
 };
 
-#endif // EDITORFONTABSTRACTCOMBOBOX_H

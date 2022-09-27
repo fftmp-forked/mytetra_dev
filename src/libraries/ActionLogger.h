@@ -1,5 +1,4 @@
-#ifndef ACTIONLOGGER_H
-#define ACTIONLOGGER_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -53,4 +52,3 @@ protected:
 
 };
 
-#endif // ACTIONLOGGER_H

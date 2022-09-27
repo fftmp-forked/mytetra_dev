@@ -1,5 +1,4 @@
-#ifndef EDITORTOOLBARCOMMANDSLISTVIEW
-#define EDITORTOOLBARCOMMANDSLISTVIEW
+#pragma once
 
 #include <QTreeView>
 
@@ -21,4 +20,3 @@ public:
 
 };
 
-#endif // EDITORTOOLBARCOMMANDSLISTVIEW

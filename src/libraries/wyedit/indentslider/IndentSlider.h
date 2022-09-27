@@ -1,5 +1,4 @@
-#ifndef _INDENTSLIDER_H_
-#define _INDENTSLIDER_H_
+#pragma once
 
 #include <QWidget>
 #include <QMouseEvent>
@@ -87,4 +86,3 @@ class IndentSlider : public QWidget
   };
 };
 
-#endif // _INDENTSLIDER_H_

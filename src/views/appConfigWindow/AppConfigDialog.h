@@ -1,5 +1,4 @@
-#ifndef APPCONFIGDIALOG_H
-#define APPCONFIGDIALOG_H
+#pragma once
 
 #include <QString>
 #include <QWidget>
@@ -36,4 +35,3 @@ private:
     void changePage(QString name);
 };
 
-#endif // APPCONFIGDIALOG_H

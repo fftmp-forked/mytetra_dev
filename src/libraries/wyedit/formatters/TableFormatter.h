@@ -1,5 +1,4 @@
-#ifndef TABLEFORMATTER_H
-#define TABLEFORMATTER_H
+#pragma once
 
 #include "Formatter.h"
 
@@ -26,4 +25,3 @@ public slots:
 
 };
 
-#endif // TABLEFORMATTER_H

@@ -1,5 +1,4 @@
-#ifndef CONFIGEDITORHELPER_H
-#define CONFIGEDITORHELPER_H
+#pragma once
 
 class QString;
 
@@ -13,4 +12,3 @@ public:
     static void editConfigFile(QString fileName, double sizeCoeffitient );
 };
 
-#endif // CONFIGEDITORHELPER_H

@@ -1,5 +1,4 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QDialog>
 #include <QMainWindow>
@@ -231,4 +230,3 @@ protected:
  int exitCounter=0;
  
 };
-#endif

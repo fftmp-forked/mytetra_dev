@@ -1,5 +1,4 @@
-#ifndef OBJECTHELPER_H
-#define OBJECTHELPER_H
+#pragma once
 
 #include <QObject>
 
@@ -77,4 +76,3 @@ template <class X> inline X *find_object(QString objectName)
 //    ObjectHelper();
 //};
 
-#endif // OBJECTHELPER_H

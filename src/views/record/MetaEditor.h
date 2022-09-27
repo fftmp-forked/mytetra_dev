@@ -1,5 +1,4 @@
-#ifndef _METAEDITOR_H_
-#define _METAEDITOR_H_
+#pragma once
 
 #include <QWidget>
 #include <QLabel>
@@ -82,4 +81,3 @@ private:
 
 };
 
-#endif /* _METAEDITOR_H_ */

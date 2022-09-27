@@ -1,5 +1,4 @@
-#ifndef _PRINTPREVIEW_H_
-#define _PRINTPREVIEW_H_
+#pragma once
 
 #include <QMainWindow>
 #include <QPrinter>
@@ -44,4 +43,3 @@ private:
     QVBoxLayout *centralLayout;
 };
 
-#endif // _PRINTPREVIEW_H_

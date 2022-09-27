@@ -1,5 +1,4 @@
-#ifndef __ADDNEWRECORD_H__
-#define __ADDNEWRECORD_H__
+#pragma once
 
 #include <QDialog>
 #include <QLabel>
@@ -55,4 +54,3 @@ private:
  virtual bool eventFilter(QObject *object, QEvent *event);
 };
 
-#endif // __ADDNEWRECORD_H__

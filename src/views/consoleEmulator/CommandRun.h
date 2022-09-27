@@ -1,5 +1,4 @@
-#ifndef COMMANDRUN_H
-#define	COMMANDRUN_H
+#pragma once
 
 #include <QWidget>
 #include <QDialog>
@@ -60,5 +59,4 @@ private:
 
 };
 
-#endif	/* COMMANDRUN_H */
 

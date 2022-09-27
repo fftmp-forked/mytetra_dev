@@ -1,5 +1,4 @@
-#ifndef TREEMODEL_H
-#define TREEMODEL_H
+#pragma once
 
 #include <QAbstractItemModel>
 #include <QModelIndex>
@@ -71,4 +70,3 @@ private:
     QPersistentModelIndex cursorOverIndex;
 };
 
-#endif

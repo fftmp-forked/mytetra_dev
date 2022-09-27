@@ -1,5 +1,4 @@
-#ifndef __ATTACHTABLECONTROLLER_H__
-#define __ATTACHTABLECONTROLLER_H__
+#pragma once
 
 #include <QObject>
 #include <QModelIndexList>
@@ -59,4 +58,3 @@ protected:
   MetaEditor *metaEditor;
 };
 
-#endif // __ATTACHTABLECONTROLLER_H__

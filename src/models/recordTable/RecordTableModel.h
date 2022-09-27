@@ -1,5 +1,4 @@
-#ifndef __RECORDTABLEMODEL_H__
-#define __RECORDTABLEMODEL_H__
+#pragma once
 
 #include <QAbstractTableModel>
 #include <QModelIndex>
@@ -69,4 +68,3 @@ protected:
 
 };
 
-#endif // __RECORDTABLEMODEL_H__

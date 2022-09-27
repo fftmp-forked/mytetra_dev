@@ -1,5 +1,4 @@
-#ifndef EDITORCONFIGMATHEXPRESSION_H
-#define	EDITORCONFIGMATHEXPRESSION_H
+#pragma once
 
 #include <QWidget>
 #include <QLineEdit>
@@ -41,5 +40,4 @@ private:
 };
 
 
-#endif	// EDITORCONFIGMATHEXPRESSION_H
 

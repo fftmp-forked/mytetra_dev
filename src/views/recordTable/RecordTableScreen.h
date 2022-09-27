@@ -1,5 +1,4 @@
-#ifndef RECORDTABLESCREEN_H_
-#define RECORDTABLESCREEN_H_
+#pragma once
 
 #include <QWidget>
 #include <QListView>
@@ -101,4 +100,3 @@ private:
 
 };
 
-#endif /* RECORDTABLESCREEN_H_ */

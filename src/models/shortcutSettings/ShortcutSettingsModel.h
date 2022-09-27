@@ -1,5 +1,4 @@
-#ifndef SHORTCUTSETTINGSMODEL_H
-#define SHORTCUTSETTINGSMODEL_H
+#pragma once
 
 #include <QObject>
 #include <QStandardItemModel>
@@ -50,4 +49,3 @@ protected:
     QString duplicateError;
 };
 
-#endif // SHORTCUTSETTINGSMODEL_H

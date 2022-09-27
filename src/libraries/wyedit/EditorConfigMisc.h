@@ -1,5 +1,4 @@
-#ifndef _EDITORCONFIGMISC_H_
-#define	_EDITORCONFIGMISC_H_
+#pragma once
 
 #include <QWidget>
 #include <QLineEdit>
@@ -47,5 +46,4 @@ private:
 };
 
 
-#endif	// _EDITORCONFIGMISC_H_
 

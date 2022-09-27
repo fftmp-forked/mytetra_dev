@@ -1,5 +1,4 @@
-#ifndef EDITORMULTILINEINPUTDIALOG_H
-#define	EDITORMULTILINEINPUTDIALOG_H
+#pragma once
 
 #include <QtGlobal>
 #include <QWidget>
@@ -40,5 +39,4 @@ private:
     void updateSize();
 };
 
-#endif // EDITORMULTILINEINPUTDIALOG_H
 

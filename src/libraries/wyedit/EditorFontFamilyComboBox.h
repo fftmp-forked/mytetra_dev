@@ -1,5 +1,4 @@
-#ifndef EDITORFONTFAMILYCOMBOBOX_H
-#define EDITORFONTFAMILYCOMBOBOX_H
+#pragma once
 
 #include <QObject>
 #include <QFontComboBox>
@@ -31,4 +30,3 @@ protected:
     int previousIndex;
 };
 
-#endif // EDITORFONTFAMILYCOMBOBOX_H

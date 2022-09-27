@@ -1,5 +1,4 @@
-#ifndef EDITORCONFIGDIALOG_H
-#define EDITORCONFIGDIALOG_H
+#pragma once
 
 #include <QWidget>
 #include "views/appConfigWindow/ConfigDialog.h"
@@ -16,4 +15,3 @@ private:
  ConfigDialog *configDialog;
 };
 
-#endif // EDITORCONFIGDIALOG_H

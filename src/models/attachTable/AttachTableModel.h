@@ -1,5 +1,4 @@
-#ifndef __ATTACHTABLEMODEL_H__
-#define __ATTACHTABLEMODEL_H__
+#pragma once
 
 #include <QObject>
 #include <QAbstractTableModel>
@@ -55,4 +54,3 @@ private:
 
 };
 
-#endif // __ATTACHTABLEMODEL_H__

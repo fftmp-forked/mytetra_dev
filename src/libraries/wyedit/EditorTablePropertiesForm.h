@@ -1,5 +1,4 @@
-#ifndef _EDITORTABLEPROPERTIESFORM_H_
-#define _EDITORTABLEPROPERTIESFORM_H_
+#pragma once
 
 #include <QDialog>
 #include <QToolButton> // Почему-то не работает предварительное определение класса (этап линковки), приходится включать инклюдом
@@ -76,4 +75,3 @@ private:
   void setColorForButtonBackgroundColor(QColor iColor);
 };
 
-#endif // _EDITORTABLEPROPERTIESFORM_H_

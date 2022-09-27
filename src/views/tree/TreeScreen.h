@@ -1,5 +1,4 @@
-#ifndef _TREESCREEN_H_
-#define	_TREESCREEN_H_
+#pragma once
 
 #include <QtGlobal>
 #include <QWidget>
@@ -116,5 +115,4 @@ private:
 };
 
 
-#endif	// _TREESCREEN_H_
 

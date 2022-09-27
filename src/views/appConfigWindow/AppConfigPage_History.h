@@ -1,5 +1,4 @@
-#ifndef APPCONFIGPAGE_HISTORY_H
-#define APPCONFIGPAGE_HISTORY_H
+#pragma once
 
 #include <QWidget>
 #include <QGroupBox>
@@ -30,4 +29,3 @@ public:
     QCheckBox *rememberAtOrdinarySelectionCheckBox;
 };
 
-#endif // APPCONFIGPAGE_HISTORY_H

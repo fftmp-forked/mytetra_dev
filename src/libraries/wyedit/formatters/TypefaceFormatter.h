@@ -1,5 +1,4 @@
-#ifndef TYPEFACEFORMATTER_H
-#define TYPEFACEFORMATTER_H
+#pragma once
 
 #include <QColor>
 
@@ -81,4 +80,3 @@ private:
     void workingSoftCarryInSelection();
 };
 
-#endif // TYPEFACEFORMATTER_H

@@ -1,5 +1,4 @@
-#ifndef MATHEXPRESSIONFORMATTER_H
-#define MATHEXPRESSIONFORMATTER_H
+#pragma once
 
 #include <QTextImageFormat>
 #include <QTextDocumentFragment>
@@ -42,4 +41,3 @@ private:
   QString m_mimetex_bin;
 };
 
-#endif // MATHEXPRESSIONFORMATTER_H

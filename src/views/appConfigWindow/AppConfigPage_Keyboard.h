@@ -1,5 +1,4 @@
-#ifndef _CONFIGPAGE_KEYBOARD_H_
-#define	_CONFIGPAGE_KEYBOARD_H_
+#pragma once
 
 #include <QWidget>
 #include <QCheckBox>
@@ -42,5 +41,4 @@ protected:
 };
 
 
-#endif // _CONFIGPAGE_KEYBOARD_H_
 

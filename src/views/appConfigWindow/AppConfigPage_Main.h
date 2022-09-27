@@ -1,5 +1,4 @@
-#ifndef _APPCONFIGPAGE_MAIN_H_
-#define	_APPCONFIGPAGE_MAIN_H_
+#pragma once
 
 #include <QComboBox>
 #include <QWidget>
@@ -65,5 +64,4 @@ private:
 };
 
 
-#endif	// _APPCONFIGPAGE_MAIN_H_
 

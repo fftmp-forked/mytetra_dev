@@ -1,5 +1,4 @@
-#ifndef _TIMERMONITORING_H_
-#define _TIMERMONITORING_H_
+#pragma once
 
 #include <QObject>
 
@@ -35,5 +34,4 @@ protected:
   KnowTreeModel *knowTreeModel;
 };
 
-#endif	/* _TIMERMONITORING_H_ */
 

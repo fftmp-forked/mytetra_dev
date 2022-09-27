@@ -1,5 +1,4 @@
-#ifndef PREVIEWFILEDIALOG
-#define PREVIEWFILEDIALOG
+#pragma once
 
 #include <QFileDialog>
 
@@ -31,4 +30,3 @@ protected:
 
 };
 
-#endif // PREVIEWFILEDIALOG

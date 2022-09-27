@@ -1,5 +1,4 @@
-#ifndef EDITORSHOWTEXTCONTEXTMENU_H
-#define EDITORSHOWTEXTCONTEXTMENU_H
+#pragma once
 
 #include <QMenu>
 #include <QTextEdit>
@@ -43,4 +42,3 @@ protected slots:
   void onActionGotoNote(void);
 };
 
-#endif // EDITORSHOWTEXTCONTEXTMENU_H

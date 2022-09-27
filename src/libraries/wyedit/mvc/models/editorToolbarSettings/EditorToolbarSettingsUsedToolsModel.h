@@ -1,5 +1,4 @@
-#ifndef EDITORTOOLBARUSEDTOOLBUTTONSMODEL
-#define EDITORTOOLBARUSEDTOOLBUTTONSMODEL
+#pragma once
 
 #include <QObject>
 #include <QStandardItemModel>
@@ -26,4 +25,3 @@ public:
 
 };
 
-#endif // EDITORTOOLBARUSEDTOOLBUTTONSMODEL

@@ -1,5 +1,4 @@
-#ifndef _CONSOLEEMULATOR_H_
-#define _CONSOLEEMULATOR_H_
+#pragma once
 
 #include <QDialog>
 #include <QWidget>
@@ -83,4 +82,3 @@ private:
  bool isErrorMode;
 };
 
-#endif /* _CONSOLEEMULATOR_H_ */

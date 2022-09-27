@@ -1,5 +1,4 @@
-#ifndef _FINDTABLEWIDGET_H_
-#define	_FINDTABLEWIDGET_H_
+#pragma once
 
 #include <QWidget>
 
@@ -42,5 +41,4 @@ private:
   void paintEvent(QPaintEvent *event);
 };
 
-#endif	/* _FINDTABLEWIDGET_H_ */
 

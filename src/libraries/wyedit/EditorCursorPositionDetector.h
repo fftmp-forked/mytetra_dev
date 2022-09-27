@@ -1,5 +1,4 @@
-#ifndef EDITORCURSORPOSITIONDETECTOR_H
-#define EDITORCURSORPOSITIONDETECTOR_H
+#pragma once
 
 #include <QTextImageFormat>
 
@@ -42,4 +41,3 @@ private:
 
 };
 
-#endif // EDITORCURSORPOSITIONDETECTOR_H

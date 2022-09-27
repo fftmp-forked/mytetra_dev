@@ -1,5 +1,4 @@
-#ifndef _EDITORSPLITCELLFORM_H_
-#define _EDITORSPLITCELLFORM_H_
+#pragma once
 
 #include <QWidget>
 #include <QDialog>
@@ -43,4 +42,3 @@ class EditorSplitCellForm : public QDialog
 
 };
 
-#endif // _EDITORSPLITCELLFORM_H_

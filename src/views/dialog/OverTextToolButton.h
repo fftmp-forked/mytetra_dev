@@ -1,5 +1,4 @@
-#ifndef __OVERTEXTTOOLBUTTON_H__
-#define __OVERTEXTTOOLBUTTON_H__
+#pragma once
 
 #include <QToolButton>
 #include <QPaintEvent>
@@ -26,4 +25,3 @@ protected:
 
 };
 
-#endif // __OVERTEXTTOOLBUTTON_H__

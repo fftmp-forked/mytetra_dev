@@ -1,5 +1,4 @@
-#ifndef EDITORTOOLBARUSEDTOOLBUTTONSCONTROLLER
-#define EDITORTOOLBARUSEDTOOLBUTTONSCONTROLLER
+#pragma once
 
 #include <QObject>
 
@@ -57,4 +56,3 @@ private:
     void moveCommandUpDown(CommandMove direction, int selectedRow);
 };
 
-#endif // EDITORTOOLBARUSEDTOOLBUTTONSCONTROLLER

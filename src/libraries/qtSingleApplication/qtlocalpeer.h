@@ -38,8 +38,7 @@
 **
 ****************************************************************************/
 
-#ifndef QTLOCALPEER_H
-#define QTLOCALPEER_H
+#pragma once
 
 #include <QLocalServer>
 #include <QLocalSocket>
@@ -74,4 +73,3 @@ private:
     static const char* ack;
 };
 
-#endif // QTLOCALPEER_H

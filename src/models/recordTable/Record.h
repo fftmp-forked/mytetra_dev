@@ -1,5 +1,4 @@
-#ifndef __RECORD_H__
-#define __RECORD_H__
+#pragma once
 
 #include <memory>
 
@@ -106,4 +105,3 @@ protected:
 
 };
 
-#endif // __RECORD_H__

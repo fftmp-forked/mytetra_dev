@@ -1,5 +1,4 @@
-#ifndef _CONFIGPAGE_ATTACH_H_
-#define	_CONFIGPAGE_ATTACH_H_
+#pragma once
 
 #include <QWidget>
 #include <QCheckBox>
@@ -46,5 +45,4 @@ protected:
 };
 
 
-#endif	// _CONFIGPAGE_ATTACH_H_
 

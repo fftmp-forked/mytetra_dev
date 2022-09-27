@@ -1,5 +1,4 @@
-#ifndef MESSAGEHELPER_H
-#define MESSAGEHELPER_H
+#pragma once
 
 class QString;
 
@@ -7,4 +6,3 @@ class QString;
 void showMessageBox(QString message);
 
 
-#endif // MESSAGEHELPER_H

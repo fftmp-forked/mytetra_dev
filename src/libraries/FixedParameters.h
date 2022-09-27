@@ -1,5 +1,4 @@
-#ifndef __FIXEDPARAMETERS_H__
-#define __FIXEDPARAMETERS_H__
+#pragma once
 
 #include <QObject>
 #include <QMap>
@@ -47,4 +46,3 @@ public:
 
 };
 
-#endif // __FIXEDPARAMETERS_H__

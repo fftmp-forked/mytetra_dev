@@ -1,5 +1,4 @@
-#ifndef SCREENHELPER_H
-#define SCREENHELPER_H
+#pragma once
 
 
 class ScreenHelper
@@ -11,4 +10,3 @@ public:
     static int getSizeY(void);
 };
 
-#endif // SCREENHELPER_H

@@ -1,5 +1,4 @@
-#ifndef _CLIPBRECORDS_H_
-#define _CLIPBRECORDS_H_
+#pragma once
 
 #include <QWidget>
 #include <QMimeData>
@@ -57,4 +56,3 @@ private:
 
 };
 
-#endif // _CLIPBRECORDS_H_

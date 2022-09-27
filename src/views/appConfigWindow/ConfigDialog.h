@@ -1,5 +1,4 @@
-#ifndef CONFIGDIALOG_H
-#define CONFIGDIALOG_H
+#pragma once
 
 #include <QDialog>
 
@@ -42,4 +41,3 @@ private:
     QDialogButtonBox *confirmButtons;
 };
 
-#endif // CONFIGDIALOG_H

@@ -1,5 +1,4 @@
-#ifndef ACTIONLOGSCREEN_H
-#define ACTIONLOGSCREEN_H
+#pragma once
 
 #include <QDialog>
 #include <QVBoxLayout>
@@ -46,4 +45,3 @@ protected:
 
 };
 
-#endif // ACTIONLOGSCREEN_H

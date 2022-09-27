@@ -1,5 +1,4 @@
-#ifndef _RECORD_TABLE_PRINT_H_
-#define	_RECORD_TABLE_PRINT_H_
+#pragma once
 
 #include <QtGlobal>
 #include <QWidget>
@@ -45,5 +44,4 @@ private:
  void assembly(void);
 };
 
-#endif	/* _RECORD_TABLE_PRINT_H_ */
 

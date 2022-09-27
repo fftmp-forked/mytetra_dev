@@ -1,5 +1,4 @@
-#ifndef __RECORDTABLECONTROLLER_H__
-#define __RECORDTABLECONTROLLER_H__
+#pragma once
 
 #include <QObject>
 #include <QModelIndexList>
@@ -125,4 +124,3 @@ protected:
 
 };
 
-#endif // __RECORDTABLECONTROLLER_H__

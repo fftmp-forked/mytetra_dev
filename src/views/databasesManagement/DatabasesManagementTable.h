@@ -1,5 +1,4 @@
-#ifndef DATABASESMANAGEMENTTABLE_H
-#define DATABASESMANAGEMENTTABLE_H
+#pragma once
 
 #include <QObject>
 #include <QWidget>
@@ -46,4 +45,3 @@ protected:
 
 };
 
-#endif // DATABASESMANAGEMENTTABLE_H

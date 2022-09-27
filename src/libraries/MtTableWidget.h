@@ -1,5 +1,4 @@
-#ifndef __MTTABLEWIDGET_H__
-#define __MTTABLEWIDGET_H__
+#pragma once
 
 #include <QWidget>
 #include <QTableWidget>
@@ -21,5 +20,4 @@ private:
 
 };
 
-#endif // __MTTABLEWIDGET_H__
 

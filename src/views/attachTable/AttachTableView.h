@@ -1,5 +1,4 @@
-#ifndef __ATTACHTABLEVIEW_H__
-#define __ATTACHTABLEVIEW_H__
+#pragma once
 
 #include <QObject>
 #include <QWidget>
@@ -53,4 +52,3 @@ protected:
   QMenu *contextMenu;
 };
 
-#endif // __ATTACHTABLEVIEW_H__

@@ -1,5 +1,4 @@
-#ifndef SHORTCUTSETTINGSCONTROLLER_H
-#define SHORTCUTSETTINGSCONTROLLER_H
+#pragma once
 
 #include <QObject>
 #include "views/shortcutSettings/ShortcutSettingsView.h"
@@ -39,4 +38,3 @@ protected:
 
 };
 
-#endif // SHORTCUTSETTINGSCONTROLLER_H

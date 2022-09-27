@@ -1,5 +1,4 @@
-#ifndef _WAITCLOCK_H_
-#define _WAITCLOCK_H_
+#pragma once
 
 #include <QWidget>
 #include <QHBoxLayout>
@@ -37,4 +36,3 @@ private:
 
 };
 
-#endif /* _WAITCLOCK_H_ */

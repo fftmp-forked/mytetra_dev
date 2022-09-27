@@ -1,5 +1,4 @@
-#ifndef _PERIODICSYNCHRO_H_
-#define _PERIODICSYNCHRO_H_
+#pragma once
 
 #include "TimerMonitoring.h"
 
@@ -15,5 +14,4 @@ protected:
 
 };
 
-#endif	/* _PERIODICSYNCHRO_H_ */
 

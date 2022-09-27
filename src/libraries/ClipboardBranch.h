@@ -1,5 +1,4 @@
-#ifndef _CLIPBBRANCH_H_
-#define _CLIPBBRANCH_H_
+#pragma once
 
 #include <QWidget>
 #include <QMimeData>
@@ -81,4 +80,3 @@ private:
 
 };
 
-#endif // _CLIPBBRANCH_H_

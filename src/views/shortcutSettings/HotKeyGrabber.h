@@ -1,5 +1,4 @@
-#ifndef HOTKEYGRABBER_H
-#define HOTKEYGRABBER_H
+#pragma once
 
 #include <QKeySequenceEdit>
 #include <QPushButton>
@@ -34,4 +33,3 @@ protected:
 };
 
 
-#endif // HOTKEYGRABBER_H

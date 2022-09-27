@@ -1,5 +1,4 @@
-#ifndef DATABASESMANAGEMENTSCREEN_H
-#define DATABASESMANAGEMENTSCREEN_H
+#pragma once
 
 #include <QDialog>
 #include <QVBoxLayout>
@@ -51,4 +50,3 @@ protected:
 
 };
 
-#endif // DATABASESMANAGEMENTSCREEN_H
