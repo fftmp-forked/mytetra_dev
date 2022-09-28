@@ -42,13 +42,6 @@ EditorToolbarSettingsScreen::~EditorToolbarSettingsScreen()
 }
 
 
-// Возвращает признак необходимости перезагрузки MyTetra, в зависимости от уровеня сложности вносимых изменений
-bool EditorToolbarSettingsScreen::isNeedRestart() const
-{
-    return false; // Изменения можно делать на лету, перезагрузка MyTetra не нужна
-}
-
-
 void EditorToolbarSettingsScreen::setupUI()
 {
     // Доступные кнопки панелей инструментов

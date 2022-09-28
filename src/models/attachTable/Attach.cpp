@@ -47,7 +47,7 @@ void Attach::setParentTable(AttachTableData *iParentTable)
 }
 
 
-// Допустимые имена полей
+/// @brief Допустимые имена полей
 QStringList Attach::fieldAvailableList(void)
 {
   return QStringList() << "id" << "fileName" << "link" << "type";

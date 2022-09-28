@@ -202,26 +202,3 @@ QVariant AttachTableModel::headerData(int section, Qt::Orientation orientation, 
         return QVariant();
     }
 }
-
-
-/*
-void AttachTableModel::addAttach(Attach& newAttach)
-{
-   beginInsertRows(QModelIndex(), attachList->size(), attachList->size());
-   attachList->append(newAttach);
-   endInsertRows();
-}
-
-
-void AttachTableModel::delAttach(const QModelIndex & index) {
-   beginRemoveRows(QModelIndex(), index.row(), index.row());
-   attachList->removeAt(index.row());
-   endRemoveRows();
-}
-
-
-Attach& AttachTableModel::getAttach(const QModelIndex & index) const
-{
-  return (*attachList)[index.row()];
-}
-*/

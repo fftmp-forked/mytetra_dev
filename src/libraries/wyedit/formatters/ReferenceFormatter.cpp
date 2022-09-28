@@ -241,21 +241,3 @@ void ReferenceFormatter::onTextChanged(void)
     }
 
 }
-
-
-// Временно не используется
-/*
-void ReferenceFormatter::onCursorPositionChanged(void)
-{
-  // TRACELOG
-
-}
-
-
-// При изменении документа
-void ReferenceFormatter::onContentsChange(int position, int charsRemoved, int charsAdded)
-{
-  // TRACELOG
-
-}
-*/

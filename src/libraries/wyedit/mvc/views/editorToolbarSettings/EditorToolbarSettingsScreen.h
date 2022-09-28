@@ -25,11 +25,6 @@ public:
     EditorToolbarSettingsScreen(QWidget *parent = nullptr);
     ~EditorToolbarSettingsScreen();
 
-    // Возвращает признак необходимости перезагрузки MyTetra, в зависимости от уровеня сложности вносимых изменений
-    // false - изменения можно делать на лету, перезагрузка MyTetra не нужна
-    // true - для принятия изменений нужна перезагрузка MyTetra
-    bool isNeedRestart() const;
-
 protected slots:
 
     // Переключение видимости виджетов со списком кнопок

@@ -17,16 +17,6 @@ AttachTableData::AttachTableData(Record *iRecord)
 }
 
 
-// Конструктор копирования
-/*
-AttachTableData::AttachTableData(const AttachTableData &obj)
-{
-  attachTable=new QList< Attach >(obj.attachTable); // "Глубокое" копирование таблицы прикрепляемых файлов
-  record=obj.record; // А ссылка на запись просто копируется
-}
-*/
-
-
 // Пустой конструктор, он требуется для Q_DECLARE_METATYPE в QMimeData
 AttachTableData::AttachTableData()
 {

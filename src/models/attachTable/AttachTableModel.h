@@ -26,7 +26,6 @@
 typedef QPair<int, int> typeIntPair;
 Q_DECLARE_METATYPE(typeIntPair);
 
-// class AttachTableData;
 
 class AttachTableModel : public QAbstractTableModel
 {
@@ -41,12 +40,6 @@ public:
   QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
   bool setData(const QModelIndex &index, const QVariant &value, int role);
   QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
-
-  /*
-  void addAttach(Attach& newAttach);
-  void delAttach(const QModelIndex & index);
-  Attach& getAttach(const QModelIndex & index) const;
-  */
 
 private:
   AttachTableData *table; // С какими данными работает модель

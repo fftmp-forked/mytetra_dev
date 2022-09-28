@@ -22,7 +22,7 @@ public:
   EditorConfigToolbars(QWidget *parent = nullptr);
   virtual ~EditorConfigToolbars(void);
   
-  int applyChanges(void);
+  int applyChanges(void) {return 0;}
     
 private slots:
 

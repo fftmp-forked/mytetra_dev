@@ -68,19 +68,3 @@ void EditorConfigToolbars::onClickedEditToolButtonsConfigFile(void)
   toolbuttonsScreen = new EditorToolbarSettingsScreen(this);
   toolbuttonsScreen->exec();
 }
-
-
-// Возвращает признак необходимости перезагрузки MyTetra, в зависимости от уровеня сложности вносимых изменений
-// 0 - изменения можно делать на лету, перезагрузка MyTetra не нужна
-// 1 - для принятия изменений нужна перезагрузка MyTetra
-int EditorConfigToolbars::applyChanges(void)
-{
-  qDebug() << "Apply changes editor toolbars";
-
-  if (toolbuttonsScreen!=nullptr) {
-      // Только, если диалог по работе с командами панелей вызывался
-      return toolbuttonsScreen->isNeedRestart() ? 1 : 0;
-  }
-
-  return 0;
-}

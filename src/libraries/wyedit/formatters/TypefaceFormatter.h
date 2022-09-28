@@ -65,7 +65,6 @@ private:
     void recurseReplaceSpaces(const QDomNode &node);
     void replaceReplacementCharacterToSpaceInSelectedText(int startCursorPos, int endCursorPos);
     int removeSpaces(int startCursorPos, int calculateEndCursorPos);
-    int replaceSpaceAndParagraphSeparatorToParagraphSeparator(int startCursorPos, int calculateEndCursorPos);
     QString replaceTabs(QString htmlCode);
     void applyStandartFontForSelection();
     void applyPureBlockFormatForSelection();
