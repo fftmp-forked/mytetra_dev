@@ -16,8 +16,9 @@ class Attach
 
 public:
 
+  enum class Type {file, link};
   Attach(AttachTableData *iParentTable);
-  Attach(QString iType, AttachTableData *iParentTable);
+  Attach(Type type, AttachTableData *iParentTable);
   virtual ~Attach();
 
   void setupDataFromDom(QDomElement iDomElement);
@@ -58,7 +59,6 @@ protected:
   void setParentTable(AttachTableData *iParentTable); // Защищенный метод, который может вызвать только этот класс и AttachTableData
 
   static QStringList fieldAvailableList(void);
-  static QStringList typeAvailableList(void);
 
   bool liteFlag;
 

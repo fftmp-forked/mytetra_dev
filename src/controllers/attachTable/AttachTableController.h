@@ -26,9 +26,9 @@ public:
 
 public slots:
 
-  void onAddAttach(void);
+  void onAddAttach(void) {addSmart(Attach::Type::file);}
   void onAddAttachFromUrl(void);
-  void onAddLink(void);
+  void onAddLink(void) {addSmart(Attach::Type::link);}
   void onEditFileName(void);
   void onDeleteAttach(void);
   void onOpenAttach(void);
@@ -39,11 +39,10 @@ public slots:
 
 
 protected:
-
-  void addSmart(QString attachType);
-  bool addAttach(QString attachType, QString currFullFileName, QString currShortFileName);
+  void addSmart(Attach::Type attachType);
+  bool addAttach(Attach::Type attachType, QString currFullFileName, QString currShortFileName);
   void saveState();
-  QStringList selectFilesForAdding(QString attachType);
+  QStringList selectFilesForAdding(Attach::Type attachType);
   void saveAttachToUserPlace(QString fromFullFileName, QString toFullFileName);
   void updateAttachListInEditor(void);
 

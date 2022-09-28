@@ -68,18 +68,6 @@ AttachTableData *AttachTableController::getAttachTableData()
 }
 
 
-void AttachTableController::onAddAttach(void)
-{
-  addSmart("file");
-}
-
-
-void AttachTableController::onAddLink()
-{
-  addSmart("link");
-}
-
-
 void AttachTableController::onAddAttachFromUrl(void)
 {
   // Окно запроса URL
@@ -148,7 +136,7 @@ void AttachTableController::onAddAttachFromUrl(void)
     QUrl url(reference);
     QString displayName=url.fileName();
 
-    if( addAttach("file", fullFileName, displayName) )
+    if( addAttach(Attach::Type::file, fullFileName, displayName) )
       sucessLoadCount++;
 
     // Исходный файл в директории закачки удаляется
@@ -160,7 +148,7 @@ void AttachTableController::onAddAttachFromUrl(void)
 }
 
 
-void AttachTableController::addSmart(QString attachType)
+void AttachTableController::addSmart(Attach::Type attachType)
 {
   QStringList files=selectFilesForAdding(attachType);
 
@@ -203,7 +191,7 @@ void AttachTableController::addSmart(QString attachType)
 }
 
 
-bool AttachTableController::addAttach(QString attachType, QString currFullFileName, QString currShortFileName)
+bool AttachTableController::addAttach(Attach::Type attachType, QString currFullFileName, QString currShortFileName)
 {
   // Выясняется указатель на данные таблицы приаттаченных файлов
   AttachTableData *attachTableData=getAttachTableData();
@@ -216,9 +204,9 @@ bool AttachTableController::addAttach(QString attachType, QString currFullFileNa
   attach.setField("fileName", currShortFileName);
 
   bool result=false;
-  if(attachType=="file")
+  if(attachType == Attach::Type::file)
     result=attach.copyFileToBase(currFullFileName); // Файл аттача копируется в базу
-  else if(attachType=="link")
+  else if(attachType == Attach::Type::link)
   {
     attach.setField("link", currFullFileName); // Запоминается куда указывает линк
     result=true;
@@ -252,15 +240,15 @@ void AttachTableController::saveState()
 }
 
 
-QStringList AttachTableController::selectFilesForAdding(QString attachType)
+QStringList AttachTableController::selectFilesForAdding(Attach::Type attachType)
 {
   // Диалог выбора файлов
   QFileDialog fileSelectDialog;
 
   QString title;
-  if(attachType=="file")
+  if(attachType == Attach::Type::file)
     title=tr("Attach file");
-  if(attachType=="link")
+  else if(attachType == Attach::Type::link)
     title=tr("Add link to file");
 
   fileSelectDialog.setWindowTitle(title);

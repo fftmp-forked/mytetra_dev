@@ -18,14 +18,10 @@ Attach::Attach(AttachTableData *iParentTable)
 }
 
 
-// Конструктор прикрепляемого файла с указанием типа прикрепления
-// в настоящий момент есть два типа прикрепления - просто файл "file" или линк на файл "link"
-Attach::Attach(QString iType, AttachTableData *iParentTable)
+/// @brief Конструктор прикрепляемого файла с указанием типа прикрепления
+Attach::Attach(Type type, AttachTableData *iParentTable)
 {
-  if( !typeAvailableList().contains(iType) )
-    criticalError("Incorrect attach type in Attach constructor: "+iType);
-
-  setField("type", iType);
+  setField("type", type == Type::file ? "file" : "link");
 
   init(iParentTable);
 }
@@ -55,12 +51,6 @@ void Attach::setParentTable(AttachTableData *iParentTable)
 QStringList Attach::fieldAvailableList(void)
 {
   return QStringList() << "id" << "fileName" << "link" << "type";
-}
-
-// Допустимые типы аттачей
-QStringList Attach::typeAvailableList(void)
-{
-  return QStringList() << "file" << "link";
 }
 
 
@@ -169,11 +159,6 @@ void Attach::setField(QString name, QString value)
   // ------------------------------------------
   // Проверки и действия для разных типов полей
   // ------------------------------------------
-
-  // Поле с типом аттача
-  if(name=="type")
-    if( !typeAvailableList().contains(value) )
-      criticalError("Attach::setField() : Incorrect attach type : "+value);
 
   // Поле с именем файла
   if(name=="fileName")
