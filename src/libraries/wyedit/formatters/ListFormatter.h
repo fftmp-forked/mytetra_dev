@@ -4,9 +4,8 @@
 
 #include "Formatter.h"
 
-// Класс форматирования текста как списка
 
-
+/// @brief Класс форматирования текста как списка
 class ListFormatter : public Formatter
 {
   Q_OBJECT

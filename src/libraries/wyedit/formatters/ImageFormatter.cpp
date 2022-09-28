@@ -25,7 +25,7 @@ ImageFormatter::ImageFormatter()
 }
 
 
-// Формат картинки, которая выделена (если выделена единственная картинка)
+/// @brief Формат картинки, которая выделена (если выделена единственная картинка)
 QTextImageFormat ImageFormatter::imageFormatOnSelect(void)
 {
     // Если выбрано изображение
@@ -37,7 +37,7 @@ QTextImageFormat ImageFormatter::imageFormatOnSelect(void)
 }
 
 
-// Формат картинки на которой находится курсор
+/// @brief Формат картинки на которой находится курсор
 QTextImageFormat ImageFormatter::imageFormatOnCursor(void)
 {
   // Проверка срабатывает только если нет выделения

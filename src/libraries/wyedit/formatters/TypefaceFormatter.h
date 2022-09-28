@@ -4,11 +4,11 @@
 
 #include "Formatter.h"
 
-// Класс форматирования для начертания текста
 
 class QDomNode;
 class QTextCharFormat;
 
+/// @brief Класс форматирования для начертания текста
 class TypefaceFormatter : public Formatter
 {
     Q_OBJECT

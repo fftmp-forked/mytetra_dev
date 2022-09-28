@@ -5,12 +5,10 @@
 #include "libraries/GlobalParameters.h"
 #include "EditorToolbarSettingsAbstractModel.h"
 
-// Модель списка используемых команд
-// на выбранной строке панели инструментов редактора
-
-
 class EditorConfig;
 
+
+/// @brief Модель списка используемых команд на выбранной строке панели инструментов редактора
 class EditorToolbarSettingsUsedToolsModel : public EditorToolbarSettingsAbstractModel
 {
     Q_OBJECT

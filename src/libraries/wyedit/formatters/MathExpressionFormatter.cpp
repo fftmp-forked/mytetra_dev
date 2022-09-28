@@ -47,7 +47,7 @@ MathExpressionFormatter::MathExpressionFormatter()
 }
 
 
-// Исходный код формулы, которая выделена (если выделена единственная картинка формулы)
+/// @brief Исходный код формулы, которая выделена (если выделена единственная картинка формулы)
 QString MathExpressionFormatter::mathExpressionOnSelect(void)
 {
     // Если выбрано математическое выражение
@@ -62,7 +62,7 @@ QString MathExpressionFormatter::mathExpressionOnSelect(void)
 }
 
 
-// Сождержимое формулы (картинки формулы) на которой находится курсор
+/// @brief Сождержимое формулы (картинки формулы) на которой находится курсор
 QString MathExpressionFormatter::mathExpressionOnCursor(void)
 {
     if(editor->cursorPositionDetector->isCursorOnMathExpression()) {
@@ -75,7 +75,7 @@ QString MathExpressionFormatter::mathExpressionOnCursor(void)
 }
 
 
-// Получение исходного кода математического выражения по имени картинки в ресурсах документа
+/// @brief Получение исходного кода математического выражения по имени картинки в ресурсах документа
 QString MathExpressionFormatter::getMathExpressionByImageName(QString resourceImageName)
 {
     QImage image=textArea->document()->resource(QTextDocument::ImageResource, QUrl(resourceImageName)).value<QImage>();
@@ -93,7 +93,7 @@ QString MathExpressionFormatter::getMathExpressionByImageName(QString resourceIm
 }
 
 
-// Обработка клавиши добавления/редактирования математического выражения
+/// @brief Обработка клавиши добавления/редактирования математического выражения
 void MathExpressionFormatter::onMathExpressionClicked(void)
 {
     // Если выделена картинка математического выражения
@@ -122,7 +122,7 @@ void MathExpressionFormatter::onMathExpressionClicked(void)
 }
 
 
-// Вызов окна редактирования формулы
+/// @brief Вызов окна редактирования формулы
 void MathExpressionFormatter::onContextMenuEditMathExpression()
 {
     // Формула меняется если формула выделена
@@ -141,7 +141,7 @@ void MathExpressionFormatter::onContextMenuEditMathExpression()
 }
 
 
-// Двойной клик по картинке с формулой
+/// @brief Двойной клик по картинке с формулой
 void MathExpressionFormatter::onDoubleClickOnImage(void)
 {
     if(editor->cursorPositionDetector->isCursorOnMathExpression()) {
@@ -151,7 +151,7 @@ void MathExpressionFormatter::onDoubleClickOnImage(void)
 }
 
 
-// Добавление новой формулы
+/// @brief Добавление новой формулы
 void MathExpressionFormatter::addMathExpression(void)
 {
     // Открывается окно запроса математического выражения
@@ -163,7 +163,7 @@ void MathExpressionFormatter::addMathExpression(void)
 }
 
 
-// Редактирование существующей формулы
+/// @brief Редактирование существующей формулы
 void MathExpressionFormatter::editMathExpression(QString iMathExpressionText)
 {
     qDebug() << "Edit math expression: " << mathExpressionOnSelect();
@@ -187,7 +187,7 @@ void MathExpressionFormatter::editMathExpression(QString iMathExpressionText)
 }
 
 
-// Запрос математического выражения от пользователя
+/// @brief Запрос математического выражения от пользователя
 QString MathExpressionFormatter::getMathExpressionFromUser(QString iMathExpressionText)
 {
     EditorMathExpressionDialog dialog(this, textArea); // Диалог написания Tex формулы

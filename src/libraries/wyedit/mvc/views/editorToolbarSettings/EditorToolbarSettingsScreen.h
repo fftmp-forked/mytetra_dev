@@ -11,13 +11,12 @@
 #include <QTreeView>
 #include <QStackedWidget>
 
-// Диалог выбора команд для панелей инструментов редактора текста
-
-
 class EditorToolbarAvailableCommandsController;
 class EditorToolbarUsedCommandsController;
 class EditorConfig;
 
+
+/// @brief Диалог выбора команд для панелей инструментов редактора текста
 class EditorToolbarSettingsScreen : public QDialog
 {
     Q_OBJECT

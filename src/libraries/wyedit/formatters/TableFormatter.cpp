@@ -20,7 +20,7 @@ TableFormatter::TableFormatter()
 }
 
 
-// Действия при нажатии кнопки создания новой таблицы
+/// @brief Действия при нажатии кнопки создания новой таблицы
 void TableFormatter::onCreatetableClicked(void)
 {
   // Создается и запускается диалог создания новой таблицы
@@ -53,7 +53,7 @@ void TableFormatter::onCreatetableClicked(void)
 }
 
 
-// Удаление строк из таблицы
+/// @brief Удаление строк из таблицы
 void TableFormatter::onTableRemoveRowClicked(void)
 {
   QTextCursor cursor(textArea->textCursor());
@@ -67,7 +67,7 @@ void TableFormatter::onTableRemoveRowClicked(void)
 }
 
 
-// Удаление столбцов из таблицы
+/// @brief Удаление столбцов из таблицы
 void TableFormatter::onTableRemoveColClicked(void)
 {
   QTextCursor cursor(textArea->textCursor());
@@ -81,7 +81,7 @@ void TableFormatter::onTableRemoveColClicked(void)
 }
 
 
-// Добавление строк в таблицу
+/// @brief Добавление строк в таблицу
 void TableFormatter::onTableAddRowClicked(void)
 {
   QTextCursor cursor(textArea->textCursor());
@@ -100,7 +100,7 @@ void TableFormatter::onTableAddRowClicked(void)
 }
 
 
-// Добавление столбцов в таблицу
+/// @brief Добавление столбцов в таблицу
 void TableFormatter::onTableAddColClicked(void)
 {
   QTextCursor cursor(textArea->textCursor());
@@ -119,7 +119,7 @@ void TableFormatter::onTableAddColClicked(void)
 }
 
 
-// Объединение ячеек таблицы
+/// @brief Объединение ячеек таблицы
 void TableFormatter::onTableMergeCellsClicked(void)
 {
   QTextCursor cursor(textArea->textCursor());

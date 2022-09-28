@@ -5,9 +5,8 @@
 
 #include "EditorToolbarSettingsAbstractModel.h"
 
-// Модель списка всех доступных инструментов редактора
 
-
+/// @brief Модель списка всех доступных инструментов редактора
 class EditorToolbarSettingsAvailableToolsModel : public EditorToolbarSettingsAbstractModel
 {
     Q_OBJECT

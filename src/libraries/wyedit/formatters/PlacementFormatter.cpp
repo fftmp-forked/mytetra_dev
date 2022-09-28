@@ -9,7 +9,7 @@ PlacementFormatter::PlacementFormatter()
 }
 
 
-// Добавление отступа
+/// @brief Добавление отступа
 void PlacementFormatter::onIndentplusClicked(void)
 {
   // Выяснение текущего отступа
@@ -30,7 +30,7 @@ void PlacementFormatter::onIndentplusClicked(void)
 }
 
 
-// Убирание отступа
+/// @brief Убирание отступа
 void PlacementFormatter::onIndentminusClicked(void)
 {
   // Выяснение текущего отступа
@@ -58,35 +58,35 @@ void PlacementFormatter::onIndentminusClicked(void)
 }
 
 
-// Форматирование по левому краю
+/// @brief Форматирование по левому краю
 void PlacementFormatter::onAlignleftClicked(void)
 {
   alignText(Qt::AlignLeft);
 }
 
 
-// Форматирование по центру
+/// @brief Форматирование по центру
 void PlacementFormatter::onAligncenterClicked(void)
 {
   alignText(Qt::AlignHCenter);
 }
 
 
-// Форматирование по правому краю
+/// @brief Форматирование по правому краю
 void PlacementFormatter::onAlignrightClicked(void)
 {
   alignText(Qt::AlignRight);
 }
 
 
-// Форматирование по ширине
+/// @brief Форматирование по ширине
 void PlacementFormatter::onAlignwidthClicked(void)
 {
   alignText(Qt::AlignJustify);
 }
 
 
-// Выравнивание текста, вспомогательный метод
+/// @brief Выравнивание текста, вспомогательный метод
 void PlacementFormatter::alignText(Qt::AlignmentFlag mode)
 {
   // Создание форматирования

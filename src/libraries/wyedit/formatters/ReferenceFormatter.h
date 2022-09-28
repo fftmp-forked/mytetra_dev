@@ -2,9 +2,8 @@
 
 #include "Formatter.h"
 
-// Класс форматирования ссылок
 
-
+/// @brief Класс форматирования ссылок
 class ReferenceFormatter : public Formatter
 {
     Q_OBJECT

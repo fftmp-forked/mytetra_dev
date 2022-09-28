@@ -5,10 +5,8 @@
 #include "../../views/editorToolbarSettings/EditorToolbarCommandsListView.h"
 #include "../../models/editorToolbarSettings/EditorToolbarSettingsAvailableToolsModel.h"
 
-// Контроллер для представления и модели всех доступных
-// инструментов редактора текста
 
-
+/// @brief Контроллер для представления и модели всех доступных инструментов редактора текста
 class EditorToolbarAvailableCommandsController : public QObject
 {
     Q_OBJECT

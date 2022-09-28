@@ -13,14 +13,14 @@ ListFormatter::ListFormatter()
 
 }
 
-// Форматирование в нумерованный список
+/// @brief Форматирование в нумерованный список
 void ListFormatter::onNumericlistClicked(void)
 {
   formatToList(QTextListFormat::ListDecimal);
 }
 
 
-// Форматирование в список с точечками
+/// @brief Форматирование в список с точечками
 void ListFormatter::onDotlistClicked(void)
 {
   formatToList(QTextListFormat::ListDisc);

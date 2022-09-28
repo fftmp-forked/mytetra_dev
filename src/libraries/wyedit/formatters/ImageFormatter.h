@@ -5,10 +5,8 @@
 
 #include "Formatter.h"
 
-// Класс для работы с картинками в тексте
 
-// class QTextDocumentFragment;
-
+/// @brief Класс для работы с картинками в тексте
 class ImageFormatter : public Formatter
 {
   Q_OBJECT

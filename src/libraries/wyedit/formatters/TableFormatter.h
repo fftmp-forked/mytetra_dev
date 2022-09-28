@@ -2,9 +2,7 @@
 
 #include "Formatter.h"
 
-// Класс форматирования таблиц в тексте
-
-
+/// @brief Класс форматирования таблиц в тексте
 class TableFormatter : public Formatter
 {
   Q_OBJECT

@@ -5,8 +5,8 @@
 
 #include "Formatter.h"
 
-// Класс для работы с математическими выражениями
 
+/// @brief Класс для работы с математическими выражениями
 class MathExpressionFormatter : public Formatter
 {
   Q_OBJECT

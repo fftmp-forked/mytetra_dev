@@ -15,7 +15,7 @@ EditorToolbarUsedCommandsController::~EditorToolbarUsedCommandsController()
 
 }
 
-// Инициализация представления
+/// @brief Инициализация представления
 void EditorToolbarUsedCommandsController::init()
 {
     // Создается вид со списком кнопок для ToolBar 1
@@ -43,25 +43,25 @@ void EditorToolbarUsedCommandsController::init()
     }
 }
 
-// Получение представления
+/// @brief Получение представления
 EditorToolbarCommandsListView *EditorToolbarUsedCommandsController::getView() const
 {
     return view;
 }
 
-// Получение модели
+/// @brief Получение модели
 EditorToolbarSettingsUsedToolsModel *EditorToolbarUsedCommandsController::getModel() const
 {
     return model;
 }
 
-// Получение SelectionModel
+/// @brief Получение SelectionModel
 QItemSelectionModel *EditorToolbarUsedCommandsController::getSelectionModel() const
 {
     return view->selectionModel();
 }
 
-// Перемещение выбранной команды в моделе команд выбранной рабочей панели инструментов
+/// @brief Перемещение выбранной команды в моделе команд выбранной рабочей панели инструментов
 void EditorToolbarUsedCommandsController::moveCommandUpDown(CommandMove direction)
 {
     // Получение строки выбранной команды
@@ -91,7 +91,7 @@ void EditorToolbarUsedCommandsController::moveCommandUpDown(CommandMove directio
     }
 }
 
-// Перемещение выбранной команды в модели команд выбранной рабочей панели инструментов
+/// @brief Перемещение выбранной команды в модели команд выбранной рабочей панели инструментов
 void EditorToolbarUsedCommandsController::moveCommandUpDown(CommandMove direction, int selectedRow)
 {
     // Перемещение выделенной команды

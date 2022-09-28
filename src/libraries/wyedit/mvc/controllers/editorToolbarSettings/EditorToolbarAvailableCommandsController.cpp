@@ -13,7 +13,7 @@ EditorToolbarAvailableCommandsController::~EditorToolbarAvailableCommandsControl
 }
 
 
-// Инициализация представления
+/// @brief Инициализация представления
 void EditorToolbarAvailableCommandsController::init()
 {
     // Создается вид со списком кнопок для панели всех доступных кнопок
@@ -42,21 +42,21 @@ void EditorToolbarAvailableCommandsController::init()
 }
 
 
-// Получение представления
+/// @brief Получение представления
 EditorToolbarCommandsListView *EditorToolbarAvailableCommandsController::getView() const
 {
     return view;
 }
 
 
-// Получение модели
+/// @brief Получение модели
 EditorToolbarSettingsAvailableToolsModel *EditorToolbarAvailableCommandsController::getModel() const
 {
     return model;
 }
 
 
-// Получение SelectionModel
+/// @brief Получение SelectionModel
 QItemSelectionModel *EditorToolbarAvailableCommandsController::getSelectionModel() const
 {
     return view->selectionModel();

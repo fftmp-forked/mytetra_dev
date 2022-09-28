@@ -3,12 +3,10 @@
 #include <QObject>
 #include <QStandardItemModel>
 
-// Универсальная модель для хранения левого и правого списка инструментов
-// в окне настроек панели инструметов редактора
-
-
 class EditorConfig;
 
+
+/// @brief Универсальная модель для хранения левого и правого списка инструментов в окне настроек панели инструметов редактора
 class EditorToolbarSettingsAbstractModel : public QStandardItemModel
 {
     Q_OBJECT

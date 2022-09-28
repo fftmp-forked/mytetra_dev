@@ -6,10 +6,10 @@
 #include <QDomElement>
 #include <QXmlStreamWriter>
 
-// Класс, реализующий абстракцию одного прикрепляемого файла
-
 class AttachTableData;
 
+
+/// @brief Класс, реализующий абстракцию одного прикрепляемого файла
 class Attach
 {
   friend class AttachTableData;

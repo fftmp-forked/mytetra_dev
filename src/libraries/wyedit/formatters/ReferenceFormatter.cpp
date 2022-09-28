@@ -20,7 +20,7 @@ ReferenceFormatter::ReferenceFormatter()
 }
 
 
-// Редактирование ссылки
+/// @brief Редактирование ссылки
 void ReferenceFormatter::onReferenceClicked(void)
 {
     // TRACELOG
@@ -123,7 +123,7 @@ void ReferenceFormatter::onReferenceClicked(void)
 }
 
 
-// Действия при выборе контекстного меню редактора "Перейти по ссылке"
+/// @brief Действия при выборе контекстного меню редактора "Перейти по ссылке"
 void ReferenceFormatter::onContextMenuGotoReference()
 {
     QString href=editor->cursorPositionDetector->referenceHref(); // Текст ссылки

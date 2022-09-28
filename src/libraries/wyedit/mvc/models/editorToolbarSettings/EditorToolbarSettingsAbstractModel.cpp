@@ -51,7 +51,7 @@ int EditorToolbarSettingsAbstractModel::columnCount(const QModelIndex &parent) c
 }
 
 
-// Нахождение индекса команды по ее названию
+/// @brief Нахождение индекса команды по ее названию
 QModelIndex EditorToolbarSettingsAbstractModel::findCommand(const QString &command, bool toLower)
 {
     // Поиск команды

@@ -22,56 +22,44 @@ TypefaceFormatter::TypefaceFormatter()
 }
 
 
-// Форматирование Bold
+/// @brief Форматирование Bold
 void TypefaceFormatter::onBoldClicked(void)
 {
-    // TRACELOG
-
     smartFormat(Bold);
 }
 
 
-// Форматирование Italic
+/// @brief Форматирование Italic
 void TypefaceFormatter::onItalicClicked(void)
 {
-    // TRACELOG
-
     smartFormat(Italic);
 }
 
 
-// Форматирование подчеркивания
+/// @brief Форматирование подчеркивания
 void TypefaceFormatter::onUnderlineClicked(void)
 {
-    // TRACELOG
-
     smartFormat(Underline);
 }
 
 
-// Форматирование Strike
+/// @brief Форматирование Strike
 void TypefaceFormatter::onStrikeOutClicked(void)
 {
-    // TRACELOG
-
     smartFormat(StrikeOut);
 }
 
 
-// Форматирование SuperScript
+/// @brief Форматирование SuperScript
 void TypefaceFormatter::onSuperScriptClicked(void)
 {
-    // TRACELOG
-
     smartFormat(SuperScript);
 }
 
 
-// Форматирование SubScript
+/// @brief Форматирование SubScript
 void TypefaceFormatter::onSubScriptClicked(void)
 {
-    // TRACELOG
-
     smartFormat(SubScript);
 }
 
@@ -229,7 +217,7 @@ void TypefaceFormatter::smartFormat(int formatType)
 }
 
 
-// Форматирование моноширинным шрифтом
+/// @brief Форматирование моноширинным шрифтом
 void TypefaceFormatter::onMonospaceClicked(void)
 {
     // TRACELOG
@@ -259,7 +247,7 @@ void TypefaceFormatter::onMonospaceClicked(void)
 }
 
 
-// Форматирование в качестве кода
+/// @brief Форматирование в качестве кода
 void TypefaceFormatter::onCodeClicked(void)
 {
     // TRACELOG
@@ -356,9 +344,8 @@ void TypefaceFormatter::onCodeClicked(void)
 }
 
 
-// Очистка форматирования, т.е. установка стандартного шрифта,
-// размера и убирание утолщения, наклона, подчеркивания
-// Картинки и таблицы не удаляются
+/// @brief Очистка форматирования, т.е. установка стандартного шрифта, размера и убирание утолщения, наклона, подчеркивания.
+/// Картинки и таблицы не удаляются
 void TypefaceFormatter::onClearClicked(void)
 {
     // TRACELOG
@@ -572,7 +559,7 @@ void TypefaceFormatter::clearColorForSelection()
 }
 
 
-// В настоящий момент этот метод не нужен, так как очистка происходит в стилях (через полное удаление атрибуторв стиля)
+/// @brief В настоящий момент этот метод не нужен, так как очистка происходит в стилях (через полное удаление атрибуторв стиля)
 void TypefaceFormatter::clearBackgroundColorForSelection()
 {
     // Сбрасывается цвет заднего фона
@@ -584,7 +571,7 @@ void TypefaceFormatter::clearBackgroundColorForSelection()
 }
 
 
-// Замена пробелов внутри тегов <span>, содержимое которых состоит из одних только пробелов
+/// @brief Замена пробелов внутри тегов <span>, содержимое которых состоит из одних только пробелов
 QString TypefaceFormatter::replaceSpacesOnlyTags(QString htmlCode)
 {
     qDebug() << "In TypefaceFormatter::replaceSpacesOnlyTags(): " << htmlSimplyfier( htmlCode );
@@ -625,7 +612,7 @@ QString TypefaceFormatter::replaceSpacesOnlyTags(QString htmlCode)
 }
 
 
-// Очистка начертания символов
+/// @brief Очистка начертания символов
 QString TypefaceFormatter::clearTypeFace(QString htmlCode)
 {
     // Удаление какого-либо форматирования стилем
@@ -701,7 +688,7 @@ QString TypefaceFormatter::clearTypeFace(QString htmlCode)
 }
 
 
-// Метод, применяемый при выводе отладочной информации, чтобы проще было смотреть на код
+/// @brief Метод, применяемый при выводе отладочной информации, чтобы проще было смотреть на код
 QString TypefaceFormatter::htmlSimplyfier(QString htmlCode)
 {
     static const QRegularExpression rx("style=\"([^\"]*)\"", QRegularExpression::InvertedGreedinessOption);
@@ -712,7 +699,7 @@ QString TypefaceFormatter::htmlSimplyfier(QString htmlCode)
 }
 
 
-// Замена в HTML-коде пробелов на спец-последовательности, иначе все повторяющиеся пробелы будут удален Qt-движком
+/// @brief Замена в HTML-коде пробелов на спец-последовательности, иначе все повторяющиеся пробелы будут удален Qt-движком
 QString TypefaceFormatter::replaceSpaces(QString htmlCode)
 {
     QDomDocument doc;
@@ -767,9 +754,9 @@ void TypefaceFormatter::recurseReplaceSpaces(const QDomNode &node)
 }
 
 
-// Замена заранее внесенных символов ReplacementCharacter на пробелы
-// Если предварительно не заменять пробелы на ReplacementCharacter,
-// то пробелы исчезнут, ибо Qt самопроизвольно удаляет ведущие пробелы при вызове textArea->textCursor().insertHtml(htmlCode);
+/// @brief Замена заранее внесенных символов ReplacementCharacter на пробелы.
+/// Если предварительно не заменять пробелы на ReplacementCharacter, то пробелы исчезнут,
+/// ибо Qt самопроизвольно удаляет ведущие пробелы при вызове textArea->textCursor().insertHtml(htmlCode);
 void TypefaceFormatter::replaceReplacementCharacterToSpaceInSelectedText(int startCursorPos, int endCursorPos)
 {
     QTextCursor replacementCursor=textArea->textCursor();
@@ -796,8 +783,9 @@ void TypefaceFormatter::replaceReplacementCharacterToSpaceInSelectedText(int sta
 }
 
 
-// Удаление пробелов происходит из предположения о том, во вставляем тексте вообще не должно быть пробелов,
-// т. к. все пробелы были предварительно заменены на RC-символ
+/// @brief Удаление пробелов.
+/// Происходит из предположения о том, что во вставляем тексте вообще не должно быть пробелов,
+/// т. к. все пробелы были предварительно заменены на RC-символ
 int TypefaceFormatter::removeSpaces(int startCursorPos, int calculateEndCursorPos)
 {
     // qDebug() << "Replace spaces from pos" << startCursorPos << "to pos" << calculateEndCursorPos;
@@ -1177,7 +1165,7 @@ void TypefaceFormatter::onFixBreakSymbolClicked()
 }
 
 
-// Слот, срабатывающий при изменении шрифта в списке шрифтов
+/// @brief Слот, срабатывающий при изменении шрифта в списке шрифтов
 void TypefaceFormatter::onFontselectChanged(const QFont &font)
 {
     // TRACELOG
@@ -1202,7 +1190,7 @@ void TypefaceFormatter::onFontselectChanged(const QFont &font)
 }
 
 
-// Слот, срабатывающий когда изменен размер шрифта через список размеров
+/// @brief Слот, срабатывающий когда изменен размер шрифта через список размеров
 void TypefaceFormatter::onFontsizeChanged(int n)
 {
     // TRACELOG
@@ -1228,7 +1216,7 @@ void TypefaceFormatter::onFontsizeChanged(int n)
 }
 
 
-// Слот, срабатыващий при нажатии на кнопку выбора цвета текста
+/// @brief Слот, срабатыващий при нажатии на кнопку выбора цвета текста
 void TypefaceFormatter::onFontcolorClicked()
 {
     // TRACELOG
@@ -1260,8 +1248,8 @@ void TypefaceFormatter::onFontcolorClicked()
 }
 
 
-// Вставка горизонтальной линии в "пустой" абзац, где расположен курсор (пустой абзац заменяется на горизонтальную линию)
-// Если есть выделение в тексте, или курсор стоит на тексте, вставка не производится
+/// @brief Вставка горизонтальной линии в "пустой" абзац, где расположен курсор (пустой абзац заменяется на горизонтальную линию).
+/// Если есть выделение в тексте, или курсор стоит на тексте, вставка не производится
 void TypefaceFormatter::onInsertHorizontalLineClicked()
 {
     // Если есть выделение в тексте, то вставка не производится
@@ -1308,9 +1296,8 @@ void TypefaceFormatter::onInsertHorizontalLineClicked()
 }
 
 
-// Обработка мягкого переноса
-// Учитываются мягкие переносы до выделенного текста (1-й символ до выделения),
-// после выделенного текста и в выделенных абзацах
+/// @brief Обработка мягкого переноса.
+/// Учитываются мягкие переносы до выделенного текста (1-й символ до выделения), после выделенного текста и в выделенных абзацах
 void TypefaceFormatter::workingSoftCarryInSelection()
 {
     // Если нет выделения, то возврат
@@ -1445,7 +1432,7 @@ void TypefaceFormatter::replaceSymbolCase(const QChar::Category &category)
 }
 
 
-// Слот, срабатыващий при нажатии на кнопку выбора цвета фона текста
+/// @brief Слот, срабатыващий при нажатии на кнопку выбора цвета фона текста
 void TypefaceFormatter::onBackgroundcolorClicked()
 {
     // TRACELOG

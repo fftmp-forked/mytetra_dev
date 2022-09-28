@@ -13,7 +13,7 @@ EditorToolbarCommandsListView::~EditorToolbarCommandsListView()
 }
 
 
-// Инициализация представления
+/// @brief Инициализация представления
 void EditorToolbarCommandsListView::init()
 {
     this->setAlternatingRowColors(true);

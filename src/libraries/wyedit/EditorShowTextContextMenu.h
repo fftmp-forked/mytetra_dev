@@ -4,10 +4,8 @@
 #include <QTextEdit>
 #include <QSharedPointer>
 
-//! \brief
-//! Контекстное меню для открепляемого окна
-
-
+/// @brief
+/// Контекстное меню для открепляемого окна
 class EditorShowTextContextMenu : public QMenu
 {
  Q_OBJECT
