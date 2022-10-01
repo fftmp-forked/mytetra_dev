@@ -1,4 +1,4 @@
-#include <QString>
+#include <QApplication>
 #include <QStringList>
 #include <QByteArray>
 #include <QPushButton>
@@ -6,19 +6,16 @@
 #include <QVBoxLayout>
 #include <QDebug>
 #include <QProgressBar>
-#include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QHeaderView>
-#include <QLabel>
 #include <QUrl>
 #include <QFileInfo>
 
 #include "Downloader.h"
-#include "main.h"
-#include "libraries/helpers/DebugHelper.h"
-#include "libraries/helpers/MessageHelper.h"
-#include "libraries/helpers/UniqueIdHelper.h"
+#include "helpers/DebugHelper.h"
+#include "helpers/MessageHelper.h"
+#include "helpers/UniqueIdHelper.h"
 
 
 Downloader::Downloader()

@@ -5,11 +5,10 @@
 
 #include "EditorShowText.h"
 #include "EditorShowTextContextMenu.h"
-#include "libraries/helpers/DebugHelper.h"
-#include "libraries/helpers/ObjectHelper.h"
-#include "models/tree/KnowTreeModel.h"
-#include "views/tree/KnowTreeView.h"
-#include "views/mainWindow/MainWindow.h"
+#include "../helpers/ObjectHelper.h"
+#include "../../models/tree/KnowTreeModel.h"
+#include "../../views/tree/KnowTreeView.h"
+#include "../../views/mainWindow/MainWindow.h"
 
 
 EditorShowText::EditorShowText(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)

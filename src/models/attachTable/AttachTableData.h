@@ -24,12 +24,12 @@ public:
   QDomElement exportDataToDom(QDomDocument *doc) const;
   void exportDataToStreamWriter(QXmlStreamWriter *xmlWriter) const;
 
-  void setRecord(Record *iRecord);
+  void setRecord(Record *iRecord) {record=iRecord;}
   void setRelatedAttachTableModel(AttachTableModel *model);
   void setRelatedAttachTableModelOnly(AttachTableModel *model);
 
   void clear();
-  int size() const;
+  int size() const {return attachTable.size();}
 
   Attach getAttach(QString id); // Получение объекта аттача
   void addAttach(Attach attach); // Добавление аттача в таблицу приаттаченных файлов
@@ -53,10 +53,10 @@ public:
   QString getAbsoluteInnerFileName(int row);
   QString getAbsoluteInnerFileNameById(QString id);
 
-  qint64 getFileSize(int row);
+  qint64 getFileSize(int row) {return attachTable.at(row).getFileSize();}
 
-  bool isEmpty() const;
-  bool isLite() const;
+  bool isEmpty() const {return attachTable.size()==0;}
+  bool isLite() const {return liteFlag;}
 
   void switchToLite();
   void switchToFat();

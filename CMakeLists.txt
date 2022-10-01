@@ -101,4 +101,4 @@ include(CPack)
 # TODO:
 # more warnings check
 # static analyzer
-# packages. rpm/deb is supported, some windows packages also. Don't know about MacOs/android.
+# android support

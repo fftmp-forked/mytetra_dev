@@ -1,13 +1,10 @@
 #pragma once
 
 #include <QWidget>
-#include <QLineEdit>
-#include <QFontComboBox>
 #include <QSpinBox>
-#include <QPushButton>
 #include <QLabel>
 
-#include "views/appConfigWindow/ConfigPage.h"
+#include "../../views/appConfigWindow/ConfigPage.h"
 
 class EditorConfig;
 
@@ -18,7 +15,7 @@ class EditorConfigMathExpression : public ConfigPage
 
 public:
   EditorConfigMathExpression(QWidget *parent = nullptr);
-  
+
   int applyChanges(void);
     
 private slots:

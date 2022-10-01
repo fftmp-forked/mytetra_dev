@@ -1,28 +1,23 @@
 #pragma once
 
-#include <QAbstractItemModel>
 #include <QModelIndex>
-#include <QVariant>
-#include <QObject>
-#include <QtXml>
+#include <QDateTime>
+#include <QDomElement>
 #include <QXmlStreamWriter>
 #include <QSet>
 
 #include "TreeModel.h"
 
-// KnowTreeModel - класс с удобными методами для управления данными дерева
-// Внимание! Данный класс наследуется от класса TreeModel
-
-
 class ClipboardBranch;
 class Record;
 
-class KnowTreeModel : public TreeModel
-{
+
+/// @brief класс с удобными методами для управления данными дерева
+class KnowTreeModel : public TreeModel {
     Q_OBJECT
 
 public:
-    KnowTreeModel(QObject *parent = nullptr); // KnowTreeModel(const QStringList &headers, QDomDocument domModel, QObject *parent = 0);
+    KnowTreeModel(QObject *parent = nullptr);
     ~KnowTreeModel();
 
     void initFromXML(QString fileName);
@@ -89,11 +84,9 @@ public:
     // Загрузка отдельной базы MyTetra в виде подветки (импорт)
     QString importBranchFromDirectory(TreeItem *startItem, QString importDir);
 
-    QDateTime getLastSaveDateTime();
-    QDateTime getLastLoadDateTime();
+    QDateTime getLastAccess() const {return lastAccess;}
 
-    QString getXmlFileName() const;
-
+    QString getXmlFileName() const {return xmlFileName;}
 
 signals:
 
@@ -103,8 +96,7 @@ private:
 
     QString xmlFileName;
 
-    QDateTime lastSaveDateTime;
-    QDateTime lastLoadDateTime;
+    QDateTime lastAccess;
 
     void init(QDomDocument *domModel);
 

@@ -1,20 +1,13 @@
 #include <QDialogButtonBox>
 #include <QDebug>
 
-#include "main.h"
-
 #include "DatabasesManagementScreen.h"
 #include "DatabasesManagementTable.h"
 #include "controllers/databasesManagement/DatabasesManagementController.h"
-#include "libraries/ShortcutManager.h"
 #include "libraries/helpers/ActionHelper.h"
 
 
-extern ShortcutManager shortcutManager;
-
-
-DatabasesManagementScreen::DatabasesManagementScreen(QWidget *parent) : QDialog(parent)
-{
+DatabasesManagementScreen::DatabasesManagementScreen(QWidget *parent) : QDialog(parent) {
   // По факту этот класс - синглтон. Синглтон сам задает себе имя
   this->setObjectName("DatabasesManagementScreen");
 
@@ -26,22 +19,13 @@ DatabasesManagementScreen::DatabasesManagementScreen(QWidget *parent) : QDialog(
 
   setupActions();
   setupUI();
-  setupShortcuts();
-  setupSignals();
   assembly();
 
   databasesManagementTable->init();
 }
 
 
-DatabasesManagementScreen::~DatabasesManagementScreen()
-{
-
-}
-
-
-void DatabasesManagementScreen::setupActions(void)
-{
+void DatabasesManagementScreen::setupActions(void) {
   actionSelect = new QAction(tr("Select database"), this);
   actionSelect->setIcon(QIcon(":/resource/pic/dbmanagement_select.svg"));
   connect(actionSelect, &QAction::triggered,
@@ -64,8 +48,7 @@ void DatabasesManagementScreen::setupActions(void)
 }
 
 
-void DatabasesManagementScreen::setupUI(void)
-{
+void DatabasesManagementScreen::setupUI(void) {
   // Экранная таблица с отображением лога действий
   databasesManagementTable=databasesManagementController->getView();
 
@@ -82,27 +65,7 @@ void DatabasesManagementScreen::setupUI(void)
 }
 
 
-void DatabasesManagementScreen::setupShortcuts(void)
-{
-    qDebug() << "Setup shortcut for" << staticMetaObject.className();
-
-    shortcutManager.initAction("actionLog-copy", actionCopy );
-}
-
-
-void DatabasesManagementScreen::setupSignals(void)
-{
-  connect(buttonBox, &QDialogButtonBox::rejected, this, &DatabasesManagementScreen::close);
-
-  // Обновление горячих клавиш, если они были изменены
-  connect(&shortcutManager, &ShortcutManager::updateWidgetShortcut,
-          this, &DatabasesManagementScreen::setupShortcuts);
-
-}
-
-
-void DatabasesManagementScreen::assembly(void)
-{
+void DatabasesManagementScreen::assembly(void) {
   screenLayout=new QVBoxLayout(this);
 
   screenLayout->addWidget(toolBar);

@@ -4,14 +4,11 @@
 
 #include "TreeItem.h"
 #include "libraries/FixedParameters.h"
-#include "models/appConfig/AppConfig.h"
+#include "../appConfig/AppConfig.h"
 #include "libraries/helpers/DebugHelper.h"
 
-extern AppConfig mytetraConfig;
 
-
-TreeItem::TreeItem(const QMap<QString, QString> &data, TreeItem *parent)
-{
+TreeItem::TreeItem(const QMap<QString, QString> &data, TreeItem *parent) {
   detachedState=false; // По-умолчанию элемент полноценный, не оторванный
 
   parentItem = parent;
@@ -19,30 +16,9 @@ TreeItem::TreeItem(const QMap<QString, QString> &data, TreeItem *parent)
 }
 
 
-TreeItem::~TreeItem()
-{
- // В родительском объекте ссылка на данный объект удаляется
- // Подумать, нужно ли это действие
- // Вроде не нужно, но может понадобиться в дальнейшем
- // if(parentItem)parentItem->removeChildrenLink(childNumber(),1);
-
+TreeItem::~TreeItem() {
  // Вызывается процедура очищения ветки без физического удаления данных на диске
  empty();
-}
-
-
-// Возвращение ссылки на потомка, который хранится в списке childItems
-// под указанным номером
-TreeItem *TreeItem::child(int number)
-{
- return childItems.value(number);
-}
-
-
-// Возвращение количества потомков (т.е. количество записей в списке childItems)
-int TreeItem::childCount() const
-{
-    return childItems.count();
 }
 
 
@@ -74,14 +50,7 @@ void TreeItem::empty(void)
 }
 
 
-int TreeItem::fieldCount() const
-{
- return fieldsTable.count();
-}
-
-
-QString TreeItem::getField(QString name)
-{
+QString TreeItem::getField(QString name) {
     // Если запрашивается динамическое имя из имени и количества потомков
     if(name=="dynamicname")
     {
@@ -124,8 +93,7 @@ QString TreeItem::getField(QString name)
 
 
 // Получение всех установленных полей "имя_поля"->"значение"
-QMap<QString, QString> TreeItem::getAllFields()
-{
+QMap<QString, QString> TreeItem::getAllFields() {
   qDebug() << "TreeItem::getAllFields() : Fields data " << fieldsTable;
 
   QMap<QString, QString> result;
@@ -143,18 +111,7 @@ QMap<QString, QString> TreeItem::getAllFields()
 }
 
 
-// Получение всех установленных полей "имя_поля"->"значение"
-QMap<QString, QString> TreeItem::getAllFieldsDirect()
-{
-  return fieldsTable;
-}
-
-
-// Установка данных
-// Первый параметр - имя поля
-// Второй параметр - устанавливаемое значение
-void TreeItem::setField(QString name, QString value)
-{
+void TreeItem::setField(QString name, QString value) {
   // Если имя поля допустимо
   if(FixedParameters::itemFieldAvailableList.contains(name))
   {
@@ -162,7 +119,7 @@ void TreeItem::setField(QString name, QString value)
     if(name=="icon")
     {
       if(value.length()>0)
-        icon=QIcon(mytetraConfig.get_tetradir()+"/"+FixedParameters::iconsRelatedDirectory+"/"+value); // Изображение иконки кешируется
+        icon=QIcon(AppConfig::get().get_tetradir()+"/"+FixedParameters::iconsRelatedDirectory+"/"+value); // Изображение иконки кешируется
       else
         icon=QIcon(); // Изображение иконки обнуляется
     }
@@ -188,22 +145,10 @@ void TreeItem::setAllFieldDirect(const QMap<QString, QString> nameAndValue)
 
   // Если есть иконка, изображение иконки кешируется
   if(nameAndValue.value("icon").length()>0)
-    icon=QIcon(mytetraConfig.get_tetradir()+"/"+FixedParameters::iconsRelatedDirectory+"/"+nameAndValue.value("icon"));
+    icon=QIcon(AppConfig::get().get_tetradir()+"/"+FixedParameters::iconsRelatedDirectory+"/"+nameAndValue.value("icon"));
 
   if(nameAndValue.value("icon").length()==0)
     icon=QIcon();
-}
-
-
-QIcon TreeItem::getIcon()
-{
-    return icon; // Просто возвращается иконка, не важно, пустая или с рисунком
-}
-
-
-TreeItem *TreeItem::parent()
-{
-  return parentItem;
 }
 
 
@@ -218,12 +163,9 @@ QString TreeItem::getId()
 }
 
 
-QString TreeItem::getParentId()
-{
-  if(parentItem!=nullptr)
-  {
+QString TreeItem::getParentId() {
+  if(parentItem)
     return parentItem->getField("id");
-  }
   else
     return "";
 }
@@ -336,20 +278,6 @@ bool TreeItem::moveDn(void)
 }
 
 
-// Путь к элементу (список идентификаторов от корня до текущего элемента)
-QStringList TreeItem::getPath(void)
-{
-  return getPathAsField("id");
-}
-
-
-// Путь к элементу (в виде списка названий веток)
-QStringList TreeItem::getPathAsName(void)
-{
-  return getPathAsField("name");
-}
-
-
 // Путь к элементу в виде строки, разделенной указанным разделителем
 QString TreeItem::getPathAsNameWithDelimeter(QString delimeter)
 {
@@ -408,33 +336,6 @@ QList<QStringList> TreeItem::getAllChildrenPathAsField(QString fieldName)
 }
 
 
-/*
-// Возвращает массив путей всех подветок, которые содержит ветка
-// Внутренняя рекурсивная функция
-QList<QStringList> TreeItem::get_all_children_path_recurse(TreeItem *item,int mode)
-{
- static QList<QStringList> pathList;
- 
- // Если дана команда очистить список путей
- if(mode==0)
-  {
-   pathList.clear();
-   return QList<QStringList>();
-  }
- 
- for(int i=0;i<(item->childCount());i++)
- {
-  QStringList path=(item->child(i))->get_path();
-  pathList << path;
-  get_all_children_path_recurse(item->child(i),2);
- }
- 
- if(mode==1)return pathList;
- else return QList<QStringList>();
-}
-*/
-
-
 // Возвращает массив указанных полей всех подветок, которые содержит ветка
 // Внутренняя рекурсивная функция
 QList<QStringList> TreeItem::getAllChildrenPathAsFieldRecurse(TreeItem *item, QString fieldName, int mode)
@@ -457,52 +358,4 @@ QList<QStringList> TreeItem::getAllChildrenPathAsFieldRecurse(TreeItem *item, QS
 
   if(mode==1)return pathList;
   else return QList<QStringList>();
-}
-
-
-void TreeItem::recordtableInit(QDomElement domModel)
-{
-  recordsTable.init(this, domModel);
-}
-
-
-int TreeItem::recordtableGetRowCount(void)
-{
-  return recordsTable.size();
-}
-
-
-QDomElement TreeItem::recordtableExportDataToDom(QDomDocument *doc)
-{
-  return recordsTable.exportDataToDom( doc );
-}
-
-
-void TreeItem::recordtableExportDataToStreamWriter(QXmlStreamWriter *xmlWriter)
-{
-  recordsTable.exportDataToStreamWriter( xmlWriter );
-}
-
-
-void TreeItem::recordtableDeleteAllRecords(void)
-{
-  recordsTable.deleteAllRecords();
-}
-
-
-RecordTableData *TreeItem::recordtableGetTableData(void)
-{
-  return &recordsTable;
-}
-
-
-void TreeItem::setDetached(bool state)
-{
-  detachedState=state;
-}
-
-
-bool TreeItem::isDetached()
-{
-  return detachedState;
 }

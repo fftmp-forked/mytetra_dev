@@ -2,28 +2,14 @@
 #include <QMessageBox>
 
 #include "XmlTree.h"
-#include "main.h"
-#include "models/recordTable/RecordTableData.h"
-
-XmlTree::XmlTree(void)
-{
-    domModel=new QDomDocument();
-}
-
-XmlTree::~XmlTree(void)
-{
-    delete domModel;
-}
 
 
-bool XmlTree::load(QString file)
-{
+bool XmlTree::load(QString file) {
     // Загрузка файла дерева разделов
     QFile xmlFile(file);
 
     // Если файл не может быть открыт
-    if(!xmlFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
+    if(!xmlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::information(0, tr("Error"), tr("Cannot read file %1:\n%2.").arg(file, xmlFile.errorString()));
         return false;
     }
@@ -43,11 +29,5 @@ bool XmlTree::load(QString file)
     }
 
     return true;
-}
-
-
-QDomDocument* XmlTree::getDomModel(void)
-{
-    return domModel;
 }
 

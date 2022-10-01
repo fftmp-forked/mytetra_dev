@@ -8,7 +8,7 @@ class EditorContextMenu : public QMenu
 
 public:
   EditorContextMenu(QWidget *parent=nullptr);
-  ~EditorContextMenu(void);
+  ~EditorContextMenu(void) {}
 
  void update(void);
 

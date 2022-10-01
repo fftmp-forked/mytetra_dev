@@ -6,15 +6,13 @@
 #include <QDebug>
 #include <QPair>
 
-#include "main.h"
 #include "EditorToolBarAssistant.h"
 #include "Editor.h"
 #include "EditorToolBar.h"
 #include "EditorTextArea.h"
 #include "EditorConfig.h"
 #include "EditorIndentSliderAssistant.h"
-#include "../TraceLogger.h"
-#include "libraries/helpers/DebugHelper.h"
+#include "../helpers/DebugHelper.h"
 
 
 EditorToolBarAssistant::EditorToolBarAssistant(QWidget *parent,
@@ -63,8 +61,7 @@ void EditorToolBarAssistant::init(const QStringList &iDisableToolList)
 
 
 // Установка списков инструментов, считываемых из конфига
-void EditorToolBarAssistant::initToolsLists(const QStringList &iDisableToolList)
-{
+void EditorToolBarAssistant::initToolsLists(const QStringList &iDisableToolList) {
     // Перед инитом устанавливается список скрываемых инструментов
     EditorToolBar::initDisableToolList(iDisableToolList);
 
@@ -126,8 +123,6 @@ void EditorToolBarAssistant::setupSignals()
 // Метод только меняет значение, показываемое списком шрифтов
 void EditorToolBarAssistant::onChangeFontselectOnDisplay(QString fontName)
 {
-    // TRACELOG
-
     if(flagSetFontParametersEnabled==false)
         return;
 
@@ -205,8 +200,6 @@ bool EditorToolBarAssistant::getFlagSetFontParametersEnabled()
 // А размер шрифта текста не меняет
 void EditorToolBarAssistant::onChangeFontsizeOnDisplay(int n)
 {
-    // TRACELOG
-
     if(flagSetFontParametersEnabled==false)
         return;
 
@@ -223,16 +216,12 @@ void EditorToolBarAssistant::onChangeFontsizeOnDisplay(int n)
 
 void EditorToolBarAssistant::onChangeFontFamily(QString fontFamily)
 {
-    // TRACELOG
-
     currentFontFamily=fontFamily;
 }
 
 
 void EditorToolBarAssistant::onChangeFontPointSize(int n)
 {
-    // TRACELOG
-
     currentFontSize=n;
 }
 
@@ -240,8 +229,6 @@ void EditorToolBarAssistant::onChangeFontPointSize(int n)
 // Изменение цвета иконки выделения цвета шрифта
 void EditorToolBarAssistant::onChangeFontcolor(const QColor &color)
 {
-    // TRACELOG
-
     // Формат символов под курсором
     QTextCharFormat textAreaFormat = textArea->currentCharFormat();
 
@@ -276,8 +263,6 @@ void EditorToolBarAssistant::onChangeIconFontColor(const QTextCharFormat &format
 // Изменение цвета иконки для фона текста
 void EditorToolBarAssistant::onChangeBackgroundColor(const QColor &color)
 {
-    // TRACELOG
-
     // Формат символов под курсором
     QTextCharFormat textAreaFormat = textArea->currentCharFormat();
 
@@ -389,8 +374,6 @@ void EditorToolBarAssistant::onCursorPositionChanged()
 // Если параметр activate=true, будет подсвечена кнопка, соответсвующая текущему форматированию
 void EditorToolBarAssistant::onUpdateAlignButtonHiglight(bool activate)
 {
-    // TRACELOG
-
     alignLeft->setChecked(false);
     alignCenter->setChecked(false);
     alignRight->setChecked(false);
@@ -409,8 +392,6 @@ void EditorToolBarAssistant::onUpdateAlignButtonHiglight(bool activate)
 // Обновление подсветки клавиш начертания текста
 void EditorToolBarAssistant::onUpdateOutlineButtonHiglight(void)
 {
-    // TRACELOG
-
     bold->setChecked(false);
     italic->setChecked(false);
     underline->setChecked(false);
@@ -502,8 +483,6 @@ void EditorToolBarAssistant::updateToActualFormat(void)
 
 void EditorToolBarAssistant::onExpandToolsLinesClicked(void)
 {
-    // TRACELOG
-
     switchExpandToolsLines();
 }
 

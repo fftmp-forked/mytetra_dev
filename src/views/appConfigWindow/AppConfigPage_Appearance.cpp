@@ -6,9 +6,6 @@
 #include "libraries/wyedit/EditorShowTextDispatcher.h"
 
 
-extern AppConfig mytetraConfig;
-
-
 AppConfigPage_Appearance::AppConfigPage_Appearance(QWidget *parent) : ConfigPage(parent)
 {
     setupUi();
@@ -30,13 +27,13 @@ void AppConfigPage_Appearance::setupUi()
     // Настройка запуска MyTetra в свернутом окне
     runInMinimizedWindow=new QCheckBox(this);
     runInMinimizedWindow->setText(tr("Run MyTetra in a minimized window"));
-    runInMinimizedWindow->setChecked( mytetraConfig.get_runinminimizedwindow() );
+    runInMinimizedWindow->setChecked( AppConfig::get().get_runinminimizedwindow() );
 
 
     // Настройка поведения открепляемых окон, как они будут сворачиваться и разворачиваться
     dockableWindowsBehavior=new QCheckBox(this);
     dockableWindowsBehavior->setText(tr("Hide detached windows if close main window"));
-    dockableWindowsBehavior->setChecked( mytetraConfig.getDockableWindowsBehavior()=="together" );
+    dockableWindowsBehavior->setChecked( AppConfig::get().getDockableWindowsBehavior()=="together" );
 }
 
 
@@ -78,16 +75,16 @@ int AppConfigPage_Appearance::applyChanges()
     int result=0;
 
     // Сохраняется настройка режима запуска MyTetra - обычный или свернутый
-    if(mytetraConfig.get_runinminimizedwindow()!=runInMinimizedWindow->isChecked())
+    if(AppConfig::get().get_runinminimizedwindow()!=runInMinimizedWindow->isChecked())
     {
-        mytetraConfig.set_runinminimizedwindow(runInMinimizedWindow->isChecked());
+        AppConfig::get().set_runinminimizedwindow(runInMinimizedWindow->isChecked());
     }
 
     // Сохраняется настройка поведения открепляемых окон
     QString mode=dockableWindowsBehavior->isChecked() ? "together" : "single";
-    if(mytetraConfig.getDockableWindowsBehavior()!=mode)
+    if(AppConfig::get().getDockableWindowsBehavior()!=mode)
     {
-        mytetraConfig.setDockableWindowsBehavior(mode);
+        AppConfig::get().setDockableWindowsBehavior(mode);
 
         EditorShowTextDispatcher::instance()->switchBehavior(mode);
     }

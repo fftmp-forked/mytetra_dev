@@ -3,87 +3,35 @@
 #include <QObject>
 #include <QStatusBar>
 
-#include "FixedParameters.h"
-
-class TreeScreen;
-class MetaEditor;
-class RecordTableScreen;
 class FindScreen;
-class WindowSwitcher;
-class CommandRun;
 
-class GlobalParameters : public QObject
+
+/// @brief singleton class
+class GlobalParameters
 {
-    Q_OBJECT
-
 public:
-    GlobalParameters(QObject *pobj=nullptr);
-    virtual ~GlobalParameters();
+    GlobalParameters() = delete;
+    GlobalParameters(const GlobalParameters &) = delete;
+    GlobalParameters& operator=(const GlobalParameters&) = delete;
+    GlobalParameters(GlobalParameters&&) = delete;
+    GlobalParameters& operator=(GlobalParameters&&) = delete;
+    ~GlobalParameters() {};
 
-    void setMainProgramFile(QString file);
-    QString getMainProgramFile(void);
+    static void init(QString filename) { _self = new GlobalParameters(filename);}
+    static GlobalParameters & get() { return *_self; }
 
-    void init(void);
+    QString getMainProgramFile(void) const {return mainProgramFile;}
 
     // Получение рабочей директории. Рабочая директория - это та, где лежит файл conf.ini
-    QString getWorkDirectory(void);
+    QString getWorkDirectory(void) const {return workDirectory;}
 
-    QString getActionLogFileName();
-    QString getActionLogPrevFileName();
+    void setFindScreen(FindScreen *point) {pointFindScreen = point;}
+    FindScreen *getFindScreen() const {return pointFindScreen;}
 
-    enum class OS_type {Android, Desktop};
-    static constexpr OS_type getOs(void) {
-        // see also QOperatingSystemVersionBase::currentType()
-        #if defined(Q_OS_ANDROID)
-            return GlobalParameters::OS_type::Android;
-        #else
-            return GlobalParameters::OS_type::Desktop;
-        #endif
-    }
+    void setStatusBar(QStatusBar *point) {pointStatusBar = point;}
+    QStatusBar *getStatusBar() const {return pointStatusBar;}
 
-    static QString getOsStr(void) { return (getOs() == OS_type::Android ? "android" : "any"); }
-
-
-    static QString getApplicationName(void) {
-        if(getOs() == OS_type::Desktop)
-            return FixedParameters::appTextId;
-        else
-            return QString("ru.webhamster.") + FixedParameters::appTextId;
-    }
-
-
-    void setTreeScreen(TreeScreen *point);
-    TreeScreen *getTreeScreen();
-
-    void setRecordTableScreen(RecordTableScreen *point);
-    RecordTableScreen *getRecordTableScreen();
-
-    void setFindScreen(FindScreen *point);
-    FindScreen *getFindScreen();
-
-    void setMetaEditor(MetaEditor *point);
-    MetaEditor *getMetaEditor();
-
-    void setStatusBar(QStatusBar *point);
-    QStatusBar *getStatusBar();
-
-    void setWindowSwitcher(WindowSwitcher *point);
-    WindowSwitcher *getWindowSwitcher();
-
-    QString getInstallAutodetectLang();
-
-    // Файл стилей может создаваться и после развертывания начальных файлов MyTetra
-    // Так как в более старых версиях MyTetra его еще не было
-    void createStyleSheetFile(QString dirName);
-
-public:
-    // Указание на обрабатываемую панель инструментов редактора текста
-    enum EditorToolbar {
-        First = 0,
-        Second
-    };
-
-    // Возможные режимы добавления записей в таблицу конечных записей
+    /// @brief Возможные режимы добавления записей в таблицу конечных записей
     enum AddNewRecordBehavior
     {
         ADD_TO_END=0,
@@ -92,6 +40,8 @@ public:
     };
 
 private:
+    explicit GlobalParameters(QString filename);
+    static GlobalParameters * _self;
 
     void initWorkDirectory(void);
     bool findWorkDirectory(void);
@@ -100,19 +50,9 @@ private:
     void createPortableProgramFiles(void);
     void createFirstProgramFiles(QString dirName);
 
-    TreeScreen *pointTreeScreen=nullptr;
-    RecordTableScreen *pointRecordTableScreen=nullptr;
     FindScreen *pointFindScreen=nullptr;
-    MetaEditor *pointMetaEditor=nullptr;
     QStatusBar *pointStatusBar=nullptr;
-    WindowSwitcher *windowSwitcher=nullptr;
 
     QString mainProgramFile;
     QString workDirectory;
-
-    //! Язык, который был автоопределен если запускалась инсталляция базы знаний.
-    //! Если автоинсталляция не запускалась, это значение будет пустой строкой
-    QString installAutodetectLang;
 };
-
-

@@ -1,17 +1,13 @@
 #pragma once
 
-#include <QDialog>
 #include <QWidget>
 #include <QLabel>
 #include <QLineEdit>
-#include <QDialogButtonBox>
-#include <QPushButton>
 #include <QGridLayout>
 #include <QToolButton>
 
-// Виджет ввода инфополей Title, Author, Url, Tags...
 
-
+/// @brief Виджет ввода инфополей Title, Author, Url, Tags...
 class InfoFieldEnter : public QWidget
 {
   Q_OBJECT

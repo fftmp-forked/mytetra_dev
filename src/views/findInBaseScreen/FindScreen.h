@@ -19,15 +19,15 @@ class TreeItem;
 
 class FindTableWidget;
 
-// Виджет поиска по базе
 
+/// @brief Виджет поиска по базе
 class FindScreen : public QWidget
 {
  Q_OBJECT
 
 public:
  FindScreen(QWidget *parent=nullptr);
- virtual ~FindScreen(void);
+ virtual ~FindScreen(void) {}
 
 public slots:
 
@@ -55,8 +55,7 @@ private slots:
 
 signals:
 
- // Сигнал вырабатывается, когда обнаружено что в слоте setFindText()
- // был изменен текст для поиска
+ // Сигнал вырабатывается, когда обнаружено что в слоте setFindText() был изменен текст для поиска
  void textChangedFromAnother(const QString&);
 
  void findClickedAfterAnotherTextChanged(void);

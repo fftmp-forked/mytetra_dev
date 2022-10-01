@@ -73,9 +73,6 @@ void RecordTablePrint::setup_ui()
 
 void RecordTablePrint::setup_signals()
 {
- // connect(buttonBox, SIGNAL(accepted()), this, SLOT(print()));
- // connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-
  connect(printButton,  &QPushButton::clicked, this, &RecordTablePrint::print);
  connect(saveButton,   &QPushButton::clicked, this, &RecordTablePrint::save);
  connect(cancelButton, &QPushButton::clicked, this, &RecordTablePrint::reject);

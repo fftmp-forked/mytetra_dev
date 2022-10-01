@@ -1,9 +1,10 @@
 #pragma once
 
 #include <QDialog>
-#include <QTableWidget>
+#include <QLabel>
 #include <QMap>
 #include <QNetworkAccessManager>
+#include <QTableWidget>
 
 
 class Downloader : public QDialog

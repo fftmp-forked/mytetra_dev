@@ -1,29 +1,22 @@
-#include <QTextBlock>
-#include <QTextFragment>
 #include <QDebug>
-#include <QFileDialog>
+#include <QDir>
+#include <QFileInfo>
 #include <QImage>
 #include <QImageReader>
-#include <QTextDocumentFragment>
 #include <QMessageBox>
-#include <QImage>
-#include <QTemporaryFile>
 
 #include "MathExpressionFormatter.h"
 
 #include "../Editor.h"
-#include "../EditorTextArea.h"
 #include "../EditorCursorPositionDetector.h"
 #include "../EditorMathExpressionDialog.h"
+#include "../EditorTextArea.h"
+#include "../../FixedParameters.h"
+#include "../../../views/consoleEmulator/CommandRun.h"
+#include "../../helpers/UniqueIdHelper.h"
 
-#include "libraries/helpers/DiskHelper.h"
-#include "libraries/FixedParameters.h"
-#include "views/consoleEmulator/CommandRun.h"
-#include "libraries/helpers/UniqueIdHelper.h"
 
-
-MathExpressionFormatter::MathExpressionFormatter()
-{
+MathExpressionFormatter::MathExpressionFormatter() {
 #if defined(Q_WS_WIN) || defined(Q_OS_WIN32) || defined(Q_OS_WINCE) || defined(Q_OS_MSDOS) || defined(Q_OS_CYGWIN)
     // mimetex должен лежать там же где и mytetra
     m_mimetex_bin = QCoreApplication::applicationDirPath() + "/mimetex.exe";
@@ -76,16 +69,15 @@ QString MathExpressionFormatter::mathExpressionOnCursor(void)
 
 
 /// @brief Получение исходного кода математического выражения по имени картинки в ресурсах документа
-QString MathExpressionFormatter::getMathExpressionByImageName(QString resourceImageName)
-{
+QString MathExpressionFormatter::getMathExpressionByImageName(QString resourceImageName) {
     QImage image=textArea->document()->resource(QTextDocument::ImageResource, QUrl(resourceImageName)).value<QImage>();
 
     if( !image.isNull() ) {
         QString text=image.text("Description");
 
-        if(text.startsWith( FixedParameters::appTextId+":"+FixedParameters::mathExpDescriptionType+":" )) {
+        if(text.startsWith(FixedParameters::appTextId + ":" + mathExpDescriptionType + ":")) {
             // Учитывается длина префикса, длина номера версии, два двоеточия и символ "v"
-            return text.right( text.size() - FixedParameters::mathExpHeaderLen);
+            return text.right( text.size() - mathExpHeaderLen);
         }
     }
 
@@ -94,8 +86,7 @@ QString MathExpressionFormatter::getMathExpressionByImageName(QString resourceIm
 
 
 /// @brief Обработка клавиши добавления/редактирования математического выражения
-void MathExpressionFormatter::onMathExpressionClicked(void)
-{
+void MathExpressionFormatter::onMathExpressionClicked(void) {
     // Если выделена картинка математического выражения
     if(editor->cursorPositionDetector->isMathExpressionSelect()) {
         qDebug() << "Math expression on select: " << mathExpressionOnSelect();
@@ -123,8 +114,7 @@ void MathExpressionFormatter::onMathExpressionClicked(void)
 
 
 /// @brief Вызов окна редактирования формулы
-void MathExpressionFormatter::onContextMenuEditMathExpression()
-{
+void MathExpressionFormatter::onContextMenuEditMathExpression() {
     // Формула меняется если формула выделена
     if(editor->cursorPositionDetector->isMathExpressionSelect()) {
         qDebug() << "Math expression on select: " << this->mathExpressionOnSelect();
@@ -142,8 +132,7 @@ void MathExpressionFormatter::onContextMenuEditMathExpression()
 
 
 /// @brief Двойной клик по картинке с формулой
-void MathExpressionFormatter::onDoubleClickOnImage(void)
-{
+void MathExpressionFormatter::onDoubleClickOnImage(void) {
     if(editor->cursorPositionDetector->isCursorOnMathExpression()) {
         qDebug() << "Math expression on double click: " << this->mathExpressionOnCursor();
         editMathExpression( this->mathExpressionOnCursor() );
@@ -152,8 +141,7 @@ void MathExpressionFormatter::onDoubleClickOnImage(void)
 
 
 /// @brief Добавление новой формулы
-void MathExpressionFormatter::addMathExpression(void)
-{
+void MathExpressionFormatter::addMathExpression(void) {
     // Открывается окно запроса математического выражения
     QString mathExpressionText=getMathExpressionFromUser();
 
@@ -164,8 +152,7 @@ void MathExpressionFormatter::addMathExpression(void)
 
 
 /// @brief Редактирование существующей формулы
-void MathExpressionFormatter::editMathExpression(QString iMathExpressionText)
-{
+void MathExpressionFormatter::editMathExpression(QString iMathExpressionText) {
     qDebug() << "Edit math expression: " << mathExpressionOnSelect();
 
     // Открывается окно запроса математического выражения
@@ -188,8 +175,7 @@ void MathExpressionFormatter::editMathExpression(QString iMathExpressionText)
 
 
 /// @brief Запрос математического выражения от пользователя
-QString MathExpressionFormatter::getMathExpressionFromUser(QString iMathExpressionText)
-{
+QString MathExpressionFormatter::getMathExpressionFromUser(QString iMathExpressionText) {
     EditorMathExpressionDialog dialog(this, textArea); // Диалог написания Tex формулы
 
     dialog.setMathExpressionText(iMathExpressionText);
@@ -222,8 +208,7 @@ QString MathExpressionFormatter::getMathExpressionFromUser(QString iMathExpressi
     return dialog.getMathExpressionText().trimmed();
 }
 
-void MathExpressionFormatter::createGifFromMathExpression(QString iMathExpression, QString iFileName)
-{
+void MathExpressionFormatter::createGifFromMathExpression(QString iMathExpression, QString iFileName) {
     CommandRun exCommand;
     exCommand.setCommand(m_mimetex_bin);
     exCommand.setArgs({iMathExpression, "-e", iFileName});
@@ -231,8 +216,7 @@ void MathExpressionFormatter::createGifFromMathExpression(QString iMathExpressio
 }
 
 
-void MathExpressionFormatter::insertMathExpressionToTextArea(QString iMathExpressionText)
-{
+void MathExpressionFormatter::insertMathExpressionToTextArea(QString iMathExpressionText) {
     QString tempFileName=QDir::tempPath()+"/"+getUniqueId()+".gif";
 
     qDebug() << "Formula code: " << iMathExpressionText;
@@ -242,20 +226,19 @@ void MathExpressionFormatter::insertMathExpressionToTextArea(QString iMathExpres
 
     bool isSuccess=false;
 
-    // Если картинка сформировалась (подумать, возможно надо вставлсять картинку в текст через форматтер ImageFormatter)
+    // Если картинка сформировалась (подумать, возможно надо вставлять картинку в текст через форматтер ImageFormatter)
     if ( QFile::exists(tempFileName) ) {
         // Временная картинка загружается из файла в память
         QImage image = QImageReader(tempFileName).read();
 
         // И сразу удаляется в корзину
-        DiskHelper::removeFileToTrash( tempFileName );
+        QFile::remove(tempFileName);
 
         // Если картинка была нормально загружена из файла
         if( !image.isNull() ) {
             // Картинка в памяти запоминает исходный код формулы
-            image.setText("Description", FixedParameters::appTextId + ":" +
-                                         FixedParameters::mathExpDescriptionType + ":" +
-                                         "v" + QString::number(FixedParameters::mathExpVersion).rightJustified(FixedParameters::mathExpVersionNumberLen, '0') + ":" +
+            image.setText("Description", FixedParameters::appTextId + ":" + mathExpDescriptionType + ":v" +
+                                         QString::number(mathExpVersion).rightJustified(mathExpVersionNumberLen, '0') + ":" +
                                          iMathExpressionText);
 
             // Внутреннее имя картинки
@@ -263,10 +246,6 @@ void MathExpressionFormatter::insertMathExpressionToTextArea(QString iMathExpres
 
             // Картинка добавляется в хранилище документа под своим внутренним именем
             textArea->document()->addResource(QTextDocument::ImageResource, QUrl(imageName), image );
-
-            // Создается описание форматированной картинки
-            // QTextImageFormat imageFormat;
-            // imageFormat.setName(link.toString());
 
             // Картинка вставляется в текст
             QTextCursor cursor=textArea->textCursor();

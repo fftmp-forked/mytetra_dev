@@ -1,23 +1,9 @@
 #include "WalkHistory.h"
-#include "models/tree/KnowTreeModel.h"
-#include "views/tree/KnowTreeView.h"
-#include "libraries/helpers/ObjectHelper.h"
+
+#include <QtDebug>
 
 
-WalkHistory::WalkHistory(void)
-{
- clear();
-}
-
-
-WalkHistory::~WalkHistory(void)
-{
- 
-}
-
-
-void WalkHistory::clear(void)
-{
+void WalkHistory::clear(void) {
  qDebug() << "WalkHistory::clear()";
 
  historyId.clear();
@@ -29,8 +15,7 @@ void WalkHistory::clear(void)
 }
 
 
-void WalkHistory::add(QString id, int cursorPosition, int scrollBarPosition, int mode)
-{
+void WalkHistory::add(QString id, int cursorPosition, int scrollBarPosition, int mode) {
   if(id.length()==0)
     return;
 
@@ -183,8 +168,7 @@ QString WalkHistory::getId()
 }
 
 
-int WalkHistory::getCursorPosition(QString id)
-{
+int WalkHistory::getCursorPosition(QString id) const {
  if(data.contains(id))
   return data[id].cursorPosition;
  else
@@ -192,8 +176,7 @@ int WalkHistory::getCursorPosition(QString id)
 }
 
 
-int WalkHistory::getScrollBarPosition(QString id)
-{
+int WalkHistory::getScrollBarPosition(QString id) const {
  if(data.contains(id))
   return data[id].scrollBarPosition;
  else
@@ -208,8 +191,7 @@ void WalkHistory::removeHistoryData(QString id)
 }
 
 
-void WalkHistory::print(void)
-{
+void WalkHistory::print(void) {
   return;
 
   qDebug() << "WalkHistory length: " << historyId.length();
@@ -223,37 +205,3 @@ void WalkHistory::print(void)
 
   qDebug() << "WalkHistory table ---^";
 }
-
-
-void WalkHistory::setDrop(bool flag)
-{
- dropFlag=flag;
-}
-
-
-// Проверка наличия идентификатора в базе, и его исключение из истории, если
-// идентификатор не обнаружен
-void WalkHistory::checkId(QString id)
-{
- // Выясняется ссылка на модель дерева данных
- KnowTreeModel *dataModel=static_cast<KnowTreeModel*>(find_object<KnowTreeView>("knowTreeView")->model());
-
- // Если запись с указанным идентификатором существует
- if(dataModel->getRecordPath(id).length()>0)
-  return; // Ничего делать не нужно
-
-
- // Здесь запись с указанным идентификатором не существует, и его надо
- // удалить из истории
-
- // Выясняется, сколько раз встречается несуществущий идентификатор в истории
- // и удаляется из истории
- int idRemoveCount=historyId.removeAll(id);
-
- // Происходит перемещение указателя назад на столько ячеек, сколько
- // было удалено идентификторов
- for(int i=0; i<idRemoveCount; i++)
-  if(historyPoint>0)
-    historyPoint--;
-}
-

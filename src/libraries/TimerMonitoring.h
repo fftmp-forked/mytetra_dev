@@ -2,7 +2,6 @@
 
 #include <QObject>
 
-class KnowTreeView;
 class KnowTreeModel;
 
 class TimerMonitoring : public QObject
@@ -11,7 +10,7 @@ class TimerMonitoring : public QObject
 
 public:
   TimerMonitoring(void);
-  virtual ~TimerMonitoring(void);
+  virtual ~TimerMonitoring(void) {}
 
   virtual void init();
 
@@ -22,16 +21,13 @@ public:
  
 protected:
 
-  virtual bool isStartEnabled()=0;
+  virtual bool isStartEnabled() const =0;
   virtual void timerEvent(QTimerEvent *)=0;
 
   bool isFirstStart;
 
   int delay;
   int timerId;
-
-  KnowTreeView  *knowTreeView;
-  KnowTreeModel *knowTreeModel;
 };
 
 

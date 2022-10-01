@@ -70,11 +70,9 @@ void DatabasesManagementController::onCreateClicked()
 }
 
 
-// Добавление существующей базы
-void DatabasesManagementController::onAddClicked()
-{
+/// @brief Добавление существующей базы
+void DatabasesManagementController::onAddClicked() {
     QString dbPath;
-    QString trashPath;
 
     QString title=tr("Append exists database");
 
@@ -133,55 +131,7 @@ void DatabasesManagementController::onAddClicked()
         return;
     }
 
-
-    // Диалог, поясняющий что нужно выбрать директорию корзины
-    QMessageBox secondBox;
-    secondBox.setWindowTitle(title);
-    secondBox.setText(tr("<b>Second step:</b> select trash directiory"));
-    secondBox.setInformativeText(tr("For database append please select\ntrash directory.\nMyTetra will put changed notes file copies\nand changed item tree copies\nto this directories"));
-    secondBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-    secondBox.setDefaultButton(QMessageBox::Ok);
-    secondBox.button(QMessageBox::Ok)->setText(tr("I understand"));
-    secondBox.setIconPixmap( QIcon(":/resource/pic/dbmanagement_trash_icon.svg").pixmap(QSize(32, 32)) );
-    if( secondBox.exec()!=QMessageBox::Ok )
-    {
-        return;
-    }
-
-    // Диалог выбора директории с корзиной
-    QFileDialog trashdirSelectDialog;
-    trashdirSelectDialog.setFileMode(QFileDialog::Directory);
-    trashdirSelectDialog.setWindowTitle(tr("Select trash directory"));
-    trashdirSelectDialog.setDirectory("");
-    if( trashdirSelectDialog.exec()==QDialog::Accepted )
-    {
-        if( !trashdirSelectDialog.directory().absolutePath().isEmpty() )
-        {
-            // Запоминается выбранный пользователем путь к корзине
-            trashPath=trashdirSelectDialog.directory().absolutePath();
-        }
-        else
-        {
-            return; // Выход, если был установлен пустой путь
-        }
-    }
-    else
-    {
-        return; // Выход, если была нажата отмена
-    }
-
-
-    // Если пользователь ошибся и выбрал в качестве директории корзины
-    // ту же директорию что и директория базы данных
-    if( dbPath==trashPath )
-    {
-        QMessageBox msgBox;
-        msgBox.setText(tr("You cannot add a trash directory in database directory."));
-        msgBox.exec();
-        return;
-    }
-
-    model->addDatabaseByUser(dbPath, trashPath);
+    model->addDatabaseByUser(dbPath);
 }
 
 

@@ -2,13 +2,11 @@
 
 #include "EditorToolbarSettingsAvailableToolsModel.h"
 
-#include "views/record/MetaEditor.h"
+#include "../../../../../views/record/MetaEditor.h"
 #include "../../../EditorToolBarAssistant.h"
 #include "../../../EditorConfig.h"
-#include "libraries/ShortcutManager.h"
-#include "libraries/helpers/ObjectHelper.h"
-
-extern ShortcutManager shortcutManager;
+#include "../../../../helpers/ObjectHelper.h"
+#include "../../../../ShortcutManager/ShortcutManager.h"
 
 
 EditorToolbarSettingsAvailableToolsModel::EditorToolbarSettingsAvailableToolsModel(QObject *parent) :
@@ -20,7 +18,7 @@ EditorToolbarSettingsAvailableToolsModel::EditorToolbarSettingsAvailableToolsMod
 
 void EditorToolbarSettingsAvailableToolsModel::init()
 {
-    // Вначале модель полностью очищается, чтобы небыло наложений от предыдущих открытий окна настроек
+    // Вначале модель полностью очищается, чтобы не было наложений от предыдущих открытий окна настроек
     this->clear();
 
     // Все уже используемые инструменты на обоих линиях панели
@@ -36,7 +34,7 @@ void EditorToolbarSettingsAvailableToolsModel::init()
         qDebug() << "Add available command " << command;
 
         // Для десктопной версии пропускаем кнопки, нужные для мобильной версии
-        // todo: подумать, а надо ли это действие
+        /// @todo: подумать, а надо ли это действие
         if (editorToolBarAssistant->getViewMode() == Editor::WYEDIT_DESKTOP_MODE && (command=="back" || command=="findInBase")) {
             continue;
         }
@@ -46,7 +44,7 @@ void EditorToolbarSettingsAvailableToolsModel::init()
             QStandardItem *item=new QStandardItem(command);
             item->setIcon( editorToolBarAssistant->getIcon(command) );
             item->setData( command, Qt::UserRole );
-            item->setData( shortcutManager.getDescription( "editor-"+command), Qt::DisplayRole );
+            item->setData( ShortcutManager::get().getDescription(ShortcutManager::SECTION_EDITOR, command), Qt::DisplayRole );
             this->appendRow(item); // Элемент отдается во владение модели
         }
     }

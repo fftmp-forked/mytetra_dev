@@ -22,27 +22,25 @@ class WalkHistory : public QObject
  Q_OBJECT
   
 public:
- WalkHistory(void);
- ~WalkHistory(void);
+ WalkHistory(void) {clear();};
+ ~WalkHistory(void) {};
 
  void clear(void);
 
  void add(QString id, int cursorPosition, int scrollBarPosition, int mode=WALK_HISTORY_GO_NONE);
 
  QString getId();
- int getCursorPosition(QString id);
- int getScrollBarPosition(QString id);
+ int getCursorPosition(QString id) const;
+ int getScrollBarPosition(QString id) const ;
  void removeHistoryData(QString id);
 
- void setDrop(bool flag);
+ void setDrop(bool flag) {dropFlag=flag;}
 
 protected:
 
   bool dropFlag;
 
   void print(void);
-
-  void checkId(QString id);
 
   // Указатель в списке истории посещения записей, обычно указывает на последнюю в списке запись
   // но если идет движение назад-вперед по истории, он соответственно смещается

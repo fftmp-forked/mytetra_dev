@@ -4,6 +4,7 @@
 #include "views/shortcutSettings/ShortcutSettingsView.h"
 #include "models/shortcutSettings/ShortcutSettingsModel.h"
 
+
 class ShortcutSettingsController : public QObject
 {
     Q_OBJECT
@@ -17,19 +18,19 @@ public:
         QString defaultKeys;
     };
 
-    ShortcutSettingsController(QObject *parent = nullptr);
-    ~ShortcutSettingsController();
+    ShortcutSettingsController(QObject *parent = nullptr) {Q_UNUSED(parent);};
+    ~ShortcutSettingsController() {};
 
     void init();
     void applyChanges();
 
-    ShortcutSettingsView* getView();
+    ShortcutSettingsView* getView() const {return view;}
 
-    ShortcutData getShortcutData(const QModelIndex &index);
-    ShortcutData getEmptyShortcutData();
+    ShortcutData getShortcutData(const QModelIndex &index) const;
+    ShortcutData getEmptyShortcutData() const;
 
     void setShortcut(QString shortcutFullName, QString sequenceText);
-    void resetAllShortcutsToDefault();
+    void resetAllShortcutsToDefault() {model->resetAllShortcutsToDefault();}
 
 protected:
 

@@ -1,5 +1,7 @@
-#include <QObject>
+#include <QApplication>
+#include <QClipboard>
 #include <QHeaderView>
+#include <QMessageBox>
 
 #include "RecordTableController.h"
 #include "controllers/attachTable/AttachTableController.h"
@@ -12,25 +14,18 @@
 #include "views/tree/TreeScreen.h"
 #include "views/record/RecordInfoFieldsEditor.h"
 #include "views/appConfigWindow/AppConfigDialog.h"
+#include "models/appConfig/AppConfig.h"
 #include "models/recordTable/Record.h"
 #include "models/recordTable/RecordTableData.h"
 #include "models/recordTable/RecordTableModel.h"
 #include "models/recordTable/RecordTableProxyModel.h"
-#include "models/appConfig/AppConfig.h"
 #include "models/tree/TreeItem.h"
-#include "libraries/GlobalParameters.h"
-#include "libraries/FixedParameters.h"
-#include "libraries/WindowSwitcher.h"
-#include "libraries/WalkHistory.h"
 #include "libraries/ClipboardRecords.h"
+#include "libraries/FixedParameters.h"
+#include "libraries/GlobalParameters.h"
 #include "libraries/helpers/DiskHelper.h"
 #include "libraries/helpers/ObjectHelper.h"
 #include "libraries/wyedit/EditorShowTextDispatcher.h"
-
-
-extern GlobalParameters globalParameters;
-extern AppConfig mytetraConfig;
-extern WalkHistory walkHistory;
 
 
 RecordTableController::RecordTableController(QObject *parent) : QObject(parent)
@@ -61,7 +56,7 @@ RecordTableController::~RecordTableController()
 {
     // Уничтожение объекта будет происходить при выходе из программы
 
-    // В окружении рабочего стола LXDE есть проблема: если при выходе из MyTetra в буфере обмена
+    /// @todo В окружении рабочего стола LXDE есть проблема: если при выходе из MyTetra в буфере обмена
     // будет лежать слепок(ки) записей, то произойдет перезапуск DE.
     // Непонятно как это работает, но проблема есть.
     // Чтобы ее избежать, надо очищать буфер обмена от данных со слепком записи, если таковые в буфере лежат
@@ -80,20 +75,10 @@ void RecordTableController::init(void)
 }
 
 
-RecordTableView *RecordTableController::getView(void)
-{
-  return view;
-}
-
-
-// Действия при выборе записи. Метод принимает индекс Proxy модели
-void RecordTableController::clickToRecord(const QModelIndex &index)
-{
+/// @brief Действия при выборе записи. Метод принимает индекс Proxy модели
+void RecordTableController::clickToRecord(const QModelIndex &index) {
   // Так как, возможно, включена сортировка, индекс на экране преобразуется в обычный индекс
-  QModelIndex sourceIndex=convertProxyIndexToSourceIndex(index);
-
-  // Позиция записи в списке
-  int pos=sourceIndex.row();
+  int pos = convertProxyIndexToSourceIndex(index).row();
   qDebug() << "RecordTableController::clickToRecord() : current item num " << pos;
 
   initMetaEditorAtClickToRecord(pos);
@@ -101,9 +86,8 @@ void RecordTableController::clickToRecord(const QModelIndex &index)
 }
 
 
-void RecordTableController::initMetaEditorAtClickToRecord(const int pos)
-{
-  // Внимание! Наверно, всю эту логику следует перенести в MetaEditor. А здесь только получить данные из таблицы
+void RecordTableController::initMetaEditorAtClickToRecord(const int pos) {
+  /// @todo Внимание! Наверно, всю эту логику следует перенести в MetaEditor. А здесь только получить данные из таблицы
 
   // Выясняется указатель на объект редактирования текста записи
   MetaEditor *edView=find_object<MetaEditor>("editorScreen");
@@ -114,10 +98,8 @@ void RecordTableController::initMetaEditorAtClickToRecord(const int pos)
   RecordTableData *table=recordSourceModel->getTableData();
 
   // Элементы управления редактором становятся доступными только при условии что запись не заблокирована на изменение
-  if( table->getField("block", pos)=="1" )
-    edView->setReadOnly(true);
-  else
-    edView->setReadOnly(false);
+  edView->setReadOnly(table->getField("block", pos)=="1");
+
 
   // В таблице конечных данных запоминается какая запись была выбрана
   // чтобы затем при выборе этой же подветки засветка автоматически
@@ -133,10 +115,10 @@ void RecordTableController::initMetaEditorAtClickToRecord(const int pos)
 
 
   // Для новой выбраной записи выясняется директория и основной файл
-  QString currentDir =table->getField("dir", pos);
-  QString currentFile=table->getField("file", pos);
-  QString fullDir=mytetraConfig.get_tetradir()+"/base/"+currentDir;
-  QString fullFileName=fullDir+"/"+currentFile;
+  auto currentDir = table->getField("dir", pos);
+  auto currentFile = table->getField("file", pos);
+  auto fullDir = AppConfig::get().get_tetradir() + "/base/" + currentDir;
+  auto fullFileName = fullDir + "/" + currentFile;
   qDebug() << " File " << fullFileName << "\n";
 
 
@@ -147,19 +129,15 @@ void RecordTableController::initMetaEditorAtClickToRecord(const int pos)
 
 
   // Если в окне содержимого записи уже находится выбираемая запись
-  if(edView->getWorkDirectory()==fullDir &&
-     edView->getFileName()==currentFile)
-  {
-    globalParameters.getWindowSwitcher()->switchFromRecordtableToRecord();
+  if(edView->getWorkDirectory()==fullDir && edView->getFileName()==currentFile)
     return;
-  }
 
   // Перед открытием редактора происходит попытка получения текста записи
-  // Этот вызов создаст файл с текстом записи, если он еще не создан (подумать, переделать)
+  // Этот вызов создаст файл с текстом записи, если он еще не создан
+  /// @todo (подумать, переделать)
   table->getText(pos);
 
-  // Редактору задаются имя файла и директории
-  // И дается команда загрузки файла
+  // Редактору задаются имя файла и директории и дается команда загрузки файла
   edView->setWorkDirectory(fullDir);
   edView->setFileName(currentFile);
 
@@ -170,7 +148,6 @@ void RecordTableController::initMetaEditorAtClickToRecord(const int pos)
   edView->setLoadCallback(table->editorLoadCallback);
 
   edView->loadTextarea();
-  // edView->set_textarea(table->get_text(index.row()));
 
   // Заполняются прочие инфо-поля
   edView->setName  ( table->getField("name", pos) );
@@ -183,25 +160,14 @@ void RecordTableController::initMetaEditorAtClickToRecord(const int pos)
 
   edView->setMiscField( "title", table->getField("name", pos) );
 
-  // Устанавливается путь до ветки в которой лежит запись (в виде названий веток)
-  QString path=qobject_cast<RecordTableScreen *>(parent())->getTreePath();
-
-  // В мобильном интерфейсе редактор должен показывать путь до записи
-  if(mytetraConfig.getInterfaceMode()=="mobile")
-    edView->setTreePath( path );
-
   // В редакторе восстанавливается позиция курсора и прокрутки если это необходимо
-  if(mytetraConfig.getRememberCursorAtOrdinarySelection())
-  {
-    edView->setCursorPosition( walkHistory.getCursorPosition(id) );
-    edView->setScrollBarPosition( walkHistory.getScrollBarPosition(id) );
+  if(AppConfig::get().getRememberCursorAtOrdinarySelection()) {
+    edView->setCursorPosition( walkHistory->getCursorPosition(id) );
+    edView->setScrollBarPosition( walkHistory->getScrollBarPosition(id) );
   }
 
   // Обновление иконки аттачей
-  if( table->getRecord(pos)->getAttachTablePointer()->size()==0 )
-    edView->switchAttachIconExists(false); // Если нет приаттаченных файлов
-  else
-    edView->switchAttachIconExists(true); // Есть приаттаченные файлы
+  edView->switchAttachIconExists(!table->getRecord(pos)->getAttachTablePointer()->isEmpty());
 }
 
 
@@ -222,7 +188,7 @@ void RecordTableController::switchMetaEditorToEditorOrAttach(QModelIndex index)
   int column=index.column();
   qDebug() << "RecordTableController::switchMetaEditorToAttachLayoutIfNeed() : current column " << column;
 
-  QString fieldName=mytetraConfig.getRecordTableShowFields().at(column);
+  auto fieldName = AppConfig::get().getRecordTableShowFields().at(column);
 
   MetaEditor *edView=find_object<MetaEditor>("editorScreen");
   if(fieldName=="hasAttach" || fieldName=="attachCount") // Если это столбец с иконкой аттачей или количеством аттачей
@@ -232,12 +198,8 @@ void RecordTableController::switchMetaEditorToEditorOrAttach(QModelIndex index)
 }
 
 
-bool RecordTableController::isTableNotExists(void)
-{
- if( recordSourceModel->getTableData()==NULL )
-   return true;
- else
-   return false;
+bool RecordTableController::isTableNotExists(void) const {
+   return !recordSourceModel->getTableData();
 }
 
 
@@ -509,7 +471,7 @@ void RecordTableController::paste(void)
   int nList=clipboardRecords->getCount();
 
   // Пробегаются все записи в буфере
-  for(int i=0;i<nList;i++)
+  for(int i = 0;i < nList; ++i)
     addNew(GlobalParameters::AddNewRecordBehavior::ADD_TO_END, clipboardRecords->getRecord(i));
 
   // Обновление на экране ветки, на которой стоит засветка,
@@ -545,23 +507,21 @@ void RecordTableController::addNewAfterContext(void)
 }
 
 
-// Вызов окна добавления данных в таблицу конечных записей
-void RecordTableController::addNewRecord(int mode)
-{
+/// @brief Вызов окна добавления данных в таблицу конечных записей
+void RecordTableController::addNewRecord(int mode) {
   qDebug() << "In add_new_record()";
 
   // Создается окно ввода данных
   // При клике Ok внутри этого окна, будет создана временная директория
   // с картинками, содержащимися в тексте
   AddNewRecord addNewRecordWin( view );
-  int i=addNewRecordWin.exec();
-  if(i==QDialog::Rejected)
+  if(addNewRecordWin.exec() == QDialog::Rejected)
     return; // Была нажата отмена, ничего не нужно делать
 
-  // Имя директории, в которой расположены файлы картинок, используемые в тексте и приаттаченные файлы
-  QString directory=addNewRecordWin.getImagesDirectory();
+  // Имя директории, в которой расположены файлы картинок, используемые в тексте, и приаттаченные файлы
+  QString directory = addNewRecordWin.getImagesDirectory();
 
-  // todo: сделать заполнение таблицы приаттаченных файлов
+  /// @todo: сделать заполнение таблицы приаттаченных файлов
 
   Record record;
   record.switchToFat();
@@ -572,13 +532,8 @@ void RecordTableController::addNewRecord(int mode)
   record.setField("tags",   addNewRecordWin.getField("tags"));
   record.setPictureFiles( DiskHelper::getFilesFromDirectory(directory, "*.png") );
 
-  // Пока что принята концепция, что файлы нельзя приаттачить в момент создания записи
-  // Запись должна быть создана, потом можно аттачить файлы.
-  // Это ограничение для "ленивого" программинга, но пока так
-  // record.setAttachFiles( DiskHelper::getFilesFromDirectory(directory, "*.bin") );
-
   // Временная директория с картинками и приаттаченными файлами удаляется
-  DiskHelper::removeDirectory(directory);
+  QDir(directory).removeRecursively();
 
   // Введенные данные добавляются
   addNew(mode, record);
@@ -590,8 +545,7 @@ void RecordTableController::addNewRecord(int mode)
 }
 
 
-// Функция добавления новой записи в таблицу конечных записей
-// Принимает полный формат записи
+/// @brief Функция добавления новой записи в таблицу конечных записей. Принимает полный формат записи
 void RecordTableController::addNew(int mode, Record record)
 {
     qDebug() << "In add_new()";
@@ -600,9 +554,7 @@ void RecordTableController::addNew(int mode, Record record)
     QModelIndex posIndex=view->getFirstSelectionSourceIndex();
 
     // Вставка новых данных, возвращаемая позиция - это позиция в Source данных
-    int selPos=recordSourceModel->addTableData(mode,
-                                               posIndex,
-                                               record);
+    int selPos=recordSourceModel->addTableData(mode, posIndex, record);
 
     if(selPos>=0)
     {
@@ -620,23 +572,18 @@ void RecordTableController::onEditFieldContext(void)
 }
 
 
-// При выборе пункта "Блокировка записи" в контекстном меню
-void RecordTableController::onBlockContext(void)
-{
-  // Получение индекса выделенного элемента
-  QModelIndexList selectItems=view->selectionModel()->selectedIndexes();
-  QModelIndex index=selectItems.at(0);
+/// @brief При выборе пункта "Блокировка записи" в контекстном меню
+void RecordTableController::onBlockContext(void) {
+  auto index = view->selectionModel()->selectedIndexes().at(0);
 
   // Номер строки в базе
-  QModelIndex sourceIndex=convertProxyIndexToSourceIndex(index);
-  int pos=sourceIndex.row();
+  int pos = convertProxyIndexToSourceIndex(index).row();
 
   // Выясняется ссылка на таблицу конечных данных
   RecordTableData *table=recordSourceModel->getTableData();
 
   // Если строка не заблокирована
-  if(table->getField("block", pos)!="1")
-  {
+  if(table->getField("block", pos)!="1") {
     // Устанавливается значение в базе
     table->setField("block", "1", pos);
 
@@ -645,9 +592,7 @@ void RecordTableController::onBlockContext(void)
     view->updateRow(viewPos);
 
     find_object<TreeScreen>("treeScreen")->saveKnowTree(); // Сохранение дерева веток
-  }
-  else
-  {
+  } else {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Question);
 
@@ -656,10 +601,8 @@ void RecordTableController::onBlockContext(void)
     msgBox.setDefaultButton(QMessageBox::No);
     int ret = msgBox.exec();
 
-    if(ret==QMessageBox::Yes)
-    {
+    if(ret==QMessageBox::Yes) {
       table->setField("block", "", pos);
-
       find_object<TreeScreen>("treeScreen")->saveKnowTree(); // Сохранение дерева веток
     }
   }
@@ -706,13 +649,8 @@ void RecordTableController::editFieldContext(QModelIndex proxyIndex)
 }
 
 
-// Функция сохранения отредактированных полей записи в таблицу конечных записей
-void RecordTableController::editField(int pos,
-                                      QString name,
-                                      QString author,
-                                      QString url,
-                                      QString tags)
-{
+///  @brief Функция сохранения отредактированных полей записи в таблицу конечных записей
+void RecordTableController::editField(int pos, QString name, QString author, QString url, QString tags) {
   qDebug() << "In edit_field()";
 
   // Выясняется ссылка на таблицу конечных данных

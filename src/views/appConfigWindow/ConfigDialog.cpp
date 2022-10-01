@@ -17,12 +17,6 @@ ConfigDialog::ConfigDialog(QWidget *parent) : QDialog(parent)
 }
 
 
-ConfigDialog::~ConfigDialog()
-{
-
-}
-
-
 void ConfigDialog::setupUi(void)
 {
     // Список конфигурирующих виджетов
@@ -52,12 +46,8 @@ void ConfigDialog::setupUi(void)
 void ConfigDialog::setupSignals(void)
 {
     connect(confirmButtons, &QDialogButtonBox::accepted, this, &ConfigDialog::applyChanges);
-
     connect(confirmButtons, &QDialogButtonBox::rejected, this, &ConfigDialog::reject);
-
-    connect(contentsWidget, &QListWidget::currentItemChanged,
-            this,           &ConfigDialog::changePage);
-
+    connect(contentsWidget, &QListWidget::currentItemChanged, this, &ConfigDialog::changePage);
 }
 
 
@@ -66,9 +56,6 @@ void ConfigDialog::assembly(void)
     QHBoxLayout *horizontalLayout = new QHBoxLayout;
     horizontalLayout->addWidget(contentsWidget);
     horizontalLayout->addWidget(pagesWidget, 1); // horizontalLayout->addWidget(pagesWidget, 1);
-
-    // scrollArea->setWidget(pagesWidget);
-    // scrollArea->adjustSize();
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout;
     buttonsLayout->addStretch(1);
@@ -111,23 +98,6 @@ void ConfigDialog::changePage(QListWidgetItem *current, QListWidgetItem *previou
     current = previous;
 
   pagesWidget->setCurrentIndex(contentsWidget->row(current));
-
-  // scrollArea->adjustSize();
-}
-
-
-
-void ConfigDialog::externalChangePage(QListWidgetItem *item)
-{
-  contentsWidget->setCurrentItem(item);
-
-  // scrollArea->adjustSize();
-}
-
-
-void ConfigDialog::setMenuListVisible(bool visible)
-{
-    contentsWidget->setVisible(visible);
 }
 
 
@@ -135,18 +105,14 @@ void ConfigDialog::updateListWidth(void)
 {
  contentsWidget->updateGeometry();
  contentsWidget->update();
-
- // scrollArea->adjustSize();
 }
 
 
-void ConfigDialog::applyChanges(void)
-{
+void ConfigDialog::applyChanges(void) {
  int difficultFlag=0;
 
  // Перебираются виджеты настройки
- for(int i=0;i<pagesWidget->count();i++)
-  {
+ for(int i=0;i<pagesWidget->count();i++) {
    // Выясняется указатель на виджет
    ConfigPage *currentConfigPage=qobject_cast<ConfigPage *>(pagesWidget->widget(i));
     
@@ -156,8 +122,7 @@ void ConfigDialog::applyChanges(void)
   }
  
  // Если требуется перезапустить программу для принятия изменений
- if(difficultFlag==1)
-  {
+ if(difficultFlag==1) {
    QMessageBox::warning(this, tr("Warning"),
                               tr("The program will have to be restarted for changes to take effect."),
                               QMessageBox::Ok); 

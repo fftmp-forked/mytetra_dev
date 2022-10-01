@@ -3,10 +3,7 @@
 #include <QTextEdit>
 #include <QPaintEvent>
 #include <QMimeData>
-#include <QTapAndHoldGesture>
 #include <QEvent>
-#include <QGestureEvent>
-#include <QTextDocumentFragment>
 
 class EditorTextArea : public QTextEdit
 {
@@ -15,7 +12,7 @@ class EditorTextArea : public QTextEdit
  public:
 
   EditorTextArea(QWidget *parent=nullptr);
-  ~EditorTextArea(void);
+  ~EditorTextArea() {};
 
   // Константы, используемые для определения формата данных в буфере обмена
   enum MimeDataFormat{MimeDataText=1,
@@ -29,7 +26,7 @@ class EditorTextArea : public QTextEdit
   virtual void insertFromMimeData(const QMimeData *source);
   int detectMimeDataFormat(const QMimeData *source);
 
-  bool getShowFormatting(void);
+  bool getShowFormatting() const {return flagShowFormatting;}
   void setShowFormatting(bool i);
 
   int getIndentStartedLeft(void);
@@ -72,8 +69,6 @@ private:
 
 
   bool event(QEvent *event);
-  bool gestureEvent(QGestureEvent *event);
-  void tapAndHoldGestureTriggered(QTapAndHoldGesture *gesture);
 
   virtual bool eventFilter(QObject *o, QEvent *e);
 

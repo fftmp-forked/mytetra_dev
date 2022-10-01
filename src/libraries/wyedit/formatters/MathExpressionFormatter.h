@@ -1,8 +1,5 @@
 #pragma once
 
-#include <QTextImageFormat>
-#include <QTextDocumentFragment>
-
 #include "Formatter.h"
 
 

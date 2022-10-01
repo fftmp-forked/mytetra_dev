@@ -4,8 +4,6 @@
 #include "AppConfigPage_History.h"
 #include "models/appConfig/AppConfig.h"
 
-extern AppConfig mytetraConfig;
-
 
 AppConfigPage_History::AppConfigPage_History(QWidget *parent) : ConfigPage(parent)
 {
@@ -28,11 +26,11 @@ void AppConfigPage_History::setupUi()
     // Настройки курсора при навигации по истории
     rememberAtHistoryNavigationCheckBox=new QCheckBox(this);
     rememberAtHistoryNavigationCheckBox->setText(tr("Remember cursor position at history navigation"));
-    rememberAtHistoryNavigationCheckBox->setChecked(mytetraConfig.getRememberCursorAtHistoryNavigation());
+    rememberAtHistoryNavigationCheckBox->setChecked(AppConfig::get().getRememberCursorAtHistoryNavigation());
 
     rememberAtOrdinarySelectionCheckBox=new QCheckBox(this);
     rememberAtOrdinarySelectionCheckBox->setText(tr("Try remember cursor position at ordinary selection"));
-    rememberAtOrdinarySelectionCheckBox->setChecked(mytetraConfig.getRememberCursorAtOrdinarySelection());
+    rememberAtOrdinarySelectionCheckBox->setChecked(AppConfig::get().getRememberCursorAtOrdinarySelection());
 }
 
 
@@ -73,15 +71,13 @@ int AppConfigPage_History::applyChanges()
 
     int result=0;
 
-    // Сохраняется настройка нужно ли вспоминать позицию курсора при перемещении
-    // по истории
-    if(mytetraConfig.getRememberCursorAtHistoryNavigation()!=rememberAtHistoryNavigationCheckBox->isChecked())
-      mytetraConfig.setRememberCursorAtHistoryNavigation(rememberAtHistoryNavigationCheckBox->isChecked());
+    // Сохраняется настройка нужно ли вспоминать позицию курсора при перемещении по истории
+    if(AppConfig::get().getRememberCursorAtHistoryNavigation()!=rememberAtHistoryNavigationCheckBox->isChecked())
+      AppConfig::get().setRememberCursorAtHistoryNavigation(rememberAtHistoryNavigationCheckBox->isChecked());
 
-    // Сохраняется настройка нужно ли пытаться вспоминать позицию курсора при
-    // обычном выборе записи
-    if(mytetraConfig.getRememberCursorAtOrdinarySelection()!=rememberAtOrdinarySelectionCheckBox->isChecked())
-      mytetraConfig.setRememberCursorAtOrdinarySelection(rememberAtOrdinarySelectionCheckBox->isChecked());
+    // Сохраняется настройка нужно ли пытаться вспоминать позицию курсора при обычном выборе записи
+    if(AppConfig::get().getRememberCursorAtOrdinarySelection()!=rememberAtOrdinarySelectionCheckBox->isChecked())
+      AppConfig::get().setRememberCursorAtOrdinarySelection(rememberAtOrdinarySelectionCheckBox->isChecked());
 
     return result;
 }

@@ -7,10 +7,10 @@
 #include <QMultiMap>
 #include <QList>
 
-#include "libraries/ClipboardRecords.h"
+#include "../models/recordTable/Record.h"
 
-// Определяется структура данных
-// которая будет передаваться через буфер обмена
+
+/// @brief структура данных, которая будет передаваться через буфер обмена
 struct CLIPB_BRANCH_STRUCT
 {
  // Список веток
@@ -43,8 +43,8 @@ class ClipboardBranch : public QMimeData
  Q_OBJECT
  
 public:
- ClipboardBranch(void);
- ~ClipboardBranch(void);
+ ClipboardBranch(void) : QMimeData() {init();}
+ ~ClipboardBranch(void) {}
 
  void init(void);
 
@@ -57,7 +57,7 @@ public:
  void printIdTree(void) const;
  
  // Этот метод QMimeData надо переопределить, так как он виртуальный
- QStringList formats() const;
+ QStringList formats() const {return clipboardBranchFormat;}
 
  // Получение полей для указанной ветки
  QMap<QString, QString> getBranchFieldsById(QString id);

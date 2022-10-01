@@ -3,7 +3,7 @@
 #include "EditorToolbarUsedCommandsController.h"
 
 
-EditorToolbarUsedCommandsController::EditorToolbarUsedCommandsController(GlobalParameters::EditorToolbar tb, QObject *parent) : QObject(parent)
+EditorToolbarUsedCommandsController::EditorToolbarUsedCommandsController(EditorToolbarSettingsUsedToolsModel::EditorToolbarLine tb, QObject *parent) : QObject(parent)
 {
     // указание на обрабатываемую панель
     this->tb = tb;

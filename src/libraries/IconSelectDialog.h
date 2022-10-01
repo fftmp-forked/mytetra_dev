@@ -14,15 +14,15 @@ class IconSelectDialog : public QDialog
 
 public:
   IconSelectDialog();
-  ~IconSelectDialog();
+  ~IconSelectDialog() {};
 
   enum resultCode{RemoveIconCode=2};
 
   void setPath(QString iPath);
   void setDefaultSection(QString iSectionName);
-  QString getCurrentSection();
+  QString getCurrentSection() const {return sectionComboBox.itemText(currentSectionIndex);};
 
-  QString getSelectFileName(void);
+  QString getSelectFileName(void) const {return currentFileName;};
 
   int exec();
 

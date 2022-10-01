@@ -1,8 +1,8 @@
 #pragma once
 
-class QString;
+#include <QString>
 
 
 QString getUniqueId(void);
-QString getUniqueImageName(void);
+inline QString getUniqueImageName(void) { return "image" + getUniqueId() + ".png"; }
 

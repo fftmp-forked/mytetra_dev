@@ -4,10 +4,6 @@
 #include "models/appConfig/AppConfig.h"
 #include "libraries/helpers/DebugHelper.h"
 
-extern AppConfig mytetraConfig;
-
-// Виджет ввода инфополей
-
 
 InfoFieldEnter::InfoFieldEnter(QWidget *parent) : QWidget(parent)
 {
@@ -56,7 +52,7 @@ void InfoFieldEnter::setup_ui(void)
  expandInfo->setMinimumSize(x,x);
  expandInfo->setMaximumSize(x,x);
  expandInfo->resize(x,x);
- if(mytetraConfig.get_addnewrecord_expand_info()=="0")
+ if(AppConfig::get().get_addnewrecord_expand_info()=="0")
   {
    expandInfo->setIcon(QIcon(":/resource/pic/triangl_dn.svg"));
    // expandInfo->setIcon(this->style()->standardIcon(QStyle::SP_ArrowDown));
@@ -100,7 +96,7 @@ void InfoFieldEnter::assembly(void)
  infoFieldLayout->addWidget(recordTags,y,1);
 
  // Устанавливается видимость или невидимость полей author, url, tags...
- expandInfoOnDisplay( mytetraConfig.get_addnewrecord_expand_info() );
+ expandInfoOnDisplay( AppConfig::get().get_addnewrecord_expand_info() );
 
  // Полученый набор элементов устанавливается для текущего виджета
  setLayout(infoFieldLayout);
@@ -138,12 +134,12 @@ void InfoFieldEnter::expandInfoOnDisplay(QString expand)
 void InfoFieldEnter::expandInfoClick(void)
 {
  // Если в данный момент информация "свернута"
- if(mytetraConfig.get_addnewrecord_expand_info()=="0")
+ if(AppConfig::get().get_addnewrecord_expand_info()=="0")
  {
   // Надо информацию развернуть
   expandInfoOnDisplay("1");
 
-  mytetraConfig.set_addnewrecord_expand_info("1");
+  AppConfig::get().set_addnewrecord_expand_info("1");
 
   expandInfo->setIcon(QIcon(":/resource/pic/triangl_up.svg"));
  }
@@ -152,7 +148,7 @@ void InfoFieldEnter::expandInfoClick(void)
   // Надо информацию свернуть
   expandInfoOnDisplay("0");
 
-  mytetraConfig.set_addnewrecord_expand_info("0");
+  AppConfig::get().set_addnewrecord_expand_info("0");
 
   expandInfo->setIcon(QIcon(":/resource/pic/triangl_dn.svg"));
  }
@@ -165,12 +161,8 @@ void InfoFieldEnter::setFocusToStart(void)
 }
 
 
-bool InfoFieldEnter::checkFieldName(QString name)
-{
- if(name=="name" ||
-    name=="author" ||
-    name=="url" ||
-    name=="tags")
+bool InfoFieldEnter::checkFieldName(QString name) {
+ if(name=="name" || name=="author" || name=="url" || name=="tags")
   return true;
  else
   return false;

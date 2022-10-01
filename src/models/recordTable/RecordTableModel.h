@@ -24,7 +24,7 @@ class RecordTableModel : public QAbstractTableModel
 
 public:
     RecordTableModel(QObject *pobj=nullptr);
-    ~RecordTableModel();
+    ~RecordTableModel() {}
 
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
@@ -42,22 +42,16 @@ public:
 
     bool removeRows(int row, int count, const QModelIndex &parent=QModelIndex());
 
-
-public slots:
-
-
 private:
 
     // Установка указателя на таблицу данных, с которой нужно работать модели
     void setTableData(RecordTableData *rtData);
 
     // Ссылка на данные, с которыми работает модель
-    RecordTableData *getTableData(void);
+    RecordTableData *getTableData(void) const {return table;}
 
     // Добавление записей
-    int addTableData(int mode,
-                     QModelIndex posIndex,
-                     Record record);
+    int addTableData(int mode, QModelIndex posIndex, Record record);
 
     void onRecordTableConfigChange(void);
 

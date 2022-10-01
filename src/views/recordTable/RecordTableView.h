@@ -2,29 +2,24 @@
 
 #include <QWidget>
 #include <QTableView>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QToolBar>
-#include <QStringList>
 #include <QItemSelection>
 #include <QMenu>
-#include <QTapAndHoldGesture>
 #include <QEvent>
-#include <QGestureEvent>
 
 class ClipboardRecords;
 class RecordTableController;
 
 
+/// @brief Виджет, отображащий список записей в ветке
 class RecordTableView : public QTableView
 {
  Q_OBJECT
 
 public:
  RecordTableView(QWidget *parent=nullptr);
- virtual ~RecordTableView();
+ virtual ~RecordTableView() {};
 
- void setController(RecordTableController *pController);
+ void setController(RecordTableController *pController) { controller=pController; };
 
  void init(void);
 
@@ -70,7 +65,7 @@ public slots:
 protected slots:
 
  // Реакия на сдвиг засветки клавишами или мышкой
- void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected );
+ void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
  // Слот, который автоматически срабатыват при изменении selection в списке
  // Этот слот нигде не надо прописывать через connect(), так как он
@@ -78,9 +73,8 @@ protected slots:
  virtual void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
  void onPressToRecord(const QModelIndex &index);
- void onClickToRecord(const QModelIndex &index);
 
- void onDropEventHandleCatch();
+ void onDropEventHandleCatch() {isDragHappeningNow=false;} // Слот вызывается из KnowTreeView если произошол Drop
 
 protected:
 
@@ -91,11 +85,7 @@ protected:
 
  void assemblyContextMenu(void);
 
- void editField(int pos,
-                QString name,
-                QString author,
-                QString url,
-                QString tags);
+ void editField(int pos, QString name, QString author, QString url, QString tags);
 
  void deleteRecords(void);
 
@@ -103,8 +93,6 @@ protected:
  void clickToRecord(const QModelIndex &index);
 
  bool event(QEvent *event);
- bool gestureEvent(QGestureEvent *event);
- void tapAndHoldGestureTriggered(QTapAndHoldGesture *gesture);
 
  QPoint mouseStartPos;
  void mousePressEvent(QMouseEvent *event);

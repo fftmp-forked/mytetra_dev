@@ -18,7 +18,7 @@ public:
     ~KnownBasesConfig();
 
     void init(void);
-    bool isInit(void);
+    bool isInit(void) const {return isInitFlag;}
 
     // Версия формата конфигфайла
     int getConfigVersion(void);

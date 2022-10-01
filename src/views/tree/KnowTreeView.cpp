@@ -3,26 +3,20 @@
 #include <QAbstractItemModel>
 #include <QMessageBox>
 
-#include "main.h"
 #include "KnowTreeView.h"
 #include "TreeScreen.h"
 #include "libraries/ClipboardRecords.h"
 #include "libraries/GlobalParameters.h"
 #include "libraries/FixedParameters.h"
 #include "libraries/helpers/ObjectHelper.h"
-#include "libraries/helpers/GestureHelper.h"
 #include "models/tree/KnowTreeModel.h"
 #include "models/recordTable/RecordTableData.h"
 #include "models/tree/TreeItem.h"
-#include "models/recordTable/RecordTableModel.h"
-#include "views/mainWindow/MainWindow.h"
 #include "views/recordTable/RecordTableScreen.h"
 #include "views/recordTable/RecordTableView.h"
 #include "views/record/MetaEditor.h"
 #include "controllers/recordTable/RecordTableController.h"
 
-
-extern GlobalParameters globalParameters;
 
 
 KnowTreeView::KnowTreeView(QWidget *parent) : QTreeView(parent)
@@ -33,9 +27,6 @@ KnowTreeView::KnowTreeView(QWidget *parent) : QTreeView(parent)
 
  // Разрешение принимать жест QTapAndHoldGesture
  grabGesture(Qt::TapAndHoldGesture);
-
- // Настройка области виджета для кинетической прокрутки
- GestureHelper::setKineticScrollArea( qobject_cast<QAbstractItemView*>(this) );
 }
 
 
@@ -51,35 +42,10 @@ bool KnowTreeView::event(QEvent *event)
     if (event->type() == QEvent::Gesture)
      {
         qDebug() << "In gesture event(): " << event << " Event type: " << event->type();
-        return gestureEvent(static_cast<QGestureEvent*>(event));
+        return true; /// @todo: ошмётки android
      }
 
     return QTreeView::event(event);
-}
-
-
-// Обработчик жестов
-// Вызывается из обработчика событий
-bool KnowTreeView::gestureEvent(QGestureEvent *event)
-{
-  qDebug() << "In gestureEvent()" << event;
-
-  if (QGesture *gesture = event->gesture(Qt::TapAndHoldGesture))
-    tapAndHoldGestureTriggered(static_cast<QTapAndHoldGesture *>(gesture));
-
-  return true;
-}
-
-
-// Обработчик жеста TapAndHoldGesture
-// Вызывается из обработчика жестов
-void KnowTreeView::tapAndHoldGestureTriggered(QTapAndHoldGesture *gesture)
-{
-  qDebug() << "In tapAndHoldGestureTriggered()" << gesture;
-
-  if(gesture->state()==Qt::GestureFinished)
-    if(globalParameters.getOs() == GlobalParameters::OS_type::Android)
-      emit tapAndHoldGestureFinished( mapFromGlobal(gesture->position().toPoint()) );
 }
 
 

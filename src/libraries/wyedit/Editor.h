@@ -10,7 +10,6 @@
 #include <QLabel>
 #include <QToolBar>
 #include <QSlider>
-#include <QStringList>
 
 #include "EditorFindDialog.h"
 #include "formatters/Formatter.h"
@@ -33,6 +32,16 @@
 
 
 #define WYEDIT_VERSION "WyEdit v.1.10 / 20.01.2016"
+
+// Описание заголовка математического выражения в поле Description PNG-файла
+// Математическое выражение состоит из текстового идентификатора приложения, типа хранимого значения
+// и номера версии формата хранимого значения, выглядит следующим образом:
+// "mytetra:mathExpression:v0001:математическое выражение в формате TeX"
+const QLatin1String mathExpDescriptionType("mathExpression");
+const int mathExpVersion = 1; // Текущая максимальная версия формата хранения формулы
+const int mathExpVersionNumberLen = 4; // Сколько символов занимает номер версии (только цифры)
+const int mathExpHeaderLen = 29; // Сколько символов занимает весь заголовок (префикс, номер версии, три двоеточия)
+
 
 class EditorConfig;
 class EditorTextEdit;

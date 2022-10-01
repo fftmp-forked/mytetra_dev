@@ -2,7 +2,6 @@
 #include <QMap>
 #include <QDomNamedNodeMap>
 
-#include "main.h"
 #include "KnowTreeModel.h"
 #include "TreeItem.h"
 #include "TreeModel.h"
@@ -19,12 +18,12 @@
 #include "libraries/helpers/UniqueIdHelper.h"
 #include "libraries/wyedit/EditorShowTextDispatcher.h"
 
+// Поддерживаемая версия формата базы (хранилища)
+#define CURRENT_FORMAT_VERSION    1
+#define CURRENT_FORMAT_SUBVERSION 2
 
-extern AppConfig mytetraConfig;
-extern GlobalParameters globalParameters;
 
-
-// Конструктор модели дерева, состоящего из Item элементов
+/// @brief Конструктор модели дерева, состоящего из Item элементов
 KnowTreeModel::KnowTreeModel(QObject *parent) : TreeModel(parent)
 {
   xmlFileName="";
@@ -36,17 +35,13 @@ KnowTreeModel::KnowTreeModel(QObject *parent) : TreeModel(parent)
 }
 
 
-// Деструктор Item модели.
-// По-хорошему деструктор перед удалением корневого элемента должен пробежать по
-// дереву элементов и удалить их
-KnowTreeModel::~KnowTreeModel()
-{
+/// @todo По-хорошему деструктор перед удалением корневого элемента должен пробежать по дереву элементов и удалить их
+KnowTreeModel::~KnowTreeModel() {
   delete rootItem;
 }
 
 
-void KnowTreeModel::initFromXML(QString fileName)
-{
+void KnowTreeModel::initFromXML(QString fileName) {
   xmlFileName=fileName;
 
   // Загрузка файла и преобразование его в DOM модель
@@ -56,12 +51,11 @@ void KnowTreeModel::initFromXML(QString fileName)
 
   init(xmlt.getDomModel());
 
-  lastLoadDateTime=QDateTime::currentDateTime();
+  lastAccess = QDateTime::currentDateTime();
 }
 
 
-void KnowTreeModel::init(QDomDocument *domModel)
-{
+void KnowTreeModel::init(QDomDocument *domModel) {
   // Проверка формата XML-файла
   if( !checkFormat(domModel->documentElement().firstChildElement("format")) )
   {
@@ -71,8 +65,7 @@ void KnowTreeModel::init(QDomDocument *domModel)
 
   QMap<QString, QString> rootData;
 
-  // Определяется одно поле в корневом объекте
-  // то есть на экране будет один столбец
+  // Определяется одно поле в корневом объекте то есть на экране будет один столбец
   rootData["id"]="0";
   rootData["name"]="";
 
@@ -90,8 +83,7 @@ void KnowTreeModel::init(QDomDocument *domModel)
 }
 
 
-bool KnowTreeModel::checkFormat(QDomElement elementFormat)
-{
+bool KnowTreeModel::checkFormat(QDomElement elementFormat) {
   int baseVersion=0;
   int baseSubVersion=0;
 
@@ -103,8 +95,7 @@ bool KnowTreeModel::checkFormat(QDomElement elementFormat)
   }
 
   // Если номер версии или подверсии выше чем поддерживаемые программой
-  if(baseVersion > CURRENT_FORMAT_VERSION ||
-     baseSubVersion > CURRENT_FORMAT_SUBVERSION)
+  if(baseVersion > CURRENT_FORMAT_VERSION || baseSubVersion > CURRENT_FORMAT_SUBVERSION)
     return false;
 
   // В настоящий момент поддерживается формат 1.2
@@ -130,8 +121,7 @@ bool KnowTreeModel::updateSubVersionFrom1To2(void)
 }
 
 
-void KnowTreeModel::reload(void)
-{
+void KnowTreeModel::reload(void) {
   initFromXML(xmlFileName);
 }
 
@@ -141,8 +131,7 @@ void KnowTreeModel::setupModelData(QDomDocument *dommodel, TreeItem *parent)
 {
   QDomElement contentRootNode=dommodel->documentElement().firstChildElement("content").firstChildElement("node");
 
-  if(contentRootNode.isNull())
-   {
+  if(contentRootNode.isNull()) {
     qDebug() << "Unable load xml tree, first content node not found.";
     return;
    }
@@ -164,20 +153,10 @@ void KnowTreeModel::parseNodeElement(QDomElement domElement, TreeItem *iParent)
 
   // Пробегаются все DOM элементы текущего уровня
   // и рекурсивно вызывается обработка подуровней
-  while(!domElement.isNull())
-  {
-    if(domElement.tagName()=="node")
-    {
+  while(!domElement.isNull()) {
+    if(domElement.tagName()=="node") {
       // Обнаруженый подузел прикрепляется к текущему элементу
       parent->insertChildren(parent->childCount(), 1, 1);
-
-      /*
-    QString line1,line_name,line_id;
-    line1=n.tagName();
-    line_name=n.attribute("name");
-    line_id=n.attribute("id");
-    qDebug() << "Read node " << line1 << " " << line_id<< " " << line_name;
-    */
 
       // Определяются атрибуты узла дерева разделов
       QDomNamedNodeMap attributeMap = domElement.attributes();
@@ -217,8 +196,6 @@ QDomElement KnowTreeModel::exportFullModelDataToDom(TreeItem *root)
   parseTreeToDom(&doc, &elm, root);
 
   qDebug() << "Parse tree to DOM elapsed time: " << timer.elapsed() << " ms";
-
-  // qDebug() << "In export_fullmodeldata_to_dom stop element " << xmlNodeToString(elm);
 
   return elm;
 }
@@ -353,7 +330,7 @@ QString KnowTreeModel::importBranchFromDirectory(TreeItem *startItem, QString im
 }
 
 
-// Копирование директорий импортируемой ветки в основную базу
+/// @brief Копирование директорий импортируемой ветки в основную базу
 bool KnowTreeModel::copyImportRecordDirectories( QDomDocument &doc,
                                                  QString importDir,
                                                  QMap<QString, QString> idRecordTranslate,
@@ -372,8 +349,8 @@ bool KnowTreeModel::copyImportRecordDirectories( QDomDocument &doc,
       if(dirRecordTranslate.contains(shortFromDir))
         shortToDir=dirRecordTranslate[shortFromDir]; // Директория назначения изменяется согласно таблице кодировки
 
-      QString fullFromDir=importDir+"/base/"+shortFromDir;
-      QString fullToDir=mytetraConfig.get_tetradir()+"/base/"+shortToDir;
+      auto fullFromDir = importDir+"/base/"+shortFromDir;
+      auto fullToDir = AppConfig::get().get_tetradir()+"/base/"+shortToDir;
 
       // Создание директории в основной базе
       if( !QDir().mkpath(fullToDir) )
@@ -397,7 +374,7 @@ bool KnowTreeModel::copyImportRecordDirectories( QDomDocument &doc,
 }
 
 
-// Преобразование DOM-документа согласно таблицам трансляции
+/// @brief Преобразование DOM-документа согласно таблицам трансляции
 void KnowTreeModel::translateImportDomData( QDomDocument &doc ,
                                             QString elementName,
                                             QString elementAttribute,
@@ -499,8 +476,6 @@ void KnowTreeModel::parseTreeToDom(QDomDocument *doc, QDomElement *xmlData, Tree
    // Добавление временного элемента к основному документу
    xmlData->appendChild(tempElement);
 
-   // qDebug() << "In parsetreetodom() current construct doc " << xmlNodeToString(*xmldata);
-
    // Рекурсивная обработка
    QDomElement workElement=xmlData->lastChildElement();
    parseTreeToDom(doc, &workElement, currItem->child(i) );
@@ -543,19 +518,15 @@ void KnowTreeModel::parseTreeToStreamWriter( QXmlStreamWriter *xmlWriter, TreeIt
 }
 
 
-// Запись всех данных в XML файл
-void KnowTreeModel::save()
-{
+/// @brief Запись всех данных в XML файл
+void KnowTreeModel::save() {
   // Если имя файла не было проинициализировано
   if(xmlFileName=="")
     criticalError("In KnowTreeModel can't set file name for XML file");
 
-  // Перенос текущего файла дерева в корзину
-  DiskHelper::removeFileToTrash(xmlFileName);
-
   // Создается новый файл дерева
   QFile writeFile(xmlFileName);
-  if (!writeFile.open(QIODevice::WriteOnly)) // | QIODevice::Text
+  if (!writeFile.open(QIODevice::WriteOnly)) // implicitly truncate file
     criticalError("Can't open file "+xmlFileName+" for write.");
 
   // Создание объекта потоковой генерации XML-данных в файл
@@ -589,19 +560,7 @@ void KnowTreeModel::save()
 
   writeFile.close();
 
-  lastSaveDateTime=QDateTime::currentDateTime();
-}
-
-
-QDateTime KnowTreeModel::getLastSaveDateTime()
-{
-  return lastSaveDateTime;
-}
-
-
-QDateTime KnowTreeModel::getLastLoadDateTime()
-{
-  return lastLoadDateTime;
+  lastAccess = QDateTime::currentDateTime();
 }
 
 
@@ -1336,91 +1295,3 @@ bool KnowTreeModel::isContainsBlockRecordsRecurse(TreeItem *item, int mode)
 
   return isBlock;
 }
-
-
-QString KnowTreeModel::getXmlFileName() const
-{
-  return xmlFileName;
-}
-
-
-// Старый вариант поиска QModelIndex по известному TreeItem закомментирован,
-// но алгоритм может пригодиться для поиска других данных
-/*
-// Получение QModelIndex по известному TreeItem
-QModelIndex knowtreemodel::get_item_index(TreeItem *item)
-{
- // Выясняется начальный QModelIndex дерева
- QModelIndex rootindex=index( 0, 0 );
- 
- // Очищается флаг поиска внутри элементов
- get_item_index_recurse(rootindex, item, 0);
- 
- // Перебираются элементы на одном уровне вложения с начальным элементом дерева
- for(int i=0;rootindex.sibling(i,0).isValid();i++)
-  {
-   // qDebug() << "Sibling current " << (find_object<KnowTreeView>("knowTreeView")->model()->data(rootindex.sibling(i,0),Qt::EditRole)).toString();
-
-   // Перебираемый элемент проверяется на соответствие с искомым TreeItem
-   if(item==static_cast<TreeItem*>(rootindex.sibling(i,0).internalPointer()))
-    return rootindex.sibling(i,0);
-   else
-    {
-     // Производится поиск внутри элемента
-     QModelIndex idx=get_item_index_recurse(rootindex.sibling(i,0), item, 1);
-    
-     // Если был найден элемент
-     if(idx.isValid())return idx;
-    }
-  }
- 
- // Если ничего не было найдено, возвращается пустой индекс
- return QModelIndex();
-}
-
-
-QModelIndex knowtreemodel::get_item_index_recurse(QModelIndex currindex, TreeItem *finditem, int mode)
-{
- static QModelIndex findindex;
- static int findflag=0;
-
- // Из QModelIndex можно всегда получить указатель TreeItem,
- // поэтому поиск можно вести по QModelIndex
- 
- // Инициализация поиска
- if(mode==0)
-  {
-   findflag=0;
-   return QModelIndex();
-  } 
-
- // qDebug() << "Recurse current " << (find_object<KnowTreeView>("knowTreeView")->model()->data(currindex,Qt::EditRole)).toString();
- // qDebug() << "Current index have " << currindex.row() << "row";
- // qDebug() << "Find flag " << findflag;
- 
- // Если был найден QModelIndex  
- if(findflag==1)return findindex;
-  
- for(int i=0;currindex.child(i,0).isValid();i++)
-  {
-   // Проверяется текущий элемент, не соответствует ли 
-   // его QModelIndex искомому TreeItem
-   if(findflag==0 && 
-      finditem==static_cast<TreeItem*>(currindex.child(i,0).internalPointer()))
-    {
-     findflag=1;
-     findindex=currindex.child(i,0);
-     return findindex;
-    }
-   
-   // Рекурсивный вызов поиска в глубину дерева
-   get_item_index_recurse(currindex.child(i,0), finditem, 1);
-   
-   // Если был найден QModelIndex  
-   if(findflag==1)return findindex;
-  }
-
- // Сюда код доходит если на текущем уровне поиска элемент еще не найден
- return QModelIndex();
-}
-*/

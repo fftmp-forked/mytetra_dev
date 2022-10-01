@@ -1,15 +1,11 @@
 #pragma once
 
-#include <QtGlobal>
-#include <QWidget>
-#include <QListView>
-#include <QToolButton>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QToolBar>
-#include <QInputDialog>
-#include <QFileInfo>
 #include <QDateTime>
+#include <QFileInfo>
+#include <QItemSelectionModel>
+#include <QToolBar>
+#include <QVBoxLayout>
+#include <QWidget>
 
 class KnowTreeModel;
 class KnowTreeView;
@@ -22,7 +18,7 @@ class TreeScreen : public QWidget
 
 public:
  TreeScreen(QWidget *parent=nullptr);
- virtual ~TreeScreen();
+ virtual ~TreeScreen() {}
 
  KnowTreeModel *knowTreeModel;
 

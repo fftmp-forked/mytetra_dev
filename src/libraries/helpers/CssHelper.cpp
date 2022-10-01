@@ -1,21 +1,9 @@
-#include <QtGlobal>
 #include <QApplication>
 #include <QScreen>
 #include <QFile>
 #include <QDebug>
 
 #include "CssHelper.h"
-
-#include "libraries/GlobalParameters.h"
-
-
-extern GlobalParameters globalParameters;
-
-
-CssHelper::CssHelper()
-{
-
-}
 
 
 qreal CssHelper::getCalculateIconSizePx(void)
@@ -30,7 +18,7 @@ qreal CssHelper::getCalculateIconSizePx(void)
 }
 
 
-// Замена в CSS-стиле все вхождения подстроки META_ICON_SIZE на вычисленный размер иконки в пикселях
+/// @brief Замена в CSS-стиле все вхождения подстроки META_ICON_SIZE на вычисленный размер иконки в пикселях
 QString CssHelper::replaceCssMetaIconSize(QString styleText)
 {
   styleText.replace( "META_ICON_SIZE", QString::number( (int) getCalculateIconSizePx() ) );
@@ -44,19 +32,20 @@ QString CssHelper::replaceCssMetaIconSize(QString styleText)
 }
 
 
-void CssHelper::setCssStyle()
-{
-  QString csspath = globalParameters.getWorkDirectory()+"/stylesheet.css";
+void CssHelper::createStyleSheetFile(QString dir) {
+  QFile::copy(":/standardconfig/stylesheet.css", dir+"/stylesheet.css");
+  QFile::setPermissions(dir+"/stylesheet.css", QFile::ReadUser | QFile::WriteUser);
+}
+
+
+void CssHelper::setCssStyle(QString dir) {
+  QString csspath = dir + "/stylesheet.css";
 
   QFile css(csspath);
 
-  bool openResult=css.open(QIODevice::ReadOnly | QIODevice::Text);
-
-  // Если файла не существует
-  if(!openResult)
-  {
+  if(!css.open(QIODevice::ReadOnly | QIODevice::Text)) {
     qDebug() << "Stylesheet not found in " << csspath << ". Create new css file.";
-    globalParameters.createStyleSheetFile( globalParameters.getWorkDirectory() );
+    createStyleSheetFile(dir);
   }
   css.close();
 

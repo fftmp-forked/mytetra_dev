@@ -5,20 +5,19 @@
 #include <QAction>
 #include <QToolBar>
 
-// Виджет отображения настроек каталогов известных баз данных
-
-
 class DatabasesManagementTable;
 class DatabasesManagementController;
 class QDialogButtonBox;
 
+
+/// @brief Виджет отображения настроек каталогов известных баз данных
 class DatabasesManagementScreen : public QDialog
 {
   Q_OBJECT
 
 public:
   DatabasesManagementScreen(QWidget *parent = nullptr);
-  virtual ~DatabasesManagementScreen();
+  virtual ~DatabasesManagementScreen() {}
 
   // Действия, используемые как на тулбаре, так и в контекстном меню
   QAction *actionSelect;
@@ -26,16 +25,9 @@ public:
   QAction *actionAdd;
   QAction *actionCopy;
 
-public slots:
-
-  void setupShortcuts(void);
-
 protected:
 
-  // Указатель на контроллер 
   DatabasesManagementController *databasesManagementController;
-
-  // Указатель на таблицу баз данных (представление)
   DatabasesManagementTable *databasesManagementTable;
 
   // Экранные элементы

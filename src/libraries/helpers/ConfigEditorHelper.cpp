@@ -1,34 +1,23 @@
-#include <QString>
 #include <QFile>
 #include <QTextStream>
 #include <QMessageBox>
 
+#include "main.h"
 #include "ConfigEditorHelper.h"
-#include "libraries/wyedit/EditorMultiLineInputDialog.h"
-#include "libraries/helpers/DebugHelper.h"
+#include "MultiLineInputDialog.h"
+#include "DebugHelper.h"
 
 
-extern QObject *pMainWindow;
-
-
-ConfigEditorHelper::ConfigEditorHelper()
-{
-
-}
-
-
-// Редактирование произвольного конфиг-файла (конфиг программы, конфиг редактора)
-void ConfigEditorHelper::editConfigFile( QString fileName, double sizeCoefficient )
-{
+/// @brief Редактирование произвольного конфиг-файла (конфиг программы, конфиг редактора)
+void ConfigEditorHelper::editConfigFile( QString fileName, double sizeCoefficient ) {
   // Окно диалога для редактирования файла конфига
-  EditorMultiLineInputDialog dialog( qobject_cast<QWidget *>(pMainWindow) );
+  MultiLineInputDialog dialog( qobject_cast<QWidget *>(pMainWindow) );
   dialog.setWordWrapMode(QTextOption::NoWrap);
   dialog.setWindowTitle(QObject::tr("Edit config file (Be careful!)"));
   dialog.setSizeCoefficient( sizeCoefficient );
 
   QFile file(fileName);
-  if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
-  {
+  if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     criticalError("Can't open config file "+fileName);
   }
 
@@ -46,10 +35,8 @@ void ConfigEditorHelper::editConfigFile( QString fileName, double sizeCoefficien
   if(!dialog.isModified())
     return;
 
-
   // Файл конфига открывается на запись
-  if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
-  {
+  if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
     criticalError("Can't open config file for write: "+fileName);
   }
 
@@ -63,7 +50,7 @@ void ConfigEditorHelper::editConfigFile( QString fileName, double sizeCoefficien
   // Для принятия изменений требуется перезапустить программу
   QMessageBox::warning(qobject_cast<QWidget *>(pMainWindow),
                        QObject::tr("Warning"),
-                       QObject::tr("The program will have to be restarted for changes to take effect."),
+                       QObject::tr("Program will be restarted to apply changes."),
                        QMessageBox::Ok);
   exit(0);
 }

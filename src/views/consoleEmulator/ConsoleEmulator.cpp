@@ -3,10 +3,7 @@
 
 #include "ConsoleEmulator.h"
 #include "models/appConfig/AppConfig.h"
-#include "libraries/ActionLogger.h"
 
-extern AppConfig mytetraConfig;
-extern ActionLogger actionLogger;
 
 ConsoleEmulator::ConsoleEmulator(QWidget *parent) : QDialog(parent)
 {
@@ -15,12 +12,6 @@ ConsoleEmulator::ConsoleEmulator(QWidget *parent) : QDialog(parent)
  setupUI();
  setupSignals();
  assembly();
-}
-
-
-ConsoleEmulator::~ConsoleEmulator()
-{
-
 }
 
 
@@ -38,7 +29,7 @@ void ConsoleEmulator::setupUI(void)
  consoleOutput=new QTextEdit(this);
  consoleOutput->setReadOnly(true);
  consoleOutput->setFontFamily("monospace");
- if(mytetraConfig.getSynchroConsoleDetails()==false)
+ if(AppConfig::get().getSynchroConsoleDetails()==false)
   consoleOutput->hide();
 
  waitClock=new WaitClock(this);
@@ -139,12 +130,12 @@ void ConsoleEmulator::onDetailsClick(void)
  if(consoleOutput->isHidden())
   {
    consoleOutput->show();
-   mytetraConfig.setSynchroConsoleDetails(true);
+   AppConfig::get().setSynchroConsoleDetails(true);
   }
  else
   {
    consoleOutput->hide();
-   mytetraConfig.setSynchroConsoleDetails(false);
+   AppConfig::get().setSynchroConsoleDetails(false);
   }
 
  this->adjustSize();
@@ -156,8 +147,6 @@ void ConsoleEmulator::switchToErrorView(void)
  qDebug() << "ConsoleEmulator::switchToErrorView() : Detect error!";
 
  isErrorMode=true;
-
- actionLogger.addAction("synchroError");
 
  // Сообщение об обнаруженной ошибке
  messageLabel->setText("<b>"+tr("Commands running error")+"</b>");

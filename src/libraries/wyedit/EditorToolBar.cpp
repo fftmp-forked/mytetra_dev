@@ -1,26 +1,10 @@
 #include <QDebug>
 #include <QStringList>
 
-#include "main.h"
+#include "../ShortcutManager/ShortcutManager.h"
 #include "EditorToolBar.h"
-#include "libraries/ShortcutManager.h"
-#include "libraries/helpers/DebugHelper.h"
-#include "libraries/helpers/ActionHelper.h"
-
-
-extern ShortcutManager shortcutManager;
-
-
-EditorToolBar::EditorToolBar(QWidget *parent) : QWidget(parent)
-{
-  isInit=false;
-}
-
-
-EditorToolBar::~EditorToolBar()
-{
-
-}
+#include "../helpers/DebugHelper.h"
+#include "../helpers/ActionHelper.h"
 
 
 void EditorToolBar::initToolsLine1(QStringList toolsLine)
@@ -55,7 +39,7 @@ void EditorToolBar::initDisableToolList(QStringList toolNames)
 // Если mode=WYEDIT_DESKTOP_MODE - происходит обычная инициализация
 // Если mode=WYEDIT_MOBILE_MODE - при инициализации в первую строку панели инструментов, слева, добавляется кнопка back
 // Теперь доп. кнопки добавляются в конструкторе EditorToolBarAssistant
-// todo: Нужно проверить, что для доп. кнопок выставляются правильные QAction в mobile-режиме
+/// @todo: Нужно проверить, что для доп. кнопок выставляются правильные QAction в mobile-режиме
 void EditorToolBar::init()
 {
     isInit=true;
@@ -68,8 +52,7 @@ void EditorToolBar::init()
 }
 
 
-QAction* EditorToolBar::generateAction(QIcon icon)
-{
+QAction* EditorToolBar::generateAction(QIcon icon) {
     actions.resize( actions.size()+1 );
 
     int currentIndex=actions.size()-1;
@@ -81,16 +64,14 @@ QAction* EditorToolBar::generateAction(QIcon icon)
 }
 
 
-void EditorToolBar::setupSignals()
-{
+void EditorToolBar::setupSignals() {
     // Обновление горячих клавиш, если они были изменены
-    connect(&shortcutManager, &ShortcutManager::updateWidgetShortcut, this, &EditorToolBar::setupShortcuts);
+    connect(&ShortcutManager::get(), &ShortcutManager::updateWidgetShortcut, this, &EditorToolBar::setupShortcuts);
 }
 
 
-// Создание объектов для линейки форматирования текста
-void EditorToolBar::setupToolBarTools(void)
-{
+/// @brief Создание объектов для линейки форматирования текста
+void EditorToolBar::setupToolBarTools(void) {
   // Для того, чтобы WyEdit нормально добавлял кнопки на панель согласно файлу editorconf.ini,
   // имена объектов должны начинаться на "editor_tb"
 
@@ -348,71 +329,69 @@ void EditorToolBar::setupToolBarTools(void)
 }
 
 
-void EditorToolBar::setupShortcuts(void)
-{
+void EditorToolBar::setupShortcuts(void) {
     qDebug() << "Setup shortcut for" << this->metaObject()->className();
-
-    shortcutManager.initAction("editor-bold", bold );
-    shortcutManager.initAction("editor-italic", italic);
-    shortcutManager.initAction("editor-underline", underline);
-    shortcutManager.initAction("editor-strikeout", strikeout);
-    shortcutManager.initAction("editor-superscript", superscript);
-    shortcutManager.initAction("editor-subscript", subscript);
-    shortcutManager.initAction("editor-monospace", monospace);
-    shortcutManager.initAction("editor-code", code);
-    shortcutManager.initAction("editor-clear", clear);
-    shortcutManager.initAction("editor-textOnly", textOnly);
-    shortcutManager.initAction("editor-fixBreakSymbol", fixBreakSymbol);
-    shortcutManager.initAction("editor-undo", undo );
-    shortcutManager.initAction("editor-redo", redo );
-    shortcutManager.initAction("editor-numericList", numericList);
-    shortcutManager.initAction("editor-dotList", dotList);
-    shortcutManager.initAction("editor-indentPlus", indentPlus);
-    shortcutManager.initAction("editor-indentMinus", indentMinus);
-    shortcutManager.initAction("editor-alignLeft", alignLeft);
-    shortcutManager.initAction("editor-alignCenter", alignCenter);
-    shortcutManager.initAction("editor-alignRight", alignRight);
-    shortcutManager.initAction("editor-alignWidth", alignWidth);
-    shortcutManager.initAction("editor-fontColor", fontColor);
-    shortcutManager.initAction("editor-backgroundColor", backgroundColor);
+    QList<QPair<QString, QAction*>> editorActions = {
+        {"bold", bold },
+        {"italic", italic},
+        {"underline", underline},
+        {"strikeout", strikeout},
+        {"superscript", superscript},
+        {"subscript", subscript},
+        {"monospace", monospace},
+        {"code", code},
+        {"clear", clear},
+        {"textOnly", textOnly},
+        {"fixBreakSymbol", fixBreakSymbol},
+        {"undo", undo },
+        {"redo", redo },
+        {"numericList", numericList},
+        {"dotList", dotList},
+        {"indentPlus", indentPlus},
+        {"indentMinus", indentMinus},
+        {"alignLeft", alignLeft},
+        {"alignCenter", alignCenter},
+        {"alignRight", alignRight},
+        {"alignWidth", alignWidth},
+        {"fontColor", fontColor},
+        {"backgroundColor", backgroundColor},
+        {"fontSelect", fontSelect->toolFocus.getSelectAction() },
+        {"fontSize", fontSize->toolFocus.getSelectAction() },
+        {"findText", findText},
+        {"settings", settings},
+        {"reference", reference},
+        {"showHtml", showHtml},
+        {"showFormatting", showFormatting},
+        {"createTable", createTable},
+        {"tableRemoveRow", tableRemoveRow},
+        {"tableRemoveCol", tableRemoveCol},
+        {"tableAddRow", tableAddRow},
+        {"tableAddCol", tableAddCol},
+        {"tableMergeCells", tableMergeCells},
+        {"tableSplitCell", tableSplitCell},
+        {"tableProperties", tableProperties},
+        {"insertImageFromFile", insertImageFromFile},
+        {"insertHorizontalLine", insertHorizontalLine},
+        {"mathExpression", mathExpression},
+        {"expandEditArea", expandEditArea},
+        {"expandToolsLines", expandToolsLines},
+        {"save", save},
+        {"showText", showText},
+        {"toAttach", toAttach}
+    };
+    ShortcutManager::get().initActions(ShortcutManager::SECTION_EDITOR, editorActions);
 
     // Настраиваются скрытые кнопки действия, а надписи настраиваются для самого виджета
     // Скрытые кнопки нужны чтобы работал выбор виджета по грячим кнопкам
-    shortcutManager.initAction("editor-fontSelect", fontSelect->toolFocus.getSelectAction() );
-    fontSelect->setStatusTip( shortcutManager.getFullDescription("editor-fontSelect") );
-    fontSelect->setToolTip( shortcutManager.getDescriptionWithShortcut("editor-fontSelect") );
-
-    shortcutManager.initAction("editor-fontSize", fontSize->toolFocus.getSelectAction() );
-    fontSize->setStatusTip( shortcutManager.getFullDescription("editor-fontSize") );
-    fontSize->setToolTip( shortcutManager.getDescriptionWithShortcut("editor-fontSize") );
-
-    shortcutManager.initAction("editor-findText", findText);
-    shortcutManager.initAction("editor-settings", settings);
-    shortcutManager.initAction("editor-reference", reference);
-    shortcutManager.initAction("editor-showHtml", showHtml);
-    shortcutManager.initAction("editor-showFormatting", showFormatting);
-    shortcutManager.initAction("editor-createTable", createTable);
-    shortcutManager.initAction("editor-tableRemoveRow", tableRemoveRow);
-    shortcutManager.initAction("editor-tableRemoveCol", tableRemoveCol);
-    shortcutManager.initAction("editor-tableAddRow", tableAddRow);
-    shortcutManager.initAction("editor-tableAddCol", tableAddCol);
-    shortcutManager.initAction("editor-tableMergeCells", tableMergeCells);
-    shortcutManager.initAction("editor-tableSplitCell", tableSplitCell);
-    shortcutManager.initAction("editor-tableProperties", tableProperties);
-    shortcutManager.initAction("editor-insertImageFromFile", insertImageFromFile);
-    shortcutManager.initAction("editor-insertHorizontalLine", insertHorizontalLine);
-    shortcutManager.initAction("editor-mathExpression", mathExpression);
-    shortcutManager.initAction("editor-expandEditArea", expandEditArea);
-    shortcutManager.initAction("editor-expandToolsLines", expandToolsLines);
-    shortcutManager.initAction("editor-save", save);
-    shortcutManager.initAction("editor-showText", showText);
-    shortcutManager.initAction("editor-toAttach", toAttach);
+    fontSize->setStatusTip( ShortcutManager::get().getFullDescription(ShortcutManager::SECTION_EDITOR, "fontSize") );
+    fontSize->setToolTip( ShortcutManager::get().getDescriptionWithShortcut(ShortcutManager::SECTION_EDITOR, "fontSize") );
+    fontSelect->setStatusTip( ShortcutManager::get().getFullDescription(ShortcutManager::SECTION_EDITOR, "fontSelect") );
+    fontSelect->setToolTip( ShortcutManager::get().getDescriptionWithShortcut(ShortcutManager::SECTION_EDITOR, "fontSelect") );
 }
 
 
-// Список названий всех контролов (команд) панелей инструментов
-QStringList EditorToolBar::getCommandNameList()
-{
+/// @brief Список названий всех контролов (команд) панелей инструментов
+QStringList EditorToolBar::getCommandNameList() {
     QRegularExpression nameMask("editor_tb_.*");
     QList<QWidget *> widgetList = this->findChildren<QWidget *>(nameMask);
     QList<QAction *> actionList = this->findChildren<QAction *>(nameMask);
@@ -673,28 +652,22 @@ void EditorToolBar::insertButtonToToolsLine(QString toolName, QToolBar &line)
 }
 
 
-// Действия с шорткатами добавляются к виджету EditorToolBar,
-// чтобы шорткаты срабатывали даже если нет кнопок на панелях редактора
-void EditorToolBar::registryActionsToToolBarWidget()
-{
+/// @details Действия с шорткатами добавляются к виджету EditorToolBar,
+///  чтобы шорткаты срабатывали даже если нет кнопок на панелях редактора
+void EditorToolBar::registryActionsToToolBarWidget() {
     // Перебираются все инструменты редактора с шорткатами
-    const auto tools = shortcutManager.getActionsNameList("editor");
-    for(const auto & toolName : tools )
-    {
+    const auto tools = ShortcutManager::get().getActionsNameList(ShortcutManager::SECTION_EDITOR);
+    for(const auto & toolName : tools ) {
         // Запрещенные действия добавляться не должны
         if( disableToolList.contains(toolName) )
-        {
             continue;
-        }
 
         QAction *toolAsAction=qobject_cast<QAction *>(this->findChild<QObject *>( "editor_tb_"+toolName ));
 
         // Добавляются только действия, но не виджеты (так как виджеты будут
         // восприняты как дочерние виджеты текущего виджета)
         if(toolAsAction)
-        {
             this->addAction( toolAsAction );
-        }
     }
 }
 

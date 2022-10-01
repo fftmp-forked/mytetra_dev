@@ -1,4 +1,5 @@
 #include <QWidget>
+#include <QPushButton>
 #include <QTextEdit>
 #include <QtDebug>
 #include <QSizePolicy>
@@ -9,24 +10,13 @@
 #include <QKeyEvent>
 
 #include "AddNewRecord.h"
-#include "InfoFieldEnter.h"
-#include "models/appConfig/AppConfig.h"
-#include "libraries/GlobalParameters.h"
-#include "libraries/wyedit/Editor.h"
 #include "libraries/helpers/DiskHelper.h"
-#include "libraries/ShortcutManager.h"
 #include "libraries/helpers/DebugHelper.h"
+#include "libraries/GlobalParameters.h"
+#include "libraries/ShortcutManager/ShortcutManager.h"
 
 
-extern GlobalParameters globalParameters;
-extern AppConfig mytetraConfig;
-extern ShortcutManager shortcutManager;
-
-
-// Окно добавления новой записи
-
-AddNewRecord::AddNewRecord( QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f)
-{
+AddNewRecord::AddNewRecord( QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f) {
   setupUI();
   setupShortcuts();
   setupSignals();
@@ -36,20 +26,13 @@ AddNewRecord::AddNewRecord( QWidget * parent, Qt::WindowFlags f) : QDialog(paren
 }
 
 
-AddNewRecord::~AddNewRecord()
-{
-
-}
-
-
-void AddNewRecord::setupUI(void)
-{
+void AddNewRecord::setupUI(void) {
   this->setWindowTitle(tr("Enter a new note"));
 
   // Редактор текста записи
   recordTextEditor.initEnableAssembly(true);
-  recordTextEditor.initConfigFileName(globalParameters.getWorkDirectory()+"/editorconf.ini");
-  recordTextEditor.initDisableToolList( mytetraConfig.getHideEditorTools() + (QStringList() << "save" << "showText" << "toAttach" << "settings" << "expandEditArea") );
+  recordTextEditor.initConfigFileName(GlobalParameters::get().getWorkDirectory()+"/editorconf.ini");
+  recordTextEditor.initDisableToolList(QStringList() << "save" << "showText" << "toAttach" << "settings" << "expandEditArea");
   recordTextEditor.init(Editor::WYEDIT_DESKTOP_MODE); // Так как это окно, в мобильном режиме его инициализировать не нужно, так как есть кнопка Отмена
 
   // В редакторе текста записи устанавливается пустой текст, что активирует правильное
@@ -79,8 +62,8 @@ void AddNewRecord::setupShortcuts(void)
 
     // На кнопку OK назначается комбинация клавиш Ctrl+Enter
     QPushButton *okButton=buttonBox.button(QDialogButtonBox::Ok); // Выясняется указатель на кнопку OK
-    okButton->setShortcut( shortcutManager.getKeySequence("misc-editConfirm") ); // Устанавливается шорткат
-    okButton->setToolTip( shortcutManager.getKeySequenceAsText("misc-editConfirm") ); // ToolTip зависит от шортката
+    okButton->setShortcut( ShortcutManager::get().getKeySequence(ShortcutManager::SECTION_MISC, "editConfirm") ); // Устанавливается шорткат
+    okButton->setToolTip( ShortcutManager::get().getKeySequenceAsText(ShortcutManager::SECTION_MISC, "editConfirm") ); // ToolTip зависит от шортката
 }
 
 
@@ -90,7 +73,7 @@ void AddNewRecord::setupSignals(void)
   connect(&buttonBox, &QDialogButtonBox::rejected, this, &AddNewRecord::reject);
 
   // Обновление горячих клавиш, если они были изменены
-  connect(&shortcutManager, &ShortcutManager::updateWidgetShortcut, this, &AddNewRecord::setupShortcuts);
+  connect(&ShortcutManager::get(), &ShortcutManager::updateWidgetShortcut, this, &AddNewRecord::setupShortcuts);
 }
 
 
@@ -110,10 +93,6 @@ void AddNewRecord::assembly(void)
 
   // Фокус устанавливается на поле ввода названия записи
   infoField.setFocusToStart();
-
-  // QWidget *wdgt=new QWidget;
-  // wdgt->setLayout(vbl);
-  // setCentralWidget(wdgt);
 }
 
 
@@ -143,34 +122,20 @@ bool AddNewRecord::eventFilter(QObject *object, QEvent *event)
     }
   }
 
-  return QDialog::eventFilter(object, event); // todo: тут подумать, возможно здесь надо возвращать false
+  return QDialog::eventFilter(object, event); /// @todo: тут подумать, возможно здесь надо возвращать false
 }
 
 
-void AddNewRecord::okClick(void)
-{
-  QString message="";
+void AddNewRecord::okClick(void) {
+  QString message = "";
 
   // Проверка наличия названия записи
   if(infoField.getField("name").length()==0)
-    message=message+tr("Please enter the note's <b>title</b>. ");
-
-  // Проверка наличия текста записи
-  if( !mytetraConfig.getEnableCreateEmptyRecord() ) // Если не разрешено создавать запись с пустым текстом
-  {
-    QTextDocumentFragment i;
-    QString j;
-    i=QTextDocumentFragment::fromHtml(getField("text"));
-    j=i.toPlainText();
-    if(j.length()==0)
-      message=message+tr("Please enter the note's <b>text</b>. ");
-  }
+    message += tr("Please enter the note's <b>title</b>. ");
 
   // Если что-то не заполнено, выдается предупреждение
-  if(message.length()>0)
-  {
-    QMessageBox::warning(this,tr("A new note cannot be added"),message,
-                         QMessageBox::Close);
+  if(message.length() > 0) {
+    QMessageBox::warning(this, tr("A new note cannot be added"), message, QMessageBox::Close);
     return;
   }
 
@@ -195,13 +160,10 @@ QString AddNewRecord::getImagesDirectory(void)
 }
 
 
-// Получение полей, заполненных в окне добавления записи
+/// @brief Получение полей, заполненных в окне добавления записи
 QString AddNewRecord::getField(QString name)
 {
-  if(name=="name" ||
-     name=="author" ||
-     name=="url" ||
-     name=="tags")
+  if(name=="name" || name=="author" || name=="url" || name=="tags")
     return infoField.getField(name);
 
   if(name=="text")

@@ -1,25 +1,15 @@
+#include <QGridLayout>
 #include <QString>
-#include <QWidget>
-#include <QBoxLayout>
-#include <QDir>
-#include <QLineEdit>
-#include <QAbstractSpinBox>
 #include <QtDebug>
-#include <QLabel>
-#include <QGroupBox>
 
 #include "EditorConfigMathExpression.h"
 #include "EditorConfig.h"
-#include "libraries/GlobalParameters.h"
-#include "libraries/helpers/ObjectHelper.h"
-#include "libraries/helpers/ConfigEditorHelper.h"
+#include "../GlobalParameters.h"
+#include "../helpers/ObjectHelper.h"
+#include "../helpers/ConfigEditorHelper.h"
 
 
-extern GlobalParameters globalParameters;
-
-
-EditorConfigMathExpression::EditorConfigMathExpression(QWidget *parent) : ConfigPage(parent)
-{
+EditorConfigMathExpression::EditorConfigMathExpression(QWidget *parent) : ConfigPage(parent) {
   // Устанавливается указатель на объект работы с конфигфайлом
   conf=find_object<EditorConfig>("editorconfig");
 
@@ -29,8 +19,7 @@ EditorConfigMathExpression::EditorConfigMathExpression(QWidget *parent) : Config
 }
 
 
-void EditorConfigMathExpression::setupUi(void)
-{
+void EditorConfigMathExpression::setupUi(void) {
  // Счетчик для таймера обновления картинки формулы в редакторе формулы
  updateFormulaTimeLabel = new QLabel(tr("Formula update timer"), this);
  updateFormulaTimeSecLabel = new QLabel(tr("sec."), this);
@@ -48,8 +37,7 @@ void EditorConfigMathExpression::setupSignals(void)
 }
 
 
-void EditorConfigMathExpression::assembly(void)
-{
+void EditorConfigMathExpression::assembly(void) {
   // Сборка всех блоков настройки отступа в окно
   QGridLayout *configLayout=new QGridLayout();
 
@@ -66,17 +54,15 @@ void EditorConfigMathExpression::assembly(void)
 }
 
 
-void EditorConfigMathExpression::onClickedEditWyEditConfigFile(void)
-{
+void EditorConfigMathExpression::onClickedEditWyEditConfigFile(void) {
   // Сбрасываются в файл конфига все возможные изменения, которые, возможно еще не были записаны
   conf->sync();
 
-  ConfigEditorHelper::editConfigFile( globalParameters.getWorkDirectory()+"/editorconf.ini", 0.8f );
+  ConfigEditorHelper::editConfigFile( GlobalParameters::get().getWorkDirectory() + "/editorconf.ini", 0.8f );
 }
 
 
-int EditorConfigMathExpression::applyChanges(void)
-{
+int EditorConfigMathExpression::applyChanges(void) {
  qDebug() << "Apply changes editor math expression";
  
  // Уровень сложности вносимых изменений

@@ -1,30 +1,24 @@
-#include <QWidget>
-#include <QRegion>
+#include <QApplication>
 #include <QLayout>
+#include <QPainter>
+#include <QRegion>
 #include <QString>
-#include <QWidget>
 #include <QVariant>
 #include <QTableWidget>
-#include <QtDebug>
 #include <QHeaderView>
 #include <QPaintEvent>
 #include <QTableView>
 #include <QStandardItemModel>
 #include <QStandardItem>
-#include <QStyledItemDelegate>
 
 #include "FindTableWidget.h"
 #include "views/mainWindow/MainWindow.h"
 #include "views/record/MetaEditor.h"
 #include "models/appConfig/AppConfig.h"
 #include "libraries/helpers/ObjectHelper.h"
-#include "libraries/helpers/GestureHelper.h"
-#include "libraries/helpers/CssHelper.h"
 
 #define USER_ROLE_PATH      Qt::UserRole
 #define USER_ROLE_RECORD_ID Qt::UserRole+1
-
-extern AppConfig mytetraConfig;
 
 
 FindTableWidget::FindTableWidget(QWidget *parent) : QWidget(parent)
@@ -35,12 +29,6 @@ FindTableWidget::FindTableWidget(QWidget *parent) : QWidget(parent)
   assembly();
 
   clearAll();
-}
-
-
-FindTableWidget::~FindTableWidget(void)
-{
-
 }
 
 
@@ -56,11 +44,9 @@ void FindTableWidget::setupUI(void)
   // У таблицы есть вертикальные заголовки, для каждой строки, в которых отображается номер строки.
   // При задании высоты вертикального заголовка, высота применяется и для всех ячеек в строке.
   findTableView->verticalHeader()->setDefaultSectionSize ( findTableView->verticalHeader()->minimumSectionSize () );
-  int height=mytetraConfig.getUglyQssReplaceHeightForTableView();
+  int height=AppConfig::get().getUglyQssReplaceHeightForTableView();
   if(height!=0)
     findTableView->verticalHeader()->setDefaultSectionSize( height );
-  if(mytetraConfig.getInterfaceMode()=="mobile")
-    findTableView->verticalHeader()->setDefaultSectionSize( CssHelper::getCalculateIconSizePx() );
 
   // Устанавливается режим что могут выделяться только строки
   // а не отдельный item таблицы
@@ -68,9 +54,6 @@ void FindTableWidget::setupUI(void)
   
   // Устанавливается режим что редактирование невозможно
   findTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-  // Настройка области виджета для кинетической прокрутки
-  GestureHelper::setKineticScrollArea( qobject_cast<QAbstractItemView*>(findTableView) );
 }
 
 
@@ -133,11 +116,6 @@ void FindTableWidget::addRow(QString title, QString branchName, QString tags, QS
   int i=findTableModel->rowCount();
 
   findTableModel->insertRow(i);
-
-  // Принудительная стилизация, так как стилизация через QSS для элементов QTableView полноценно не работает
-  // int height=mytetraconfig.getUglyQssReplaceHeightForTableView();
-  // if(height!=0)
-  //  findTableView->setRowHeight(i, height);
 
   // Заголовок (название) записи
   QStandardItem *item_title=new QStandardItem();

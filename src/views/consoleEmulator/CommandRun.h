@@ -13,7 +13,7 @@ class CommandRun : public QObject
  Q_OBJECT
 
 public:
- CommandRun(QObject *parent=nullptr);
+ CommandRun(QObject *parent=nullptr) {Q_UNUSED(parent)};
  virtual ~CommandRun();
 
  void setCommand(QString cmd);

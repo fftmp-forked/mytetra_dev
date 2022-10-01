@@ -1,34 +1,22 @@
-#include <QObject>
+#include <QApplication>
+#include <QClipboard>
 #include <QMimeData>
 #include <QMap>
 #include <QList>
 
-#include "main.h"
 #include "RecordTableView.h"
 #include "RecordTableScreen.h"
 
 #include "views/mainWindow/MainWindow.h"
 #include "views/record/MetaEditor.h"
-#include "models/appConfig/AppConfig.h"
-#include "libraries/WindowSwitcher.h"
-#include "libraries/GlobalParameters.h"
-#include "libraries/FixedParameters.h"
 #include "controllers/recordTable/RecordTableController.h"
-#include "libraries/ShortcutManager.h"
+#include "libraries/FixedParameters.h"
+#include "libraries/ShortcutManager/ShortcutManager.h"
 #include "libraries/helpers/ObjectHelper.h"
 #include "libraries/helpers/ActionHelper.h"
 
 
-extern GlobalParameters globalParameters;
-extern AppConfig mytetraConfig;
-extern ShortcutManager shortcutManager;
-
-
-// Виджет, который отображает список записей в ветке
-// c кнопками управления
-
-RecordTableScreen::RecordTableScreen(QWidget *parent) : QWidget(parent)
-{
+RecordTableScreen::RecordTableScreen(QWidget *parent) : QWidget(parent) {
   setupActions();
 
   // Инициализируется контроллер списка записей
@@ -40,12 +28,6 @@ RecordTableScreen::RecordTableScreen(QWidget *parent) : QWidget(parent)
   setupShortcuts();
   setupSignals();
   assembly();
-}
-
-
-RecordTableScreen::~RecordTableScreen()
-{
-
 }
 
 
@@ -104,7 +86,7 @@ void RecordTableScreen::setupActions(void)
  actionSynchro->setIcon(QIcon(":/resource/pic/synchronization.svg"));
 
  // Поиск по базе (клик связывается с действием в MainWindow)
- actionFindInBase=new QAction(shortcutManager.getDescriptionWithShortcut("misc-findInBase"), this);
+ actionFindInBase=new QAction(ShortcutManager::get().getDescriptionWithShortcut(ShortcutManager::SECTION_MISC, "findInBase"), this);
  actionFindInBase->setIcon(QIcon(":/resource/pic/find_in_base.svg"));
 
  // Перемещение по истории посещаемых записей назад
@@ -114,11 +96,6 @@ void RecordTableScreen::setupActions(void)
  // Перемещение по истории посещаемых записей вперед
  actionWalkHistoryNext=new QAction(tr("Next viewing note"), this);
  actionWalkHistoryNext->setIcon(QIcon(":/resource/pic/walk_history_next.svg"));
-
- // Кнопка Назад (Back) в мобильном интерфейсе
- actionBack=new QAction(tr("Back to item tree"), this);
- actionBack->setStatusTip(tr("Back to item tree"));
- actionBack->setIcon(QIcon(":/resource/pic/mobile_back.svg"));
 
  // Действия по сортировке (горячая кнопка не требуется)
  actionSort = new QAction(tr("Toggle sorting"), this);
@@ -145,31 +122,16 @@ void RecordTableScreen::setupActions(void)
 }
 
 
-void RecordTableScreen::setupUI(void)
-{
+void RecordTableScreen::setupUI(void) {
  toolsLine=new QToolBar(this);
-
- /*
- QSize toolBarIconSize(16,16);
- toolsLine->setIconSize(toolBarIconSize);
- */
-
- if(mytetraConfig.getInterfaceMode()=="mobile")
- {
-   insertActionAsButton(toolsLine, actionBack);
-   toolsLine->addSeparator();
- }
 
  insertActionAsButton(toolsLine, actionAddNewToEnd);
  insertActionAsButton(toolsLine, actionAddNewBefore, false); // Действие без видимой кнопки
  insertActionAsButton(toolsLine, actionAddNewAfter, false); // Действие без видимой кнопки
 
- if(mytetraConfig.getInterfaceMode()=="desktop")
- {
-   insertActionAsButton(toolsLine, actionEditField);
-   insertActionAsButton(toolsLine, actionBlock, false);
-   insertActionAsButton(toolsLine, actionDelete);
- }
+ insertActionAsButton(toolsLine, actionEditField);
+ insertActionAsButton(toolsLine, actionBlock, false);
+ insertActionAsButton(toolsLine, actionDelete);
 
  toolsLine->addSeparator();
  insertActionAsButton(toolsLine, actionCut);
@@ -179,70 +141,41 @@ void RecordTableScreen::setupUI(void)
  insertActionAsButton(toolsLine, actionMoveUp);
  insertActionAsButton(toolsLine, actionMoveDn);
 
-
  extraToolsLine=new QToolBar(this);
+ insertActionAsButton(extraToolsLine, actionSynchro);
+ insertActionAsButton(extraToolsLine, actionWalkHistoryPrevious);
+ insertActionAsButton(extraToolsLine, actionWalkHistoryNext);
 
- if(mytetraConfig.getInterfaceMode()=="desktop")
- {
-   insertActionAsButton(extraToolsLine, actionSynchro);
-   insertActionAsButton(extraToolsLine, actionWalkHistoryPrevious);
-   insertActionAsButton(extraToolsLine, actionWalkHistoryNext);
- }
  insertActionAsButton(extraToolsLine, actionFindInBase);
 
  treePathLabel=new QLabel(this);
  treePathLabel->setWordWrap(true);
- if(mytetraConfig.getInterfaceMode()=="desktop")
-   treePathLabel->hide();
+ treePathLabel->hide();
 }
 
 
-void RecordTableScreen::setupShortcuts(void)
-{
+void RecordTableScreen::setupShortcuts(void) {
     qDebug() << "Setup shortcut for" << staticMetaObject.className();
-
-    // Добавление записи
-    shortcutManager.initAction("note-addNewToEnd", actionAddNewToEnd);
-
-    // Добавление записи до
-    shortcutManager.initAction("note-addNewBefore", actionAddNewBefore);
-
-    // Добавление записи после
-    shortcutManager.initAction("note-addNewAfter", actionAddNewAfter);
-
-    // Редактирование свойств записи
-    shortcutManager.initAction("note-editField", actionEditField);
-
-    // Блокировка/разблокировка записи
-    shortcutManager.initAction("note-block", actionBlock);
-
-    // Удаление записи (записей)
-    shortcutManager.initAction("note-delete", actionDelete);
-
-    // Удаление записи с копированием в буфер обмена
-    shortcutManager.initAction("note-cut", actionCut);
-
-    // Копирование записи (записей)
-    shortcutManager.initAction("note-copy", actionCopy);
-
-    // Вставка записи (записей)
-    shortcutManager.initAction("note-paste", actionPaste);
-
-    // Перемещение записи вверх
-    shortcutManager.initAction("note-moveUp", actionMoveUp);
-
-    // Перемещение записи вниз
-    shortcutManager.initAction("note-moveDn", actionMoveDn);
-
+    QList<QPair<QString, QAction*>> noteActions {
+        {"addNewToEnd", actionAddNewToEnd},
+        {"addNewBefore", actionAddNewBefore},
+        {"addNewAfter", actionAddNewAfter},
+        {"editField", actionEditField},
+        {"block", actionBlock},
+        {"delete", actionDelete},
+        {"cut", actionCut},
+        {"copy", actionCopy},
+        {"paste", actionPaste},
+        {"moveUp", actionMoveUp},
+        {"moveDn", actionMoveDn},
+        {"previousNote", actionWalkHistoryPrevious},
+        {"nextNote", actionWalkHistoryNext},
+    };
 
     // Синхронизация
-    shortcutManager.initAction("misc-synchro", actionSynchro);
+    ShortcutManager::get().initAction(ShortcutManager::SECTION_MISC, "synchro", actionSynchro); /// @todo: recheck
 
-    // Переход на предыдущую запись в истории
-    shortcutManager.initAction("note-previousNote", actionWalkHistoryPrevious);
-
-    // Переход на следующую запись в истории
-    shortcutManager.initAction("note-nextNote", actionWalkHistoryNext);
+    ShortcutManager::get().initActions(ShortcutManager::SECTION_NOTE, noteActions);
 }
 
 
@@ -296,9 +229,6 @@ void RecordTableScreen::setupSignals(void)
     // Перемещение по истории посещаемых записей вперед
     connect(actionWalkHistoryNext, &QAction::triggered, this, &RecordTableScreen::onWalkHistoryNextClick);
 
-    // Кнопка Назад (Back) в мобильном интерфейсе
-    connect(actionBack, &QAction::triggered, this, &RecordTableScreen::onBackClick);
-
     // Действия по сортировке
     connect(actionSort, &QAction::triggered, recordTableController, &RecordTableController::onSortClick);
 
@@ -312,7 +242,7 @@ void RecordTableScreen::setupSignals(void)
     connect(actionSwitchSelectionMode, &QAction::triggered, recordTableController, &RecordTableController::onSwitchSelectionMode);
 
     // Обновление горячих клавиш, если они были изменены
-    connect(&shortcutManager, &ShortcutManager::updateWidgetShortcut, this, &RecordTableScreen::setupShortcuts);
+    connect(&ShortcutManager::get(), &ShortcutManager::updateWidgetShortcut, this, &RecordTableScreen::setupShortcuts);
 }
 
 
@@ -333,9 +263,7 @@ void RecordTableScreen::assembly(void)
  setLayout(recordTableScreenLayout);
 
  // Границы убираются, так как данный объект будет использоваться как виджет
- QLayout *lt;
- lt=layout();
- lt->setContentsMargins(0,2,0,0);
+ layout()->setContentsMargins(0,2,0,0);
 }
 
 
@@ -447,7 +375,7 @@ void RecordTableScreen::toolsWidgetsUpdate()
   {
    const QMimeData *mimeData=QApplication::clipboard()->mimeData();
    if(mimeData!=nullptr)
-    if(mimeData->hasFormat(FixedParameters::appTextId+"/records"))
+    if(mimeData->hasFormat(FixedParameters::appTextId + "/records"))
      actionPaste->setEnabled(true);
   }
 
@@ -546,17 +474,10 @@ void RecordTableScreen::onWalkHistoryNextClick(void)
 }
 
 
-// Возвращение к дереву разделов в мобильном интерфейсе
-void RecordTableScreen::onBackClick(void)
-{
-  globalParameters.getWindowSwitcher()->switchFromRecordtableToTree();
-}
-
-
 // Копирование в буфер обмена ссылки на запись
 void RecordTableScreen::onCopyRecordReference()
 {
-  QString reference=FixedParameters::appTextId+"://note/"+getFirstSelectionId();
+  QString reference=FixedParameters::appTextId + "://note/" + getFirstSelectionId();
 
   QClipboard *clipboard = QApplication::clipboard();
   clipboard->setText(reference);

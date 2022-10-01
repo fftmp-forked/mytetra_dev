@@ -6,58 +6,32 @@
 
 #include "MetaEditor.h"
 
+#include "libraries/GlobalParameters.h"
 #include "libraries/wyedit/EditorTextArea.h"
 #include "libraries/wyedit/EditorIndentSliderAssistant.h"
 #include "libraries/wyedit/EditorToolBarAssistant.h"
 #include "libraries/wyedit/indentslider/IndentSlider.h"
-#include "libraries/GlobalParameters.h"
 #include "views/findInBaseScreen/FindScreen.h"
-#include "models/appConfig/AppConfig.h"
 #include "views/attachTable/AttachTableScreen.h"
 #include "libraries/helpers/ObjectHelper.h"
 
 
-extern GlobalParameters globalParameters;
-extern AppConfig mytetraConfig;
-
-
-MetaEditor::MetaEditor(QWidget *parent) : Editor(parent)
-{
+MetaEditor::MetaEditor(QWidget *parent) : Editor(parent) {
   Editor::initEnableAssembly(false);
-  Editor::initConfigFileName(globalParameters.getWorkDirectory()+"/editorconf.ini");
-  Editor::initDisableToolList( mytetraConfig.getHideEditorTools() );
+  Editor::initConfigFileName(GlobalParameters::get().getWorkDirectory() + "/editorconf.ini");
 
-  if(mytetraConfig.getInterfaceMode()=="desktop")
-    Editor::init(Editor::WYEDIT_DESKTOP_MODE);
-  else if(mytetraConfig.getInterfaceMode()=="mobile")
-    Editor::init(Editor::WYEDIT_MOBILE_MODE);
-  else
-    criticalError("In MetaEditor constructor unknown interface mode: "+mytetraConfig.getInterfaceMode());
+  Editor::init(Editor::WYEDIT_DESKTOP_MODE);
 
   setupLabels();
   setupUI();
   metaAssembly();
 
-  setupSignals();
-
+  connect(this, &MetaEditor::setFindTextSignal, GlobalParameters::get().getFindScreen(), &FindScreen::setFindText);
   // В редакторе устанавливается функция обратного вызова на кнопку Attach
+
   setAttachCallback( toAttachCallback );
 
   emit updateIndentSliderGeometry();
-}
-
-
-MetaEditor::~MetaEditor(void)
-{
-
-}
-
-
-void MetaEditor::setupSignals(void)
-{
-  connect(this,                             &MetaEditor::setFindTextSignal,
-          globalParameters.getFindScreen(), &FindScreen::setFindText);
-
 }
 
 
@@ -65,25 +39,19 @@ void MetaEditor::setupLabels(void)
 {
   // Путь в дереве до данной записи в виде названий веток (только для мобильного интерфейса)
   treePath=new QLabel(this);
-  treePath->setTextInteractionFlags(Qt::TextSelectableByMouse |
-                                    Qt::TextSelectableByKeyboard);
-  if(mytetraConfig.getInterfaceMode()=="desktop")
-    treePath->setVisible(false);
-  else
-    treePath->setVisible(true);
+  treePath->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+  treePath->setVisible(false);
   treePath->setWordWrap(true);
 
   // Название записи
   recordName=new QLabel(this);
-  recordName->setTextInteractionFlags(Qt::TextSelectableByMouse |
-                                      Qt::TextSelectableByKeyboard);
+  recordName->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
   recordName->setVisible(false);
   recordName->setWordWrap(true);
 
   // Автор
   recordAuthor=new QLabel(this);
-  recordAuthor->setTextInteractionFlags(Qt::TextSelectableByMouse |
-                                        Qt::TextSelectableByKeyboard);
+  recordAuthor->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
   recordAuthor->setVisible(false);
   recordAuthor->setWordWrap(true);
 
@@ -256,13 +224,10 @@ void MetaEditor::setName(QString name)
 
 void MetaEditor::setAuthor(QString author)
 {
-  if(author.length()==0)
-  {
+  if(author.length() == 0) {
     recordAuthor->setVisible(false);
     recordAuthor->setText("");
-  }
-  else
-  {
+  } else {
     recordAuthor->setVisible(true);
     recordAuthor->setText("<i>"+author.toHtmlEscaped()+"</i>");
   }
@@ -271,15 +236,12 @@ void MetaEditor::setAuthor(QString author)
 
 void MetaEditor::setUrl(QString url)
 {
-  if(url.length()==0)
-  {
+  if(url.length() == 0) {
     labelUrl->setVisible(false);
     recordUrl->setVisible(false);
 
     recordUrl->setText("");
-  }
-  else
-  {
+  } else {
     labelUrl->setVisible(true);
     recordUrl->setVisible(true);
 

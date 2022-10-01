@@ -3,8 +3,6 @@
 #include <QGroupBox>
 #include <QtDebug>
 
-#include "../../main.h"
-
 #include "EditorConfigToolbars.h"
 #include "mvc/views/editorToolbarSettings/EditorToolbarSettingsScreen.h"
 
@@ -16,11 +14,6 @@ EditorConfigToolbars::EditorConfigToolbars(QWidget *parent) : ConfigPage(parent)
   assembly();
 }
 
-
-EditorConfigToolbars::~EditorConfigToolbars()
-{
-
-}
 
 void EditorConfigToolbars::setupUi(void)
 {

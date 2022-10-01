@@ -14,7 +14,7 @@ class FindTableWidget : public QWidget
 public:
 
   FindTableWidget(QWidget *parent=nullptr);
-  virtual ~FindTableWidget(void);
+  virtual ~FindTableWidget(void) {}
 
   void clearAll(void);
   void addRow(QString title, QString branchName, QString tags, QStringList path, QString recordId);

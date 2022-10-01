@@ -1,22 +1,12 @@
-#include <QtGui>
+#include <QApplication>
+#include <QClipboard>
+#include <QDebug>
+#include <QDir>
 #include <QLayout>
 #include <QMessageBox>
-#include <QColor>
-#include <QColorDialog>
-#include <QStyle>
-#include <QPalette>
-#include <QStringList>
-#include <QMenu>
-#include <QObject>
-#include <QtGlobal>
-#include <QDateTime>
-#include <QTextCursor>
-#include <QDebug>
-#include <QInputDialog>
-#include <QFileDialog>
 #include <QScrollBar>
-#include <QColor>
-#include <QtGlobal>
+#include <QStyle>
+#include <QTextCursor>
 
 #include "Editor.h"
 #include "EditorConfig.h"
@@ -27,13 +17,13 @@
 #include "EditorIndentSliderAssistant.h"
 #include "EditorToolBarAssistant.h"
 #include "formatters/Formatter.h"
-#include "EditorMultiLineInputDialog.h"
 #include "EditorCursorPositionDetector.h"
 #include "EditorShowTextDispatcher.h"
 
 #include "../../views/mainWindow/MainWindow.h"
-#include "libraries/helpers/DiskHelper.h"
-#include "libraries/helpers/ObjectHelper.h"
+#include "../helpers/MultiLineInputDialog.h"
+#include "../helpers/DebugHelper.h"
+#include "../helpers/ObjectHelper.h"
 
 
 // Максимально возможная длина выделения текста (в символах) при которой
@@ -240,7 +230,8 @@ void Editor::setupSignals(void)
 {
   setupToolsSignals();
 
-  // Обратка для typefaceFormatter todo: подумать, а надо ли
+  // Обратка для typefaceFormatter
+  /// @todo: подумать, а надо ли
   connect(typefaceFormatter,      &TypefaceFormatter::updateOutlineButtonHiglight,
           editorToolBarAssistant, &EditorToolBarAssistant::onUpdateOutlineButtonHiglight,
           Qt::DirectConnection);
@@ -366,14 +357,6 @@ void Editor::setupSignals(void)
   connect(find_object<MainWindow>("mainwindow"), &MainWindow::globalReleaseKey,
           textArea,                              &EditorTextArea::onGlobalReleaseKey,
           Qt::DirectConnection);
-
-  // connect(textArea->document(), SIGNAL(contentsChange(int, int, int)),
-  //        referenceFormatter,   SLOT  (onContentsChange(int, int, int)),
-  //        Qt::DirectConnection);
-
-  // connect(textArea->document(), SIGNAL(modificationChanged (bool )),
-  //         this, SLOT  (onModificationChanged(bool)));
-
 
   // Сигналы контекстного меню
   connect(textArea->document(), &QTextDocument::undoAvailable,
@@ -634,31 +617,10 @@ void Editor::setTextarea(QString text)
 }
 
 
-// Установка запрета или разрешения редактирования в области редактирования текста
+/// @brief Установка запрета или разрешения редактирования в области редактирования текста
 void Editor::setTextareaEditable(bool editable)
 {
   textArea->setReadOnly( !editable );
-
-  /*
-  if(editable==true)
-  {
-    // Если редактирование разрешено
-    textArea->setTextInteractionFlags(Qt::TextEditorInteraction);
-    textArea->setPalette(qApp->palette());
-  }
-  else
-  {
-    // Если редактирование запрещено
-    textArea->setTextInteractionFlags(Qt::TextBrowserInteraction);
-
-    QPalette pal=qApp->palette();
-    QColor inactiveColor;
-
-    inactiveColor=qApp->palette().color(QPalette::Disabled, QPalette::Window);
-    pal.setColor(QPalette::Normal, QPalette::Base, inactiveColor);
-    textArea->setPalette(pal);
-  }
-  */
 }
 
 
@@ -740,10 +702,8 @@ bool Editor::saveTextareaText()
 }
 
 
-// Сохранение картинок, которые присутствуют в документе,
-// в указанную директорию
-bool Editor::saveTextareaImages(int mode=SAVE_IMAGES_SIMPLE)
-{
+/// @brief Сохранение картинок, которые присутствуют в документе, в указанную директорию
+bool Editor::saveTextareaImages(int mode = SAVE_IMAGES_SIMPLE) {
   qDebug() << "Save images...\n" ;
   qDebug() << "Block count" << textArea->document()->blockCount() << "\n";
 
@@ -799,48 +759,35 @@ bool Editor::saveTextareaImages(int mode=SAVE_IMAGES_SIMPLE)
 
 
   // Если при сохранении все лишние картинки должны удалиться в каталоге
-  if(mode==SAVE_IMAGES_REMOVE_UNUSED)
-  {
+  if(mode == SAVE_IMAGES_REMOVE_UNUSED) {
     // Выясняется список файлов в директории
     QDir directory(workDirectory);
     QStringList imageInDirectory=directory.entryList(QDir::Files);
 
     // Перебираются файлы в директории
     static const QRegularExpression re("\\.png$");
-    foreach(QString fileName, imageInDirectory)
-      if( fileName.contains(re) ) // Обрабатываются только *.png файлы
-        if( !imagesNames.contains(fileName) ) // Только картинки, не встречающиеся в тексте записи
-          if( !miscFields["attachFileNameList"].contains(fileName) ) // Только имена файлов, не содержащиеся в прикрепленных файлах
-          {
-            // Этот файл лишний и он удаляется в корзину
-            DiskHelper::removeFileToTrash(workDirectory+"/"+fileName);
-          }
+    foreach(auto fileName, imageInDirectory)
+      if(fileName.contains(re)  && !imagesNames.contains(fileName) && !miscFields["attachFileNameList"].contains(fileName))
+        // удаляются *.png файлы, не встречающиеся ни в тексте записи, ни в прикрепленных файлах
+        directory.remove(fileName);
   }
 
-  qDebug() << "Save images finish\n" ;
+  qDebug() << "Save images finish" ;
 
   return true;
 }
 
 
-void Editor::saveTextarea(void)
-{
+void Editor::saveTextarea(void) {
   qDebug() << "Save textarea...";
 
   // Если запись была открыта на просмотр и изменена
-  if(getWorkDirectory().length()!=0 &&
-     getFileName().length()!=0 &&
-     getTextareaModified()==true)
+  if(getWorkDirectory().length()!=0 && getFileName().length()!=0 && getTextareaModified()==true)
   {
     // Перенос текущего файла записи в корзину
     qDebug() << "Try remove file " << getFileName() << " from directory " << getWorkDirectory();
-    if( QFileInfo::exists( getWorkDirectory()+"/"+getFileName() ) )
-    {
-      qDebug() << "File exists. Remove it.";
-      DiskHelper::removeFileToTrash(getWorkDirectory()+"/"+getFileName());
-    }
-    else
-      qDebug() << "Can't remove file. File not exists.";
+    if(!QDir(getWorkDirectory()).remove(getFileName()))
+      qDebug() << "Can't remove file.";
 
     // Если происходит прямая работа с файлом текста
     if(loadCallbackFunc==nullptr)
@@ -1001,8 +948,6 @@ int Editor::smartFontSize(int fontSize)
 // Слот вызывается при каждом движении курсора в момент выделения текста
 void Editor::onSelectionChanged(void)
 {
-  // TRACELOG
-
   // Если выделения нет
   if(!textArea->textCursor().hasSelection())
     return;
@@ -1154,8 +1099,6 @@ void Editor::onSelectionChanged(void)
 // Слот вызывается при каждом перемещении курсора
 void Editor::onCursorPositionChanged(void)
 {
-  // TRACELOG
-
   // Если одновременно идет режим выделения
   // то обслуживание текущего шрифта и размера идет в on_selection_changed()
   if(textArea->textCursor().hasSelection())
@@ -1307,7 +1250,7 @@ void Editor::onSelectAll(void)
 // Показывание окна с исходным текстом HTML
 void Editor::onShowhtmlClicked(void)
 {
-  EditorMultiLineInputDialog dialog(this);
+  MultiLineInputDialog dialog(this);
 
   dialog.setText(textArea->toHtml());
   dialog.setWindowTitle(tr("Edit HTML source"));

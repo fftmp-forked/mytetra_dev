@@ -1,8 +1,13 @@
 #pragma once
 
-class QString;
+#include <QMessageBox>
+#include <QString>
 
-// Выдача на экран простого окна с сообщением
-void showMessageBox(QString message);
+/// @brief Выдача на экран простого окна с сообщением
+inline void showMessageBox(QString message) {
+  QMessageBox msgBox;
+  msgBox.setText(message);
+  msgBox.exec();
+}
 
 

@@ -1,73 +1,50 @@
-#include "main.h"
+#include <QtDebug>
+
 #include "TimerMonitoring.h"
-#include "models/tree/KnowTreeModel.h"
-#include "views/tree/KnowTreeView.h"
-#include "libraries/helpers/ObjectHelper.h"
 
 
-TimerMonitoring::TimerMonitoring(void)
-{
+TimerMonitoring::TimerMonitoring(void) {
   // По сути, это синглтон. Синглтон назначает себе имя сам
   setObjectName("timerMonitoring");
 
-  isFirstStart=true;
-
-  knowTreeView=NULL;
-  knowTreeModel=NULL;
+  isFirstStart = true;
 }
 
 
-TimerMonitoring::~TimerMonitoring(void)
-{
-
-}
-
-
-// Инициализация класса должна происходить после инициализации KnowTreeView
-void TimerMonitoring::init()
-{
+/// @details Инициализация класса должна происходить после инициализации KnowTreeView
+void TimerMonitoring::init() {
   setDelay(0);
-  timerId=0;
-
-  knowTreeView=find_object<KnowTreeView>("knowTreeView");
-  knowTreeModel=qobject_cast<KnowTreeModel*>( knowTreeView->model() );
+  timerId = 0;
 }
 
 
-void TimerMonitoring::setDelay(int sec)
-{
-  delay=sec;
+void TimerMonitoring::setDelay(int sec) {
+  delay = sec;
 
   // Если таймер работает, он перезапускается с новой задержкой
-  if(timerId!=0)
-  {
+  if(timerId != 0) {
     stop();
     start();
   }
 }
 
 
-void TimerMonitoring::start()
-{
-  // Если периодическая проверка не разрешена в конфигурации
+void TimerMonitoring::start() {
   if( !isStartEnabled() )
-    return; // Таймер не запускается
-  else // Иначе, если это первый старт, то нужно напрямую первый раз вызвать исполнение действий
-    if( isFirstStart )
-    {
+      return;
+  if(isFirstStart) {
       timerEvent(NULL);
-      isFirstStart=false;
-    }
+      isFirstStart = false;
+  }
 
   // Установка автоматического повтора действий
-  timerId=startTimer(delay*1000); // Периодичность таймера должна задаваться в миллисекундах
+  timerId = startTimer(delay * 1000); // Периодичность таймера должна задаваться в миллисекундах
   qDebug() << "Start timer with delay: " << delay << " ID: " << timerId;
 }
 
 
-void TimerMonitoring::stop()
-{
+void TimerMonitoring::stop() {
   killTimer(timerId);
-  timerId=0;
+  timerId = 0;
 }
 

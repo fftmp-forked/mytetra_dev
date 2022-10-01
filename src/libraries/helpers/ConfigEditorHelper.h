@@ -1,12 +1,12 @@
 #pragma once
 
-class QString;
+#include<QString>
 
 
 class ConfigEditorHelper
 {
 public:
-    ConfigEditorHelper();
+    ConfigEditorHelper() {};
 
     // Редактирование какого-либо конфиг-файла
     static void editConfigFile(QString fileName, double sizeCoeffitient );

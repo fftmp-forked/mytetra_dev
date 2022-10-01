@@ -14,7 +14,7 @@ class EditorShowTextDispatcher : public QObject
     Q_OBJECT
 public:
 
-    //! Класс в виде синглтона
+    /// Класс в виде синглтона
     static EditorShowTextDispatcher *instance();
 
     void createWindow(const QString &noteId, int x=-1, int y=-1, int w=-1, int h=-1, int vScroll=0);

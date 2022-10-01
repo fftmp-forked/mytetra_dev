@@ -5,21 +5,9 @@
 #include <QDebug>
 
 #include "EditorCursorPositionDetector.h"
+#include "Editor.h"
 #include "EditorTextArea.h"
-#include "libraries/FixedParameters.h"
-
-
-
-EditorCursorPositionDetector::EditorCursorPositionDetector()
-{
-
-}
-
-
-void EditorCursorPositionDetector::setTextArea(EditorTextArea *iTextArea)
-{
-  textArea=iTextArea;
-}
+#include "../FixedParameters.h"
 
 
 // Проверка, находится ли курсор на позиции, где находится картинка
@@ -38,7 +26,7 @@ bool EditorCursorPositionDetector::isCursorOnImage(void)
 }
 
 
-// Метод, определяющий, выбрана ли только одна картинка
+/// @brief Метод, определяющий, выбрана ли только одна картинка
 bool EditorCursorPositionDetector::isImageSelect(void)
 {
     QTextImageFormat format=getImageSelectFormat();
@@ -51,7 +39,7 @@ bool EditorCursorPositionDetector::isImageSelect(void)
 }
 
 
-// Метод, получающий информацию о выбранной выделением одной картинке
+/// @brief Метод, получающий информацию о выбранной выделением одной картинке
 QTextImageFormat EditorCursorPositionDetector::getImageSelectFormat(void)
 {
   // Происходит анализ, выделена ли картинка
@@ -140,14 +128,13 @@ bool EditorCursorPositionDetector::isMathExpressionSelect(void)
 }
 
 
-bool EditorCursorPositionDetector::isMathExpressionSmartDetect(QString &resourceName)
-{
+bool EditorCursorPositionDetector::isMathExpressionSmartDetect(QString &resourceName) {
     QImage image=textArea->document()->resource(QTextDocument::ImageResource, QUrl(resourceName)).value<QImage>();
 
     if( !image.isNull() ) {
         QString text=image.text("Description");
 
-        if(text.startsWith( FixedParameters::appTextId+":"+FixedParameters::mathExpDescriptionType+":" )) {
+        if(text.startsWith( FixedParameters::appTextId + ":" + mathExpDescriptionType + ":" )) {
             return true;
         }
     }

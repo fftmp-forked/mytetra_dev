@@ -20,11 +20,11 @@ public:
 
   void init(void);
 
-  RecordTableView *getView(void);
+  RecordTableView *getView(void) {return view;}
 
   void clickToRecord(const QModelIndex &index);
 
-  bool isTableNotExists(void);
+  bool isTableNotExists(void) const;
   void setTableData(RecordTableData *rtData);
 
   int getRowCount(void);
@@ -116,11 +116,6 @@ protected:
 
   void addNew(int mode, Record record);
 
-  void editField(int pos,
-                 QString name,
-                 QString author,
-                 QString url,
-                 QString tags);
-
+  void editField(int pos, QString name, QString author, QString url, QString tags);
 };
 

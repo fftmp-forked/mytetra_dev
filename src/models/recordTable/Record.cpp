@@ -1,4 +1,6 @@
+#include <QDir>
 #include <QDomElement>
+#include <QFile>
 #include <QMessageBox>
 #include <QObject>
 #include <QRegularExpression>
@@ -6,24 +8,18 @@
 #include "Record.h"
 
 #include "models/appConfig/AppConfig.h"
-#include "libraries/FixedParameters.h"
 #include "models/attachTable/AttachTableData.h"
+#include "libraries/FixedParameters.h"
 #include "libraries/helpers/DiskHelper.h"
 #include "libraries/helpers/DebugHelper.h"
 
 
-extern AppConfig mytetraConfig;
-
-
-Record::Record() : attachTableData(this)
-{
-  liteFlag=true; // По-умолчанию объект легкий
+Record::Record() : attachTableData(this) {
+  liteFlag = true; // По-умолчанию объект легкий
 }
 
 
-// Конструктор копирования
-Record::Record(const Record &obj)
-{
+Record::Record(const Record &obj) {
   // Скопировать нужно каждый кусочек класса, сами они не копируются
   liteFlag=obj.liteFlag;
   fieldList=obj.fieldList;
@@ -37,23 +33,14 @@ Record::Record(const Record &obj)
 }
 
 
-Record::~Record()
-{
-
-}
-
-
 // На вход этой функции подается элемент <record>
-void Record::setupDataFromDom(QDomElement iDomElement)
-{
+void Record::setupDataFromDom(QDomElement iDomElement) {
   // Получение списка всех атрибутов текущего элемента
   QDomNamedNodeMap attList;
   attList=iDomElement.attributes();
 
   // Перебор атрибутов в списке и добавление их в запись
-  int i;
-  for(i=0; i<attList.count(); i++)
-  {
+  for(int i=0; i<attList.count(); i++) {
     QDomAttr attcurr=attList.item(i).toAttr();
 
     QString name=attcurr.name();
@@ -445,9 +432,8 @@ QMap<QString, QByteArray> Record::getPictureFiles() const
 }
 
 
-// todo: Переделать на копирование по ссылке
-void Record::setPictureFiles(QMap<QString, QByteArray> iPictureFiles)
-{
+/// @todo: Переделать на копирование по ссылке
+void Record::setPictureFiles(QMap<QString, QByteArray> iPictureFiles) {
   // Легкому объекту невозможно установить картики, если так происходит - это ошибка вызывающей логики
   if(liteFlag==true)
     criticalError("Can't set picture files for lite record object"+getIdAndNameAsString());
@@ -540,7 +526,7 @@ QString Record::getFullDirName() const
  if(fieldList.contains("dir")==false)
    criticalError("Record::getFullDirName() : Not present dir field");
 
- return mytetraConfig.get_tetradir()+"/base/"+fieldList.value("dir");
+ return AppConfig::get().get_tetradir()+"/base/"+fieldList.value("dir");
 }
 
 
@@ -593,7 +579,7 @@ void Record::checkAndFillFileDir(QString &iDirName, QString &iFileName)
  if(!recordDir.exists())
   {
    // Создается новая директория в директории base
-   QDir directory(mytetraConfig.get_tetradir()+"/base");
+   QDir directory(AppConfig::get().get_tetradir()+"/base");
    bool result=directory.mkdir( getShortDirName() );
 
    if(!result)

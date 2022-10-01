@@ -1,39 +1,31 @@
 #include <QAbstractItemView>
 #include <QAction>
+#include <QApplication>
+#include <QClipboard>
+#include <QInputDialog>
 #include <QMenu>
 #include <QMessageBox>
-#include <QString>
 #include <QMap>
-#include <QAction>
-#include <QItemSelectionModel>
+#include <QString>
 
-#include "main.h"
 #include "TreeScreen.h"
 #include "KnowTreeView.h"
 
-#include "models/recordTable/RecordTableData.h"
-#include "views/recordTable/RecordTableScreen.h"
+#include "controllers/recordTable/RecordTableController.h"
 #include "models/appConfig/AppConfig.h"
-#include "views/mainWindow/MainWindow.h"
+#include "models/recordTable/RecordTableData.h"
 #include "models/tree/TreeItem.h"
 #include "models/tree/KnowTreeModel.h"
+#include "views/recordTable/RecordTableScreen.h"
+#include "views/mainWindow/MainWindow.h"
 #include "libraries/ClipboardBranch.h"
-#include "libraries/GlobalParameters.h"
 #include "libraries/FixedParameters.h"
-#include "libraries/WindowSwitcher.h"
-#include "libraries/helpers/DiskHelper.h"
-#include "controllers/recordTable/RecordTableController.h"
+#include "libraries/ShortcutManager/ShortcutManager.h"
 #include "libraries/IconSelectDialog.h"
-#include "libraries/ShortcutManager.h"
 #include "libraries/helpers/ObjectHelper.h"
 #include "libraries/helpers/ActionHelper.h"
 #include "libraries/helpers/MessageHelper.h"
 #include "libraries/helpers/UniqueIdHelper.h"
-
-
-extern AppConfig mytetraConfig;
-extern GlobalParameters globalParameters;
-extern ShortcutManager shortcutManager;
 
 
 TreeScreen::TreeScreen(QWidget *parent) : QWidget(parent)
@@ -47,12 +39,6 @@ TreeScreen::TreeScreen(QWidget *parent) : QWidget(parent)
   setupModels();
   setupSignals();
   assembly();
-}
-
-
-TreeScreen::~TreeScreen()
-{
-
 }
 
 
@@ -105,7 +91,7 @@ void TreeScreen::setupActions(void)
  // Удаление ветки
  ac = new QAction(this);
  ac->setIcon(QIcon(":/resource/pic/note_delete.svg"));
- connect(ac, SIGNAL(triggered()), this, SLOT(delBranch())); // Разобраться с новым синтаксисом сигнал-слот для слота с параметром по-умолчанию
+ connect(ac, &QAction::triggered, this, [=](){delBranch();});
  actionList["delBranch"]=ac;
 
  // Удаление ветки с сохранением копии в буфер обмена
@@ -150,20 +136,22 @@ void TreeScreen::setupActions(void)
 void TreeScreen::setupShortcuts(void)
 {
     qDebug() << "Setup shortcut for" << staticMetaObject.className();
-
-    shortcutManager.initAction("tree-expandAllSubbranch", actionList["expandAllSubbranch"] );
-    shortcutManager.initAction("tree-collapseAllSubbranch", actionList["collapseAllSubbranch"] );
-    shortcutManager.initAction("tree-moveUpBranch", actionList["moveUpBranch"] );
-    shortcutManager.initAction("tree-moveDownBranch", actionList["moveDownBranch"] );
-    shortcutManager.initAction("tree-insSubbranch", actionList["insSubbranch"] );
-    shortcutManager.initAction("tree-insBranch", actionList["insBranch"] );
-    shortcutManager.initAction("tree-editBranch", actionList["editBranch"] );
-    shortcutManager.initAction("tree-delBranch", actionList["delBranch"] );
-    shortcutManager.initAction("tree-cutBranch", actionList["cutBranch"] );
-    shortcutManager.initAction("tree-copyBranch", actionList["copyBranch"] );
-    shortcutManager.initAction("tree-pasteBranch", actionList["pasteBranch"] );
-    shortcutManager.initAction("tree-pasteSubbranch", actionList["pasteSubbranch"] );
-    shortcutManager.initAction("tree-setIcon", actionList["setIcon"] );
+    QList<QPair<QString, QAction*>> treeActions {
+        {"expandAllSubbranch", actionList["expandAllSubbranch"] },
+        {"collapseAllSubbranch", actionList["collapseAllSubbranch"] },
+        {"moveUpBranch", actionList["moveUpBranch"] },
+        {"moveDownBranch", actionList["moveDownBranch"] },
+        {"insSubbranch", actionList["insSubbranch"] },
+        {"insBranch", actionList["insBranch"] },
+        {"editBranch", actionList["editBranch"] },
+        {"delBranch", actionList["delBranch"] },
+        {"cutBranch", actionList["cutBranch"] },
+        {"copyBranch", actionList["copyBranch"] },
+        {"pasteBranch", actionList["pasteBranch"] },
+        {"pasteSubbranch", actionList["pasteSubbranch"] },
+        {"setIcon", actionList["setIcon"] },
+    };
+    ShortcutManager::get().initActions(ShortcutManager::SECTION_TREE, treeActions);
 }
 
 
@@ -175,11 +163,8 @@ void TreeScreen::setupUI(void)
  insertActionAsButton(toolsLine, actionList["insSubbranch"]);
  insertActionAsButton(toolsLine, actionList["insBranch"]);
 
- if(mytetraConfig.getInterfaceMode()=="desktop")
- {
-   insertActionAsButton(toolsLine, actionList["editBranch"]);
-   insertActionAsButton(toolsLine, actionList["delBranch"]);
- }
+ insertActionAsButton(toolsLine, actionList["editBranch"]);
+ insertActionAsButton(toolsLine, actionList["delBranch"]);
 
  toolsLine->addSeparator();
 
@@ -190,16 +175,6 @@ void TreeScreen::setupUI(void)
 
  insertActionAsButton(toolsLine, actionList["moveUpBranch"]);
  insertActionAsButton(toolsLine, actionList["moveDownBranch"]);
-
- if(mytetraConfig.getInterfaceMode()=="mobile")
- {
-     // Вставка невидимого автоматически расталкивающего виджета
-     QWidget* empty = new QWidget(this);
-     empty->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
-     toolsLine->addWidget(empty);
-
-     insertActionAsButton(toolsLine, actionList["findInBase"]); // Клик по этой кнопке связывается с действием в MainWindow
- }
 
  // Добавление скрытых действий, которые не видны на тулбаре, но видны на контекстном меню
  insertActionAsButton(toolsLine, actionList["cutBranch"], false);
@@ -216,10 +191,8 @@ void TreeScreen::setupUI(void)
  knowTreeView->setWordWrap(true);
 
  // Временно сделан одинарный режим выбора пунктов
- // todo: Множественный режим надо выставить тогда, когда
- // станет ясно, как удалять несколько произвольных веток так, чтобы
- // в процессе удаления QModelIndex нижестоящих еще не удаленных
- // веток не менялся
+ /// @todo: Множественный режим надо выставить тогда, когда станет ясно, как удалять несколько произвольных веток так, чтобы
+ /// в процессе удаления QModelIndex нижестоящих еще не удаленных веток не менялся
  // knowTreeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
  knowTreeView->setSelectionMode(QAbstractItemView::SingleSelection);
 
@@ -239,13 +212,8 @@ void TreeScreen::setupModels(void)
  // Создание и первичная настройка модели
  knowTreeModel = new KnowTreeModel(this);
 
- // Установка заголовка
- // QStringList headers;
- // headers << tr("Info groups");
- // knowTreeModel->setHeaders(headers);
-
  // Загрузка данных
- knowTreeModel->initFromXML( mytetraConfig.get_tetradir()+"/mytetra.xml" );
+ knowTreeModel->initFromXML( AppConfig::get().get_tetradir()+"/mytetra.xml" );
 
  // Модель подключется к виду
  knowTreeView->setModel(knowTreeModel);
@@ -311,26 +279,11 @@ void TreeScreen::setupSignals(void)
          this,         &TreeScreen::onCustomContextMenuRequested);
 
  // Соединение сигнал-слот что ветка выбрана мышкой или стрелками на клавиатуре (через selection-модель)
- if(mytetraConfig.getInterfaceMode()=="desktop")
-   connect(knowTreeView->selectionModel(), &QItemSelectionModel::currentRowChanged,
-           this,                           &TreeScreen::onKnowtreeClicked);
- 
- if(mytetraConfig.getInterfaceMode()=="mobile")
-   connect(knowTreeView, &KnowTreeView::clicked,
-           this,         &TreeScreen::onKnowtreeClicked);
-
- // Сигнал чтобы открыть на редактирование параметры записи при двойном клике
- // connect(knowTreeView, SIGNAL(doubleClicked(const QModelIndex &)),
- //         actionList["editBranch"], SLOT(trigger(void)));
-
- // Сигнал что ветка выбрана мышкой
- // connect(knowTreeView,SIGNAL(pressed(const QModelIndex &)),
- //         this,SLOT(on_knowTreeView_clicked(const QModelIndex &)));
- // connect(knowTreeView, SIGNAL(clicked(const QModelIndex &)),
- //         this, SLOT(on_knowTreeView_clicked(const QModelIndex &)));
+ connect(knowTreeView->selectionModel(), &QItemSelectionModel::currentRowChanged,
+         this,                           &TreeScreen::onKnowtreeClicked);
 
  // Обновление горячих клавиш, если они были изменены
- connect(&shortcutManager, &ShortcutManager::updateWidgetShortcut, this, &TreeScreen::setupShortcuts);
+ connect(&ShortcutManager::get(), &ShortcutManager::updateWidgetShortcut, this, &TreeScreen::setupShortcuts);
 }
 
 
@@ -606,10 +559,8 @@ void TreeScreen::editBranch(void)
 }
 
 
-// Удаление выбранных веток, вызывается при выборе соотвествущей
-// кнопки или пункта меню
-void TreeScreen::delBranch(QString mode)
-{
+/// @brief Удаление выбранных веток, вызывается при выборе соотвествущей кнопки или пункта меню
+void TreeScreen::delBranch(QString mode) {
  qDebug() << "In del_branch()";
 
  // На время удаления блокируется главное окно
@@ -683,7 +634,7 @@ void TreeScreen::delBranch(QString mode)
    text=tr("Are you sure you wish to cut item <b>") + branchesName.join(", ") + tr("</b> and all sub items?");
    del_button=tr("Cut");
 
-   if(mytetraConfig.get_cutbranchconfirm()) enable_question=true;
+   if(AppConfig::get().get_cutbranchconfirm()) enable_question=true;
    else enable_question=false;
   }
 
@@ -729,13 +680,8 @@ void TreeScreen::delBranch(QString mode)
 }
 
 
-void TreeScreen::cutBranch(void)
-{
- bool copy_result;
- 
- copy_result=copyBranch();
-
- if(copy_result)
+void TreeScreen::cutBranch(void) {
+ if(copyBranch())
   delBranch("cut");
 }
 
@@ -820,11 +766,9 @@ void TreeScreen::addBranchToClipboard(ClipboardBranch *branch_clipboard_data, QS
   curr_item_fields=curr_item->getAllFields(); // Раньше было getAllFieldsDirect()
   branch_id=curr_item_fields["id"];
   if(is_root)
-    branch_clipboard_data->addBranch("-1",
-                                     curr_item_fields);
+    branch_clipboard_data->addBranch("-1", curr_item_fields);
   else
-    branch_clipboard_data->addBranch(curr_item->getParentId(),
-                                     curr_item_fields);
+    branch_clipboard_data->addBranch(curr_item->getParentId(), curr_item_fields);
 
   // Добавление конечных записей
   curr_item_record_table=curr_item->recordtableGetTableData();
@@ -923,12 +867,12 @@ void TreeScreen::pasteBranchSmart(bool is_branch)
 // Установка иконки для ветки
 void TreeScreen::setIcon(void)
 {
-  QString startDirectory=mytetraConfig.get_tetradir()+"/"+FixedParameters::iconsRelatedDirectory;
+  QString startDirectory=AppConfig::get().get_tetradir()+"/"+FixedParameters::iconsRelatedDirectory;
   qDebug() << "Set start directory for select icon: " << startDirectory;
 
   // Создается окно выбора файла иконки
   IconSelectDialog iconSelectDialog;
-  iconSelectDialog.setDefaultSection( mytetraConfig.getIconCurrentSectionName() );
+  iconSelectDialog.setDefaultSection( AppConfig::get().getIconCurrentSectionName() );
   iconSelectDialog.setPath( startDirectory );
 
   int result=iconSelectDialog.exec();
@@ -970,17 +914,15 @@ void TreeScreen::setIcon(void)
 
   // Если текущая секция изменилась, ее имя запоминается чтобы в последующем открывать виджет с этой секцией
   if(iconSelectDialog.getCurrentSection()!="" &&
-     iconSelectDialog.getCurrentSection()!=mytetraConfig.getIconCurrentSectionName())
-   mytetraConfig.setIconCurrentSectionName( iconSelectDialog.getCurrentSection() );
+     iconSelectDialog.getCurrentSection()!=AppConfig::get().getIconCurrentSectionName())
+   AppConfig::get().setIconCurrentSectionName( iconSelectDialog.getCurrentSection() );
 }
 
 
-void TreeScreen::exportBranchToDirectory(QString exportDir)
-{
+void TreeScreen::exportBranchToDirectory(QString exportDir) {
   // Проверка, является ли выбранная директория пустой. Выгрузка возможна только в полностью пустую директорию
-  if( !DiskHelper::isDirectoryEmpty(exportDir) )
-  {
-    showMessageBox(tr("The export directory %1 is not empty. Please, select an empty directory.").arg(exportDir));
+  if( !QDir(exportDir).isEmpty()) {
+    showMessageBox(tr("Directory %1 is not empty. Please, select an empty export directory.").arg(exportDir));
     return;
   }
 
@@ -1019,14 +961,14 @@ void TreeScreen::importBranchFromDirectory(QString importDir)
 
 
   // Если импорт данных был успешным
-  if(importNodeId.count()>0)
+  if(importNodeId.size()>0)
     setCursorToId(importNodeId); // Курсор устанавливается на только что импортированную ветку
 
   showMessageBox(tr("Item importing finished."));
 }
 
 
-// Обновление на экране ветки и подветок
+/// @brief Обновление на экране ветки и подветок
 void TreeScreen::updateBranchOnScreen(const QModelIndex &index)
 {
  // Для корневой ветки дается команда чтобы модель сообщила о своем изменении
@@ -1093,35 +1035,11 @@ void TreeScreen::onKnowtreeClicked(const QModelIndex &index)
     // Устанавливаем данные таблицы конечных записей
     find_object<RecordTableController>("recordTableController")->setTableData(rtdata);
 
-    // Устанавливается текстовый путь в таблице конечных записей для мобильного варианта интерфейса
-    if(mytetraConfig.getInterfaceMode()=="mobile")
-    {
-        QStringList path=item->getPathAsName();
-
-        // Убирается пустой элемент, если он есть (это может быть корень, у него нет названия)
-        int emptyStringIndex=path.indexOf("");
-        path.removeAt(emptyStringIndex);
-
-        find_object<RecordTableScreen>("recordTableScreen")->setTreePath( path.join(" > ") );
-    }
-
     // Ширина колонки дерева устанавливается так чтоб всегда вмещались данные
     knowTreeView->resizeColumnToContents(0);
 
-    // Переключаются окна (используется для мобильного интерфейса)
-    globalParameters.getWindowSwitcher()->switchFromTreeToRecordtable();
-
     isThisSlotWork=false;
 }
-
-
-/*
-void treescreen::on_knowTreeView_repaint(void)
-{
- // Попытка расширить нулевую колонку с деревом, если содержимое слишком широкое
- knowTreeView->resizeColumnToContents(0);
-}
-*/
 
 
 void TreeScreen::updateSelectedBranch(void)
@@ -1141,10 +1059,7 @@ QItemSelectionModel * TreeScreen::getSelectionModel(void)
 }
 
 
-void TreeScreen::setCursorToIndex(QModelIndex index)
-{
-  // qDebug() << "Set cursor to tree item: " << index.data(Qt::DisplayRole);
-
+void TreeScreen::setCursorToIndex(QModelIndex index) {
   // Если индекс невалидный
   if(!index.isValid())
   {
@@ -1152,30 +1067,9 @@ void TreeScreen::setCursorToIndex(QModelIndex index)
     return;
   }
 
-
-  // Если попытка установить курсор на корень (а корень в MyTetra не отображается)
-  // Это условие некорректно.
-  // В древовидной Qt-модели узлы, находящиеся на верхнем уровне, считаются корневыми.
-  // У них нет общего корня. Модель хранит просто список узлов.
-  // Но надо разобраться дальше. Ведь по-хорошему должен быть корневой узел, в котором перечислены узлы верхнего уровня.
-  /*
-  if(!index.parent().isValid())
-  {
-    qDebug() << "Try set cursor to ROOT index. Disabled.";
-    return;
-  }
-  */
-
-
   // Курсор устанавливается на нужный элемент дерева
   // В desktop-варианте на сигнал currentRowChanged() будет вызван слот on_knowtree_clicked()
   knowTreeView->selectionModel()->setCurrentIndex(index,QItemSelectionModel::ClearAndSelect);
-
-  // В мобильной версии реакции на выбор ветки нет (не обрабатывается сигнал смены строки в модели выбора)
-  // Поэтому по ветке должен быть сделан виртуальный клик, чтобы заполнилась таблица конечных записей
-  // Метод clicked() публичный начиная с Qt5 (мобильный интерфейс возможен только в Qt5)
-  if(mytetraConfig.getInterfaceMode()=="mobile")
-    emit knowTreeView->clicked(index);
 }
 
 

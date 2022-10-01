@@ -1,28 +1,18 @@
+#include <QApplication>
 #include <QHeaderView>
 #include <QMenu>
 #include <QDebug>
 #include <QPainter>
 
-#include "main.h"
 #include "AttachTableView.h"
 #include "AttachTableScreen.h"
 #include "controllers/attachTable/AttachTableController.h"
-#include "libraries/GlobalParameters.h"
-#include "libraries/helpers/GestureHelper.h"
-
-extern GlobalParameters globalParameters;
 
 
 AttachTableView::AttachTableView(QWidget *parent) : QTableView(parent)
 {
   this->horizontalHeader()->setStretchLastSection( true );
   this->setSelectionBehavior(QAbstractItemView::SelectRows); // Выделяется вся строка
-
-  // Настройка области виджета для кинетической прокрутки
-  GestureHelper::setKineticScrollArea( qobject_cast<QAbstractItemView*>(this) );
-
-  // Разрешение принимать жест QTapAndHoldGesture
-  grabGesture(Qt::TapAndHoldGesture);
 }
 
 
@@ -57,12 +47,6 @@ void AttachTableView::setupSignals(void)
 }
 
 
-void AttachTableView::setController(AttachTableController *pController)
-{
-  controller=pController;
-}
-
-
 void AttachTableView::assemblyContextMenu(void)
 {
   // Конструирование меню
@@ -83,13 +67,12 @@ void AttachTableView::assemblyContextMenu(void)
 }
 
 
-// Обработчик событий, нужен только для QTapAndHoldGesture (долгое нажатие)
-bool AttachTableView::event(QEvent *event)
-{
+/// @brief Обработчик событий, нужен только для QTapAndHoldGesture (долгое нажатие)
+bool AttachTableView::event(QEvent *event) {
   if (event->type() == QEvent::Gesture)
   {
     qDebug() << "In gesture event(): " << event << " Event type: " << event->type();
-    return gestureEvent(static_cast<QGestureEvent*>(event));
+    return true; ///@todo: ошмётки от android support
   }
 
   return QTableView::event(event);
@@ -113,39 +96,12 @@ void AttachTableView::paintEvent(QPaintEvent *event)
   QTableView::paintEvent(event);
 
   // Если список приаттаченных файлов пуст
-  if(model()!=NULL)
-    if(model()->rowCount()==0)
-    {
+  if(model() && model()->rowCount()==0) {
       QPainter painter(viewport());
       painter.setPen( QApplication::palette().color(QPalette::ToolTipText) );
       painter.setFont(QFont("Arial", 14));
       painter.drawText(rect(), Qt::AlignCenter, tr("No attach files"));
-    }
-}
-
-
-// Обработчик жестов
-// Вызывается из обработчика событий event()
-bool AttachTableView::gestureEvent(QGestureEvent *event)
-{
-  qDebug() << "In gestureEvent()" << event;
-
-  if (QGesture *gesture = event->gesture(Qt::TapAndHoldGesture))
-    tapAndHoldGestureTriggered(static_cast<QTapAndHoldGesture *>(gesture));
-
-  return true;
-}
-
-
-// Обработчик жеста TapAndHoldGesture
-// Вызывается из обработчика жестов gestureEvent()
-void AttachTableView::tapAndHoldGestureTriggered(QTapAndHoldGesture *gesture)
-{
-  qDebug() << "In tapAndHoldGestureTriggered()" << gesture;
-
-  if(gesture->state()==Qt::GestureFinished)
-    if(globalParameters.getOs() == GlobalParameters::OS_type::Android)
-      emit tapAndHoldGestureFinished( mapFromGlobal(gesture->position().toPoint()) );
+  }
 }
 
 

@@ -1,3 +1,5 @@
+#include <QApplication>
+#include <QScreen>
 #include <QStackedWidget>
 #include <QObject>
 #include <QDialog>
@@ -13,27 +15,13 @@
 #include "AppConfigPage_Keyboard.h"
 #include "AppConfigPage_History.h"
 #include "AppConfigPage_Appearance.h"
-#include "models/appConfig/AppConfig.h"
-#include "libraries/helpers/ScreenHelper.h"
 
 
-extern AppConfig mytetraConfig;
-
-
-AppConfigDialog::AppConfigDialog(const QString &firstPageName, QWidget *parent)
-{
-    // Создание диалога с parent обеспечивает отображение иконки приложения
-    // в диалоговом окне и на панели задач
+AppConfigDialog::AppConfigDialog(const QString &firstPageName, QWidget *parent) {
+    // Создание диалога с parent обеспечивает отображение иконки приложения в диалоговом окне и на панели задач
     configDialog=new ConfigDialog( parent );
     configDialog->setAttribute(Qt::WA_DeleteOnClose);
     configDialog->setWindowTitle(QObject::tr("MyTetra settings"));
-
-    if(mytetraConfig.getInterfaceMode()=="mobile")
-    {
-        qDebug() << "Screen size X Y: " << ScreenHelper::getSizeX() << ScreenHelper::getSizeY();
-        configDialog->setMinimumSize(ScreenHelper::getSizeX(), ScreenHelper::getSizeY());
-        configDialog->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    }
 
     // Наполнение диалога виджетами
     // В качестве родителя надо указывать parent а не configDialog (разобраться почему)
@@ -45,7 +33,6 @@ AppConfigDialog::AppConfigDialog(const QString &firstPageName, QWidget *parent)
     pageKeyboard   =configDialog->addWidget(new AppConfigPage_Keyboard( parent ), QObject::tr("Keyboard"));
     pageHistory    =configDialog->addWidget(new AppConfigPage_History( parent ),  QObject::tr("History"));
     pageMisc       =configDialog->addWidget(new AppConfigPage_Misc( parent ), QObject::tr("Misc"));
-
 
     configDialog->updateListWidth();
 

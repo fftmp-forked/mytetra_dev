@@ -7,11 +7,10 @@
 #include "libraries/GlobalParameters.h"
 #include "libraries/helpers/DebugHelper.h"
 
-extern GlobalParameters globalParameters;
 
 
 const QString KnownBasesConfig::sectionPrefix="num";
-const QStringList KnownBasesConfig::fieldList={"dbPath", "trashPath"};
+const QStringList KnownBasesConfig::fieldList={"dbPath"};
 
 
 // Конструктор объекта настройки БД
@@ -37,7 +36,7 @@ KnownBasesConfig::~KnownBasesConfig()
 void KnownBasesConfig::init(void)
 {
  // Создается имя файла конфигурации
- QString configFileName=globalParameters.getWorkDirectory()+"/knownbases.ini";
+ auto configFileName = GlobalParameters::get().getWorkDirectory() + "/knownbases.ini";
 
  // Проверяется, есть ли файл конфигурации
  QFile confFile(configFileName);
@@ -57,12 +56,6 @@ void KnownBasesConfig::init(void)
  conf->sync();
 
  isInitFlag=true;
-}
-
-
-bool KnownBasesConfig::isInit(void)
-{
- return isInitFlag;
 }
 
 

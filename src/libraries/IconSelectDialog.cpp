@@ -1,29 +1,20 @@
-#include <QLabel>
-#include <QComboBox>
-#include <QListWidget>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QDialogButtonBox>
 #include <QFileInfo>
 #include <QFileInfoList>
 #include <QDir>
 #include <QDebug>
 #include <QSize>
 #include <QTimer>
-#include <QtGlobal>
 
-#include "main.h"
 #include "IconSelectDialog.h"
-#include "models/appConfig/AppConfig.h"
-#include "views/mainWindow/MainWindow.h"
-#include "libraries/helpers/ObjectHelper.h"
-#include "libraries/helpers/MessageHelper.h"
-
-extern AppConfig mytetraConfig;
+#include "../models/appConfig/AppConfig.h"
+#include "../views/mainWindow/MainWindow.h"
+#include "helpers/MessageHelper.h"
+#include "helpers/ObjectHelper.h"
 
 
-IconSelectDialog::IconSelectDialog()
-{
+IconSelectDialog::IconSelectDialog() {
   enableIconUpdate=false;
 
   setupUI();
@@ -32,19 +23,11 @@ IconSelectDialog::IconSelectDialog()
 }
 
 
-IconSelectDialog::~IconSelectDialog()
-{
+/// @brief Проверка наличия коллекции иконок, и создание иконок из ресурсов, если иконки на диске отсутствовали
+void IconSelectDialog::iconsCollectionCheck() {
+  qDebug() << "In iconsCollectionCheck(). Mytetra XML dir is: " << AppConfig::get().get_tetradir();
 
-}
-
-
-// Проверка наличия коллекции иконок, и создание иконок из ресурсов,
-// если иконки на диске отсутствовали
-void IconSelectDialog::iconsCollectionCheck()
-{
-  qDebug() << "In iconsCollectionCheck(). Mytetra XML dir is: " << mytetraConfig.get_tetradir();
-
-  QString mytetraXmlDirName=mytetraConfig.get_tetradir();
+  auto mytetraXmlDirName = AppConfig::get().get_tetradir();
   QDir mytetraXmlDir( mytetraXmlDirName );
 
   QString iconsDirName="icons"; // Путь относительно каталога где лежит mytetra.xml
@@ -126,7 +109,7 @@ void IconSelectDialog::setupUI()
   sectionLabel.setText(tr("Section"));
 
   // В списке иконок устанавливается размер отображаемых иконок
-  int iconSize=mytetraConfig.getPreviewIconSize();
+  int iconSize = AppConfig::get().getPreviewIconSize();
   iconList.setIconSize(QSize(iconSize, iconSize));
 
   // Линейка наполяемости скрывается. Она должна быть видна только в процессе загрузки иконок
@@ -273,12 +256,6 @@ void IconSelectDialog::setDefaultSection(QString iSectionName)
 }
 
 
-QString IconSelectDialog::getCurrentSection()
-{
-  return sectionComboBox.itemText(currentSectionIndex);
-}
-
-
 // Обновление экранного списка иконок
 void IconSelectDialog::updateIcons()
 {
@@ -365,11 +342,5 @@ void IconSelectDialog::onOkClick()
 void IconSelectDialog::onCancelClick()
 {
   reject();
-}
-
-
-QString IconSelectDialog::getSelectFileName()
-{
-  return currentFileName;
 }
 

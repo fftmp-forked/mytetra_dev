@@ -9,7 +9,7 @@
 #include "EditorAbsTable.h"
 #include "EditorAbsTableCell.h"
 
-#include "libraries/helpers/DebugHelper.h"
+#include "../helpers/DebugHelper.h"
 
 
 // Конструктор пустой таблицы

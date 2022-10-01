@@ -103,42 +103,12 @@ void AttachTableData::setRelatedAttachTableModelOnly(AttachTableModel *model)
 }
 
 
-bool AttachTableData::isEmpty() const
-{
-  if(attachTable.size()==0)
-    return true;
-  else
-    return false;
-}
-
-
-bool AttachTableData::isLite() const
-{
-  return liteFlag;
-}
-
-
-void AttachTableData::setRecord(Record *iRecord)
-{
-  record=iRecord; // Запоминается ссылка на запись, которой принадлежит данная таблица файлов
-}
-
-
 void AttachTableData::clear()
 {
   attachTable.clear();
   record=NULL;
   liteFlag=true;
 }
-
-
-int AttachTableData::size() const
-{
-  return attachTable.size();
-}
-
-
-
 
 
 // Получение объекта аттача
@@ -321,12 +291,6 @@ QString AttachTableData::getAbsoluteInnerFileNameById(QString id)
     return getAbsoluteInnerFileName(row);
   else
     return "";
-}
-
-
-qint64 AttachTableData::getFileSize(int row)
-{
-  return attachTable.at(row).getFileSize();
 }
 
 

@@ -1,15 +1,11 @@
 #include <QDebug>
 
-#include "main.h"
-
 #include "AttachTableScreen.h"
 #include "AttachTableView.h"
 #include "controllers/attachTable/AttachTableController.h"
-#include "libraries/ShortcutManager.h"
 #include "libraries/helpers/ActionHelper.h"
+#include "libraries/ShortcutManager/ShortcutManager.h"
 
-
-extern ShortcutManager shortcutManager;
 
 
 AttachTableScreen::AttachTableScreen(QWidget *parent) : QWidget(parent)
@@ -29,13 +25,6 @@ AttachTableScreen::AttachTableScreen(QWidget *parent) : QWidget(parent)
   setupSignals();
   assembly();
 }
-
-
-AttachTableScreen::~AttachTableScreen()
-{
-
-}
-
 
 // Настройка возможных действий
 void AttachTableScreen::setupActions(void)
@@ -78,24 +67,24 @@ void AttachTableScreen::setupActions(void)
 }
 
 
-void AttachTableScreen::setupShortcuts(void)
-{
+void AttachTableScreen::setupShortcuts(void) {
     qDebug() << "Setup shortcut for" << staticMetaObject.className();
-
-    shortcutManager.initAction("attach-addAttach",        actionAddAttach );
-    shortcutManager.initAction("attach-addAttachFromUrl", actionAddAttachFromUrl );
-    shortcutManager.initAction("attach-addLink",          actionAddLink );
-    shortcutManager.initAction("attach-editFileName",     actionEditFileName );
-    shortcutManager.initAction("attach-deleteAttach",     actionDeleteAttach );
-    shortcutManager.initAction("attach-openAttach",       actionOpenAttach );
-    shortcutManager.initAction("attach-saveAsAttach",     actionSaveAsAttach );
-    shortcutManager.initAction("attach-showAttachInfo",   actionShowAttachInfo );
-    shortcutManager.initAction("attach-switchToEditor",   actionSwitchToEditor );
+    QList<QPair<QString, QAction*>> attachActions {
+        {"addAttach",        actionAddAttach },
+        {"addAttachFromUrl", actionAddAttachFromUrl },
+        {"addLink",          actionAddLink },
+        {"editFileName",     actionEditFileName },
+        {"deleteAttach",     actionDeleteAttach },
+        {"openAttach",       actionOpenAttach },
+        {"saveAsAttach",     actionSaveAsAttach },
+        {"showAttachInfo",   actionShowAttachInfo },
+        {"switchToEditor",   actionSwitchToEditor },
+    };
+    ShortcutManager::get().initActions(ShortcutManager::SECTION_ATTACH, attachActions);
 }
 
 
-void AttachTableScreen::setupUI(void)
-{
+void AttachTableScreen::setupUI(void) {
   // Создание тулбара
   toolsLine=new QToolBar(this);
 
@@ -131,7 +120,7 @@ void AttachTableScreen::setupSignals(void)
   connect(actionSwitchToEditor,   &QAction::triggered, attachTableController, &AttachTableController::onSwitchToEditor);
 
   // Обновление горячих клавиш, если они были изменены
-  connect(&shortcutManager, &ShortcutManager::updateWidgetShortcut, this, &AttachTableScreen::setupShortcuts);
+  connect(&ShortcutManager::get(), &ShortcutManager::updateWidgetShortcut, this, &AttachTableScreen::setupShortcuts);
 }
 
 

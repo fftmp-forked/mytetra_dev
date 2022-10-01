@@ -3,13 +3,10 @@
 #include <QtDebug>
 
 #include "EditorConfig.h"
-#include "../../main.h"
-#include "libraries/helpers/DebugHelper.h"
+#include "../helpers/DebugHelper.h"
 
 
-// Конструктор объекта хранения настроек редактора
-EditorConfig::EditorConfig(QString config_file_name, QWidget *parent) : QWidget(parent)
-{
+EditorConfig::EditorConfig(QString config_file_name, QWidget *parent) : QWidget(parent) {
     Q_UNUSED(parent)
 
     // Информация о файле настроек редактора
@@ -31,9 +28,7 @@ EditorConfig::EditorConfig(QString config_file_name, QWidget *parent) : QWidget(
 }
 
 
-// Деструктор объекта настройки редактора
-EditorConfig::~EditorConfig()
-{
+EditorConfig::~EditorConfig() {
     qDebug() << "Save editor config file";
     conf->sync();
 }

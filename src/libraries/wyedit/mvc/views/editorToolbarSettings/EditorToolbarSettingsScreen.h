@@ -13,7 +13,6 @@
 
 class EditorToolbarAvailableCommandsController;
 class EditorToolbarUsedCommandsController;
-class EditorConfig;
 
 
 /// @brief Диалог выбора команд для панелей инструментов редактора текста

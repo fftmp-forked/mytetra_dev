@@ -8,15 +8,7 @@
 #include "CommandRun.h"
 #include "ConsoleEmulator.h"
 #include "views/mainWindow/MainWindow.h"
-#include "libraries/ActionLogger.h"
 #include "libraries/helpers/ObjectHelper.h"
-
-extern ActionLogger actionLogger;
-
-
-CommandRun::CommandRun(QObject *parent) : QObject(parent)
-{
-}
 
 
 CommandRun::~CommandRun()
@@ -229,12 +221,7 @@ void CommandRun::onProcessFinish(int exitCode, QProcess::ExitStatus exitStatus)
 void CommandRun::onProcessError(QProcess::ProcessError error)
 {
     qDebug() << "Execute command detect error! Error code: " << error;
-
-    QMap<QString, QString> data;
-    data["errCode"]=QString::number(error);
-    actionLogger.addAction("synchroProcessError", data);
     m_console->switchToErrorView();
-
     m_isError=true;
 }
 

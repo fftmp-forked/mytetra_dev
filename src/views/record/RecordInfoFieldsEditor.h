@@ -1,15 +1,13 @@
 #pragma once
 
 #include <QDialog>
-#include <QLabel>
-#include <QLineEdit>
 #include <QDialogButtonBox>
-#include <QPushButton>
 
 class InfoFieldEnter;
 
-// Окно редактирования инфополей записи
 
+/// @brief Окно редактирования инфополей записи (не текста записи!).
+/// Оно появляется при двойном клике на записи или при клике на кнопку редактирования полей записи
 class RecordInfoFieldsEditor : public QDialog
 {
   Q_OBJECT
@@ -17,7 +15,7 @@ class RecordInfoFieldsEditor : public QDialog
 public:
   RecordInfoFieldsEditor( QWidget * parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags() );
 
-  ~RecordInfoFieldsEditor();
+  ~RecordInfoFieldsEditor(){}
 
   QString getField(QString name);
   void setField(QString name, QString value);

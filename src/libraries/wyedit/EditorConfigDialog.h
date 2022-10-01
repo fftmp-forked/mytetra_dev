@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QWidget>
-#include "views/appConfigWindow/ConfigDialog.h"
+#include "../../views/appConfigWindow/ConfigDialog.h"
 
 
 class EditorConfigDialog : public QWidget

@@ -1,16 +1,11 @@
 #pragma once
 
-// Функции, используемые при отладке
+#include <QObject>
+#include <QString>
 
-
-class QString;
-class QDomNode;
 
 [[ noreturn ]] void criticalError(QString message);
 
-QString xmlNodeToString(QDomNode xmlData);
+void printObjectTree(const QObject * obj);
 
-void printObjectTree(void);
-
-void setDebugMessageHandler();
-
+inline void setupDebug(bool enable) { qSetMessagePattern(enable ? " [${time} %{type}] %{message}" : ""); }

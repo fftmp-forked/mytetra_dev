@@ -10,9 +10,9 @@ class EditorCursorPositionDetector
 {
 
 public:
-  EditorCursorPositionDetector();
+  EditorCursorPositionDetector() {};
 
-  void setTextArea(EditorTextArea *iTextArea);
+  void setTextArea(EditorTextArea *iTextArea) {textArea=iTextArea;}
 
   bool isCursorOnImage(void);
   bool isImageSelect(void);

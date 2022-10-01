@@ -1,13 +1,10 @@
 #pragma once
 
 #include <QDialog>
+#include <QListWidget>
 
 class QDialogButtonBox;
-class QListWidget;
-class QListWidgetItem;
 class QStackedWidget;
-class QListWidgetItem;
-class QScrollArea;
 
 
 class ConfigDialog : public QDialog
@@ -16,13 +13,13 @@ class ConfigDialog : public QDialog
 
 public:
     ConfigDialog(QWidget * parent = nullptr);
-    virtual ~ConfigDialog();
+    virtual ~ConfigDialog() {};
 
     QListWidgetItem *addWidget(QWidget *inswidget, QString name);
 
     void updateListWidth(void);
-    void externalChangePage(QListWidgetItem *item);
-    void setMenuListVisible(bool visible);
+    void externalChangePage(QListWidgetItem *item) {contentsWidget->setCurrentItem(item);}
+    void setMenuListVisible(bool visible) {contentsWidget->setVisible(visible);}
 
 private slots:    
     void applyChanges(void);

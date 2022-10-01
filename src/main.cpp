@@ -1,3 +1,5 @@
+#include <QLibraryInfo>
+#include <QMessageBox>
 #include <QTranslator>
 #include <QToolButton>
 #include <QSplashScreen>
@@ -7,61 +9,34 @@
 #include <QScrollerProperties>
 #include <QScrollBar>
 
+#include "main.h"
 #include "views/mainWindow/MainWindow.h"
-#include "models/appConfig/AppConfig.h"
-#include "libraries/TrashMonitoring.h"
-#include "libraries/FixedParameters.h"
-#include "libraries/GlobalParameters.h"
-#include "libraries/ActionLogger.h"
 
 #include "libraries/qtSingleApplication/qtsingleapplication.h"
 
-#include "libraries/WalkHistory.h"
-#include "libraries/WindowSwitcher.h"
-#include "libraries/ShortcutManager.h"
+#include "libraries/GlobalParameters.h"
 #include "libraries/PeriodicCheckBase.h"
 #include "libraries/PeriodicSynchro.h"
+#include "libraries/ShortcutManager/ShortcutManager.h"
 #include "libraries/IconSelectDialog.h"
-#include "libraries/helpers/DebugHelper.h"
 #include "libraries/helpers/CssHelper.h"
+#include "libraries/helpers/DebugHelper.h"
+#include "models/appConfig/AppConfig.h"
 
 
-// todo: Разгрести объекты глобальной области, переделать все
-// на синглтоны, сделать объект ядра, поместить объекты глабальной
-// области в ядро как в единую центральную точку доступа
-
-
-// Фиксированные параметры программы (жестко заданные в текущей версии MyTetra)
-FixedParameters fixedParameters;
-
-// Глобальные параметры программы (вычислимые на этапе инициализации, иногда меняющиеся в процессе выполнения программы)
-GlobalParameters globalParameters;
-
-// Конфигурация программы (считанная из файла конфигурации)
-AppConfig mytetraConfig;
-
-// Объект слежения за состоянием корзины
-TrashMonitoring trashMonitoring;
-
-// Объект с историей посещаемых записей
-WalkHistory walkHistory;
-
-// Логгер действий с данными
-ActionLogger actionLogger;
-
-// Менеджер горячих клавиш
-ShortcutManager shortcutManager;
+/// @todo: Разгрести объекты глобальной области, переделать все
+/// на синглтоны, сделать объект ядра, поместить объекты глобальной
+/// области в ядро как в единую центральную точку доступа
 
 // Различные периодические проверки
 PeriodicCheckBase periodicCheckBase;
 PeriodicSynchro periodicSynchro;
 
-// Указатель на основное окно программы
-QObject *pMainWindow;
+QObject * pMainWindow;
+WalkHistory * walkHistory;
 
 
-void printHelp()
-{
+void printHelp() {
   printf("\n");
   printf("MyTetra %s\n", APPLICATION_VERSION);
   printf("For use control mode, run by standard way MyTetra for show GUI interface, and next use command:\n");
@@ -76,8 +51,7 @@ void printHelp()
 }
 
 
-void parseConsoleOption(QtSingleApplication &app)
-{
+static void parseConsoleOption(QtSingleApplication &app) {
   // Если запрашивается помощь по опциям
   if( app.arguments().contains("-h") || app.arguments().contains("--help"))
   {
@@ -184,13 +158,8 @@ int main(int argc, char ** argv)
  // Запоминается имя файла запущенного бинарника
  // Файл запущенной программы (нулевой аргумент функции main)
  // Метод fromLocal8Bit корректно работает для 8-ми битных кодировок локали (Win) и для UTF-8 (Lin)
- // даже если в имени файла встречаются национальные символы
- // а кодек еще не установлен
+ // даже если в имени файла встречаются национальные символы, а кодек еще не установлен
  QString mainProgramFile=QString::fromLocal8Bit( argv[0] ); // Данные запоминаются в сыром виде и никак не интерпретируются до использования
- globalParameters.setMainProgramFile(mainProgramFile);
-
- // Перехват отладочных сообщений
- setDebugMessageHandler();
 
  // Создание объекта приложения
  QtSingleApplication app(argc, argv);
@@ -198,38 +167,21 @@ int main(int argc, char ** argv)
  // Обработка консольных опций
  parseConsoleOption(app);
 
- // Инициализация глобальных параметров,
- // внутри происходит установка рабочей директории, настройка кодеков для локали и консоли
- globalParameters.init();
+ // Инициализация глобальных параметров, внутри происходит установка рабочей директории, настройка кодеков для локали и консоли
+ GlobalParameters::init(mainProgramFile);
 
  // Инициализация основных конфигурирующих программу переменных
- mytetraConfig.init();
- if( !globalParameters.getInstallAutodetectLang().isEmpty() )
- {
-     // Если была процедура инсталляции, в конфиг записывается автоопределенный язык
-     mytetraConfig.set_interfacelanguage( globalParameters.getInstallAutodetectLang() );
- }
+ AppConfig::init(GlobalParameters::get().getWorkDirectory() + "/conf.ini");
+ auto & cfg = AppConfig::get();
 
+ setupDebug(cfg.get_printdebugmessages());
  // Проверяется наличие коллекции прикрепляемых к веткам иконок (и иконки создаются если они отсутствуют)
  IconSelectDialog::iconsCollectionCheck();
 
- // Установка CSS-оформления
- CssHelper::setCssStyle();
-
- // Инициализация логирования действий над данными
- actionLogger.init();
- actionLogger.setEnableLogging( mytetraConfig.getEnableLogging() ); // Установка или запрещение логирования согласно конфигурации
- actionLogger.addAction("startProgram"); // Запись в лог старта программы
-
-
- // Экран загрузки, показывается только в Андроид версии (так как загрузка идет ~10 сек, и без сплешскрина непонятно что происходит)
- QSplashScreen splash(QPixmap(":/resource/pic/mytetra_splash.png"));
- if(mytetraConfig.getShowSplashScreen())
-   splash.show();
-
+ CssHelper::setCssStyle(GlobalParameters::get().getWorkDirectory());
 
  // Подключение перевода интерфейса
- QString langFileName=":/resource/translations/mytetra_"+mytetraConfig.get_interfacelanguage()+".qm";
+ QString langFileName=":/resource/translations/mytetra_" + cfg.get_interfacelanguage() + ".qm";
  qDebug() << "Use language file " << langFileName;
  QTranslator langTranslator;
  if(langTranslator.load(langFileName))
@@ -239,20 +191,23 @@ int main(int argc, char ** argv)
 
  //Загрузка переводов стандартных диалогов и кнопок
  QTranslator qtTranslator;
- if(qtTranslator.load("qt_" + mytetraConfig.get_interfacelanguage(),
-                      QLibraryInfo::path(QLibraryInfo::TranslationsPath)
-                      ))
- {
+ if(qtTranslator.load("qt_" + cfg.get_interfacelanguage(), QLibraryInfo::path(QLibraryInfo::TranslationsPath))) {
      if(!app.installTranslator(&qtTranslator))
          qDebug() << "Can't install QT translations";
  }
 
  // Инициализация менеджера горячих клавиш должна происходить после инициализации переводов,
  // чтобы были переведены все действия по горячим клавишам
- shortcutManager.init();
+ ShortcutManager::init(GlobalParameters::get().getWorkDirectory()+"/shortcut.ini");
+
+ // История перехода очищается, так как в нее может попасть первая запись в востаналиваемой ветке и сама восстанавливаемая запись
+ WalkHistory wk;
+ walkHistory = &wk;
 
  // Создание объекта главного окна
  MainWindow win;
+ pMainWindow = &win;
+ win.init();
 
  // Сразу восстанавливается вид окна в предыдущий запуск
  // Эти действия нельзя делать в конструкторе главного окна, т.к. окно еще не создано
@@ -262,45 +217,28 @@ int main(int argc, char ** argv)
 
  // Настройка объекта главного окна
  win.setWindowTitle("MyTetra");
- if(globalParameters.getOs() == GlobalParameters::OS_type::Android)
-   win.show(); // В Андроиде нет десктопа, на нем нельзя сворачивать окно
- else
- {
-   if(mytetraConfig.get_runinminimizedwindow()==false)
+ if(!cfg.get_runinminimizedwindow())
      win.show();
-   else
+ else
      win.hide();
- }
+
 
  // Восстанавливаются открепляемые окна
  win.restoreDockableWindowsState();
 
- // Восстановление видимости виджета, который был активный, для мобильного интерфейса
- if(mytetraConfig.getInterfaceMode()=="mobile")
-   globalParameters.getWindowSwitcher()->restoreFocusWidget();
-
  qDebug() << "Restore session succesfull";
 
- // В момент восстановления главного окна восстановилась и последняя редактируемая запись
- // История перехода очищается, так как в нее может попасть
- // первая запись в востаналиваемой ветке и сама восстанавливаемая запись
- walkHistory.clear();
-
-
- // Если в конфиге настроено, что нужно синхронизироваться при старте
- // И задана команда синхронизации
- if(mytetraConfig.get_synchroonstartup())
-  if(mytetraConfig.get_synchrocommand().trimmed().length()>0)
+ if(cfg.get_synchroonstartup() && cfg.get_synchrocommand().trimmed().length() > 0)
    win.synchronization();
 
  // Инициалиация периодической проверки изменения базы сторонними программами
  periodicCheckBase.init();
- periodicCheckBase.setDelay( mytetraConfig.getCheckBasePeriod() );
+ periodicCheckBase.setDelay( cfg.getCheckBasePeriod() );
  periodicCheckBase.start();
 
  // Инициалиация периодической синхронизации
  periodicSynchro.init();
- periodicSynchro.setDelay( mytetraConfig.getPeriodicSynchroPeriod() );
+ periodicSynchro.setDelay( cfg.getPeriodicSynchroPeriod() );
  periodicSynchro.start();
 
  // При закрытии окна не выходить из программы.
@@ -311,10 +249,6 @@ int main(int argc, char ** argv)
 
  // Прием сообщений, испускаемых другим экземпляром MyTetra с помощью консольных команд "--control"
  app.connect(&app, &QtSingleApplication::messageReceived,  &win, &MainWindow::messageHandler);
-
- // Окно сплеш-скрина скрывается
- if(mytetraConfig.getShowSplashScreen())
-   splash.finish(&win);
 
  return app.exec();
 }

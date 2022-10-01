@@ -28,7 +28,6 @@ public:
     
 private slots:
   void onClickedTetradirSelectDialog(void);
-  void onClickedTrashdirSelectDialog(void);
 
   void onDisableCustomDateTimeFormatToggle(bool checked);
   void onEnableCustomDateTimeFormatToggle(bool checked);
@@ -39,18 +38,6 @@ private:
   QLabel *tetradirLabel;
   QLineEdit *tetradirInput;
   QToolButton *tetradirButton;
-
-  QLabel *trashdirLabel;
-  QLineEdit *trashdirInput;
-  QToolButton *trashdirButton;
-
-  QLabel *trashsizeLabel;
-  QSpinBox  *trashsizeInput;
-  QLabel *trashsizeFlexion;
-
-  QLabel *trashmaxfilecountLabel;
-  QSpinBox  *trashmaxfilecountInput;
-  QLabel *trashmaxfilecountFlexion;
 
   QLabel *interfaceLanguageLabel;
   QComboBox *interfaceLanguage;

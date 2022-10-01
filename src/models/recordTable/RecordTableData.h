@@ -13,6 +13,7 @@ class TreeItem;
 class Record;
 
 
+/// @brief Это набор данных конечной таблицы, с которыми удобно работать
 class RecordTableData
 {
 

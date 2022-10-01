@@ -8,10 +8,8 @@ class PeriodicSynchro : public TimerMonitoring
   Q_OBJECT
 
 protected:
-
-  bool isStartEnabled();
+  bool isStartEnabled() const;
   void timerEvent(QTimerEvent *event);
-
 };
 
 

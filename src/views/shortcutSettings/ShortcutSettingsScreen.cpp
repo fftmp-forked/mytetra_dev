@@ -1,13 +1,13 @@
 #include <QItemSelectionModel>
 #include <QCommonStyle>
+#include <QMessageBox>
+#include <QToolButton>
 
 #include "ShortcutSettingsScreen.h"
-#include "main.h"
 #include "views/mainWindow/MainWindow.h"
 
 
-ShortcutSettingsScreen::ShortcutSettingsScreen(QWidget *parent) : QDialog(parent)
-{
+ShortcutSettingsScreen::ShortcutSettingsScreen(QWidget *parent) : QDialog(parent) {
     // Инициализируется контроллер списка записей
     shortcutSettingsController=new ShortcutSettingsController(this);
     shortcutSettingsController->setObjectName("shortcutSettingsController");
@@ -19,14 +19,7 @@ ShortcutSettingsScreen::ShortcutSettingsScreen(QWidget *parent) : QDialog(parent
 }
 
 
-ShortcutSettingsScreen::~ShortcutSettingsScreen()
-{
-
-}
-
-
-void ShortcutSettingsScreen::setupUI()
-{
+void ShortcutSettingsScreen::setupUI() {
     // Создание различных кнопок
     buttonGrabShortcut=new QPushButton(tr("Grab shortcut"), this);
     buttonResetShortcutToDefault=new QPushButton(tr("Reset shortcut to default"), this);
@@ -144,8 +137,7 @@ void ShortcutSettingsScreen::onShortcutSelect(const QModelIndex &index)
 
 
 // Обработчик изменения текста клавиатурной комбинации
-void ShortcutSettingsScreen::onShortcutKeysChange(const QString &text)
-{
+void ShortcutSettingsScreen::onShortcutKeysChange(const QString &text) {
     shortcutData.keys=text;
 
     shortcutSettingsController->setShortcut( shortcutData.section+"-"+shortcutData.command, shortcutData.keys);

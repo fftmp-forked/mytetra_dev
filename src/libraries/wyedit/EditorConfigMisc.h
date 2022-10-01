@@ -7,7 +7,7 @@
 #include <QPushButton>
 #include <QLabel>
 
-#include "views/appConfigWindow/ConfigPage.h"
+#include "../../views/appConfigWindow/ConfigPage.h"
 
 class EditorConfig;
 

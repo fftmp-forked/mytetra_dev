@@ -31,7 +31,7 @@ class ConsoleEmulator : public QDialog
 
 public:
  ConsoleEmulator(QWidget *parent=nullptr);
- ~ConsoleEmulator();
+ ~ConsoleEmulator() {}
 
  void setMessageText(QString text);
 

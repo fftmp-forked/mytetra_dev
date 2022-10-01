@@ -8,43 +8,25 @@
 #include "RecordTableData.h"
 
 #include "models/appConfig/AppConfig.h"
-#include "libraries/GlobalParameters.h"
 #include "models/tree/TreeItem.h"
-#include "libraries/WalkHistory.h"
 #include "models/tree/KnowTreeModel.h"
 #include "views/tree/KnowTreeView.h"
 #include "libraries/helpers/DiskHelper.h"
-#include "libraries/ActionLogger.h"
 
 #include "libraries/wyedit/Editor.h"
 #include "libraries/helpers/ObjectHelper.h"
 #include "libraries/helpers/UniqueIdHelper.h"
+#include "libraries/GlobalParameters.h"
 
 
-extern AppConfig mytetraConfig;
-extern GlobalParameters globalParameters;
-extern WalkHistory walkHistory;
-extern ActionLogger actionLogger;
-
-// Это набор данных конечной таблицы, с которыми удобно работать
-
-
-// Конструктор
-RecordTableData::RecordTableData(void)
-{
+RecordTableData::RecordTableData(void) {
     treeItem=nullptr;
-
     workPos=-1;
-
-    return;
 }
 
 
-// Деструктор
-RecordTableData::~RecordTableData()
-{
+RecordTableData::~RecordTableData() {
     this->empty();
-    return;
 }
 
 
@@ -64,9 +46,8 @@ QString RecordTableData::getField(QString name, int pos) const
 }
 
 
-// Установка значения указанного поля для указанного элемента
-void RecordTableData::setField(QString name, QString value, int pos)
-{
+/// @brief Установка значения указанного поля для указанного элемента
+void RecordTableData::setField(QString name, QString value, int pos) {
     // Если индекс недопустимый
     if(pos<0 || pos>=tableData.size())
     {
@@ -81,8 +62,7 @@ void RecordTableData::setField(QString name, QString value, int pos)
 
 // Получение значения текста указанной записи
 // Если возникнет проблема, что файла с текстом записи нет, будет создан пустой файл
-QString RecordTableData::getText(int pos)
-{
+QString RecordTableData::getText(int pos) {
     // Если индекс недопустимый, возвращается пустая строка
     if(pos<0 || pos>=(int)size())
         return QString();
@@ -91,14 +71,10 @@ QString RecordTableData::getText(int pos)
 }
 
 
-// Функция, которая заменяет стандартную функцию редактора по считыванию
-// редактируемого текста
-// Ее вызывает редактор, передавая указатель на себя
-// и ссылку на переменную loadText, которую надо заполнить
-// Внимание! Метод не содержит работы с данными записи. Подумать, где его разместить
-void RecordTableData::editorLoadCallback(QObject *editor,
-                                         QString &loadText)
-{
+/// @brief Функция, которая заменяет стандартную функцию редактора по считыванию редактируемого текста.
+/// Ее вызывает редактор, передавая указатель на себя и ссылку на переменную loadText, которую надо заполнить
+/// Внимание! Метод не содержит работы с данными записи. Подумать, где его разместить
+void RecordTableData::editorLoadCallback(QObject *editor, QString &loadText) {
     // qDebug() << "RecordTableScreen::editor_load_callback() : Dir" << dir << "File" << file;
 
     // Ссылка на объект редактора
@@ -121,14 +97,10 @@ void RecordTableData::editorLoadCallback(QObject *editor,
 }
 
 
-// Функция, которая заменяет стандартную функцию редактора по записыванию
-// редактируемого текста
-// Ее вызывает редактор, передавая указатель на себя
-// и текст который надо записать в переменной saveText
-// Внимание! Метод не содержит работы с данными записи. Подумать, где его разместить
-void RecordTableData::editorSaveCallback(QObject *editor,
-                                         QString saveText)
-{
+/// @brief Функция, которая заменяет стандартную функцию редактора по записыванию редактируемого текста.
+/// Ее вызывает редактор, передавая указатель на себя и текст который надо записать в переменной saveText
+/// Внимание! Метод не содержит работы с данными записи. Подумать, где его разместить
+void RecordTableData::editorSaveCallback(QObject *editor, QString saveText) {
     // qDebug() << "RecordTableScreen::editor_load_callback() : Dir" << dir << "File" << file;
 
     // Ссылка на объект редактора
@@ -147,14 +119,6 @@ void RecordTableData::editorSaveCallback(QObject *editor,
 
     // Вызывается сохранение картинок
     currEditor->saveTextareaImages(Editor::SAVE_IMAGES_REMOVE_UNUSED);
-
-
-    // Запись в лог о редактировании текста записи
-    QMap<QString, QString> data;
-    data["recordId"]=currEditor->getMiscField("id");
-
-    data["recordName"]=currEditor->getMiscField("title");
-    actionLogger.addAction("editRecordText", data);
 }
 
 
@@ -188,7 +152,7 @@ Record RecordTableData::getRecordFat(int pos)
     resultRecord.setText( getText(pos) );
 
     // Добавление бинарных образов файлов картинок
-    QString directory=mytetraConfig.get_tetradir()+"/base/"+resultRecord.getField("dir");
+    QString directory=AppConfig::get().get_tetradir()+"/base/"+resultRecord.getField("dir");
     resultRecord.setPictureFiles( DiskHelper::getFilesFromDirectory(directory, "*.png") );
 
     return resultRecord;
@@ -394,21 +358,8 @@ int RecordTableData::insertNewRecord(int mode,
 
     qDebug() << "RecordTableData::insert_new_record() : New record pos" << QString::number(insertPos);
 
-
-    // Запись в лог о добавлении записи
-    QMap<QString, QString> data;
-    data["recordId"]=record.getNaturalFieldSource("id");
-    data["recordName"]=record.getNaturalFieldSource("name");
-    if(treeItem!=nullptr)
-    {
-        auto fields=treeItem->getAllFieldsDirect();
-        data["branchId"]=fields["id"];
-        data["branchName"]=fields["name"];
-    }
-    actionLogger.addAction("createRecord", data);
-
     // В историю перемещений по записям добавляется только что созданная запись
-    walkHistory.add(record.getNaturalFieldSource("id"), 0, 0);
+    walkHistory->add(record.getNaturalFieldSource("id"), 0, 0);
 
     // Возвращается номера строки, на которую должна быть установлена засветка после выхода из данного метода
     return insertPos;
@@ -416,8 +367,7 @@ int RecordTableData::insertNewRecord(int mode,
 
 
 // Замена в указанной записи переданных полей на новые значения
-void RecordTableData::editRecordFields(int pos,
-                                       QMap<QString, QString> editFields)
+void RecordTableData::editRecordFields(int pos, QMap<QString, QString> editFields)
 {
     qDebug() << "In recordtabledata method edit_record()";
 
@@ -427,20 +377,11 @@ void RecordTableData::editRecordFields(int pos,
         i.next();
         setField(i.key(), i.value(), pos);
     }
-
-    // Запись в лог о редактировании полей записи
-    QMap<QString, QString> data;
-    data["recordId"]=getField("id", pos);
-
-    data["recordName"]=getField("name", pos);
-    actionLogger.addAction("editRecord", data);
-
-    // changePersistentIndex(QModelIndex(), QModelIndex());
 }
 
 
-// Удаление записи с указанным индексом
-// todo: добавить удаление приаттаченных файлов и очистку таблицы приаттаченных файлов
+/// @brief Удаление записи с указанным индексом
+/// @todo: добавить удаление приаттаченных файлов и очистку таблицы приаттаченных файлов
 void RecordTableData::deleteRecord(int i)
 {
     qDebug() << "Try delete record num " << i << " table count " << tableData.size();
@@ -450,25 +391,19 @@ void RecordTableData::deleteRecord(int i)
         return;
 
     // Удаление директории и файлов внутри, с сохранением в резервной директории
-    QString dirForDelete=mytetraConfig.get_tetradir()+"/base/"+getField("dir",i);
+    QString dirForDelete=AppConfig::get().get_tetradir()+"/base/"+getField("dir",i);
     qDebug() << "Remove dir " << dirForDelete;
-    DiskHelper::removeDirectoryToTrash( dirForDelete );
+    QDir(dirForDelete).removeRecursively();
 
 
     // Удаление позиции курсора из истории
     QString id=getField("id", i);
     if(id.length()>0)
-        walkHistory.removeHistoryData(id);
-
-    // Начинается удаление записи
-    // beginRemoveRows(QModelIndex(),i,i);
+        walkHistory->removeHistoryData(id);
 
     // Удаляется элемент
     tableData.removeAt(i); // Было takeAt
     qDebug() << "Delete record succesfull";
-
-    // Удаление записи закончено
-    // endRemoveRows();
 }
 
 

@@ -1,6 +1,6 @@
 #include "EditorToolbarSettingsAbstractModel.h"
 #include "../../../EditorConfig.h"
-#include "libraries/helpers/ObjectHelper.h"
+#include "../../../../helpers/ObjectHelper.h"
 
 
 EditorToolbarSettingsAbstractModel::EditorToolbarSettingsAbstractModel(QObject *parent) :

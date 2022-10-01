@@ -6,13 +6,10 @@
 #include <QScrollBar>
 #include <QUrl>
 
-#include "libraries/GlobalParameters.h"
-#include "libraries/helpers/UniqueIdHelper.h"
+#include "../helpers/UniqueIdHelper.h"
+#include "../GlobalParameters.h"
 
 #include "EditorTextArea.h"
-
-
-extern GlobalParameters globalParameters;
 
 
 EditorTextArea::EditorTextArea(QWidget *parent) : QTextEdit(parent)
@@ -37,18 +34,6 @@ EditorTextArea::EditorTextArea(QWidget *parent) : QTextEdit(parent)
 }
 
 
-EditorTextArea::~EditorTextArea(void)
-{
-
-}
-
-
-bool EditorTextArea::getShowFormatting(void)
-{
- return flagShowFormatting;
-}
-
-
 void EditorTextArea::setShowFormatting(bool i)
 {
  flagShowFormatting=i;
@@ -61,37 +46,9 @@ void EditorTextArea::setShowFormatting(bool i)
 bool EditorTextArea::event(QEvent *event)
 {
   if (event->type() == QEvent::Gesture)
-  {
-    // qDebug() << "In gesture event(): " << event << " Event type: " << event->type();
-    return gestureEvent(static_cast<QGestureEvent*>(event));
-  }
+    return true; /// @todo: это ошмётки Android
 
   return QTextEdit::event(event);
-}
-
-
-// Обработчик жестов
-// Вызывается из обработчика событий
-bool EditorTextArea::gestureEvent(QGestureEvent *event)
-{
-  // qDebug() << "In gestureEvent()" << event;
-
-  if (QGesture *gesture = event->gesture(Qt::TapAndHoldGesture))
-    tapAndHoldGestureTriggered(static_cast<QTapAndHoldGesture *>(gesture));
-
-  return true;
-}
-
-
-// Обработчик жеста TapAndHoldGesture
-// Вызывается из обработчика жестов
-void EditorTextArea::tapAndHoldGestureTriggered(QTapAndHoldGesture *gesture)
-{
-  // qDebug() << "In tapAndHoldGestureTriggered()" << gesture;
-
-  if(gesture->state()==Qt::GestureFinished)
-    if(globalParameters.getOs() == GlobalParameters::OS_type::Android)
-      emit tapAndHoldGestureFinished( mapFromGlobal(gesture->position().toPoint()) );
 }
 
 
@@ -148,8 +105,7 @@ void EditorTextArea::onGlobalReleaseKey(int key)
 
 void EditorTextArea::switchReferenceClickMode(bool flag)
 {
-  if(flag)
-  {
+  if(flag) {
     // Сразу нужно проверить, не наведен ли курсор на ссылку, и если наведен, то поменять его вид
     QString href=anchorAt(currentMousePosition);
     if( !(href.isEmpty()) )
@@ -157,19 +113,17 @@ void EditorTextArea::switchReferenceClickMode(bool flag)
       qApp->setOverrideCursor(QCursor(Qt::PointingHandCursor));
       mouseCursorOverriden = true;
 
-      globalParameters.getStatusBar()->showMessage(href);
+      GlobalParameters::get().getStatusBar()->showMessage(href);
       qDebug() << "Cursor href in key event: " << href;
     }
-  }
-  else
-  {
+  } else {
     // Вид курсора сбрасывается на основной. Нужно для того, чтобы курсор поменялся,
     // если мышка в момент отжатия клавиши была наведена на ссылку и курсор был с указательным пальцем
     qApp->restoreOverrideCursor();
 
     mouseCursorOverriden = false;
 
-    globalParameters.getStatusBar()->showMessage("");
+    GlobalParameters::get().getStatusBar()->showMessage("");
   }
 
   qDebug() << "switchReferenceClickMode: " << flag;
@@ -186,23 +140,20 @@ void EditorTextArea::mouseMoveEvent(QMouseEvent *event)
     QString href=anchorAt(currentMousePosition);
 
     // Если курсор мыши находится над ссылкой
-    if(!href.isEmpty())
-    {
+    if(!href.isEmpty()) {
       if(!mouseCursorOverriden)
       {
         qApp->setOverrideCursor(QCursor(Qt::PointingHandCursor)); // Меняется форма курсора на указатель клика по ссылке
         mouseCursorOverriden = true;
-        globalParameters.getStatusBar()->showMessage(href); // Ссылка отображается в строке статуса
+        GlobalParameters::get().getStatusBar()->showMessage(href); // Ссылка отображается в строке статуса
         qDebug() << "Cursor href in mouse event: " << href;
       }
-    }
-    else
-    {
+    } else {
       if(mouseCursorOverriden)
       {
         qApp->restoreOverrideCursor(); // Воостанавливается обычный курсор
         mouseCursorOverriden = false;
-        globalParameters.getStatusBar()->showMessage("");
+        GlobalParameters::get().getStatusBar()->showMessage("");
       }
     }
   }
@@ -595,8 +546,6 @@ void EditorTextArea::onDownloadImagesSuccessfull(const QString html,
 
 void EditorTextArea::onChangeFontcolor(const QColor &selectedColor)
 {
-  // TRACELOG
-
   // Если выделение есть
   if(textCursor().hasSelection())
     setTextColor(selectedColor); // Меняется цвет текста
@@ -618,8 +567,6 @@ void EditorTextArea::onChangeFontcolor(const QColor &selectedColor)
 // Изменение цвета фона текста
 void EditorTextArea::onChangeBackgroundColor(const QColor &selectedColor)
 {
-  // TRACELOG
-
   // Если выделение есть
   if(textCursor().hasSelection())
     setTextBackgroundColor(selectedColor); // Меняется цвет фона
@@ -640,8 +587,6 @@ void EditorTextArea::onChangeBackgroundColor(const QColor &selectedColor)
 
 void EditorTextArea::onChangeFontFamily(QString fontFamily)
 {
-  // TRACELOG
-
   qDebug() << "Apply font family " << fontFamily;
 
   // Ранее для установки шрифта хватало одной команды setFontFamily(fontFamily);
@@ -666,8 +611,6 @@ void EditorTextArea::onChangeFontFamily(QString fontFamily)
 
 void EditorTextArea::onChangeFontPointSize(int n)
 {
-  // TRACELOG
-
   setFontPointSize(n);
 }
 

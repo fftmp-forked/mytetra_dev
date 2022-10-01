@@ -1,20 +1,17 @@
 #include <QDateTime>
+#include <QFileInfo>
 
-#include "TimerMonitoring.h"
 #include "PeriodicCheckBase.h"
-#include "models/appConfig/AppConfig.h"
-#include "models/tree/KnowTreeModel.h"
-#include "views/mainWindow/MainWindow.h"
-#include "libraries/helpers/ObjectHelper.h"
-#include "libraries/helpers/MessageHelper.h"
-#include "libraries/wyedit/EditorShowTextDispatcher.h"
+#include "../models/appConfig/AppConfig.h"
+#include "../models/tree/KnowTreeModel.h"
+#include "../views/mainWindow/MainWindow.h"
+#include "../views/tree/KnowTreeView.h"
+#include "helpers/ObjectHelper.h"
+#include "helpers/MessageHelper.h"
+#include "wyedit/EditorShowTextDispatcher.h"
 
 
-extern AppConfig mytetraConfig;
-
-
-void PeriodicCheckBase::init()
-{
+void PeriodicCheckBase::init() {
     TimerMonitoring::init();
 
     connect(this, &PeriodicCheckBase::doUpdateDetachedWindows,
@@ -23,41 +20,32 @@ void PeriodicCheckBase::init()
 }
 
 
-bool PeriodicCheckBase::isStartEnabled()
-{
-    return mytetraConfig.getEnablePeriodicCheckBase();
+bool PeriodicCheckBase::isStartEnabled() const {
+    return AppConfig::get().getEnablePeriodicCheckBase();
 }
 
 
-// Действия, происходящие по таймеру
-void PeriodicCheckBase::timerEvent(QTimerEvent *event)
-{
+/// @brief  Действия, происходящие по таймеру
+void PeriodicCheckBase::timerEvent(QTimerEvent *event) {
     Q_UNUSED(event)
 
-    // qDebug() << "In timer working method";
+    auto knowTreeView = find_object<KnowTreeView>("knowTreeView");
+    auto knowTreeModel = qobject_cast<KnowTreeModel*>( knowTreeView->model() );
 
-    QDateTime lastSave=knowTreeModel->getLastSaveDateTime();
-    QDateTime lastLoad=knowTreeModel->getLastLoadDateTime();
-
-    // Если доступа к файла за текущий сеанс ни разу не производилось, нечего сравнивать
-    if(lastSave.isNull() && lastLoad.isNull())
+    auto lastAccess = knowTreeModel->getLastAccess();
+    if(lastAccess.isNull())
         return;
 
-    QDateTime lastAccess = lastSave > lastLoad ? lastSave : lastLoad;
-
     // Время последнего изменения файла дерева
-    QString fileName=mytetraConfig.get_tetradir()+"/mytetra.xml";
-    QFileInfo fileInfo(fileName);
-    QDateTime modifyDateTime=fileInfo.lastModified();
+    auto modifyDateTime = QFileInfo(AppConfig::get().get_tetradir() + "/mytetra.xml").lastModified();
 
-    if(modifyDateTime>lastAccess)
-    {
+    if(modifyDateTime > lastAccess) {
         (find_object<MainWindow>("mainwindow"))->reload();
 
         emit doUpdateDetachedWindows();
 
         // Если разрешена выдача сообщения о том, что база данных была изменена
-        if(mytetraConfig.getEnablePeriodicCheckMessage())
+        if(AppConfig::get().getEnablePeriodicCheckMessage())
             showMessageBox(tr("The database was changed by external application or services.\nMyTetra reload the database tree to keep data consistency."));
     }
 }

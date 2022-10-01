@@ -1,21 +1,8 @@
 #pragma once
 
-#include <stdio.h>
-
-#include <QApplication>
-#include <QClipboard>
 #include <QObject>
-#include <QWidget>
-#include <QDialog>
-#include <QtGlobal>
 
-#include <QDomNode>
-#include <QTextEdit>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QSizePolicy>
-#include <QToolBar>
-#include <QAbstractItemView>
+#include "libraries/WalkHistory.h"
 
 
 // ----------------------------------------------------------
@@ -33,18 +20,9 @@
 #define APPLICATION_VERSION "unknown"
 #endif
 
-// Поддерживаемая версия формата базы (хранилища)
-#define CURRENT_FORMAT_VERSION    1
-#define CURRENT_FORMAT_SUBVERSION 2
-
-// Управление трассировкой
-#ifdef QT_DEBUG
-#define TRACELOG TraceLogger logger(__FILE__, __FUNCTION__, __LINE__);
-#else
-#define TRACELOG
-#endif
-
 #ifdef Q_CC_MSVC
 [[noreturn]] __forceinline void __builtin_unreachable() {__assume(false);}
 #endif
 
+extern QObject * pMainWindow; // Указатель на основное окно программы
+extern WalkHistory * walkHistory; // Объект с историей посещаемых записей

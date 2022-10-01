@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QMainWindow>
 #include <QPrinter>
 #include <QVBoxLayout>
 #include <QDialog>

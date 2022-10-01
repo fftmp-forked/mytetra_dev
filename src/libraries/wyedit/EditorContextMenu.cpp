@@ -5,10 +5,7 @@
 #include "EditorContextMenu.h"
 #include "Editor.h"
 #include "EditorCursorPositionDetector.h"
-#include "libraries/ShortcutManager.h"
-
-
-extern ShortcutManager shortcutManager;
+#include "../ShortcutManager/ShortcutManager.h"
 
 
 EditorContextMenu::EditorContextMenu(QWidget *parent) : QMenu(parent)
@@ -17,12 +14,6 @@ EditorContextMenu::EditorContextMenu(QWidget *parent) : QMenu(parent)
     setupShortcuts();
     setupSignals();
     setupMenu();
-}
-
-
-EditorContextMenu::~EditorContextMenu(void)
-{
-
 }
 
 
@@ -50,35 +41,34 @@ void EditorContextMenu::setupActions(void)
 }
 
 
-void EditorContextMenu::setupShortcuts(void)
-{
+void EditorContextMenu::setupShortcuts(void) {
     qDebug() << "Setup shortcut for" << staticMetaObject.className();
+    QList<QPair<QString, QAction*>> editorContextActions = {
+        {"undo", actionUndo },
+        {"redo", actionRedo },
+        {"cut", actionCut },
+        {"copy", actionCopy },
+        {"paste", actionPaste },
+        {"pasteAsPlainText", actionPasteAsPlainText },
+        {"selectAll", actionSelectAll },
+        {"insertImageFromFile", actionEditImageProperties },
+        {"mathExpression", actionEditMathExpression },
 
-    shortcutManager.initAction("editor-undo", actionUndo );
-    shortcutManager.initAction("editor-redo", actionRedo );
-    shortcutManager.initAction("editor-cut", actionCut );
-    shortcutManager.initAction("editor-copy", actionCopy );
-    shortcutManager.initAction("editor-paste", actionPaste );
-    shortcutManager.initAction("editor-pasteAsPlainText", actionPasteAsPlainText );
-    shortcutManager.initAction("editor-selectAll", actionSelectAll );
+        {"gotoReference", actionGotoReference },
+        {"lowercase", actionLowercase },
+        {"uppercase", actionUppercase },
+    };
+    ShortcutManager::get().initActions(ShortcutManager::SECTION_EDITOR, editorContextActions);
 
     // "Умное" действие Вставить изображение / Редактировать свойства изображения
-    shortcutManager.initAction("editor-insertImageFromFile", actionEditImageProperties );
     actionEditImageProperties->setText(tr("Edit image properties")); // В контекстном меню это редактирование свойств изображения
 
     // "Умное" действие Вставить / Редактировать формулу
-    shortcutManager.initAction("editor-mathExpression", actionEditMathExpression );
     actionEditMathExpression->setText(tr("Edit math expression")); // В контекстном меню это редактирование формулы
-
-    shortcutManager.initAction("editor-gotoReference", actionGotoReference );
-
-    shortcutManager.initAction("editor-lowercase", actionLowercase );
-    shortcutManager.initAction("editor-uppercase", actionUppercase );
 }
 
 
-void EditorContextMenu::update(void)
-{
+void EditorContextMenu::update(void) {
     // Сначала скрываются пункты редактирования формулы и картинки
     setEditMathExpression( false );
     setImageProperties( false );
@@ -194,8 +184,7 @@ void EditorContextMenu::setFormatToUpperCase(bool flag)
 }
 
 
-void EditorContextMenu::setupSignals(void)
-{
+void EditorContextMenu::setupSignals(void) {
     connect(actionUndo,            &QAction::triggered, this, &EditorContextMenu::onActionUndo);
     connect(actionRedo,            &QAction::triggered, this, &EditorContextMenu::onActionRedo);
     connect(actionCut,             &QAction::triggered, this, &EditorContextMenu::onActionCut);
@@ -212,12 +201,11 @@ void EditorContextMenu::setupSignals(void)
     connect(actionUppercase, &QAction::triggered, this, &EditorContextMenu::onActionUppercase);
 
     // Обновление горячих клавиш, если они были изменены
-    connect(&shortcutManager, &ShortcutManager::updateWidgetShortcut, this, &EditorContextMenu::setupShortcuts);
+    connect(&ShortcutManager::get(), &ShortcutManager::updateWidgetShortcut, this, &EditorContextMenu::setupShortcuts);
 }
 
 
-void EditorContextMenu::setupMenu(void)
-{
+void EditorContextMenu::setupMenu(void) {
     this->addAction(actionCut);
     this->addAction(actionCopy);
     this->addAction(actionPaste);
@@ -242,96 +230,84 @@ void EditorContextMenu::setupMenu(void)
 }
 
 
-void EditorContextMenu::onActionUndo()
-{
+void EditorContextMenu::onActionUndo() {
     update();
     if(actionUndo->isEnabled()) {
         emit undo();
     }
 }
 
-void EditorContextMenu::onActionRedo()
-{
+void EditorContextMenu::onActionRedo() {
     update();
     if(actionRedo->isEnabled()) {
         emit redo();
     }
 }
 
-void EditorContextMenu::onActionCut()
-{
+void EditorContextMenu::onActionCut() {
     update();
     if(actionCut->isEnabled()) {
         emit cut();
     }
 }
 
-void EditorContextMenu::onActionCopy()
-{
+void EditorContextMenu::onActionCopy() {
     update();
     if(actionCopy->isEnabled()) {
         emit copy();
     }
 }
 
-void EditorContextMenu::onActionPaste()
-{
+void EditorContextMenu::onActionPaste() {
     update();
     if(actionPaste->isEnabled()) {
         emit paste();
     }
 }
 
-void EditorContextMenu::onActionPasteAsPlainText()
-{
+void EditorContextMenu::onActionPasteAsPlainText() {
     update();
     if(actionPasteAsPlainText->isEnabled()) {
         emit pasteAsPlainText();
     }
 }
 
-void EditorContextMenu::onActionSelectAll()
-{
+void EditorContextMenu::onActionSelectAll() {
     update();
     if(actionSelectAll->isEnabled()) {
         emit selectAll();
     }
 }
 
-void EditorContextMenu::onActionContextMenuEditImageProperties()
-{
+void EditorContextMenu::onActionContextMenuEditImageProperties() {
     update();
     if(actionEditImageProperties->isEnabled()) {
         emit contextMenuEditImageProperties();
     }
 }
 
-void EditorContextMenu::onActionContextMenuEditMathExpression()
-{
+void EditorContextMenu::onActionContextMenuEditMathExpression() {
     update();
     if(actionEditMathExpression->isEnabled()) {
         emit contextMenuEditMathExpression();
     }
 }
 
-void EditorContextMenu::onActionContextMenuGotoReference()
-{
+void EditorContextMenu::onActionContextMenuGotoReference() {
     update();
     if(actionGotoReference->isEnabled()) {
         emit contextMenuGotoReference();
     }
 }
 
-void EditorContextMenu::onActionLowercase()
-{
+void EditorContextMenu::onActionLowercase() {
     update();
     if(actionLowercase->isEnabled()) {
         emit lowercase();
     }
 }
 
-void EditorContextMenu::onActionUppercase()
-{
+void EditorContextMenu::onActionUppercase() {
     update();
     if(actionUppercase->isEnabled()) {
         emit uppercase();

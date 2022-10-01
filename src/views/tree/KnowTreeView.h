@@ -4,9 +4,7 @@
 #include <QTreeView>
 #include <QDragEnterEvent>
 #include <QDropEvent>
-#include <QTapAndHoldGesture>
 #include <QEvent>
-#include <QGestureEvent>
 
 
 class KnowTreeView : public QTreeView
@@ -21,13 +19,9 @@ signals:
  void tapAndHoldGestureFinished(const QPoint &);
  void dropEventHandleCatch();
 
-public slots:
-
 protected:
 
  bool event(QEvent *event);
- bool gestureEvent(QGestureEvent *event);
- void tapAndHoldGestureTriggered(QTapAndHoldGesture *gesture);
 
  void dragEnterEvent(QDragEnterEvent *event);
  void dragMoveEvent(QDragMoveEvent *event);

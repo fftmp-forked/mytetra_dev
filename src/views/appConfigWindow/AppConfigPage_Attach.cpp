@@ -7,8 +7,6 @@
 #include "AppConfigPage_Attach.h"
 #include "models/appConfig/AppConfig.h"
 
-extern AppConfig mytetraConfig;
-
 
 AppConfigPage_Attach::AppConfigPage_Attach(QWidget *parent) : ConfigPage(parent)
 {
@@ -31,7 +29,7 @@ void AppConfigPage_Attach::setupUi(void)
     // Галка разрешения/запрещения подсветки записи с прикрепленными файлами
     enableRecordWithAttachHighlight=new QCheckBox(this);
     enableRecordWithAttachHighlight->setText( tr("Enable highlight notes with attachments") );
-    enableRecordWithAttachHighlight->setChecked( mytetraConfig.getEnableRecordWithAttachHighlight() );
+    enableRecordWithAttachHighlight->setChecked( AppConfig::get().getEnableRecordWithAttachHighlight() );
 
     // Выбор цвета для записи с прикрепленными файлами
     labelHighlightColor=new QLabel(this);
@@ -39,10 +37,10 @@ void AppConfigPage_Attach::setupUi(void)
 
     buttonHighlightColor=new QToolButton(this);
     highlightColor=new QColor();
-    this->setColorForButtonHighlightColor( QColor( mytetraConfig.getRecordWithAttachHighlightColor() ) );
+    this->setColorForButtonHighlightColor( QColor( AppConfig::get().getRecordWithAttachHighlightColor() ) );
 
     // Начальный выбор цвета активируется или отключается в зависимости от галки
-    this->onEnableRecordWithAttachHighlight( mytetraConfig.getEnableRecordWithAttachHighlight() );
+    this->onEnableRecordWithAttachHighlight( AppConfig::get().getEnableRecordWithAttachHighlight() );
 }
 
 
@@ -120,12 +118,12 @@ int AppConfigPage_Attach::applyChanges(void)
     int result=0;
 
     // Сохраняется настройка разрешения/запрещения подсветки записи с прикрепленными файлами
-    if(mytetraConfig.getEnableRecordWithAttachHighlight()!=enableRecordWithAttachHighlight->isChecked())
-        mytetraConfig.setEnableRecordWithAttachHighlight(enableRecordWithAttachHighlight->isChecked());
+    if(AppConfig::get().getEnableRecordWithAttachHighlight()!=enableRecordWithAttachHighlight->isChecked())
+        AppConfig::get().setEnableRecordWithAttachHighlight(enableRecordWithAttachHighlight->isChecked());
 
     // Сохраняется цвет подсветки
-    if(mytetraConfig.getRecordWithAttachHighlightColor()!=highlightColor->name())
-        mytetraConfig.setRecordWithAttachHighlightColor(highlightColor->name());
+    if(AppConfig::get().getRecordWithAttachHighlightColor()!=highlightColor->name())
+        AppConfig::get().setRecordWithAttachHighlightColor(highlightColor->name());
 
     return result;
 }

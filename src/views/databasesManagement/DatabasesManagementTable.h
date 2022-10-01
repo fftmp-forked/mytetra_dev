@@ -1,27 +1,23 @@
 #pragma once
 
-#include <QObject>
 #include <QWidget>
 #include <QTableView>
 #include <QMenu>
-#include <QGestureEvent>
-#include <QTapAndHoldGesture>
-
-// Отображение таблицы известных баз данных (только таблица)
 
 
 class DatabasesManagementController;
 
+/// @brief Отображение таблицы известных баз данных (только таблица)
 class DatabasesManagementTable : public QTableView
 {
     Q_OBJECT
 
 public:
-    DatabasesManagementTable(QWidget *parent=nullptr);
-    virtual ~DatabasesManagementTable();
+    DatabasesManagementTable(QWidget *parent=nullptr) { Q_UNUSED(parent); };
+    virtual ~DatabasesManagementTable() {};
 
     void init();
-    void setController(DatabasesManagementController *pController);
+    void setController(DatabasesManagementController *pController) { controller = pController; };
 
 signals:
 

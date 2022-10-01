@@ -21,7 +21,7 @@ class ShortcutSettingsScreen : public QDialog
     Q_OBJECT
 public:
     ShortcutSettingsScreen(QWidget *parent = nullptr);
-    ~ShortcutSettingsScreen();
+    ~ShortcutSettingsScreen() {}
 
 protected slots:
 

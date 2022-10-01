@@ -17,15 +17,11 @@ class TreeItem
     TreeItem(const QMap<QString, QString> &data, TreeItem *parent = nullptr);
     ~TreeItem();
 
-    // Возвращение ссылки на потомка, который хранится в списке childItems
-    // под указанным номером
-    TreeItem *child(int number);
+    TreeItem *child(int number) {return childItems.value(number);}
 
-    // Возвращение количества потомков (т.е. количество записей в списке childItems)
-    int childCount() const;
+    int childCount() const {return childItems.count();}
 
-    // Возвращение количества полей, которые хранит данный элемент.
-    int fieldCount() const;
+    int fieldCount() const {return fieldsTable.count();}
 
     // Получение значения поля по имени
     QString getField(QString name);
@@ -34,7 +30,7 @@ class TreeItem
     QMap<QString, QString> getAllFields();
 
     // Получение всех полей данных напрямую, без преобразований
-    QMap<QString, QString> getAllFieldsDirect();
+    QMap<QString, QString> getAllFieldsDirect() const {return fieldsTable;}
 
     // Заполнение указанного поля
     void setField(QString name, QString value);
@@ -55,7 +51,7 @@ class TreeItem
     bool addChildrenItem(TreeItem *item);
     
     // Возвращение ссылки на родительский элемент
-    TreeItem *parent();
+    TreeItem *parent() const {return parentItem;}
 
     // Удаление потомков, начиная с позиции position массива childItems
     bool removeChildren(int position, int count);
@@ -71,10 +67,10 @@ class TreeItem
     bool moveDn(void);
     
     // Возвращает id путь (список идентификаторов от корня до текущего элемента)
-    QStringList getPath(void);
+    QStringList getPath(void) {return getPathAsField("id");}
     
     // Возвращает путь в виде названий веток дерева
-    QStringList getPathAsName(void);
+    QStringList getPathAsName(void) {return getPathAsField("name");}
 
     QString getPathAsNameWithDelimeter(QString delimeter);
 
@@ -93,28 +89,28 @@ class TreeItem
     // Получение идентификатора родительской ветки
     QString getParentId();
 
-    // Получение иконки ветки
-    QIcon getIcon();
+    // возвращается иконка, не важно, пустая или с рисунком
+    QIcon getIcon() const {return icon;}
 
     // Первичное заполнение таблицы конечных записей, "промежуточный" метод
-    void recordtableInit(QDomElement domModel);
+    void recordtableInit(QDomElement domModel) {recordsTable.init(this, domModel);}
 
     // Взятие количества записей в таблице конечных записей, "промежуточный" метод
-    int recordtableGetRowCount(void);
+    int recordtableGetRowCount(void) const {return recordsTable.size();}
 
     // Удаление всех элементов в таблице конечных записей, "промежуточный" метод
-    void recordtableDeleteAllRecords(void);
+    void recordtableDeleteAllRecords(void) {recordsTable.deleteAllRecords();}
     
     // Преобразование таблицы конечных записей в DOM представление, "промежуточный" метод
-    QDomElement recordtableExportDataToDom(QDomDocument *doc);
-    void recordtableExportDataToStreamWriter(QXmlStreamWriter *xmlWriter);
+    QDomElement recordtableExportDataToDom(QDomDocument *doc) const {return recordsTable.exportDataToDom( doc );}
+    void recordtableExportDataToStreamWriter(QXmlStreamWriter *xmlWriter) const {recordsTable.exportDataToStreamWriter( xmlWriter );}
 
     // Взятие ссылки на данные конечных записей
-    RecordTableData *recordtableGetTableData(void);
+    RecordTableData *recordtableGetTableData(void) {return &recordsTable;}
 
-    void setDetached(bool state);
-    bool isDetached();
-    
+    void setDetached(bool state) {detachedState=state;}
+    bool isDetached() const {return detachedState;}
+
 private:
     bool removeChildrenLink(int position, int count);
 
@@ -135,4 +131,5 @@ private:
 
     QIcon icon; // Иконка ветки
 };
+
 

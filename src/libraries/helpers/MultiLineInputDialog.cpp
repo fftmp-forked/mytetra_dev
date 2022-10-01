@@ -4,15 +4,11 @@
 #include <QDebug>
 #include <QPushButton>
 
-#include "EditorMultiLineInputDialog.h"
-#include "libraries/ShortcutManager.h"
+#include "../ShortcutManager/ShortcutManager.h"
+#include "MultiLineInputDialog.h"
 
 
-extern ShortcutManager shortcutManager;
-
-
-EditorMultiLineInputDialog::EditorMultiLineInputDialog(QWidget *parent) : QDialog(parent)
-{
+MultiLineInputDialog::MultiLineInputDialog(QWidget *parent) : QDialog(parent) {
   sizeCoefficient=1.0;
 
   setupUi();
@@ -22,8 +18,7 @@ EditorMultiLineInputDialog::EditorMultiLineInputDialog(QWidget *parent) : QDialo
 }
 
 
-EditorMultiLineInputDialog::~EditorMultiLineInputDialog()
-{
+MultiLineInputDialog::~MultiLineInputDialog() {
   if(textArea!=NULL)
     delete textArea;
 
@@ -32,8 +27,7 @@ EditorMultiLineInputDialog::~EditorMultiLineInputDialog()
 }
 
 
-void EditorMultiLineInputDialog::setupUi()
-{
+void MultiLineInputDialog::setupUi() {
   QSizePolicy sizePolicy;
   sizePolicy.setHorizontalPolicy(QSizePolicy::Expanding);
   sizePolicy.setVerticalPolicy(QSizePolicy::Expanding);
@@ -59,36 +53,32 @@ void EditorMultiLineInputDialog::setupUi()
   CancelButton->setDefault(false);
 
 
-  // Устанавливается размер окна, основанный на размере виджета, из которого
-  // этот виджет был вызван
+  // Устанавливается размер окна, основанный на размере виджета, из которого этот виджет был вызван
   if(this->parent()!=nullptr)
     if(this->parent()->isWidgetType())
         updateSize();
 }
 
 
-void EditorMultiLineInputDialog::setupShortcuts(void)
-{
+void MultiLineInputDialog::setupShortcuts(void) {
     qDebug() << "Setup shortcut for" << staticMetaObject.className();
 
     QPushButton *okButton=buttonBox->button(QDialogButtonBox::Ok); // Выясняется указатель на кнопку OK
-    okButton->setShortcut( shortcutManager.getKeySequence("misc-editConfirm") ); // Устанавливается шорткат
-    okButton->setToolTip(shortcutManager.getKeySequenceAsText("misc-editConfirm")); // ToolTip зависит от шортката
+    okButton->setShortcut(ShortcutManager::get().getKeySequence(ShortcutManager::SECTION_MISC, "editConfirm")); // Устанавливается шорткат
+    okButton->setToolTip(ShortcutManager::get().getKeySequenceAsText(ShortcutManager::SECTION_MISC, "editConfirm")); // ToolTip зависит от шортката
 }
 
 
-void EditorMultiLineInputDialog::setupSignals()
-{
-    connect(buttonBox, &QDialogButtonBox::accepted, this, &EditorMultiLineInputDialog::accept);
-    connect(buttonBox, &QDialogButtonBox::rejected, this, &EditorMultiLineInputDialog::reject);
+void MultiLineInputDialog::setupSignals() {
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &MultiLineInputDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &MultiLineInputDialog::reject);
 
     // Обновление горячих клавиш, если они были изменены
-    connect(&shortcutManager, &ShortcutManager::updateWidgetShortcut, this, &EditorMultiLineInputDialog::setupShortcuts);
+    connect(&ShortcutManager::get(), &ShortcutManager::updateWidgetShortcut, this, &MultiLineInputDialog::setupShortcuts);
 }
 
 
-void EditorMultiLineInputDialog::assembly()
-{
+void MultiLineInputDialog::assembly() {
   QVBoxLayout *mainLayout=new QVBoxLayout(this);
 
   // Добавляется область текста
@@ -99,41 +89,7 @@ void EditorMultiLineInputDialog::assembly()
 }
 
 
-void EditorMultiLineInputDialog::setText(QString text)
-{
-  textArea->setPlainText(text);
-}
-
-
-QString EditorMultiLineInputDialog::getText()
-{
-  return textArea->toPlainText();
-}
-
-
-// Выясняется, был ли изменен текст, показанный в диалоге
-bool EditorMultiLineInputDialog::isModified() 
-{ 
-  return textArea->document()->isModified();
-}
-
-
-void EditorMultiLineInputDialog::setWordWrapMode(QTextOption::WrapMode mode)
-{
-  textArea->setWordWrapMode(mode);
-}
-
-
-void EditorMultiLineInputDialog::setSizeCoefficient(double f)
-{
-  sizeCoefficient=f;
-
-  updateSize();
-}
-
-
-void EditorMultiLineInputDialog::updateSize()
-{
+void MultiLineInputDialog::updateSize() {
   QWidget *parentWidget=qobject_cast<QWidget *>(this->parent());
   QRect geom(parentWidget->pos(), parentWidget->size());
 

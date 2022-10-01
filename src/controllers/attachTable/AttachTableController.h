@@ -18,7 +18,7 @@ public:
   AttachTableController(QObject *parent, QObject *iMetaEditor );
   virtual ~AttachTableController();
 
-  AttachTableView *getView(void);
+  AttachTableView *getView(void) const {return view;}
   void setAttachTableData(AttachTableData *attachTableData);
   AttachTableData *getAttachTableData();
 

@@ -4,11 +4,11 @@
 #include "EditorToolbarSettingsScreen.h"
 #include "../../controllers/editorToolbarSettings/EditorToolbarAvailableCommandsController.h"
 #include "../../controllers/editorToolbarSettings/EditorToolbarUsedCommandsController.h"
-#include "views/mainWindow/MainWindow.h"
-#include "libraries/wyedit/EditorConfig.h"
-#include "libraries/wyedit/EditorToolBarAssistant.h"
-#include "views/record/MetaEditor.h"
-#include "libraries/helpers/ObjectHelper.h"
+#include "../../../../../views/mainWindow/MainWindow.h"
+#include "../../../EditorConfig.h"
+#include "../../../EditorToolBarAssistant.h"
+#include "../../../../../views/record/MetaEditor.h"
+#include "../../../..//helpers/ObjectHelper.h"
 
 
 EditorToolbarSettingsScreen::EditorToolbarSettingsScreen(QWidget *parent) : QDialog(parent)
@@ -80,12 +80,12 @@ void EditorToolbarSettingsScreen::setupUI()
     availableCommandsToolbarController->init();
 
     // Контроллер списка кнопок строки 1 Редактора Текста
-    usedCommandsToolbar1Controller = new EditorToolbarUsedCommandsController(GlobalParameters::EditorToolbar::First, this);
+    usedCommandsToolbar1Controller = new EditorToolbarUsedCommandsController(EditorToolbarSettingsUsedToolsModel::EditorToolbarLine::First, this);
     usedCommandsToolbar1Controller->setObjectName("editorToolbarUsedCommands1Controller");
     usedCommandsToolbar1Controller->init();
 
     // Контроллер списка кнопок строки 2 Редактора Текста
-    usedCommandsToolbar2Controller = new EditorToolbarUsedCommandsController(GlobalParameters::EditorToolbar::Second, this);
+    usedCommandsToolbar2Controller = new EditorToolbarUsedCommandsController(EditorToolbarSettingsUsedToolsModel::EditorToolbarLine::Second, this);
     usedCommandsToolbar2Controller->setObjectName("editorToolbarUsedCommands2Controller");
     usedCommandsToolbar2Controller->init();
 

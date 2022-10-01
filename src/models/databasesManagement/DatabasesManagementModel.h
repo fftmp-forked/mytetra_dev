@@ -3,32 +3,18 @@
 #include <QObject>
 #include <QAbstractTableModel>
 #include <QVariant>
-#include <QPair>
 
 #include "KnownBasesConfig.h"
 
-// Модель для работы с возможными расположениями каталогов баз данных и каталогов корзин
 
 // Примечание: если в конфиге прописаны относительные пути,
 // то они высчитываются относительно рабочего каталога,
 // а не каталога бинарника, хотя эти каталоги могут совпадать.
 // Другими словами: файл conf.ini всегда лежит в рабочем каталоге,
 // и таким образом, если в conf.ini прописаны относительные пути, то
-// эти пути и будут высчитываться относительно каталога, в котором
-// лежит этот conf.ini
+// эти пути и будут высчитываться относительно каталога, в котором лежит этот conf.ini
 
-
-#define DBMANAGEMENT_COLUMNS 4
-#define DBMANAGEMENT_COLUMN_SELECT    0 // Признак выбора базы
-#define DBMANAGEMENT_COLUMN_DBPATH    1 // Путь к БД
-#define DBMANAGEMENT_COLUMN_TRASHPATH 2 // Путь к корзине
-#define DBMANAGEMENT_COLUMN_DESCRIPT  3 // Человекочитаемое описание базы
-
-#define DBMANAGEMENT_LINE_SELECT_FLAG "1" // Значение, свидетельствующее о выборе базы
-
-#define DBMANAGEMENT_DEFAULT_DESCRIPT "Custom database directory"
-
-
+/// @brief Модель для работы с возможными расположениями каталогов баз данных
 class DatabasesManagementModel : public QAbstractTableModel
 {
   Q_OBJECT
@@ -36,14 +22,13 @@ class DatabasesManagementModel : public QAbstractTableModel
   struct DatabasesDirsInfo
   {
       QString dbPath;
-      QString trashPath;
       QString descript;
       bool isCurrentConfigPath=false;
   };
 
 public:
   DatabasesManagementModel(QObject *parent);
-  virtual ~DatabasesManagementModel();
+  virtual ~DatabasesManagementModel() {};
 
   int columnCount(const QModelIndex & parent = QModelIndex()) const;
   int rowCount(const QModelIndex & parent = QModelIndex()) const;
@@ -51,7 +36,7 @@ public:
   QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
   bool isDbPathExists(const QString &path);
-  void addDatabaseByUser(const QString &dbPath, const QString &trashPath);
+  void addDatabaseByUser(const QString &dbPath);
   void selectDatabase(const int &row);
 
 private:
@@ -67,12 +52,11 @@ private:
   void scanDirectories(const QList< DatabasesDirsInfo > &dbDirs);
 
   void clearSelection();
-  void selectDirectories(const QString &dbPath, const QString &trashPath);
+  void selectDir(const QString &dbPath);
 
-  bool isDbDirectory(const QString &path);
-  bool isTrashDirectory(const QString &path);
+  bool isDbDirectory(const QString &path) const;
 
-  QPair<QString, QString> getDirectoriesFromConfigFile(const QString &path);
+  QString getDirectoriesFromConfigFile(const QString &path);
 
   // На каждой строке хранится строковый набор данных
   // Столбцы содержат информацию согласно определениям DBMANAGEMENT_COLUMN_*

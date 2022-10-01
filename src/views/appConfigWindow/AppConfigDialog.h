@@ -3,12 +3,10 @@
 #include <QString>
 #include <QWidget>
 
-// Объект, подготавливающий и отображающий диалог настройки MyTetra
-
-
 class ConfigDialog;
 class QListWidgetItem;
 
+/// @brief Объект, подготавливающий и отображающий диалог настройки MyTetra
 class AppConfigDialog
 {
 

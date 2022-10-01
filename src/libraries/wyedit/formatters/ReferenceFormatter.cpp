@@ -1,30 +1,23 @@
+#include <QApplication>
 #include <QInputDialog>
 #include <QDebug>
 #include <QDesktopServices>
 
 #include "ReferenceFormatter.h"
 
-#include "views/mainWindow/MainWindow.h"
-#include "views/tree/KnowTreeView.h"
-#include "models/tree/KnowTreeModel.h"
-#include "libraries/FixedParameters.h"
-#include "libraries/helpers/ObjectHelper.h"
+#include "../../../views/mainWindow/MainWindow.h"
+#include "../../../views/tree/KnowTreeView.h"
+#include "../../../models/tree/KnowTreeModel.h"
+#include "../..//FixedParameters.h"
+#include "../..//helpers/ObjectHelper.h"
 #include "../Editor.h"
 #include "../EditorTextArea.h"
 #include "../EditorCursorPositionDetector.h"
 
 
-ReferenceFormatter::ReferenceFormatter()
-{
-
-}
-
-
 /// @brief Редактирование ссылки
 void ReferenceFormatter::onReferenceClicked(void)
 {
-    // TRACELOG
-
     QString href="";
 
     // Если курсор установлен на ссылке
@@ -180,8 +173,6 @@ QString ReferenceFormatter::getIdFromInternalHref(QString href)
 // Слот используется для "открепления" от ссылки, то есть чтобы при нажатии пробела после ссылки, ссылка не продолжала "тянуться"
 void ReferenceFormatter::onTextChanged(void)
 {
-    // TRACELOG
-
     // Создается дополнительный курсор как копия основного курсора
     QTextCursor cursor=textArea->textCursor();
 

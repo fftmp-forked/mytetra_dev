@@ -4,7 +4,6 @@
 
 #include "../../views/editorToolbarSettings/EditorToolbarCommandsListView.h"
 #include "../../models/editorToolbarSettings/EditorToolbarSettingsUsedToolsModel.h"
-#include "libraries/GlobalParameters.h"
 
 
 /// @brief Контроллер для представления и модели списка используемых команд для выбранной строки инструментов редактора текста
@@ -14,7 +13,7 @@ class EditorToolbarUsedCommandsController : public QObject
 
 public:
 
-    EditorToolbarUsedCommandsController(GlobalParameters::EditorToolbar tb, QObject *parent = nullptr);
+    EditorToolbarUsedCommandsController(EditorToolbarSettingsUsedToolsModel::EditorToolbarLine tb, QObject *parent = nullptr);
     ~EditorToolbarUsedCommandsController();
 
     // Направление перемещения команды на панели используемых комманд
@@ -41,7 +40,7 @@ public:
 
 protected:
 
-    GlobalParameters::EditorToolbar tb; // Номер обрабатываемой панели
+    EditorToolbarSettingsUsedToolsModel::EditorToolbarLine tb; // Номер обрабатываемой панели
 
     EditorToolbarCommandsListView *view;
     EditorToolbarSettingsUsedToolsModel *model;

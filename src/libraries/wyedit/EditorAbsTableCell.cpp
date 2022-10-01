@@ -2,8 +2,7 @@
 
 #include "EditorAbsTableCell.h"
 
-#include "../../main.h"
-#include "libraries/helpers/DebugHelper.h"
+#include "../helpers/DebugHelper.h"
 
 
 // Конструктор по умолчанию пустой ячейки
@@ -120,9 +119,8 @@ int EditorAbsTableCell::get_ref_super_cell_y(void)
 }
 
 
-// Вывод содержимого ячейки для отладки
-void EditorAbsTableCell::print_cell(void)
-{
+/// @brief Вывод содержимого ячейки для отладки
+void EditorAbsTableCell::print_cell(void) {
  char type;
  switch(cellType) {
    case IS_NULL_CELL:   type='O'; break;

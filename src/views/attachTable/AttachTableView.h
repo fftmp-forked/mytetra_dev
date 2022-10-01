@@ -4,13 +4,11 @@
 #include <QWidget>
 #include <QTableView>
 #include <QMenu>
-#include <QGestureEvent>
-#include <QTapAndHoldGesture>
 
 class AttachTableController;
 
-// Отображение таблицы с файлами (только таблица)
 
+/// @brief Отображение таблицы с файлами (только таблица)
 class AttachTableView : public QTableView
 {
   Q_OBJECT
@@ -21,7 +19,7 @@ public:
 
   void init(void);
 
-  void setController(AttachTableController *pController);
+  void setController(AttachTableController *pController) {controller=pController;}
 
   int getFirstSelectionPos(void);
 
@@ -44,8 +42,6 @@ protected:
   bool event(QEvent *event);
   virtual void resizeEvent(QResizeEvent *event);
   virtual void paintEvent(QPaintEvent *event);
-  bool gestureEvent(QGestureEvent *event);
-  void tapAndHoldGestureTriggered(QTapAndHoldGesture *gesture);
 
   AttachTableController *controller;
 

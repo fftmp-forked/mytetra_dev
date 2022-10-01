@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include <QString>
 #include <QMap>
 #include <QByteArray>
@@ -13,7 +11,8 @@
 #include "../attachTable/Attach.h"
 #include "../attachTable/AttachTableData.h"
 
-// Класс одной записи в таблице записей
+
+/// @brief Класс одной записи в таблице записей
 class Record
 {
 
@@ -24,7 +23,7 @@ class Record
 public:
   Record();
   Record(const Record &obj);
-  virtual ~Record();
+  virtual ~Record() {};
 
   void setupDataFromDom(QDomElement iDomElement);
   QDomElement exportDataToDom(QDomDocument *doc) const;
@@ -33,7 +32,6 @@ public:
   QString getText() const;
   QString getTextDirect() const;
   QSharedPointer<QTextDocument> getTextDocument() const;
-  // QTextDocument* getTextDocument() const;
   void setText(const QString &iText);
 
   QString getField(const QString &name) const;
@@ -82,9 +80,6 @@ protected:
   // Таблица прикрепляемых файлов
   AttachTableData attachTableData;
 
-  // -----------------
-  // Защищенные методы
-  // -----------------
 
   void saveTextDirect(QString iText) const;
   void saveText();

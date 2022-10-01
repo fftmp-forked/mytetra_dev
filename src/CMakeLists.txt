@@ -1,19 +1,19 @@
-add_subdirectory("libraries/qtSingleApplication")
+add_subdirectory("libraries")
 
-file(GLOB SRC_1 "libraries/*.cpp")
-file(GLOB_RECURSE SRC_2
+file(GLOB_RECURSE SRC
     "controllers/*.cpp"
-    "libraries/helpers/*.cpp"
-    "libraries/wyedit/*.cpp"
     "models/*.cpp"
     "views/*.cpp"
 )
 
-add_executable(mytetra "main.cpp" "../resource/mytetra.qrc" "../resource/icons.qrc" ${SRC_1} ${SRC_2})
-
+add_executable(mytetra "main.cpp" "../resource/mytetra.qrc" "../resource/icons.qrc" ${SRC})
 target_include_directories(mytetra PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(mytetra PRIVATE qtsingleapplication ${QT_LIBS})
+target_link_libraries(mytetra PRIVATE
+    actionhelper configeditorhelper csshelper clipboardbranch clipboardrecords debughelper diskhelper downloader
+    fixedparameters globalparameters iconselectdialog multilineinputdialog periodiccheckbase periodicsynchro shortcutmanager timermonitoring uniqueidhelper
+    qtsingleapplication walkhistory wyedit
+    ${QT_LIBS})
 
 set_target_properties(mytetra PROPERTIES
     POSITION_INDEPENDENT_CODE TRUE # rpmlint wants PIE

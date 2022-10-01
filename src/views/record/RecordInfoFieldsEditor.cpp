@@ -1,23 +1,14 @@
+#include <QPushButton>
 #include <QWidget>
-#include <QTextEdit>
 #include <QtDebug>
 #include <QSizePolicy>
-#include <QIcon>
 #include <QMessageBox>
-#include <QTextDocumentFragment>
 
-#include "main.h"
 #include "InfoFieldEnter.h"
 #include "RecordInfoFieldsEditor.h"
-#include "libraries/ShortcutManager.h"
 #include "libraries/helpers/DebugHelper.h"
+#include "libraries/ShortcutManager/ShortcutManager.h"
 
-
-extern ShortcutManager shortcutManager;
-
-
-// Окно редактирования информационных полей записи (не текста записи!)
-// Оно появляется при двойном клике на записи или при клике на кнопку редактирования полей записи
 
 RecordInfoFieldsEditor::RecordInfoFieldsEditor( QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
@@ -25,12 +16,6 @@ RecordInfoFieldsEditor::RecordInfoFieldsEditor( QWidget * parent, Qt::WindowFlag
   setupShortcuts();
   setupSignals();
   assembly();
-}
-
-
-RecordInfoFieldsEditor::~RecordInfoFieldsEditor()
-{
-
 }
 
 
@@ -47,14 +32,13 @@ void RecordInfoFieldsEditor::setupUI(void)
 
 
 // Может вызваться повторно при изменении схемы горячих клавиш
-void RecordInfoFieldsEditor::setupShortcuts(void)
-{
+void RecordInfoFieldsEditor::setupShortcuts(void) {
     qDebug() << "Setup shortcut for" << staticMetaObject.className();
 
     // На кнопку OK назначается комбинация клавиш Ctrl+Enter
     QPushButton *okButton=buttonBox->button(QDialogButtonBox::Ok); // Выясняется указатель на кнопку OK
-    okButton->setShortcut( shortcutManager.getKeySequence("misc-editConfirm") ); // Устанавливается шорткат
-    okButton->setToolTip( shortcutManager.getKeySequenceAsText("misc-editConfirm") ); // ToolTip зависит от шортката
+    okButton->setShortcut( ShortcutManager::get().getKeySequence(ShortcutManager::SECTION_MISC, "editConfirm") ); // Устанавливается шорткат
+    okButton->setToolTip( ShortcutManager::get().getKeySequenceAsText(ShortcutManager::SECTION_MISC, "editConfirm") ); // ToolTip зависит от шортката
 }
 
 
@@ -64,7 +48,7 @@ void RecordInfoFieldsEditor::setupSignals(void)
     connect(buttonBox, &QDialogButtonBox::rejected, this, &RecordInfoFieldsEditor::reject);
 
     // Обновление горячих клавиш, если они были изменены
-    connect(&shortcutManager, &ShortcutManager::updateWidgetShortcut, this, &RecordInfoFieldsEditor::setupShortcuts);
+    connect(&ShortcutManager::get(), &ShortcutManager::updateWidgetShortcut, this, &RecordInfoFieldsEditor::setupShortcuts);
 }
 
 
@@ -101,8 +85,7 @@ void RecordInfoFieldsEditor::okClick(void)
  // Если что-то не заполнено, выдается предупреждение
  if(message.length()>0)
   {
-   QMessageBox::warning(this,tr("The note's fields cannot be modified"),message,
-                        QMessageBox::Close);
+   QMessageBox::warning(this, tr("The note's fields cannot be modified"), message, QMessageBox::Close);
    return;
   }
  else

@@ -1,25 +1,10 @@
 #include <QMessageBox>
 
 #include "ShortcutSettingsController.h"
-#include "libraries/ShortcutManager.h"
-
-extern ShortcutManager shortcutManager;
+#include "libraries/ShortcutManager/ShortcutManager.h"
 
 
-ShortcutSettingsController::ShortcutSettingsController(QObject *parent) : QObject(parent)
-{
-
-}
-
-
-ShortcutSettingsController::~ShortcutSettingsController()
-{
-
-}
-
-
-void ShortcutSettingsController::init()
-{
+void ShortcutSettingsController::init() {
     // Создается вид с деревом настроек клавиатурных комбинаций
     view=new ShortcutSettingsView( qobject_cast<QWidget *>(parent()) ); // Вид размещается внутри виджета Screen
     view->setObjectName("shortcutSettingsView");
@@ -34,40 +19,22 @@ void ShortcutSettingsController::init()
 }
 
 
-void ShortcutSettingsController::applyChanges()
-{
+void ShortcutSettingsController::applyChanges() {
     // Проверка на наличие задвоенных сочетаний клавиш
-    if( !model->checkShortcutDuplicate() )
-    {
+    auto err = model->check();
+    if(err) {
         QMessageBox msgBox;
-        msgBox.setText( model->getDuplicateError());
+        msgBox.setText(err.value());
         msgBox.exec();
-
-        return;
+    } else {
+        model->save(); // Сохранение изменений на диск
+        ShortcutManager::get().initKeyTable();
+        static_cast<QWidget *>( parent() )->close(); // Закрытие окна настроек горячих клавиш
     }
-
-    // Сохранение изменений на диск
-    model->save();
-
-    // Переинициализация менеджера горячих клавиш
-    shortcutManager.init();
-
-    // Переинициализация всех шорткатов в программе
-    shortcutManager.updateShortcutInApplication();
-
-    // Закрытие окна настроек горячих клавиш
-    static_cast<QWidget *>( parent() )->close();
 }
 
 
-ShortcutSettingsView *ShortcutSettingsController::getView()
-{
-    return view;
-}
-
-
-ShortcutSettingsController::ShortcutData ShortcutSettingsController::getShortcutData(const QModelIndex &index)
-{
+ShortcutSettingsController::ShortcutData ShortcutSettingsController::getShortcutData(const QModelIndex &index) const {
     ShortcutData shortcutData;
 
     shortcutData.section    =model->data( index.parent() ).toString();
@@ -80,8 +47,7 @@ ShortcutSettingsController::ShortcutData ShortcutSettingsController::getShortcut
 }
 
 
-ShortcutSettingsController::ShortcutData ShortcutSettingsController::getEmptyShortcutData()
-{
+ShortcutSettingsController::ShortcutData ShortcutSettingsController::getEmptyShortcutData() const {
     ShortcutData shortcutData;
 
     shortcutData.section    ="";
@@ -94,16 +60,8 @@ ShortcutSettingsController::ShortcutData ShortcutSettingsController::getEmptySho
 }
 
 
-void ShortcutSettingsController::setShortcut(QString shortcutFullName, QString sequenceText)
-{
+void ShortcutSettingsController::setShortcut(QString shortcutFullName, QString sequenceText) {
     QModelIndex index=model->findShortcut( shortcutFullName );
-
     model->setData( index.sibling(index.row(), 2), sequenceText );
-}
-
-
-void ShortcutSettingsController::resetAllShortcutsToDefault()
-{
-    model->resetAllShortcutsToDefault();
 }
 

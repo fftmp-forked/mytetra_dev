@@ -2,7 +2,6 @@
 
 #include <QObject>
 
-#include "libraries/GlobalParameters.h"
 #include "EditorToolbarSettingsAbstractModel.h"
 
 class EditorConfig;
@@ -14,11 +13,15 @@ class EditorToolbarSettingsUsedToolsModel : public EditorToolbarSettingsAbstract
     Q_OBJECT
 
 public:
-
+    /// Указание на обрабатываемую панель инструментов редактора текста
+    enum class EditorToolbarLine {
+        First = 0,
+        Second
+    };
     EditorToolbarSettingsUsedToolsModel(QObject *parent = nullptr);
 
     // Первичное наполнение модели
-    void init(GlobalParameters::EditorToolbar tb);
+    void init(EditorToolbarLine tb);
 
 };
 

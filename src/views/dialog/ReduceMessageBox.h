@@ -7,10 +7,8 @@
 #include <QFlags>
 
 
-// Виджет, похожий на QMessageBox, только позволяющий выделять и копировать текст
-// (т. к. в Windows невозможно скопировать текст, отображаемый в QMessageBox)
-
-
+/// @brief Виджет, похожий на QMessageBox, только позволяющий выделять и копировать текст
+/// (т. к. в Windows невозможно скопировать текст, отображаемый в QMessageBox)
 class ReduceMessageBox : public QDialog
 {
   Q_OBJECT
@@ -18,10 +16,10 @@ class ReduceMessageBox : public QDialog
 public:
   ReduceMessageBox(QWidget *parent = nullptr);
 
-  void setText(QString iText);
-  void setDetailedText(QString iDetailedText);
-  void setDetailedTextReadOnly(bool iReadOnly);
-  void setStandardButtons(QFlags<QDialogButtonBox::StandardButton> buttons);
+  void setText(QString iText) {text.setText(iText);}
+  void setDetailedText(QString iDetailedText) {detailedText.setText(iDetailedText);}
+  void setDetailedTextReadOnly(bool iReadOnly) {detailedText.setReadOnly(iReadOnly);}
+  void setStandardButtons(QFlags<QDialogButtonBox::StandardButton> buttons) {buttonBox.setStandardButtons(buttons);}
 
 protected:
 
@@ -34,6 +32,4 @@ protected:
   QTextEdit detailedText;
   QDialogButtonBox buttonBox;
 
-
 };
-

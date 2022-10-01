@@ -1,12 +1,14 @@
 #include "EditorMathExpressionDialog.h"
+#include <QDir>
 #include <QFile>
+#include <QGuiApplication>
+#include <QPushButton>
 #include <QScrollBar>
 
 #include "EditorConfig.h"
-#include "main.h"
-#include "views/mainWindow/MainWindow.h"
-#include "libraries/helpers/ObjectHelper.h"
-#include "libraries/helpers/UniqueIdHelper.h"
+#include "../../views/mainWindow/MainWindow.h"
+#include "../helpers/ObjectHelper.h"
+#include "../helpers/UniqueIdHelper.h"
 
 
 EditorMathExpressionDialog::EditorMathExpressionDialog(MathExpressionFormatter *mathExpressionFormatter, QWidget *parent) : QDialog(parent)
@@ -28,7 +30,7 @@ EditorMathExpressionDialog::EditorMathExpressionDialog(MathExpressionFormatter *
         int( 0.25 * static_cast<double>(find_object<MainWindow>("mainwindow")->width()) )
     );
 
-    // todo: переделать на восстановление запомненных размеров и положения диалога
+    /// @todo: переделать на восстановление запомненных размеров и положения диалога
     resize(QGuiApplication::primaryScreen()->availableSize() / 2);
 
     // Класс для работы с математическими выражениями

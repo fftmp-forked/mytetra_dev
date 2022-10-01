@@ -11,17 +11,15 @@
 #include "EditorFontFamilyComboBox.h"
 
 
-// Виджет для отрисовки кнопок форматирования текста
-// Является базовым для EditorToolBarAssistant
-
+/// @brief Виджет для отрисовки кнопок форматирования текста. Является базовым для EditorToolBarAssistant
 class EditorToolBar : public QWidget
 {
     Q_OBJECT
 
 public:
 
-    explicit EditorToolBar(QWidget *parent = nullptr);
-    virtual ~EditorToolBar();
+    explicit EditorToolBar(QWidget *parent = nullptr) {Q_UNUSED(parent); isInit=false;}
+    virtual ~EditorToolBar() {};
 
     // Область, содержащая линейки с кнопками форматирования
     QVBoxLayout textformatButtonsLayout;

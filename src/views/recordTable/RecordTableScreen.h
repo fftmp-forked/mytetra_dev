@@ -1,27 +1,23 @@
 #pragma once
 
 #include <QWidget>
-#include <QListView>
-#include <QToolButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QToolBar>
-#include <QStringList>
-#include <QMap>
 #include <QString>
-#include <QByteArray>
-#include <QItemSelection>
 #include <QLabel>
 
 class RecordTableController;
 
+
+/// @brief Виджет, который отображает список записей в ветке c кнопками управления
 class RecordTableScreen : public QWidget
 {
  Q_OBJECT
 
 public:
  RecordTableScreen(QWidget *parent=nullptr);
- virtual ~RecordTableScreen();
+ virtual ~RecordTableScreen(){}
 
  int     getFirstSelectionPos(void);
  QString getFirstSelectionId(void);
@@ -70,7 +66,6 @@ private slots:
  void onSynchroClick(void);
  void onWalkHistoryPreviousClick(void);
  void onWalkHistoryNextClick(void);
- void onBackClick(void);
  void onCopyRecordReference(void);
 
 private:

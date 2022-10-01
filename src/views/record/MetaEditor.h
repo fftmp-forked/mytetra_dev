@@ -3,7 +3,8 @@
 #include <QWidget>
 #include <QLabel>
 
-#include "libraries/wyedit/Editor.h"
+#include "../../libraries/wyedit/Editor.h"
+#include "../findInBaseScreen/FindScreen.h"
 
 class QHBoxLayout;
 class QGridLayout;
@@ -28,13 +29,14 @@ signals:
 
 public:
  MetaEditor(QWidget *parent=nullptr);
- ~MetaEditor(void);
+ ~MetaEditor(void) {};
 
  void setTreePath(QString path);
  void setName    (QString name);
  void setAuthor  (QString author);
  void setUrl     (QString url);
  void setTags    (QString tags);
+ void setFindScreenSignal(FindScreen * findScreenObj);
 
  static void toAttachCallback(void);
 
@@ -49,7 +51,6 @@ private:
  void setupLabels(void);
  void setupUI(void);
  void metaAssembly(void);
- void setupSignals(void);
 
  QLabel *treePath; // Надпись Path (только для мобильного интерфейса)
 

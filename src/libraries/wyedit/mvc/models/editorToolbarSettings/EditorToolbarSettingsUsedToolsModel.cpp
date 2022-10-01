@@ -2,12 +2,9 @@
 
 #include "../../../EditorConfig.h"
 #include "../../../EditorToolBarAssistant.h"
-#include "views/record/MetaEditor.h"
-#include "libraries/ShortcutManager.h"
-#include "libraries/helpers/ObjectHelper.h"
-
-
-extern ShortcutManager shortcutManager;
+#include "../../../../../views/record/MetaEditor.h"
+#include "../../../../ShortcutManager/ShortcutManager.h"
+#include "../../../../helpers/ObjectHelper.h"
 
 
 EditorToolbarSettingsUsedToolsModel::EditorToolbarSettingsUsedToolsModel(QObject *parent) :
@@ -17,13 +14,12 @@ EditorToolbarSettingsUsedToolsModel::EditorToolbarSettingsUsedToolsModel(QObject
 }
 
 
-void EditorToolbarSettingsUsedToolsModel::init(GlobalParameters::EditorToolbar tb)
-{
+void EditorToolbarSettingsUsedToolsModel::init(EditorToolbarLine tb) {
     // Вначале модель полностью очищается, чтобы не было наложений от предыдущих открытий окна настроек
     this->clear();
 
     // Создание команд для панели с учетом номера панели
-    QStringList commandsInToolsLine = tb == GlobalParameters::EditorToolbar::First
+    QStringList commandsInToolsLine = tb == EditorToolbarLine::First
             ? editorConfig->get_tools_line_1().split(',')
             : editorConfig->get_tools_line_2().split(',');
 
@@ -36,13 +32,10 @@ void EditorToolbarSettingsUsedToolsModel::init(GlobalParameters::EditorToolbar t
 
         newItem->setData(command, Qt::UserRole);
 
-        if(command=="separator") {
+        if(command=="separator")
             newItem->setData( tr("<Separator>"), Qt::DisplayRole );
-        }
         else
-        {
-            newItem->setData( shortcutManager.getDescription( "editor-"+command ), Qt::DisplayRole );
-        }
+            newItem->setData( ShortcutManager::get().getDescription(ShortcutManager::SECTION_EDITOR, command ), Qt::DisplayRole );
 
         newItem->setIcon( editorToolBarAssistant->getIcon(command) );
 

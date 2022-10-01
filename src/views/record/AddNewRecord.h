@@ -1,17 +1,13 @@
 #pragma once
 
 #include <QDialog>
-#include <QLabel>
-#include <QLineEdit>
 #include <QDialogButtonBox>
-#include <QPushButton>
 
 #include "libraries/wyedit/Editor.h"
 #include "views/record/InfoFieldEnter.h"
 
 
-// Окно добавления новой записи
-
+/// @brief Окно добавления новой записи
 class AddNewRecord : public QDialog
 {
 Q_OBJECT
@@ -20,7 +16,7 @@ public:
 
  AddNewRecord( QWidget * parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags() );
 
- ~AddNewRecord();
+ ~AddNewRecord() {};
 
  QString getField(QString name);
  QString getImagesDirectory(void);

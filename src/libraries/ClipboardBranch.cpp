@@ -3,29 +3,15 @@
 #include <QFontComboBox>
 #include <QSpinBox>
 #include <QTextEdit>
-#include <QMimeData>
 #include <QtDebug>
 
-#include "main.h"
 #include "ClipboardBranch.h"
-#include "libraries/FixedParameters.h"
-#include "libraries/helpers/DebugHelper.h"
+#include "FixedParameters.h"
+#include "helpers/DebugHelper.h"
+#include "../models/recordTable/Record.h"
 
 
-ClipboardBranch::ClipboardBranch(void) : QMimeData()
-{
- init();
-}
-
-
-ClipboardBranch::~ClipboardBranch(void)
-{
- 
-}
-
-
-void ClipboardBranch::init(void)
-{
+void ClipboardBranch::init(void) {
  branchData.branch.clear();
  branchData.record.clear();
 
@@ -113,7 +99,7 @@ void ClipboardBranch::addBranch( QString parent_id, QMap<QString, QString> branc
 // Добавление конечной записи
 void ClipboardBranch::addRecord(QString branch_id, Record record)
 {
- // todo: Сделать проверку, есть ли ветка с указанным id
+ /// @todo: Сделать проверку, есть ли ветка с указанным id
  branchData.record.insert(branch_id, record);
 }
 
@@ -151,18 +137,11 @@ QList< Record > ClipboardBranch::getBranchRecords(QString id)
 }
 
 
-QStringList ClipboardBranch::formats() const
-{
- return clipboardBranchFormat;
-}
-
-
 QVariant ClipboardBranch::retrieveData(const QString &format, QMetaType preferredType) const
 {
  Q_UNUSED(preferredType)
 
- if(format==clipboardBranchFormat[0])
-  {
+ if(format == clipboardBranchFormat[0]) {
    QVariant v;
    v.setValue(branchData);
    return v;

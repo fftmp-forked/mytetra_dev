@@ -1,17 +1,14 @@
-#include "main.h"
+#include <QBrush>
+#include <QColor>
+#include <QIcon>
+
 #include "Record.h"
 #include "RecordTableModel.h"
 #include "RecordTableData.h"
 
-#include "models/tree/TreeItem.h"
-#include "models/tree/TreeModel.h"
-#include "models/appConfig/AppConfig.h"
-#include "views/mainWindow/MainWindow.h"
 #include "libraries/FixedParameters.h"
 #include "libraries/helpers/DebugHelper.h"
-
-
-extern AppConfig mytetraConfig;
+#include "models/appConfig/AppConfig.h"
 
 
 // Конструктор модели
@@ -21,16 +18,8 @@ RecordTableModel::RecordTableModel(QObject *pobj) : QAbstractTableModel(pobj), t
 }
 
 
-// Деструктор модели
-RecordTableModel::~RecordTableModel()
-{
-
-}
-
-
 // Предоставление данных табличной модели
-QVariant RecordTableModel::data(const QModelIndex &index, int role) const
-{
+QVariant RecordTableModel::data(const QModelIndex &index, int role) const {
     // Если таблица данных не создана
     if(table==nullptr)
         return QVariant();
@@ -46,53 +35,30 @@ QVariant RecordTableModel::data(const QModelIndex &index, int role) const
     // qDebug() << "RecordTableModel::data(), row:" << index.row() << " column " << index.column();
 
     // Если запрашивается текст строки для отрисовки или для редактирования
-    if(role==Qt::DisplayRole || role==Qt::EditRole || role==SORT_ROLE)
-    {
-        QStringList showFields=mytetraConfig.getRecordTableShowFields();
+    if(role==Qt::DisplayRole || role==Qt::EditRole || role==SORT_ROLE) {
+        auto showFields = AppConfig::get().getRecordTableShowFields();
 
         // Если длина списка показываемых столбцов меньше или равна номеру запрашиваемого столбца
-        if( index.column() < showFields.size() )
-        {
-            QString fieldName=showFields.value( index.column() );
-            QString field=table->getField(fieldName, index.row());
-
+        if( index.column() < showFields.size() ) {
+            auto fieldName = showFields.value( index.column() );
+            auto field = table->getField(fieldName, index.row());
 
             // Некоторые данные при отрисовке в таблице преобразуются в "экранные" представления
             // Преобразование возможно только для отображаемой в таблице информации
-
-            if( role==Qt::DisplayRole && fieldName=="ctime")
-            {
-                // Преобразование временного штампа в дату и время
-                QDateTime fieldDateTime=QDateTime::fromString(field, "yyyyMMddhhmmss");
-                auto fmt = mytetraConfig.getEnableCustomDateTimeFormat() ? mytetraConfig.getCustomDateTimeFormat() : QLocale::system().dateTimeFormat(QLocale::ShortFormat);
-                QLocale::system().toString(fieldDateTime, fmt);
+            if(role == Qt::DisplayRole) {
+                if(fieldName=="ctime") {
+                    auto fieldDateTime = QDateTime::fromString(field, "yyyyMMddhhmmss");
+                    auto fmt = (AppConfig::get().getEnableCustomDateTimeFormat() ? AppConfig::get().getCustomDateTimeFormat() : QLocale::system().dateTimeFormat(QLocale::ShortFormat));
+                    return QLocale::system().toString(fieldDateTime, fmt);
+                } else if(fieldName=="hasAttach") {
+                    return field=="0" ? "" : tr("..."); // Если аттачей нет, выводится пустая строка. Это повышает читабельность
+                } else if(fieldName=="attachCount") {
+                    return field=="0" ? "" : field; // Если количество аттачей нулевое, выводится пустая строка. Это повышает читабельность
+                } else if(fieldName=="block") {
+                    return field=="1" ? tr("...") : "";
+                }
             }
-
-            else if( role==Qt::DisplayRole && fieldName=="hasAttach") // Наличие аттачей
-            {
-                if(field=="0")
-                    return ""; // Если аттачей нет, выводится пустая строка. Это повышает читабельность
-                else
-                    return tr("...");
-            }
-
-            else if( role==Qt::DisplayRole && fieldName=="attachCount") // Количество аттачей
-            {
-                if(field=="0")
-                    return ""; // Если количество аттачей нулевое, выводится пустая строка. Это повышает читабельность
-                else
-                    return field;
-            }
-
-            else if( role==Qt::DisplayRole && fieldName=="block") // Наличие блокировки записи
-            {
-                if(field!="1")
-                    return "";
-                else
-                    return tr("...");
-            }
-            else
-                return field;
+            return field;
         }
     }
 
@@ -103,21 +69,12 @@ QVariant RecordTableModel::data(const QModelIndex &index, int role) const
         return table->getField("block", index.row());
 
     // Подсветка заднего фона
-    if(role==Qt::BackgroundRole)
-    {
-        if( mytetraConfig.getEnableRecordWithAttachHighlight() )
-            if( table->getField("hasAttach", index.row())=="1" )
-            {
-                QColor color( mytetraConfig.getRecordWithAttachHighlightColor() );
-                return QBrush(color);
-            }
-    }
-
+    if(role==Qt::BackgroundRole &&  AppConfig::get().getEnableRecordWithAttachHighlight() && table->getField("hasAttach", index.row())=="1")
+       return QBrush(QColor(AppConfig::get().getRecordWithAttachHighlightColor()));
 
     // Оформление иконками
-    if(role == Qt::DecorationRole)
-    {
-        QStringList showFields=mytetraConfig.getRecordTableShowFields();
+    if(role == Qt::DecorationRole) {
+        QStringList showFields=AppConfig::get().getRecordTableShowFields();
         QString fieldName=showFields.value( index.column() );
         QString field=table->getField(fieldName, index.row());
 
@@ -135,18 +92,6 @@ QVariant RecordTableModel::data(const QModelIndex &index, int role) const
         if(fieldName=="block" && field=="1")
             return QIcon(":/resource/pic/note_block.svg");
     }
-
-
-    // Если происходит запрос ссылки на таблицу данных
-    /*
-  if(role==TABLE_DATA_ROLE)
-  {
-    QVariant var;
-    var.setValue<RecordTableDataPointer>( this->getTableData() );
-    return var;
-  }
-  */
-
     // Во всех остальных случаях
     return QVariant();
 }
@@ -170,8 +115,7 @@ bool RecordTableModel::setData(const QModelIndex &index, const QVariant &value, 
     // Если происходит редактирование
     if(role==Qt::EditRole)
     {
-        // QStringList showFields=FixedParameters::recordFieldAvailableList(); // TODO: Заменить на показываемые поля
-        QStringList showFields=mytetraConfig.getRecordTableShowFields();
+        QStringList showFields=AppConfig::get().getRecordTableShowFields();
 
         // Если длина списка показываемых столбцов меньше или равна номеру запрашиваемого столбца
         if( index.column() < showFields.size() )
@@ -191,84 +135,57 @@ bool RecordTableModel::setData(const QModelIndex &index, const QVariant &value, 
         }
     }
 
-    /*
-  // Если происходит запись во всю таблицу данных
-  if(role==TABLE_DATA_ROLE)
-  {
-   this->setTableData( qVariantFromValue(value) );
-   return true;
-  }
-
-  // Если происходит запись одной строки
-  if(role==ONE_RECORD_ROLE)
-  {
-    this->setTableData( qVariantFromValue(value) );
-    return true;
-  }
-  */
-
     // Во всех остальных случаях
     return false;
 }
 
 
 // Получение заголовков столбцов и строк
-QVariant RecordTableModel::headerData(int section, Qt::Orientation orientation, int role) const
-{
-    // QStringList showFields=FixedParameters::recordFieldAvailableList(); // TODO: Заменить на показываемые поля
-    QStringList showFields=mytetraConfig.getRecordTableShowFields();
+QVariant RecordTableModel::headerData(int section, Qt::Orientation orientation, int role) const {
+    auto showFields = AppConfig::get().getRecordTableShowFields();
 
-    QMap<QString, QString> descriptionFields=FixedParameters::recordFieldDescription( showFields );
-
-    // Если ни один столбец не показывается (чего, впринципе не может быть)
-    if(showFields.size()==0)
+    // Если ни один столбец не показывается (чего, в принципе не может быть)
+    if(showFields.size() == 0)
         return QVariant();
 
     // Если запрашивается заголовок столбца
-    if(orientation==Qt::Horizontal && role==Qt::DisplayRole)
-    {
+    if(orientation == Qt::Horizontal && role == Qt::DisplayRole) {
         // Если запрашиваемый номер столбца больше количества показываемых
         if(section>showFields.size())
             return QVariant();
 
-        QString fieldName=showFields.value(section);
+        auto fieldName = showFields.value(section);
 
+        auto descriptionFields = FixedParameters::recordFieldDescription( showFields );
         return descriptionFields.value(fieldName);
     }
 
-
     // Если запрашивается заголовок строки
-    if(orientation==Qt::Vertical && role==Qt::DisplayRole)
+    if(orientation == Qt::Vertical && role == Qt::DisplayRole)
         return section+1;
-
 
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
 
-// Сколько записей в таблице
-int RecordTableModel::rowCount(const QModelIndex &parent) const
-{
+int RecordTableModel::rowCount(const QModelIndex &parent) const {
     Q_UNUSED(parent)
 
-    if(table==nullptr)
+    if(!table)
         return 0;
 
     return static_cast<int>( table->size() );
 }
 
 
-// Сколько столбцов в таблице
-int RecordTableModel::columnCount(const QModelIndex &parent) const
-{
+int RecordTableModel::columnCount(const QModelIndex &parent) const {
     Q_UNUSED(parent)
 
     static int previousColumnCount=0;
 
-    int currentColumnCount=mytetraConfig.getRecordTableShowFields().size();
+    int currentColumnCount=AppConfig::get().getRecordTableShowFields().size();
 
-    if( currentColumnCount!=previousColumnCount)
-    {
+    if( currentColumnCount!=previousColumnCount) {
         qDebug() << "Column count change. New column count: " << currentColumnCount;
         previousColumnCount=currentColumnCount;
     }
@@ -280,19 +197,14 @@ int RecordTableModel::columnCount(const QModelIndex &parent) const
 // Удаление строк в таблице
 // note: Переопределение метода removeRows() влияет и на метод removeRow(),
 // так как он просто вызывает removeRows() для удаления одной строки
-bool RecordTableModel::removeRows(int row, int count, const QModelIndex &parent)
-{
+bool RecordTableModel::removeRows(int row, int count, const QModelIndex &parent) {
     Q_UNUSED(parent)
 
-    if(table==nullptr)
-    {
+    if(!table)
         return true;
-    }
 
     if(row<0 || row>=rowCount() || (row+count-1)<0 || (row+count-1)>=rowCount())
-    {
         criticalError("Bad arguments in RecordTableModel::removeRows(). row: "+QString::number(row)+" count: "+QString::number(count));
-    }
 
     beginRemoveRows(QModelIndex(), row, row+count-1);
 
@@ -307,8 +219,7 @@ bool RecordTableModel::removeRows(int row, int count, const QModelIndex &parent)
 
 
 // Установка данных в таблицу данных
-void RecordTableModel::setTableData(RecordTableData *rtData)
-{
+void RecordTableModel::setTableData(RecordTableData *rtData) {
     beginResetModel();
 
     table=rtData;
@@ -317,31 +228,16 @@ void RecordTableModel::setTableData(RecordTableData *rtData)
 }
 
 
-// Получение ссылки на таблицу данных
-RecordTableData *RecordTableModel::getTableData(void)
-{
-    // Возвращается ссылка на данные, с которыми в данный момент работает модель
-    return table;
-}
-
-
-// Добавление данных
-// Функция возвращает позицию нового добавленного элемента
-int RecordTableModel::addTableData(int mode,
-                                   QModelIndex posIndex,
-                                   Record record)
-{
-    if(table==nullptr)
-    {
+/// @brief Добавление данных
+/// @return позицию нового добавленного элемента
+int RecordTableModel::addTableData(int mode, QModelIndex posIndex, Record record) {
+    if(!table)
         return -1;
-    }
 
     beginResetModel(); // Подумать, возможно нужно заменить на beginInsertRows
 
     // Вставка новых данных в таблицу конечных записей
-    int selPos=table->insertNewRecord(mode,
-                                      posIndex.row(),
-                                      record);
+    int selPos = table->insertNewRecord(mode, posIndex.row(), record);
 
     endResetModel(); // Подумать, возможно нужно заменить на endInsertRows
 
@@ -349,8 +245,7 @@ int RecordTableModel::addTableData(int mode,
 }
 
 
-void RecordTableModel::onRecordTableConfigChange(void)
-{
+void RecordTableModel::onRecordTableConfigChange(void) {
     beginResetModel();
     endResetModel();
 }

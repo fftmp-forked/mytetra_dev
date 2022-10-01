@@ -9,7 +9,7 @@ class ReferenceFormatter : public Formatter
     Q_OBJECT
 
 public:
-    ReferenceFormatter();
+    ReferenceFormatter() {};
 
 signals:
 

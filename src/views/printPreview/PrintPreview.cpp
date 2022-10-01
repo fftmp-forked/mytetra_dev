@@ -1,6 +1,5 @@
 #include <QAbstractScrollArea>
 #include <QPrintDialog>
-#include <QPrinter>
 #include <QToolBar>
 #include <QAction>
 #include <QTextFormat>
@@ -14,10 +13,7 @@
 
 #include "PreviewView.h"
 #include "PrintPreview.h"
-#include "libraries/ShortcutManager.h"
-
-
-extern ShortcutManager shortcutManager;
+#include "../../libraries/ShortcutManager/ShortcutManager.h"
 
 
 static inline int inchesToPixels(float inches, QPaintDevice *device)
@@ -108,8 +104,8 @@ void PrintPreview::setupShortcuts()
 {
     qDebug() << "Setup shortcut for" << staticMetaObject.className();
 
-    buttonPrint->setShortcut( shortcutManager.getKeySequence("misc-print") ); // Устанавливается шорткат
-    buttonPrint->setToolTip( shortcutManager.getKeySequenceAsText("misc-print") ); // ToolTip зависит от шортката
+    buttonPrint->setShortcut( ShortcutManager::get().getKeySequence(ShortcutManager::SECTION_MISC, "print") ); // Устанавливается шорткат
+    buttonPrint->setToolTip( ShortcutManager::get().getKeySequenceAsText(ShortcutManager::SECTION_MISC, "print") ); // ToolTip зависит от шортката
 }
 
 
@@ -122,7 +118,7 @@ void PrintPreview::setupSignals()
     connect(buttonClose, &QToolButton::clicked, this, &PrintPreview::close);
 
     // Обновление горячих клавиш, если они были изменены
-    connect(&shortcutManager, &ShortcutManager::updateWidgetShortcut, this, &PrintPreview::setupShortcuts);
+    connect(&ShortcutManager::get(), &ShortcutManager::updateWidgetShortcut, this, &PrintPreview::setupShortcuts);
 }
 
 

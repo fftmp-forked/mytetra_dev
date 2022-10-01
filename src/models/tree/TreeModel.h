@@ -5,27 +5,23 @@
 #include <QPersistentModelIndex>
 #include <QVariant>
 #include <QObject>
-#include <QtXml>
 
-
-// TreeModel - Это вспомогательный класс! От него наследуется KnowTreeModel
 
 class TreeItem;
 
+/// @brief вспомогательный класс! От него наследуется KnowTreeModel
 class TreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 
 public:
-    TreeModel(QObject *parent = nullptr);
-    ~TreeModel(void);
+    TreeModel(QObject *parent = nullptr) {Q_UNUSED(parent);};
+    ~TreeModel(void) {};
 
     QVariant data(const QModelIndex &index, int role) const;
-    QVariant headerData(int section, Qt::Orientation orientation,
-                        int role = Qt::DisplayRole) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
-    QModelIndex index(int row, int column,
-                      const QModelIndex &parent = QModelIndex()) const;
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     QModelIndex parent(const QModelIndex &index) const;
 
     int rowCount(const QModelIndex &itemIndex = QModelIndex()) const;
@@ -33,15 +29,11 @@ public:
 
 
     Qt::ItemFlags flags(const QModelIndex &index) const;
-    bool setData(const QModelIndex &index, const QVariant &value,
-                 int role = Qt::EditRole);
-    bool setHeaderData(int section, Qt::Orientation orientation,
-                       const QVariant &value, int role = Qt::EditRole);
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole);
 
-    bool insertRows(int position, int rows,
-                    const QModelIndex &parent = QModelIndex());
-    bool removeRows(int position, int rows,
-                    const QModelIndex &parent = QModelIndex());
+    bool insertRows(int position, int rows, const QModelIndex &parent = QModelIndex());
+    bool removeRows(int position, int rows, const QModelIndex &parent = QModelIndex());
 
     // Возвращение указателя на Item-элемент с указанным index
     // Где index - это индекс объекта в терминах структуры модель-вид

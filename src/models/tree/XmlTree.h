@@ -10,10 +10,10 @@ class XmlTree : public QObject
  Q_OBJECT
 
  public:
-  XmlTree(void);
-  ~XmlTree(void);
+  XmlTree(void) {domModel=new QDomDocument();}
+  ~XmlTree(void) {delete domModel;}
   bool load(QString file);
-  QDomDocument* getDomModel(void);
+  QDomDocument* getDomModel(void) const {return domModel;}
   
  protected:
   QDomDocument *domModel; // DOM-представление документа

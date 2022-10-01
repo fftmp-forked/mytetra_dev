@@ -13,7 +13,7 @@
 #include "../EditorTextArea.h"
 #include "../EditorToolBarAssistant.h"
 #include "../EditorCursorPositionDetector.h"
-#include "libraries/helpers/MessageHelper.h"
+#include "../../helpers/MessageHelper.h"
 
 
 TypefaceFormatter::TypefaceFormatter()
@@ -220,8 +220,6 @@ void TypefaceFormatter::smartFormat(int formatType)
 /// @brief Форматирование моноширинным шрифтом
 void TypefaceFormatter::onMonospaceClicked(void)
 {
-    // TRACELOG
-
     textArea->textCursor().beginEditBlock();
 
     // Устанавливается шрифт
@@ -250,8 +248,6 @@ void TypefaceFormatter::onMonospaceClicked(void)
 /// @brief Форматирование в качестве кода
 void TypefaceFormatter::onCodeClicked(void)
 {
-    // TRACELOG
-
     // Если выделения нет
     if(!textArea->textCursor().hasSelection())
         return;
@@ -348,8 +344,6 @@ void TypefaceFormatter::onCodeClicked(void)
 /// Картинки и таблицы не удаляются
 void TypefaceFormatter::onClearClicked(void)
 {
-    // TRACELOG
-
     int startCursorPos=textArea->textCursor().anchor(); // Начало выделения
     int stopCursorPos=textArea->textCursor().position(); // Конец выделения
     qDebug() << "Cursor start position: " << startCursorPos << "Cursor stop position: " << stopCursorPos;
@@ -1034,11 +1028,6 @@ void TypefaceFormatter::onFixBreakSymbolClicked()
 /// @brief Слот, срабатывающий при изменении шрифта в списке шрифтов
 void TypefaceFormatter::onFontselectChanged(const QFont &font)
 {
-    // TRACELOG
-
-    // todo: Разобраться с этим флагом. Его нужно поместить в Editor или ToolBar, или вообще от него отказаться
-    // if(editor->flagSetFontParametersEnabled==false)
-    //   return;
     if( !(editor->editorToolBarAssistant->getFlagSetFontParametersEnabled()) )
         return;
 
@@ -1059,11 +1048,6 @@ void TypefaceFormatter::onFontselectChanged(const QFont &font)
 /// @brief Слот, срабатывающий когда изменен размер шрифта через список размеров
 void TypefaceFormatter::onFontsizeChanged(int n)
 {
-    // TRACELOG
-
-    // todo: Разобраться с этим флагом. Его нужно поместить в Editor или ToolBar, или вообще от него отказаться
-    // if(editor->flagSetFontParametersEnabled==false)
-    //   return;
     if( !(editor->editorToolBarAssistant->getFlagSetFontParametersEnabled()) )
         return;
 
@@ -1085,8 +1069,6 @@ void TypefaceFormatter::onFontsizeChanged(int n)
 /// @brief Слот, срабатыващий при нажатии на кнопку выбора цвета текста
 void TypefaceFormatter::onFontcolorClicked()
 {
-    // TRACELOG
-
     // Текущий цвет шрифта возле курсором
     QColor currentColor = textArea->textColor();
 
@@ -1301,8 +1283,6 @@ void TypefaceFormatter::replaceSymbolCase(const QChar::Category &category)
 /// @brief Слот, срабатыващий при нажатии на кнопку выбора цвета фона текста
 void TypefaceFormatter::onBackgroundcolorClicked()
 {
-    // TRACELOG
-
     // Текущий цвет фона под курсором
     QColor currentColor = textArea->textBackgroundColor();
 

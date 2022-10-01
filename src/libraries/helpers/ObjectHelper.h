@@ -1,18 +1,14 @@
 #pragma once
 
-#include <QObject>
+#include "../../main.h"
 
-#include "libraries/helpers/DebugHelper.h"
-
-// Функции для работы с объектами QObject
+#include "DebugHelper.h"
 
 
-// Поиск объекта от корня по имени
+/// @brief Поиск объекта от корня по имени
 template <typename X>
 X *find_object(QString objectName) {
     QObject *findObj;
-
-    extern QObject *pMainWindow;
 
     // Если запрошен сам корень
     if(objectName=="mainwindow")
@@ -31,23 +27,14 @@ X *find_object(QString objectName) {
     }
 
     // Запрошен обычный объект, надо его найти
-    // findObj=qFindChild<X *>(pMainWindow, objectName);
     findObj=pMainWindow->findChild<X *>(objectName);
 
     if(!findObj)
     {
         // Если объекта с указанным именем не найдено
-        // print_object_tree();
-        printf("find_object(): Can't find object with name %s\n",qPrintable(objectName));
+        printf("find_object(): Can't find object with name %s\n", qPrintable(objectName));
 
-        printObjectTree();
-
-        /*
-        QList<QWidget *> widgets = pMainWindow->findChildren<QWidget *>();
-        foreach (QWidget* b, widgets)
-            printf("Obj: %s\n", qPrintable( b->objectName() ) );
-        */
-
+        printObjectTree(pMainWindow);
         exit(1);
     }
     else
@@ -68,11 +55,4 @@ X *find_object(QString objectName) {
 
     return nullptr;
 }
-
-
-//class ObjectHelper
-//{
-//public:
-//    ObjectHelper();
-//};
 

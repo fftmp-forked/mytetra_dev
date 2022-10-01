@@ -3,19 +3,8 @@
 #include "libraries/helpers/DebugHelper.h"
 
 
-
 // TreeModel - Это модель данных, которая работает с видом TreeScreen
 // От него наследуется класс KnowTreeModel
-
-TreeModel::TreeModel(QObject *parent) : QAbstractItemModel(parent)
-{
- return;
-}
-
-TreeModel::~TreeModel(void)
-{
- return;
-}
 
 int TreeModel::columnCount(const QModelIndex &itemIndex) const
 {

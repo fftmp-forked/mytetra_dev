@@ -1,15 +1,15 @@
-#include <QObject>
 #include <QHeaderView>
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QDialogButtonBox>
 
 #include "AttachTableController.h"
 #include "views/attachTable/AttachTableView.h"
+#include "models/appConfig/AppConfig.h"
 #include "models/attachTable/AttachTableModel.h"
 #include "models/attachTable/AttachTableData.h"
-#include "models/appConfig/AppConfig.h"
 #include "views/tree/TreeScreen.h"
 #include "views/dialog/ReduceMessageBox.h"
 #include "libraries/Downloader.h"
@@ -18,11 +18,7 @@
 #include "libraries/helpers/UniqueIdHelper.h"
 
 
-extern AppConfig mytetraConfig;
-
-
-AttachTableController::AttachTableController(QObject *parent, QObject *iMetaEditor) : QObject(parent)
-{
+AttachTableController::AttachTableController(QObject *parent, QObject *iMetaEditor) : QObject(parent) {
   // Запоминается указатель на редактор
   // Область со списком приаттаченных файлов находится на том же логическом уровне что и редактор, и взаимодействует с ним
   metaEditor=static_cast<MetaEditor*>(iMetaEditor);
@@ -46,12 +42,6 @@ AttachTableController::~AttachTableController()
 {
   delete view;
   delete model;
-}
-
-
-AttachTableView *AttachTableController::getView(void)
-{
-  return view;
 }
 
 
@@ -258,7 +248,7 @@ QStringList AttachTableController::selectFilesForAdding(Attach::Type attachType)
   fileSelectDialog.setDirectory(QDir::homePath());
 
   // Если существует каталог, открытый при предыдущем выборе файла
-  QDir appendDir( mytetraConfig.getAttachAppendDir() );
+  QDir appendDir( AppConfig::get().getAttachAppendDir() );
   if( appendDir.exists() )
     fileSelectDialog.setDirectory( appendDir );
 
@@ -274,7 +264,7 @@ QStringList AttachTableController::selectFilesForAdding(Attach::Type attachType)
 
   // Запоминается директория, в которой был сделан выбор
   if(files.size()>0)
-    mytetraConfig.setAttachAppendDir( fileSelectDialog.directory().absolutePath() );
+    AppConfig::get().setAttachAppendDir( fileSelectDialog.directory().absolutePath() );
 
   return files;
 }
@@ -304,7 +294,7 @@ void AttachTableController::onSaveAsAttach(void)
     fileSelectDialog.setFileMode(QFileDialog::AnyFile); // Чтобы кнопка "Сохранить" была активной
 
     // Если существует каталог, открытый при предыдущем сохранении
-    QDir saveAsDir( mytetraConfig.getAttachSaveAsDir() );
+    QDir saveAsDir( AppConfig::get().getAttachSaveAsDir() );
     if( saveAsDir.exists() )
       fileSelectDialog.setDirectory( saveAsDir );
 
@@ -320,9 +310,8 @@ void AttachTableController::onSaveAsAttach(void)
     if(dialogResult==QDialog::Rejected)
       return;
 
-
     // Запоминается директория, в которой был сделан выбор
-    mytetraConfig.setAttachSaveAsDir( fileSelectDialog.directory().absolutePath() );
+    AppConfig::get().setAttachSaveAsDir( fileSelectDialog.directory().absolutePath() );
 
 
     // Выясняется список выбранных файлов
@@ -350,7 +339,7 @@ void AttachTableController::onSaveAsAttach(void)
     fileSelectDialog.setDirectory(QDir::homePath());
 
     // Если существует каталог, открытый при предыдущем сохранении
-    QDir saveAsDir( mytetraConfig.getAttachSaveAsDir() );
+    QDir saveAsDir( AppConfig::get().getAttachSaveAsDir() );
     if( saveAsDir.exists() )
       fileSelectDialog.setDirectory( saveAsDir );
 
@@ -361,7 +350,7 @@ void AttachTableController::onSaveAsAttach(void)
 
 
     // Запоминается директория, в которой был сделан выбор
-    mytetraConfig.setAttachSaveAsDir( fileSelectDialog.directory().absolutePath() );
+    AppConfig::get().setAttachSaveAsDir( fileSelectDialog.directory().absolutePath() );
 
 
     // Выбранная директория
@@ -532,9 +521,6 @@ void AttachTableController::onShowAttachInfo(void)
                              );
   messageBox.setDetailedTextReadOnly(true);
   messageBox.setStandardButtons(QDialogButtonBox::Ok); // Для двух кнопок можно так: QDialogButtonBox::Ok | QDialogButtonBox::Cancel
-
-  // int result=messageBox.exec();
-  // qDebug() << "Result code: " << result;
   messageBox.exec();
 }
 

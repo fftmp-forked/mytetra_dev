@@ -12,8 +12,6 @@ public:
 
     void init();
 
-//    void setController(ShortcutSettingsController *pController);
-
 protected slots:
 
     void onCurrentChanged(const QModelIndex &index, const QModelIndex &prevIndex);

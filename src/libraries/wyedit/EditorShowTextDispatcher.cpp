@@ -1,18 +1,14 @@
 #include "EditorShowTextDispatcher.h"
 #include "EditorShowText.h"
-#include "views/mainWindow/MainWindow.h"
-#include "views/tree/KnowTreeView.h"
-#include "models/tree/KnowTreeModel.h"
-#include "models/recordTable/Record.h"
-#include "libraries/helpers/ObjectHelper.h"
-#include "models/appConfig/AppConfig.h"
+#include "../../views/mainWindow/MainWindow.h"
+#include "../../views/tree/KnowTreeView.h"
+#include "../../models/appConfig/AppConfig.h"
+#include "../../models/tree/KnowTreeModel.h"
+#include "../../models/recordTable/Record.h"
+#include "../helpers/ObjectHelper.h"
 
 
-extern AppConfig mytetraConfig;
-
-
-EditorShowTextDispatcher::EditorShowTextDispatcher(QObject *parent) : QObject(parent)
-{
+EditorShowTextDispatcher::EditorShowTextDispatcher(QObject *parent) : QObject(parent) {
     mThread=new QThread();
     this->moveToThread(mThread);
 
@@ -20,8 +16,7 @@ EditorShowTextDispatcher::EditorShowTextDispatcher(QObject *parent) : QObject(pa
 }
 
 
-EditorShowTextDispatcher::~EditorShowTextDispatcher()
-{
+EditorShowTextDispatcher::~EditorShowTextDispatcher() {
     // Корректное закрытие и удаление треда
     if(mThread!=nullptr)
     {
@@ -36,15 +31,13 @@ EditorShowTextDispatcher::~EditorShowTextDispatcher()
 }
 
 
-EditorShowTextDispatcher *EditorShowTextDispatcher::instance()
-{
+EditorShowTextDispatcher *EditorShowTextDispatcher::instance() {
     static EditorShowTextDispatcher inst;
     return &inst;
 }
 
 
-void EditorShowTextDispatcher::createWindow(const QString &noteId, int x, int y, int w, int h, int vScroll)
-{
+void EditorShowTextDispatcher::createWindow(const QString &noteId, int x, int y, int w, int h, int vScroll) {
     // Уже созданное окно не должно открываться дважды
     if( mWindowsList.contains( noteId ) )
     {
@@ -79,11 +72,11 @@ void EditorShowTextDispatcher::createWindow(const QString &noteId, int x, int y,
     // станет неактивным (например, когда запись не выбрана)
     // то данное окно тоже станет неактивным, и невозможно будет выделить в нем текст
     QPointer<EditorShowText> editorShowText;
-    if(mytetraConfig.getDockableWindowsBehavior()=="single")
+    if(AppConfig::get().getDockableWindowsBehavior()=="single")
     {
         editorShowText=new EditorShowText(nullptr, Qt::Window);
     }
-    else if(mytetraConfig.getDockableWindowsBehavior()=="together")
+    else if(AppConfig::get().getDockableWindowsBehavior()=="together")
     {
         editorShowText=new EditorShowText( find_object<MainWindow>("mainwindow"), Qt::Dialog );
     }
@@ -276,7 +269,7 @@ void EditorShowTextDispatcher::saveOpenWindows()
 
     // Формат запоминаемых данных
     // "IDокна1,x1,y1,w1,h1;IDокна2,x2,y2,w2,h2" и т. д.
-    mytetraConfig.setDockableWindowsState( windowsState.join(";") );
+    AppConfig::get().setDockableWindowsState( windowsState.join(";") );
 }
 
 
@@ -284,7 +277,7 @@ void EditorShowTextDispatcher::saveOpenWindows()
 void EditorShowTextDispatcher::restoreOpenWindows()
 {
     // Строка со всеми окнами
-    QString state=mytetraConfig.getDockableWindowsState();
+    QString state=AppConfig::get().getDockableWindowsState();
 
     // Строка со всеми окнами разделяется на подстроки с описанием одного окна
     QStringList windowsState=state.split(";");
@@ -376,7 +369,7 @@ void EditorShowTextDispatcher::switchBehavior(const QString &mode)
 // теряют указатель на родителя, и, соответственно меняют свое поведение
 void EditorShowTextDispatcher::restoreBehavior()
 {
-    this->switchBehavior( mytetraConfig.getDockableWindowsBehavior() );
+    this->switchBehavior( AppConfig::get().getDockableWindowsBehavior() );
 
     qDebug() << "Restore detached window behavior";
 }

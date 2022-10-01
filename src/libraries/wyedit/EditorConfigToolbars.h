@@ -9,7 +9,7 @@
 #include <QGroupBox>
 #include <QVBoxLayout>
 
-#include "views/appConfigWindow/ConfigPage.h"
+#include "../../views/appConfigWindow/ConfigPage.h"
 
 class EditorConfig;
 class EditorToolbarSettingsScreen;
@@ -20,7 +20,7 @@ class EditorConfigToolbars : public ConfigPage
 
 public:
   EditorConfigToolbars(QWidget *parent = nullptr);
-  virtual ~EditorConfigToolbars(void);
+  virtual ~EditorConfigToolbars(void) {}
   
   int applyChanges(void) {return 0;}
     

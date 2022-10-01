@@ -1,17 +1,13 @@
 #include "EditorIndentSliderAssistant.h"
 #include "indentslider/IndentSlider.h"
 #include "EditorTextArea.h"
-#include "main.h"
-#include "libraries/helpers/DebugHelper.h"
+#include "../helpers/DebugHelper.h"
 
 
 EditorIndentSliderAssistant::EditorIndentSliderAssistant(QObject *parent, EditorTextArea *iTextArea) : QObject(parent)
 {
-  if(parent==NULL)
-    criticalError("Call "+QString(__FUNCTION__)+" with NULL of parent.");
-
-  if(iTextArea==NULL)
-    criticalError("Call "+QString(__FUNCTION__)+" with NULL of TextArea.");
+  if(!parent || !iTextArea)
+    criticalError("Call "+QString(__FUNCTION__)+" with NULL parent or TextArea.");
 
   // Создается линейка отступов
   indentSlider=new IndentSlider(qobject_cast<QWidget *>(parent)->width(), 16, qobject_cast<QWidget *>(parent));
