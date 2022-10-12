@@ -53,6 +53,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     install(FILES "icons/mytetra.svg" DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/scalable/apps/")
 endif()
 
+add_subdirectory("thirdParty/qtSingleApplication")
 add_subdirectory("src")
 if (NOT USE_SYSTEM_MIMETEX)
     add_subdirectory("thirdParty/mimetex")

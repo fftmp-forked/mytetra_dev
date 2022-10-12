@@ -12,7 +12,7 @@
 #include "main.h"
 #include "views/mainWindow/MainWindow.h"
 
-#include "libraries/qtSingleApplication/qtsingleapplication.h"
+#include "../thirdParty/qtSingleApplication/qtsingleapplication.h"
 
 #include "libraries/GlobalParameters.h"
 #include "libraries/PeriodicCheckBase.h"

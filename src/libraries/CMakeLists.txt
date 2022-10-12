@@ -1,4 +1,3 @@
-add_subdirectory("qtSingleApplication")
 add_subdirectory("helpers")
 add_subdirectory("wyedit")
 
