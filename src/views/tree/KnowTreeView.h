@@ -11,15 +11,12 @@ class KnowTreeView : public QTreeView {
 
   public:
     explicit KnowTreeView(QWidget *parent = nullptr);
-    virtual ~KnowTreeView();
+    virtual ~KnowTreeView() {}
 
   signals:
-    void tapAndHoldGestureFinished(const QPoint &);
     void dropEventHandleCatch();
 
   protected:
-    bool event(QEvent *event);
-
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);

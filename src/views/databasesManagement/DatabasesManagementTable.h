@@ -17,10 +17,6 @@ class DatabasesManagementTable : public QTableView {
     void init();
     void setController(DatabasesManagementController *pController) { controller = pController; };
 
-  signals:
-
-    void tapAndHoldGestureFinished(const QPoint &pos);
-
   protected slots:
 
     void onCustomContextMenuRequested(const QPoint &pos);

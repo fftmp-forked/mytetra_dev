@@ -284,13 +284,7 @@ void Editor::setupSignals(void) {
             this, &Editor::onCustomContextMenuRequested,
             Qt::DirectConnection);
 
-    // Соединение сигнал-слот чтобы показать контекстное меню по долгому нажатию
-    connect(textArea, &EditorTextArea::tapAndHoldGestureFinished,
-            this, &Editor::onCustomContextMenuRequested,
-            Qt::DirectConnection);
-
-    connect(textArea, &EditorTextArea::textChanged,
-            referenceFormatter, &ReferenceFormatter::onTextChanged,
+    connect(textArea, &EditorTextArea::textChanged, referenceFormatter, &ReferenceFormatter::onTextChanged,
             Qt::DirectConnection);
 
     // Вызов загрузки картинок

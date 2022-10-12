@@ -255,10 +255,6 @@ void TreeScreen::setupSignals(void) {
     connect(knowTreeView, &KnowTreeView::customContextMenuRequested,
             this, &TreeScreen::onCustomContextMenuRequested);
 
-    // Соединение сигнал-слот чтобы показать контекстное меню по долгому нажатию
-    connect(knowTreeView, &KnowTreeView::tapAndHoldGestureFinished,
-            this, &TreeScreen::onCustomContextMenuRequested);
-
     // Соединение сигнал-слот что ветка выбрана мышкой или стрелками на клавиатуре (через selection-модель)
     connect(knowTreeView->selectionModel(), &QItemSelectionModel::currentRowChanged,
             this, &TreeScreen::onKnowtreeClicked);

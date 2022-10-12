@@ -21,22 +21,6 @@ KnowTreeView::KnowTreeView(QWidget *parent) : QTreeView(parent) {
     // Разрешение принимать Drop-события
     setAcceptDrops(true);
     setDropIndicatorShown(true);
-
-    // Разрешение принимать жест QTapAndHoldGesture
-    grabGesture(Qt::TapAndHoldGesture);
-}
-
-KnowTreeView::~KnowTreeView() {
-}
-
-// Обработчик событий, нужен только для QTapAndHoldGesture (долгое нажатие)
-bool KnowTreeView::event(QEvent *event) {
-    if (event->type() == QEvent::Gesture) {
-        qDebug() << "In gesture event(): " << event << " Event type: " << event->type();
-        return true; /// @todo: ошмётки android
-    }
-
-    return QTreeView::event(event);
 }
 
 void KnowTreeView::dragEnterEvent(QDragEnterEvent *event) {
@@ -72,10 +56,7 @@ bool KnowTreeView::isDragableData(X *event) {
 
     QObject *sourceObject = qobject_cast<QObject *>(event->source());
 
-    if (sourceObject->objectName() == "recordTableView")
-        return true;
-    else
-        return false;
+    return sourceObject->objectName() == "recordTableView";
 }
 
 void KnowTreeView::dropEvent(QDropEvent *event) {

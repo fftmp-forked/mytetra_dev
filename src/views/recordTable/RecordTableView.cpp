@@ -1,7 +1,6 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QDrag>
-#include <QGestureEvent>
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QMimeData>
@@ -24,9 +23,6 @@
 RecordTableView::RecordTableView(QWidget *parent) : QTableView(parent) {
     // Изначально сортировка запрещена (заголовки столбцов не будут иметь треугольнички)
     this->setSortingEnabled(false);
-
-    // Разрешение принимать жест QTapAndHoldGesture
-    grabGesture(Qt::TapAndHoldGesture);
 }
 
 // Пришлось ввести метод init, так как инициализация невозможна без
@@ -80,9 +76,6 @@ void RecordTableView::init(void) {
 void RecordTableView::setupSignals(void) {
     // Сигнал чтобы показать контекстное меню по правому клику на списке записей
     connect(this, &RecordTableView::customContextMenuRequested, this, &RecordTableView::onCustomContextMenuRequested);
-
-    // Соединение сигнал-слот чтобы показать контекстное меню по долгому нажатию
-    connect(this, &RecordTableView::tapAndHoldGestureFinished, this, &RecordTableView::onCustomContextMenuRequested);
 
     // Сигнал чтобы открыть на редактирование параметры записи при двойном клике
     connect(this, &RecordTableView::doubleClicked, this, &RecordTableView::editFieldContext);
@@ -377,15 +370,6 @@ void RecordTableView::switchSelectionMode() {
         setSelectionMode(QAbstractItemView::SingleSelection);
 }
 
-// Обработчик событий, нужен только для QTapAndHoldGesture (долгое нажатие)
-bool RecordTableView::event(QEvent *event) {
-    if (event->type() == QEvent::Gesture) {
-        qDebug() << "In gesture event(): " << event << " Event type: " << event->type();
-        return true; /// @todo: ошмётки Android
-    }
-
-    return QTableView::event(event);
-}
 
 // Реакция на нажатие кнопок мышки
 // Событие приходит до того, как даже произойдет выделение строки под курсором мышки

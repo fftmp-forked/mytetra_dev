@@ -21,10 +21,6 @@ class AttachTableView : public QTableView {
 
     int getFirstSelectionPos(void);
 
-  signals:
-
-    void tapAndHoldGestureFinished(const QPoint &);
-
   protected slots:
 
     void onCustomContextMenuRequested(const QPoint &pos);
@@ -33,7 +29,6 @@ class AttachTableView : public QTableView {
     void setupSignals(void);
     void assemblyContextMenu(void);
 
-    bool event(QEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
     virtual void paintEvent(QPaintEvent *event);
 

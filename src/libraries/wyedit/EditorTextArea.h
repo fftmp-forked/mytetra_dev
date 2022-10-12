@@ -31,7 +31,6 @@ class EditorTextArea : public QTextEdit {
     int getIndentStartedRight(void);
 
   signals:
-    void tapAndHoldGestureFinished(const QPoint &);
     void updateIndentlineGeometry(void);
     void clickedOnReference(QString href);
 
@@ -63,8 +62,6 @@ class EditorTextArea : public QTextEdit {
     bool mouseCursorOverriden;
 
     QPoint currentMousePosition;
-
-    bool event(QEvent *event);
 
     virtual bool eventFilter(QObject *o, QEvent *e);
 

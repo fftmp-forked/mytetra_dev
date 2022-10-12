@@ -28,10 +28,6 @@ void AttachTableView::setupSignals(void) {
     connect(this, &AttachTableView::customContextMenuRequested,
             this, &AttachTableView::onCustomContextMenuRequested);
 
-    // Соединение сигнал-слот чтобы показать контекстное меню по долгому нажатию
-    connect(this, &AttachTableView::tapAndHoldGestureFinished,
-            this, &AttachTableView::onCustomContextMenuRequested);
-
     // Сигнал чтобы открыть на просмотр/редактирование файл по двойному клику
     connect(this, &AttachTableView::doubleClicked,
             controller, &AttachTableController::onOpenAttach);
@@ -53,16 +49,6 @@ void AttachTableView::assemblyContextMenu(void) {
     contextMenu->addSeparator();
     contextMenu->addAction(screenPointer->actionOpenAttach);
     contextMenu->addAction(screenPointer->actionShowAttachInfo);
-}
-
-/// @brief Обработчик событий, нужен только для QTapAndHoldGesture (долгое нажатие)
-bool AttachTableView::event(QEvent *event) {
-    if (event->type() == QEvent::Gesture) {
-        qDebug() << "In gesture event(): " << event << " Event type: " << event->type();
-        return true; ///@todo: ошмётки от android support
-    }
-
-    return QTableView::event(event);
 }
 
 void AttachTableView::resizeEvent(QResizeEvent *event) {

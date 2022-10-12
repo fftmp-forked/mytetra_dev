@@ -24,11 +24,6 @@ EditorTextArea::EditorTextArea(QWidget *parent) : QTextEdit(parent) {
 
     // Устанавливается фильтр на событие показа или скрытия области прокрутки
     this->verticalScrollBar()->installEventFilter(this);
-
-    // this->setStyleSheet("QTextEdit::table {border:1px solid maroon; border-collapse:collapse;}");
-
-    // Разрешение принимать жест QTapAndHoldGesture
-    grabGesture(Qt::TapAndHoldGesture);
 }
 
 void EditorTextArea::setShowFormatting(bool i) {
@@ -37,13 +32,6 @@ void EditorTextArea::setShowFormatting(bool i) {
     viewport()->update();
 }
 
-// Обработчик событий, нужен только для QTapAndHoldGesture (долгое нажатие)
-bool EditorTextArea::event(QEvent *event) {
-    if (event->type() == QEvent::Gesture)
-        return true; /// @todo: это ошмётки Android
-
-    return QTextEdit::event(event);
-}
 
 bool EditorTextArea::eventFilter(QObject *o, QEvent *e) {
     // Обработка показа или скрытия области прокрутки редактора

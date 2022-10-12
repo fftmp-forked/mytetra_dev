@@ -43,10 +43,6 @@ class RecordTableView : public QTableView {
 
     void updateRow(int rowNum);
 
-  signals:
-
-    void tapAndHoldGestureFinished(const QPoint &);
-
   public slots:
 
     // Открытие контекстного меню
@@ -87,8 +83,6 @@ class RecordTableView : public QTableView {
 
     // Реакция на выбор записи мышкой или клавишами
     void clickToRecord(const QModelIndex &index);
-
-    bool event(QEvent *event);
 
     QPoint mouseStartPos;
     void mousePressEvent(QMouseEvent *event);
