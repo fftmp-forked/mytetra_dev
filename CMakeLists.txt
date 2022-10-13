@@ -86,6 +86,10 @@ set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6,libqt6core6,libqt6gui6,libqt6network6,li
 set(CPACK_GENERATOR "DEB" "RPM")
 include(CPack)
 
+file(GLOB_RECURSE ALL_SRC "src/*.cpp" "src/*.h" )
+add_custom_target(style
+    COMMAND clang-format --style=file -i ${ALL_SRC}
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
 # Use only Release build type when building packages.
 # Generate packages with 'cpack -G DEB/RPM'.
