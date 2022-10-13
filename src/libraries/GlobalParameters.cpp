@@ -21,9 +21,8 @@
 #include <unistd.h>
 #endif
 
-GlobalParameters *GlobalParameters::_self;
 
-GlobalParameters::GlobalParameters(QString filename) {
+void GlobalParameters::init(QString filename) {
     mainProgramFile = filename;
     pointFindScreen = nullptr;
     pointStatusBar = nullptr;

@@ -8,9 +8,8 @@
 
 #include "libraries/helpers/DebugHelper.h"
 
-AppConfig *AppConfig::_self;
 
-AppConfig::AppConfig(QString confName) {
+void AppConfig::init(QString confName) {
     QFile confFile(confName);
     if (!confFile.exists())
         criticalError("File " + confName + " not found.");

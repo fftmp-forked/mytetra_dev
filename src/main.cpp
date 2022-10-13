@@ -141,10 +141,10 @@ int main(int argc, char **argv) {
     parseConsoleOption(app);
 
     // Инициализация глобальных параметров, внутри происходит установка рабочей директории, настройка кодеков для локали и консоли
-    GlobalParameters::init(mainProgramFile);
+    GlobalParameters::get().init(mainProgramFile);
 
     // Инициализация основных конфигурирующих программу переменных
-    AppConfig::init(GlobalParameters::get().getWorkDirectory() + "/conf.ini");
+    AppConfig::get().init(GlobalParameters::get().getWorkDirectory() + "/conf.ini");
     auto &cfg = AppConfig::get();
 
     setupDebug(cfg.get_printdebugmessages());
@@ -171,7 +171,7 @@ int main(int argc, char **argv) {
 
     // Инициализация менеджера горячих клавиш должна происходить после инициализации переводов,
     // чтобы были переведены все действия по горячим клавишам
-    ShortcutManager::init(GlobalParameters::get().getWorkDirectory() + "/shortcut.ini");
+    ShortcutManager::get().init(GlobalParameters::get().getWorkDirectory() + "/shortcut.ini");
 
     // История перехода очищается, так как в нее может попасть первая запись в востаналиваемой ветке и сама восстанавливаемая запись
     WalkHistory wk;

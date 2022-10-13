@@ -5,12 +5,11 @@
 #include <QToolButton>
 #include <QtDebug>
 
-#include "../models/recordTable/Record.h"
 #include "ClipboardBranch.h"
 #include "FixedParameters.h"
 #include "helpers/DebugHelper.h"
 
-void ClipboardBranch::init(void) {
+ClipboardBranch::ClipboardBranch(void) : QMimeData()  {
     branchData.branch.clear();
     branchData.record.clear();
 
@@ -33,7 +32,6 @@ void ClipboardBranch::print(void) const {
 
         // Находятся все записи, принадлежащие текущей ветке
         foreach (Record current_record, branchData.record.values(branch_id)) {
-            qDebug() << "Record:";
 
             QMap<QString, QString> current_record_fields = current_record.getNaturalFieldList();
             foreach (QString field_name, current_record_fields.keys())
@@ -77,13 +75,11 @@ void ClipboardBranch::printIdTree(void) const {
         qDebug() << one_line.branch_id << one_line.subbranches_id;
 }
 
-// Добавление ветки
 void ClipboardBranch::addBranch(QString parent_id, QMap<QString, QString> branch_fields) {
     branch_fields["parent_id"] = parent_id;
     branchData.branch << branch_fields;
 }
 
-// Добавление конечной записи
 void ClipboardBranch::addRecord(QString branch_id, Record record) {
     /// @todo: Сделать проверку, есть ли ветка с указанным id
     branchData.record.insert(branch_id, record);

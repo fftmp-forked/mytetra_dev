@@ -4,26 +4,17 @@
 #include <QMap>
 #include <QObject>
 #include <QSettings>
+#include "../Singleton.h"
 
 class QAction;
 class QKeySequence;
 class QToolButton;
 
-/// @brief singleton class
-class ShortcutManager : public QObject {
+class ShortcutManager : public QObject, public Singleton<ShortcutManager> {
+    friend class Singleton<ShortcutManager>;
     Q_OBJECT
-
   public:
-    ShortcutManager() = delete;
-    ShortcutManager(const ShortcutManager &) = delete;
-    ShortcutManager &operator=(const ShortcutManager &) = delete;
-    ShortcutManager(ShortcutManager &&) = delete;
-    ShortcutManager &operator=(ShortcutManager &&) = delete;
-    ~ShortcutManager() {}
-
-    static void init(QString confName) { _self = new ShortcutManager(confName); }
-    static ShortcutManager &get() { return *_self; }
-
+    void init(QString confName);
     enum shortcutSections {
         SECTION_NOTE,
         SECTION_TREE,
@@ -70,11 +61,9 @@ class ShortcutManager : public QObject {
     void updateWidgetShortcut();
 
   private:
-    explicit ShortcutManager(QString confName, QObject *parent = nullptr);
-
+    ShortcutManager(QObject * parent = nullptr) : QObject(parent) {}
     void initDefaultKeyTable();
 
-    static ShortcutManager *_self;
     static QMap<QString, QKeySequence> keyTable[SECTION_TOTAL_COUNT]; // map keys is action names
 
     QString configFileName;

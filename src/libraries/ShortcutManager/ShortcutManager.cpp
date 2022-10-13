@@ -7,13 +7,12 @@
 
 #include "../helpers/DebugHelper.h"
 
-ShortcutManager *ShortcutManager::_self;
 QMap<QString, QKeySequence> ShortcutManager::keyTable[SECTION_TOTAL_COUNT];
 QMap<QString, ShortcutManager::Data> ShortcutManager::defaultKeyTable[SECTION_TOTAL_COUNT];
 
 const QStringList ShortcutManager::availableSection = {"note", "tree", "editor", "attach", "misc"}; // order must be as in enum shortcutSections
 
-ShortcutManager::ShortcutManager(QString confName, QObject *parent) : QObject(parent) {
+void ShortcutManager::init(QString confName) {
     configFileName = confName;
     initDefaultKeyTable();
     initKeyTable();

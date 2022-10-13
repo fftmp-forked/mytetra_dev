@@ -8,8 +8,7 @@
 class AttachTableView;
 class AttachTableController;
 
-// Виджет таблицы приаттаченных файлов (с кнопками)
-
+/// @brief Виджет таблицы приаттаченных файлов (с кнопками)
 class AttachTableScreen : public QWidget {
     Q_OBJECT
   public:

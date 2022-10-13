@@ -37,10 +37,8 @@ class ClipboardBranch : public QMimeData {
     Q_OBJECT
 
   public:
-    ClipboardBranch(void) : QMimeData() { init(); }
+    ClipboardBranch(void);
     ~ClipboardBranch(void) {}
-
-    void init(void);
 
     void addBranch(QString parent_id, QMap<QString, QString> branch_fields);
     void addRecord(QString branch_id, Record record);

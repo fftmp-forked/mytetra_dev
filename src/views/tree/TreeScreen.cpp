@@ -749,8 +749,7 @@ void TreeScreen::pasteBranchSmart(bool is_branch) {
     QClipboard *cbuf = QApplication::clipboard();
 
     // Извлечение объекта из буфера обмена
-    const ClipboardBranch *branch;
-    branch = qobject_cast<const ClipboardBranch *>(cbuf->mimeData());
+    const ClipboardBranch *branch = qobject_cast<const ClipboardBranch *>(cbuf->mimeData());
     branch->print();
     branch->printIdTree();
 

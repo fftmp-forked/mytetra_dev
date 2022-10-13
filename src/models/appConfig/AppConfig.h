@@ -1,20 +1,15 @@
 #pragma once
 
 #include <QSettings>
+#include "../../libraries/Singleton.h"
 
-/// @brief singleton class
-class AppConfig {
-
+class AppConfig : public Singleton<AppConfig> {
+    friend class Singleton<AppConfig>;
   public:
-    AppConfig() = delete;
-    AppConfig(const AppConfig &) = delete;
-    AppConfig &operator=(const AppConfig &) = delete;
-    AppConfig(AppConfig &&) = delete;
-    AppConfig &operator=(AppConfig &&) = delete;
+
     ~AppConfig() { sync(); }
 
-    static void init(QString confName) { _self = new AppConfig(confName); }
-    static AppConfig &get() { return *_self; }
+    void init(QString confName);
 
     void sync(void) { conf->sync(); }
 
@@ -198,8 +193,7 @@ class AppConfig {
     void setDockableWindowsBehavior(QString mode);
 
   private:
-    explicit AppConfig(QString confName);
-    static AppConfig *_self;
+    AppConfig(){}
 
     QSettings *conf;
 
