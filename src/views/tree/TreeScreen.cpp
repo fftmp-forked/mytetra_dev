@@ -666,7 +666,7 @@ bool TreeScreen::copyBranch(void) {
     addBranchToClipboard(branch_clipboard_data, path, true);
 
     // Добавление прочих веток
-    foreach (QStringList curr_path, subbranchespath)
+    for (const auto & curr_path : subbranchespath)
         addBranchToClipboard(branch_clipboard_data, curr_path, false);
 
     // branch_clipboard_data->print();
@@ -877,7 +877,7 @@ void TreeScreen::updateBranchOnScreen(const QModelIndex &index) {
 
     // Перебираются подветки
     QList<QStringList> updatePathts = item->getAllChildrenPath();
-    foreach (QStringList currentPath, updatePathts) {
+    for (const auto & currentPath : updatePathts) {
         TreeItem *currentItem = knowTreeModel->getItem(currentPath);
 
         QModelIndex currentIndex = knowTreeModel->getIndexByItem(currentItem);

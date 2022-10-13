@@ -690,7 +690,7 @@ bool Editor::saveTextareaImages(int mode = SAVE_IMAGES_SIMPLE) {
 
         // Перебираются файлы в директории
         static const QRegularExpression re("\\.png$");
-        foreach (auto fileName, imageInDirectory)
+        for(const auto & fileName : imageInDirectory)
             if (fileName.contains(re) && !imagesNames.contains(fileName) && !miscFields["attachFileNameList"].contains(fileName))
                 // удаляются *.png файлы, не встречающиеся ни в тексте записи, ни в прикрепленных файлах
                 directory.remove(fileName);

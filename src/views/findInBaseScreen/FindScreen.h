@@ -43,12 +43,12 @@ class FindScreen : public QWidget {
     void changedHowExtract(int pos);
     void changedTreeSearchArea(int pos);
 
-    void changedFindInName(int state);
-    void changedFindInAuthor(int state);
-    void changedFindInUrl(int state);
-    void changedFindInTags(int state);
-    void changedFindInText(int state);
-    void changedFindInNameItem(int state);
+    void changedFindInName(int state) {changedFindInField("name", state);}
+    void changedFindInAuthor(int state) {changedFindInField("author", state);}
+    void changedFindInUrl(int state) {changedFindInField("url", state);}
+    void changedFindInTags(int state) {changedFindInField("tags", state);}
+    void changedFindInText(int state) {changedFindInField("text", state);}
+    void changedFindInNameItem(int state) {changedFindInField("nameItem", state);}
 
   signals:
 
@@ -116,13 +116,12 @@ class FindScreen : public QWidget {
 
     QStringList textDelimiterDecompose(QString text);
 
-    // Поля, где нужно искать (Заголовок, текст, теги...)
-    QMap<QString, bool> searchArea;
+    QStringList scanFields;
 
     // Список слов, которые нужно искать
     QStringList searchWordList;
 
     int totalProgressCounter;
 
-    int cancelFlag;
+    bool cancelFlag;
 };

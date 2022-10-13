@@ -443,7 +443,8 @@ void EditorTextArea::onDownloadImagesSuccessfull(const QString html,
                                                  const QMap<QString, QByteArray> referencesAndMemoryFiles,
                                                  const QMap<QString, QString> referencesAndInternalNames) {
     // К документу добавляются скачанные картинки в виде ресурсов
-    foreach (QString imageReference, referencesAndMemoryFiles.keys()) {
+    for(auto it = referencesAndMemoryFiles.keyBegin(); it != referencesAndMemoryFiles.keyEnd(); ++it) {
+        const auto & imageReference = *it;
         QImage image;
         bool result = image.loadFromData(referencesAndMemoryFiles.value(imageReference));
 

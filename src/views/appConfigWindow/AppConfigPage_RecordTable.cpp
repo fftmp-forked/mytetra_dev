@@ -48,7 +48,7 @@ AppConfigPage_RecordTable::AppConfigPage_RecordTable(QWidget *parent) : ConfigPa
 
     // Область настройки видимости столбцов
     QVBoxLayout *vboxVisibleColumns = new QVBoxLayout;
-    foreach (QCheckBox *currentCheckBox, fields)
+    for(auto currentCheckBox : std::as_const(fields))
         vboxVisibleColumns->addWidget(currentCheckBox);
 
     QGroupBox *groupBoxVisibleColumns = new QGroupBox(tr("Columns visible"));
@@ -155,7 +155,7 @@ int AppConfigPage_RecordTable::applyChanges(void) {
     newShowFields = showFields + addFieldsList;
 
     // Удаление полей в результирующем списке
-    foreach (QString removeFieldName, removeFieldsList)
+    for(const auto & removeFieldName : removeFieldsList)
         newShowFields.removeAll(removeFieldName);
 
     qDebug() << "newShowFields" << newShowFields;
@@ -169,7 +169,7 @@ int AppConfigPage_RecordTable::applyChanges(void) {
 
         // Ширина всех полей
         float fullWidth = 0.0;
-        foreach (QString currentWidth, fieldsWidth)
+        for(const auto & currentWidth : fieldsWidth)
             fullWidth += currentWidth.toFloat();
 
         qDebug() << "fullWidth" << fullWidth;
@@ -179,7 +179,7 @@ int AppConfigPage_RecordTable::applyChanges(void) {
         float insertFieldWidth = 100.0;
         float insertFullWidth = insertFieldWidth * (newShowFields.size() - showFields.size());
         float coefficient = (fullWidth - insertFullWidth) / fullWidth;
-        foreach (QString currentWidth, fieldsWidth)
+        for(const auto & currentWidth : fieldsWidth)
             newFieldsWidth << QString::number((int)(currentWidth.toFloat() * coefficient));
 
         qDebug() << "insertFullWidth" << insertFullWidth;

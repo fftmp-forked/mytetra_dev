@@ -256,24 +256,18 @@ void FindScreen::setFindText(QString text) {
     emit findClickedAfterAnotherTextChanged();
 }
 
-// Слот, срабатывающий при нажатии на кнопку начала поиска
+/// @brief Слот, срабатывающий при нажатии на кнопку начала поиска
 void FindScreen::findClicked(void) {
     // Поля, где нужно искать (Заголовок, текст, теги...)
-    searchArea["name"] = findInName->isChecked();
-    searchArea["author"] = findInAuthor->isChecked();
-    searchArea["url"] = findInUrl->isChecked();
-    searchArea["tags"] = findInTags->isChecked();
-    searchArea["text"] = findInText->isChecked();         // Поиск в тексте записи
-    searchArea["nameItem"] = findInNameItem->isChecked(); // Поиск по именам веток
-
-    // Проверяется, установлено ли хоть одно поле для поиска
-    int findEnableFlag = 0;
-    foreach (bool value, searchArea)
-        if (value == true)
-            findEnableFlag = 1;
+    if(findInName->isChecked())     scanFields << "name";
+    if(findInAuthor->isChecked())   scanFields << "author";
+    if(findInUrl->isChecked())      scanFields << "url";
+    if(findInTags->isChecked())     scanFields << "tags";
+    if(findInText->isChecked())     scanFields << "text";
+    if(findInNameItem->isChecked()) scanFields << "nameItem"; // Поиск по именам веток
 
     // Если не отмечены поля для поиска
-    if (findEnableFlag == 0) {
+    if (scanFields.empty()) {
         QMessageBox messageBox(this);
         messageBox.setWindowTitle(tr("Cannot start find process"));
         messageBox.setText(tr("Verify that you selected fields for search for starting find process."));
@@ -285,7 +279,7 @@ void FindScreen::findClicked(void) {
     // Выясняется список слов, которые нужно искать
     searchWordList = textDelimiterDecompose(findText->text());
 
-    if (searchWordList.size() == 0) {
+    if (searchWordList.empty()) {
         QMessageBox messageBox(this);
         messageBox.setWindowTitle(tr("Can not start find process"));
         messageBox.setText(tr("The search request is too short. Enter at least one word."));
@@ -315,15 +309,16 @@ void FindScreen::findStart(void) {
     // Выясняется сколько всего конечных записей
     TreeItem *startItem = 0;
     int totalRec = 0;
-    if (AppConfig::get().getFindScreenTreeSearchArea() == 0) // Если нужен поиск во всем дереве
-    {
+    if (AppConfig::get().getFindScreenTreeSearchArea() == 0) {
+        // поиск во всем дереве
         // Корневой элемент дерева
         startItem = searchModel->rootItem;
 
         // Количество конечных записей во всем дереве
         totalRec = searchModel->getAllRecordCount();
-    } else if (AppConfig::get().getFindScreenTreeSearchArea() == 1) // Если нужен поиск в текущей ветке
-    {
+    } else if (AppConfig::get().getFindScreenTreeSearchArea() == 1) {
+        // поиск в текущей ветке
+
         // Индекс текущей выбранной ветки
         QModelIndex currentItemIndex = find_object<TreeScreen>("treeScreen")->getCurrentItemIndex();
 
@@ -352,6 +347,7 @@ void FindScreen::findStart(void) {
     // Корректировка регрессии в Qt 5.5 - 5.6.x QTBUG-47042 QTBUG-47049
     // QProgressDialog показывает сам себя через 4 секунды (точнее, спустя minimumDuration() сек.) после отработки конструктора
     // метод hide() не может скрыть такое окно
+    /// @todo: recheck
     progress->cancel();
 
     // Показывается виджет линейки наполняемости
@@ -360,11 +356,11 @@ void FindScreen::findStart(void) {
     progress->setRange(0, totalRec);
     progress->setModal(true);
     progress->setMinimumDuration(0);
-    progress->show(); // Эта команда под вопросом, возможно она не нужна
+    progress->show(); /// @todo: recheck Эта команда под вопросом, возможно она не нужна
 
     // Обнуляется счетчик обработанных конечных записей
     totalProgressCounter = 0;
-    cancelFlag = 0;
+    cancelFlag = false;
 
     //Вызывается рекурсивный поиск в дереве
     findRecurse(startItem);
@@ -379,110 +375,66 @@ void FindScreen::findStart(void) {
     if (findTable->getRowCount() == 0) {
         // если поиск проводился не во всей базе
         if (AppConfig::get().getFindScreenTreeSearchArea() != 0)
-            findTable->setOverdrawMessage(tr("No search results.\nHint: search produced in current tree item.\nTry to search for entire database.")); // Ничего не найдено. Поиск производился внутри одной ветки. Попробуйте искать во всей базе.
+            findTable->setOverdrawMessage(tr("No search results.\nHint: search produced in current tree item.\nTry to search for entire database."));
     }
 }
 
 void FindScreen::findRecurse(TreeItem *curritem) {
     // Если была нажата отмена поиска
-    if (cancelFlag == 1)
+    if (cancelFlag)
         return;
 
     // Проверка имени ветки
-    if (searchArea["nameItem"] == true) {
-        QString itemName = curritem->getField("name");
-        bool findItem = findInTextProcess(itemName);
-        if (findItem) {
-            // QString path = curritem->getPathAsNameWithDelimeter(" ");
-            // qDebug() << "Find branch succesfull " << path;
+    if (scanFields.contains("nameItem")) {
+        auto itemName = curritem->getField("name");
+        if (findInTextProcess(itemName)) {
             // В таблицу результатов добавляется запись о найденой ветке
-            findTable->addRow(itemName,
-                              tr("[Tree item]"),
-                              "",
-                              curritem->getPath(),
-                              curritem->getField("id"));
+            findTable->addRow(itemName, tr("[Tree item]"), "", curritem->getPath(), curritem->getField("id"));
         }
     }
 
-    // Если в ветке присутсвует таблица конечных записей
-    if (curritem->recordtableGetRowCount() > 0) {
-        // Обработка таблицы конечных записей
+    // Выясняется ссылка на таблицу конечных записей
+    auto searchRecordTable = curritem->recordtableGetTableData();
 
-        // Выясняется ссылка на таблицу конечных записей
-        RecordTableData *searchRecordTable = curritem->recordtableGetTableData();
+    // Перебираются записи таблицы
+    for (int i = 0; i < static_cast<int>(searchRecordTable->size()); ++i) {
+        // Обновляется линейка наполняемости
+        progress->setValue(++totalProgressCounter);
+        qApp->processEvents();
+        if (progress->wasCanceled()) {
+            cancelFlag = true;
+            return;
+        }
 
-        // Перебираются записи таблицы
-        for (int i = 0; i < static_cast<int>(searchRecordTable->size()); i++) {
-            // Обновляется линейка наполняемости
-            progress->setValue(++totalProgressCounter);
-            qApp->processEvents();
-            if (progress->wasCanceled()) {
-                cancelFlag = 1;
-                return;
+        bool found = false;
+        for (const auto & f : scanFields) {
+            if(f == "nameItem") {
+                continue; // search by branch name. Alreary processed upper; have no sense, when iterating over records.
+            } else if (f == "text") {
+                // Поиск в обычном поле
+                auto inspectText = searchRecordTable->getText(i);
+                QTextDocument textdoc;
+                textdoc.setHtml(inspectText);
+                found = findInTextProcess(textdoc.toPlainText());
+            } else {
+                auto inspectText = searchRecordTable->getField(f, i);
+                found = findInTextProcess(inspectText);
             }
+            if(found)
+                break;
+        }
 
-            // Результаты поиска в полях
-            QMap<QString, bool> iteration_search_result;
+        // Если запись найдена
+        if (found) {
+            qDebug() << "Find succesfull in " << searchRecordTable->getField("name", i);
+            findTable->addRow(searchRecordTable->getField("name", i),
+                              curritem->getField("name"),
+                              searchRecordTable->getField("tags", i),
+                              curritem->getPath(),
+                              searchRecordTable->getField("id", i));
+        }
 
-            iteration_search_result["name"] = false;
-            iteration_search_result["author"] = false;
-            iteration_search_result["url"] = false;
-            iteration_search_result["tags"] = false;
-            iteration_search_result["text"] = false;
-
-            // Текст в котором будет проводиться поиск
-            QString inspectText;
-
-            // Цикл поиска в отмеченных пользователем полях записи
-            QMapIterator<QString, bool> j(iteration_search_result);
-            while (j.hasNext()) {
-                j.next();
-                QString key = j.key();
-
-                // Если в данном поле нужно проводить поиск
-                if (searchArea[key] == true) {
-                    if (key == "nameItem") // Здесь поиск по имени ветки не производится
-                        continue;
-
-                    if (key != "text") {
-                        // Поиск в обычном поле
-                        inspectText = searchRecordTable->getField(key, i);
-                        iteration_search_result[key] = findInTextProcess(inspectText);
-                    } else {
-                        // Поиск в тексте записи
-                        inspectText = searchRecordTable->getText(i);
-                        QTextDocument textdoc;
-                        textdoc.setHtml(inspectText);
-                        iteration_search_result[key] = findInTextProcess(textdoc.toPlainText());
-                    }
-                }
-            } // Закрылся цикл поиска в полях
-
-            // Проверяется, есть ли поле, в котором поиск был успешен
-            int findFlag = 0;
-            foreach (bool value, iteration_search_result)
-                if (value == true)
-                    findFlag = 1;
-
-            // Если запись найдена
-            if (findFlag == 1) {
-                qDebug() << "Find succesfull in " << searchRecordTable->getField("name", i);
-
-                // В таблицу результатов поиска добавляются данные
-                // Имя записи
-                // Имя ветки
-                // Теги
-                // Путь к ветке
-                // ID записи в таблице конечных записей
-                findTable->addRow(searchRecordTable->getField("name", i),
-                                  curritem->getField("name"),
-                                  searchRecordTable->getField("tags", i),
-                                  curritem->getPath(),
-                                  searchRecordTable->getField("id", i));
-            }
-
-        } // Закрылся цикл перебора записей в таблице конечных записей
-    }     // Закрылось условие что в ветке есть таблица конечных записей
+    } // Закрылся цикл перебора записей
 
     // Рекурсивная обработка каждой подчиненной ветки
     for (int i = 0; i < curritem->childCount(); i++)
@@ -544,38 +496,8 @@ void FindScreen::changedTreeSearchArea(int pos) {
     AppConfig::get().setFindScreenTreeSearchArea(pos);
 }
 
-void FindScreen::changedFindInName(int state) {
-    changedFindInField("name", state);
-}
-
-void FindScreen::changedFindInAuthor(int state) {
-    changedFindInField("author", state);
-}
-
-void FindScreen::changedFindInUrl(int state) {
-    changedFindInField("url", state);
-}
-
-void FindScreen::changedFindInTags(int state) {
-    changedFindInField("tags", state);
-}
-
-void FindScreen::changedFindInText(int state) {
-    changedFindInField("text", state);
-}
-
-void FindScreen::changedFindInNameItem(int state) {
-    changedFindInField("nameItem", state);
-}
-
 void FindScreen::changedFindInField(QString fieldname, int state) {
-    bool i;
-    if (state == Qt::Checked)
-        i = true;
-    else
-        i = false;
-
-    AppConfig::get().set_findscreen_find_in_field(fieldname, i);
+    AppConfig::get().set_findscreen_find_in_field(fieldname, state == Qt::Checked);
 }
 
 void FindScreen::widgetShow(void) {

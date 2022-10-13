@@ -84,12 +84,10 @@ QMap<QString, QString> TreeItem::getAllFields() {
 
     QMap<QString, QString> result;
 
-    QList<QString> names = fieldsTable.keys();
-
-    foreach (QString name, names) {
+    for(auto name = fieldsTable.keyBegin(); name != fieldsTable.keyEnd(); ++name) {
         // В результат добаляются только параметры с разрешенным именем
-        if (FixedParameters::itemFieldAvailableList.contains(name))
-            result[name] = getField(name);
+        if (FixedParameters::itemFieldAvailableList.contains(*name))
+            result[*name] = getField(*name);
     }
 
     return result;
@@ -115,9 +113,9 @@ void TreeItem::setField(QString name, QString value) {
 // Установка данных напрямую - какие данные переданы, те и запомнятся
 // Метод используется в одном месте - при инициализации дерева из XML файла
 void TreeItem::setAllFieldDirect(const QMap<QString, QString> nameAndValue) {
-    foreach (QString name, nameAndValue.keys())
-        if (!FixedParameters::itemFieldAvailableList.contains(name))
-            criticalError("TreeItem::setFieldDirect() : Set unavailable field \"" + name + "\" to tree item");
+    for(auto name = nameAndValue.keyBegin(); name != nameAndValue.keyEnd(); ++name)
+        if (!FixedParameters::itemFieldAvailableList.contains(*name))
+            criticalError("TreeItem::setFieldDirect() : Set unavailable field \"" + *name + "\" to tree item");
 
     // Устанавливаются значения полей
     fieldsTable = nameAndValue; // Qt сам должен правильно сделать привязку к переданным данным и оставить их в памяти

@@ -124,16 +124,6 @@ void EditorToolBarAssistant::onChangeFontselectOnDisplay(QString fontName) {
             // Иначе шрифт с указанным названием не найден в списке шрифтов,
             // и надо попробовать выставить комбобоксе стандартный похожий шрифт
 
-            // Вывод в консоль полного списка шифтов
-            /*
-            foreach (const QString &family, database.families()) {
-               qDebug() << "Font family:" << family;
-               foreach (const QString &style, database.styles(family)) {
-                   qDebug() << "     style:" << style;
-               }
-            }
-            */
-
             QList<QPair<QString, QString>> sameFonts;
             sameFonts << QPair<QString, QString>("Sans Serif", "MS Sans Serif");
             sameFonts << QPair<QString, QString>("Sans Serif", "Microsoft Sans Serif");

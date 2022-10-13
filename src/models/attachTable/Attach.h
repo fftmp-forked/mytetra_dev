@@ -39,7 +39,7 @@ class Attach {
 
     // todo: подумать, может унаследовать Attach и Record от общего класса LiteFatObject
     bool isEmpty() const;
-    bool isLite() const;
+    bool isLite() const {return liteFlag;}
     void switchToLite();
     void switchToFat();
 

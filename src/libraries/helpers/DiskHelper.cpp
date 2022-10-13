@@ -30,7 +30,7 @@ bool DiskHelper::copyDirectory(const QString &fromName, const QString &toName) {
     QDir toDir(toName);
 
     if (fromDir.exists() && toDir.exists()) {
-        Q_FOREACH (QFileInfo info, fromDir.entryInfoList(QDir::Files)) {
+        for(const auto & info : fromDir.entryInfoList(QDir::Files)) {
             QFile::copy(info.absoluteFilePath(), toName + "/" + info.fileName());
         }
 
@@ -49,7 +49,7 @@ QMap<QString, QByteArray> DiskHelper::getFilesFromDirectory(QString dirName, QSt
         QStringList filter;
         filter << fileMask;
 
-        foreach (QFileInfo info, directory.entryInfoList(filter, QDir::Files)) {
+        for(const auto & info : directory.entryInfoList(filter, QDir::Files)) {
             QFile f(info.absoluteFilePath());
             if (!f.open(QIODevice::ReadOnly))
                 criticalError("DiskHelper::getFilesFromDirectory() : File '" + info.absoluteFilePath() + "' open error");
@@ -72,26 +72,25 @@ bool DiskHelper::saveFilesToDirectory(QString dirName, QMap<QString, QByteArray>
 
     QDir directory(dirName);
 
-    // Если директория существует
-    if (directory.exists()) {
-        foreach (QString filename, fileList.keys()) {
-            qDebug() << "DiskHelper::saveFilesToDirectory() : Save file " << filename;
-
-            QFile file(dirName + "/" + filename);
-
-            // Файл открывается для записи
-            if (!file.open(QIODevice::WriteOnly)) {
-                qDebug() << "DiskHelper::saveFilesToDirectory() : Can not save file '" << filename << "' to directory '" << dirName << "'";
-                return false;
-            }
-
-            // Данные сохраняются в файл
-            file.write(fileList.value(filename));
-        }
-
-        return true;
-    } else {
+    if (!directory.exists()) {
         qDebug() << "DiskHelper::saveFilesToDirectory() : Can not find directory" << dirName;
         return false;
     }
+
+    for (auto it = fileList.keyBegin(); it != fileList.keyEnd(); ++it) {
+        const auto & filename = *it;
+        qDebug() << "DiskHelper::saveFilesToDirectory() : Save file " << filename;
+
+        QFile file(dirName + "/" + filename);
+
+        // Файл открывается для записи
+        if (!file.open(QIODevice::WriteOnly)) {
+            qDebug() << "DiskHelper::saveFilesToDirectory() : Can not save file '" << filename << "' to directory '" << dirName << "'";
+            return false;
+        }
+
+        // Данные сохраняются в файл
+        file.write(fileList.value(filename));
+    }
+    return true;
 }

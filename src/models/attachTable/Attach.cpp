@@ -46,16 +46,14 @@ QStringList Attach::fieldAvailableList(void) {
 
 // На вход метода подается тег <file>
 void Attach::setupDataFromDom(QDomElement iDomElement) {
-    QStringList fieldsName = fieldAvailableList();
-    foreach (QString fieldName, fieldsName)                   // Перебираются имена полей (XML-тегов)
+    for(const auto & fieldName : fieldAvailableList())        // Перебираются имена полей (XML-тегов)
         fields[fieldName] = iDomElement.attribute(fieldName); // Напрямую устанавливаются значения из XML файла
 }
 
 QDomElement Attach::exportDataToDom(QDomDocument *doc) const {
     QDomElement elem = doc->createElement("file");
 
-    QStringList fieldsName = fieldAvailableList();
-    foreach (QString fieldName, fieldsName) // Перебираются имена полей (XML-тегов)
+    for(const auto & fieldName : fieldAvailableList()) // Перебираются имена полей (XML-тегов)
         if (fields[fieldName].size() > 0)
             elem.setAttribute(fieldName, fields[fieldName]);
 
@@ -65,8 +63,7 @@ QDomElement Attach::exportDataToDom(QDomDocument *doc) const {
 void Attach::exportDataToStreamWriter(QXmlStreamWriter *xmlWriter) const {
     xmlWriter->writeStartElement("file");
 
-    QStringList fieldsName = fieldAvailableList();
-    foreach (QString fieldName, fieldsName) // Перебираются имена полей (XML-тегов)
+    for(const auto & fieldName : fieldAvailableList()) // Перебираются имена полей (XML-тегов)
         if (fields[fieldName].size() > 0)
             xmlWriter->writeAttribute(fieldName, fields[fieldName]);
 
@@ -75,14 +72,7 @@ void Attach::exportDataToStreamWriter(QXmlStreamWriter *xmlWriter) const {
 
 bool Attach::isEmpty() const {
     // Заполненный аттач не может содержать пустой id
-    if (fields.contains("id") == false || getField("id").length() == 0)
-        return true;
-    else
-        return false;
-}
-
-bool Attach::isLite() const {
-    return liteFlag;
+    return (!fields.contains("id") || getField("id").length() == 0);
 }
 
 void Attach::switchToLite() {

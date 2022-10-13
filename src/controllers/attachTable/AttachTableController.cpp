@@ -108,11 +108,11 @@ void AttachTableController::onAddAttachFromUrl(void) {
     QMap<QString, QString> referencesAndFileNames = downloader.getReferencesAndFileNames();
 
     int sucessLoadCount = 0;
-    foreach (QString reference, referencesAndFileNames.keys()) {
-        QString shortFileName = referencesAndFileNames.value(reference);
+    for (auto reference = referencesAndFileNames.keyBegin(); reference != referencesAndFileNames.keyEnd(); ++reference) {
+        QString shortFileName = referencesAndFileNames.value(*reference);
         QString fullFileName = downloader.getSaveDirectory() + "/" + shortFileName;
 
-        QUrl url(reference);
+        QUrl url(*reference);
         QString displayName = url.fileName();
 
         if (addAttach(Attach::Type::file, fullFileName, displayName))
@@ -326,7 +326,7 @@ void AttachTableController::onSaveAsAttach(void) {
         AttachTableData *attachTableData = getAttachTableData();
 
         // Перебор выбранных для сохранения аттачей
-        foreach (QString id, selectedId) {
+        for (const auto & id : selectedId) {
             QString fileName = attachTableData->getFileNameById(id);
             QString fromFullFileName = attachTableData->getAbsoluteInnerFileNameById(id);
             QString toFullFileName = toDir + "/" + fileName;
@@ -414,7 +414,7 @@ void AttachTableController::onDeleteAttach(void) {
     // Удаление выбранных аттачей
     AttachTableData *attachTableData = getAttachTableData();
 
-    foreach (QString id, selectedId)
+    for (const auto & id : selectedId)
         attachTableData->deleteAttach(id);
 
     // Сохранение дерева веток
@@ -431,7 +431,7 @@ void AttachTableController::onOpenAttach(void) {
 
     QList<QString> selectedId = getSelectedId();
 
-    foreach (QString id, selectedId) {
+    for (const auto & id : selectedId) {
         QString fullFileName = attachTableData->getAbsoluteInnerFileNameById(id);
 
         qDebug() << "Open file: " + fullFileName;

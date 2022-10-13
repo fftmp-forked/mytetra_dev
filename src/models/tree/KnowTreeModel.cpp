@@ -560,8 +560,8 @@ void KnowTreeModel::addNewBranch(TreeItem *parent, QMap<QString, QString> branch
         criticalError("In KnowTreeModel::addNewBranch() can't setted name field");
 
     // Перебираются поля новой ветки и их значения
-    foreach (QString fieldName, branchFields.keys()) {
-
+    for(auto it = branchFields.keyBegin(); it != branchFields.keyEnd(); ++it) {
+        const auto & fieldName = *it;
         // Добавляются только поля, разрешенные для ветки. Вспомогательные поля отбрасываются
         if (!FixedParameters::itemFieldAvailableList.contains(fieldName))
             continue;
@@ -998,14 +998,9 @@ QString KnowTreeModel::pasteSubbranchRecurse(TreeItem *item,
     // Для стартовой ветки добавляются конечные записи
     // -----------------------------------------------
 
-    // Выясняются данные конечных записей
-    QList<Record> records = subbranch->getBranchRecords(startBranchId);
-
-    foreach (Record record, records) {
+    for(const auto & record : subbranch->getBranchRecords(startBranchId)) {
         qDebug() << "Add table record " + record.getField("name");
-        newitem->recordtableGetTableData()->insertNewRecord(GlobalParameters::AddNewRecordBehavior::ADD_TO_END,
-                                                            0,
-                                                            record);
+        newitem->recordtableGetTableData()->insertNewRecord(GlobalParameters::AddNewRecordBehavior::ADD_TO_END, 0, record);
     }
 
     // --------------------
@@ -1017,11 +1012,11 @@ QString KnowTreeModel::pasteSubbranchRecurse(TreeItem *item,
 
     // Выясняется список подветок для стартовой ветки
     QStringList subbranch_list;
-    foreach (CLIPB_TREE_ONE_LINE one_line, tree)
+     for(const auto & one_line : tree)
         if (one_line.branch_id == startBranchId)
             subbranch_list = one_line.subbranches_id;
 
-    foreach (QString current_subbranch, subbranch_list)
+     for(const auto & current_subbranch : subbranch_list)
         pasteSubbranchRecurse(newitem, current_subbranch, subbranch);
 
     return id;
