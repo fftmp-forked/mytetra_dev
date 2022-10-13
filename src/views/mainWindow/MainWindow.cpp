@@ -775,7 +775,7 @@ void MainWindow::onSynchroCommandFinishWork() {
     emit doUpdateDetachedWindows();
 
     // В конце синхронизации нужно проверить, не происходит ли выход из программы
-    if (enableRealClose == true) {
+    if (enableRealClose) {
         this->applicationExit();
     }
 }
@@ -816,14 +816,11 @@ void MainWindow::createTrayIcon(void) {
 }
 
 void MainWindow::setIcon(void) {
-    connect(trayIcon, &QSystemTrayIcon::activated,
-            this, &MainWindow::iconActivated);
+    connect(trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::iconActivated);
 
     QIcon icon = QIcon(":/resource/pic/logo.svg");
     trayIcon->setIcon(icon);
     setWindowIcon(icon);
-
-    // tray_icon->setToolTip(iconComboBox->itemText(index));
 }
 
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
@@ -839,7 +836,7 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
         if (isVisible()) {
             // Если окно неактивно, значит активно другое (и возможно оно перекрывает окно MyTetra)
             // Не работает в Windows, в Linux не проверял
-            // Причина неработоспособности - при клике на иконку, окно MyTera всегда становится неактивным (т.к. активен систрей)
+            // Причина неработоспособности - при клике на иконку, окно MyTetra всегда становится неактивным (т.к. активен систрей)
             // И условие срабатывает всегда. Доделать или отказаться
             // if(QGuiApplication::applicationState() == Qt::ApplicationInactive)
             // {
@@ -860,8 +857,6 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
             qDebug() << "If not visible";
             showWindow();
             return;
-            // if(isMinimized()) showNormal();
-            // else show();
         }
     default:;
     }
@@ -870,13 +865,11 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
 // Слот закрытия окна
 void MainWindow::closeEvent(QCloseEvent *event) {
     if (enableRealClose == false) {
-        if (QSystemTrayIcon::isSystemTrayAvailable() == false) {
+        if (!QSystemTrayIcon::isSystemTrayAvailable())
             return;
-        }
 
-        // При приходе события закрыть окно, событие игнорируется
-        // и окно просто делается невидимым. Это нужно чтобы при закрытии окна
-        // программа не завершала работу
+        // При приходе события закрыть окно, событие игнорируется и окно просто делается невидимым.
+        // Это нужно чтобы при закрытии окна программа не завершала работу
         if (trayIcon->isVisible()) {
             hide();
             event->ignore();
@@ -908,18 +901,12 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 }
 
 bool MainWindow::eventFilter(QObject *o, QEvent *e) {
-    // Q_UNUSED(o);
-    // qDebug() << "Event: " << e->type();
 
     // Отлавливание потери фокуса
-    // QEvent::ActivationChange
     if (o == this && e->type() == QEvent::WindowDeactivate) {
         qDebug() << "Main window focus deactivate, save all state.";
         saveAllState();
     }
-
-    // Продолжать оработку событий дальше
-    // return false;
     return QMainWindow::eventFilter(o, e);
 }
 
