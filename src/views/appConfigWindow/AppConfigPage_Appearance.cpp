@@ -11,9 +11,6 @@ AppConfigPage_Appearance::AppConfigPage_Appearance(QWidget *parent) : ConfigPage
     assembly();
 }
 
-AppConfigPage_Appearance::~AppConfigPage_Appearance() {
-}
-
 void AppConfigPage_Appearance::setupUi() {
     qDebug() << "Create appearance config page";
 
@@ -26,9 +23,6 @@ void AppConfigPage_Appearance::setupUi() {
     dockableWindowsBehavior = new QCheckBox(this);
     dockableWindowsBehavior->setText(tr("Hide detached windows if close main window"));
     dockableWindowsBehavior->setChecked(AppConfig::get().getDockableWindowsBehavior() == "together");
-}
-
-void AppConfigPage_Appearance::setupSignals() {
 }
 
 void AppConfigPage_Appearance::assembly() {
@@ -57,8 +51,6 @@ void AppConfigPage_Appearance::assembly() {
 int AppConfigPage_Appearance::applyChanges() {
     qDebug() << "Apply changes appearance";
 
-    int result = 0;
-
     // Сохраняется настройка режима запуска MyTetra - обычный или свернутый
     if (AppConfig::get().get_runinminimizedwindow() != runInMinimizedWindow->isChecked()) {
         AppConfig::get().set_runinminimizedwindow(runInMinimizedWindow->isChecked());
@@ -72,5 +64,5 @@ int AppConfigPage_Appearance::applyChanges() {
         EditorShowTextDispatcher::instance()->switchBehavior(mode);
     }
 
-    return result;
+    return 0;
 }

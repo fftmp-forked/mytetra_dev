@@ -105,5 +105,5 @@ add_custom_target(style
 
 # TODO:
 # more warnings check
-# static analyzer
+# portable mode check/return back
 # android support

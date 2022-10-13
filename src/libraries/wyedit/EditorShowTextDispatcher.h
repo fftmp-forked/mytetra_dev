@@ -31,8 +31,6 @@ class EditorShowTextDispatcher : public QObject {
     void switchBehavior(const QString &mode);
     void restoreBehavior();
 
-  signals:
-
   public slots:
 
     void closeWindowByIdVector(const QVector<QString> &ids);

@@ -18,6 +18,7 @@ DatabasesManagementScreen::DatabasesManagementScreen(QWidget *parent) : QDialog(
 
     setupActions();
     setupUI();
+    setupSignals();
     assembly();
 
     databasesManagementTable->init();
@@ -59,6 +60,10 @@ void DatabasesManagementScreen::setupUI(void) {
 
     // Создание набора диалоговых кнопок
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Cancel, this);
+}
+
+void DatabasesManagementScreen::setupSignals(void) {
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &DatabasesManagementScreen::close);
 }
 
 void DatabasesManagementScreen::assembly(void) {

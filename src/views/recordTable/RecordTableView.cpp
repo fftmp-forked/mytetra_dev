@@ -370,7 +370,6 @@ void RecordTableView::switchSelectionMode() {
         setSelectionMode(QAbstractItemView::SingleSelection);
 }
 
-
 // Реакция на нажатие кнопок мышки
 // Событие приходит до того, как даже произойдет выделение строки под курсором мышки
 void RecordTableView::mousePressEvent(QMouseEvent *event) {

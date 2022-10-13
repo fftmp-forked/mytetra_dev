@@ -11,13 +11,13 @@ class AppConfigPage_Appearance : public ConfigPage {
 
   public:
     AppConfigPage_Appearance(QWidget *parent = nullptr);
-    virtual ~AppConfigPage_Appearance();
+    virtual ~AppConfigPage_Appearance() {}
 
     int applyChanges(void);
 
   protected:
     void setupUi(void);
-    void setupSignals(void);
+    void setupSignals(void) {}
     void assembly(void);
 
     // Объединяющая рамка

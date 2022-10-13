@@ -252,8 +252,6 @@ void EditorShowTextDispatcher::restoreOpenWindows() {
 
 // Установка поведения окон, которое запускается при сворачивании/разворачивании
 void EditorShowTextDispatcher::switchBehavior(const QString &mode) {
-    MainWindow *mainWindow = find_object<MainWindow>("mainwindow");
-
     for (auto &widgetWindow : std::as_const(mWindowsList)) {
         int x = widgetWindow->geometry().x();
         int y = widgetWindow->geometry().y();
@@ -263,33 +261,24 @@ void EditorShowTextDispatcher::switchBehavior(const QString &mode) {
             // и это не первое переключение (когда поведение еще не было установлено)
             if (mBehavior != mode && mBehavior != "") {
                 // Необходим пересчет координат
-
                 // Ранее виджет имел родительский виджет, и его координаты были относительны родительскому
-                int parentX = widgetWindow->parentWidget()->geometry().x();
-                int parentY = widgetWindow->parentWidget()->geometry().y();
-
-                // Высчитываются абсолютные координаты
-                x = parentX + x;
-                y = parentY + y;
+                x += widgetWindow->parentWidget()->geometry().x();
+                y += widgetWindow->parentWidget()->geometry().y();
             }
 
             widgetWindow->setParent(nullptr);
             widgetWindow->setWindowFlags(Qt::Window);
         } else if (mode == "together") {
+            MainWindow *mainWindow = find_object<MainWindow>("mainwindow");
             // Если идет переключение режима single->together,
             // и это не первое переключение (когда поведение еще не было установлено)
             if (mBehavior != mode && mBehavior != "") {
                 // Необходим пересчет координат
-
                 // Ранее виджет не имел родительский виджет, и его координаты были абсолютными
                 // и для вычисления новых относительных координат требуются координаты
                 // устанавливаемого родительского виджета
-                int parentX = mainWindow->geometry().x();
-                int parentY = mainWindow->geometry().y();
-
-                // Высчитываются новые относительные координаты
-                x = x - parentX;
-                y = y - parentY;
+                x -= mainWindow->geometry().x();
+                y -= mainWindow->geometry().y();
             }
 
             widgetWindow->setParent(mainWindow);

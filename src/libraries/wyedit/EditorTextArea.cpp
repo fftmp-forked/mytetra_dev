@@ -32,7 +32,6 @@ void EditorTextArea::setShowFormatting(bool i) {
     viewport()->update();
 }
 
-
 bool EditorTextArea::eventFilter(QObject *o, QEvent *e) {
     // Обработка показа или скрытия области прокрутки редактора
     if (o == this->verticalScrollBar())
