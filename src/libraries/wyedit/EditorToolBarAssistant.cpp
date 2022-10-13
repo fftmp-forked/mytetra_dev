@@ -15,14 +15,12 @@
 #include "EditorToolBarAssistant.h"
 
 EditorToolBarAssistant::EditorToolBarAssistant(QWidget *parent,
-                                               int iViewMode,
                                                EditorTextArea *iTextArea,
                                                QStringList iDisableToolList) : EditorToolBar(parent) {
     if (parent == nullptr)
         criticalError("Call " + QString(__FUNCTION__) + " with NULL of parent.");
 
     editor = qobject_cast<Editor *>(parent);
-    viewMode = iViewMode;
     textArea = iTextArea;
 
     currentFontFamily = "";
@@ -59,18 +57,6 @@ void EditorToolBarAssistant::initToolsLists(const QStringList &iDisableToolList)
 
     // Выясняется перечень кнопок в первой строке на панели инструментов
     QStringList toolsList = editor->editorConfig->get_tools_line_1().split(",");
-
-    // В мобильном режиме добавляется кнопка back (если ее нет)
-    if (viewMode == Editor::WYEDIT_MOBILE_MODE && !toolsList.contains("back")) {
-        toolsList.prepend("separator"); // Добавляется в начало панели
-        toolsList.prepend("back");
-    }
-
-    // В мобильном режиме добавляется кнопка find_in_base (если ее нет)
-    if (viewMode == Editor::WYEDIT_MOBILE_MODE && !toolsList.contains("findInBase")) {
-        toolsList.append("spring"); // Добавляется в конец панели
-        toolsList.append("findInBase");
-    }
 
     // Устанавливается перечень кнопок на панели инструментов
     EditorToolBar::initToolsLine1(toolsList);                                           // Первая строка
@@ -151,9 +137,6 @@ void EditorToolBarAssistant::onChangeFontselectOnDisplay(QString fontName) {
     flagSetFontParametersEnabled = true;
 }
 
-bool EditorToolBarAssistant::getFlagSetFontParametersEnabled() {
-    return flagSetFontParametersEnabled;
-}
 
 // Слот только устанавливает значение, показываемое списком размеров шрифта
 // А размер шрифта текста не меняет
@@ -444,8 +427,7 @@ void EditorToolBarAssistant::switchExpandToolsLines(int flag) {
 
     // Панели распахиваются/смыкаются (кроме первой линии инструментов)
     toolsLine2.setVisible(setFlag);
-    if (viewMode == Editor::WYEDIT_DESKTOP_MODE)
-        editor->indentSliderAssistant->setVisible(setFlag);
+    editor->indentSliderAssistant->setVisible(setFlag);
 
     // Запоминается новое состояние
     editor->editorConfig->set_expand_tools_lines(setFlag);
@@ -477,13 +459,4 @@ bool EditorToolBarAssistant::isKeyForToolLineUpdate(QKeyEvent *event) {
         return true;
     else
         return false;
-}
-
-int EditorToolBarAssistant::getFontSizeByNum(int n) {
-    return fontSize->itemData(n).toInt();
-}
-
-// Режим представления (мобильный или десктопный)
-int EditorToolBarAssistant::getViewMode() {
-    return viewMode;
 }

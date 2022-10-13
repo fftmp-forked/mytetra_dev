@@ -27,12 +27,6 @@ void EditorToolbarSettingsAvailableToolsModel::init() {
 
         qDebug() << "Add available command " << command;
 
-        // Для десктопной версии пропускаем кнопки, нужные для мобильной версии
-        /// @todo: подумать, а надо ли это действие
-        if (editorToolBarAssistant->getViewMode() == Editor::WYEDIT_DESKTOP_MODE && (command == "back" || command == "findInBase")) {
-            continue;
-        }
-
         // Добавление только тех команд, которые отсутствуют на обоих панелях инструментов
         if (commandsInToolsLine.indexOf(command) == -1) {
             QStandardItem *item = new QStandardItem(command);

@@ -100,8 +100,6 @@ class MainWindow : public QMainWindow {
     void onClickFocusNoteTable(void);
     void onClickFocusEditor(void);
 
-    void runDirectPreferences(QAction *action);
-
     void onSynchroCommandFinishWork(void);
 
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
@@ -115,7 +113,6 @@ class MainWindow : public QMainWindow {
 
     void initFileMenu(void);
     void initToolsMenu(void);
-    void initPreferencesMenu(QMenu *menu);
     void initHelpMenu(void);
     void initHiddenActions(void);
 
@@ -144,16 +141,6 @@ class MainWindow : public QMainWindow {
 
     QAction *actionToolsMenuFindInBase;
     QAction *actionToolsMenuPreferences; // Вызов окна настроек, используется в десктопе
-
-    // Напрямую вызываемые настройки, используются в мобильном интерфейсе
-    QAction *actionDirectPreferencesMain = nullptr;
-    QAction *actionDirectPreferencesAppearance = nullptr;
-    QAction *actionDirectPreferencesSyncro = nullptr;
-    QAction *actionDirectPreferencesRecordTable = nullptr;
-    QAction *actionDirectPreferencesAttach = nullptr;
-    QAction *actionDirectPreferencesKeyboard = nullptr;
-    QAction *actionDirectPreferencesHistory = nullptr;
-    QAction *actionDirectPreferencesMisc = nullptr;
 
     QAction *actionHelpMenuAboutMyTetra;
     QAction *actionHelpMenuAboutQt;

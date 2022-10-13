@@ -3,22 +3,19 @@
 #include "EditorToolBar.h"
 #include <QWidget>
 
-// Виджет для отрисовки кнопок форматирования текста
-// Управляет поведением и внешним видом кнопок, и действиями, совершаемыми при кликах на кнопки
-// Наследуется от базового класса EditorToolBar
 
 class Editor;
 class EditorTextArea;
 class QTextCharFormat;
 
+
+/// @brief Виджет для отрисовки кнопок форматирования текста
+/// Управляет поведением и внешним видом кнопок, и действиями, совершаемыми при кликах на кнопки
 class EditorToolBarAssistant : public EditorToolBar {
     Q_OBJECT
 
   public:
-    explicit EditorToolBarAssistant(QWidget *parent,
-                                    int iViewMode,
-                                    EditorTextArea *iTextArea,
-                                    QStringList iDisableToolList);
+    EditorToolBarAssistant(QWidget *parent, EditorTextArea *iTextArea, QStringList iDisableToolList);
     ~EditorToolBarAssistant();
 
     void reload();
@@ -34,9 +31,9 @@ class EditorToolBarAssistant : public EditorToolBar {
     void setShowFormattingButtonHiglight(bool active);
     bool isKeyForToolLineUpdate(QKeyEvent *event);
 
-    bool getFlagSetFontParametersEnabled();
+    bool getFlagSetFontParametersEnabled() const {return flagSetFontParametersEnabled;}
 
-    int getFontSizeByNum(int n);
+    int getFontSizeByNum(int n) const {return fontSize->itemData(n).toInt();}
 
     enum {
         BT_BOLD,
@@ -50,9 +47,6 @@ class EditorToolBarAssistant : public EditorToolBar {
         BT_ALIGN_RIGHT,
         BT_ALIGN_WIDTH
     };
-
-    // Режим представления (мобильный или десктопный)
-    int getViewMode();
 
   signals:
 
@@ -83,8 +77,6 @@ class EditorToolBarAssistant : public EditorToolBar {
 
     Editor *editor;           // Указатель на объект редактора, с которым работает эта панель кнопок
     EditorTextArea *textArea; // Указатель на объект области редактирования, с которой работает эта панель кнопок
-
-    int viewMode;
 
     QString currentFontFamily;
     int currentFontSize;

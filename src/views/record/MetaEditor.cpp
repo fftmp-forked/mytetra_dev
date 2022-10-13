@@ -19,7 +19,7 @@ MetaEditor::MetaEditor(QWidget *parent) : Editor(parent) {
     Editor::initEnableAssembly(false);
     Editor::initConfigFileName(GlobalParameters::get().getWorkDirectory() + "/editorconf.ini");
 
-    Editor::init(Editor::WYEDIT_DESKTOP_MODE);
+    Editor::init();
 
     setupLabels();
     setupUI();
@@ -34,12 +34,6 @@ MetaEditor::MetaEditor(QWidget *parent) : Editor(parent) {
 }
 
 void MetaEditor::setupLabels(void) {
-    // Путь в дереве до данной записи в виде названий веток (только для мобильного интерфейса)
-    treePath = new QLabel(this);
-    treePath->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
-    treePath->setVisible(false);
-    treePath->setWordWrap(true);
-
     // Название записи
     recordName = new QLabel(this);
     recordName->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
@@ -102,7 +96,6 @@ void MetaEditor::metaAssembly(void) {
 
     editorMainLayer->addWidget(editorToolBarAssistant, 0, 0, 1, 2);
     editorMainLayer->addWidget(indentSliderAssistant->getIndentSlider(), 1, 0, 1, 2);
-    editorMainLayer->addWidget(treePath, 2, 0, 1, 2);
     editorMainLayer->addWidget(recordName, 3, 0, 1, 2);
     editorMainLayer->addWidget(recordAuthor, 4, 0, 1, 2);
     editorMainLayer->addWidget(textArea, 5, 0, 1, 2);
@@ -189,11 +182,6 @@ void MetaEditor::clearAll(void) {
 
     // Очистка для слоя приаттаченных файлов
     attachTableScreen->clear();
-}
-
-void MetaEditor::setTreePath(QString path) {
-    treePath->setVisible(true);
-    treePath->setText(tr("<b>Path: </b>") + path);
 }
 
 void MetaEditor::setName(QString name) {

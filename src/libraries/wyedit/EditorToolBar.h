@@ -86,9 +86,6 @@ class EditorToolBar : public QWidget {
     QAction *expandToolsLines;
     QAction *save;
 
-    QAction *mobileBack;
-    QAction *mobileFindInBase;
-
     QAction *showText;
 
     QAction *toAttach;

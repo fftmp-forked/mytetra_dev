@@ -29,7 +29,6 @@
 // © Степанов С. М. 2010
 // ----------------------------------------------------------
 
-#define WYEDIT_VERSION "WyEdit v.1.10 / 20.01.2016"
 
 // Описание заголовка математического выражения в поле Description PNG-файла
 // Математическое выражение состоит из текстового идентификатора приложения, типа хранимого значения
@@ -87,12 +86,10 @@ class Editor : public QWidget {
 
     EditorCursorPositionDetector *cursorPositionDetector = nullptr;
 
-    const char *getVersion(void);
-
     void initEnableAssembly(bool flag);
     void initConfigFileName(QString name);
     void initDisableToolList(QStringList toolNames);
-    void init(int mode);
+    void init();
 
     // Методы работы с textarea
     void setTextarea(QString text);
@@ -120,9 +117,6 @@ class Editor : public QWidget {
     // Методы установки нестандартных процедур чтения и сохранения текста
     void setSaveCallback(void (*func)(QObject *editor, QString saveString));
     void setLoadCallback(void (*func)(QObject *editor, QString &loadString));
-
-    // Метод установки функции переключения на предыдущее окно (для мобильного интерфейса)
-    void setBackCallback(void (*func)(void));
 
     // Метод установки функции нажатия на кнопку Attach
     void setAttachCallback(void (*func)(void));
@@ -157,16 +151,9 @@ class Editor : public QWidget {
         DIRFILEEMPTY_REACTION_SUPPRESS_ERROR
     };
 
-    enum {
-        WYEDIT_DESKTOP_MODE = 0,
-        WYEDIT_MOBILE_MODE = 1
-    };
-
   signals:
 
     void send_expand_edit_area(bool flag);
-
-    void wyeditFindInBaseClicked();
 
     void updateIndentsliderToActualFormat();
     void updateIndentSliderGeometry();
@@ -185,8 +172,6 @@ class Editor : public QWidget {
 
     void onExpandEditAreaClicked(void);
     void onSaveClicked(void);
-    void onBackClicked(void);
-    void onFindInBaseClicked(void);
     void onShowTextClicked(void);
     void onToAttachClicked(void);
 
@@ -205,12 +190,10 @@ class Editor : public QWidget {
     // Открытие контекстного меню
     void onCustomContextMenuRequested(const QPoint &pos);
 
-    // void onModificationChanged(bool flag);
-
   private:
     void setupSignals(void);
     void setupToolsSignals(void);
-    void setupEditorToolBarAssistant(int mode, EditorTextArea *textArea, QStringList disableToolList);
+    void setupEditorToolBarAssistant(EditorTextArea *textArea, QStringList disableToolList);
     void setupIndentSliderAssistant(void);
     void setupEditorTextArea(void);
     void setupCursorPositionDetector(void);
@@ -248,8 +231,6 @@ class Editor : public QWidget {
     QString workDirectory;
     QString workFileName;
 
-    int viewMode; // Режим отображения редактора - WYEDIT_DESKTOP_MODE или WYEDIT_MOBILE_MODE
-
     EditorFindDialog *findDialog; // Виджет поиска
 
     bool expandEditAreaFlag; // Распахнуто ли на максимум окно редактора
@@ -257,9 +238,6 @@ class Editor : public QWidget {
     // Указатели на переопределенные функции записи и чтения редактируемого текста
     void (*saveCallbackFunc)(QObject *editor, QString saveString) = nullptr;
     void (*loadCallbackFunc)(QObject *editor, QString &loadString) = nullptr;
-
-    // Указатель на функцию переключения на предыдущее окно (для мобильного интерфейса)
-    void (*backCallbackFunc)(void) = nullptr;
 
     // Указатель на функцию открытия присоединенных файлов
     void (*attachCallbackFunc)(void) = nullptr;

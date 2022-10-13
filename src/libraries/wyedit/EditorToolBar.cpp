@@ -27,12 +27,6 @@ void EditorToolBar::initDisableToolList(QStringList toolNames) {
     disableToolList = toolNames;
 }
 
-// Инициализация панели инструментов
-// Ранее в этот метод передавался параметр mode
-// Если mode=WYEDIT_DESKTOP_MODE - происходит обычная инициализация
-// Если mode=WYEDIT_MOBILE_MODE - при инициализации в первую строку панели инструментов, слева, добавляется кнопка back
-// Теперь доп. кнопки добавляются в конструкторе EditorToolBarAssistant
-/// @todo: Нужно проверить, что для доп. кнопок выставляются правильные QAction в mobile-режиме
 void EditorToolBar::init() {
     isInit = true;
 
@@ -280,18 +274,6 @@ void EditorToolBar::setupToolBarTools(void) {
     save->setStatusTip(tr("Save (Ctrl+S)"));
     save->setIcon(QIcon(":/resource/pic/edit_save.svg"));
     save->setObjectName("editor_tb_save");
-
-    // Кнопка редактора "назад", используется в мобильном интерфейсе, для нее не может быть горячей клавиши
-    mobileBack = new QAction(this);
-    mobileBack->setStatusTip(tr("Back"));
-    mobileBack->setIcon(QIcon(":/resource/pic/mobile_back.svg"));
-    mobileBack->setObjectName("editor_tb_back");
-
-    // Кнопка редактора "поиск по базе", используется в мобильном интерфейсе, для нее не может быть горячей клавиши
-    mobileFindInBase = new QAction(this);
-    mobileFindInBase->setStatusTip(tr("Find in base"));
-    mobileFindInBase->setIcon(QIcon(":/resource/pic/find_in_base.svg"));
-    mobileFindInBase->setObjectName("editor_tb_findInBase");
 
     // Кнопка "показать текст" для просмотра текста в отдельном окне
     showText = new QAction(this);

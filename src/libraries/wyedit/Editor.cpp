@@ -58,11 +58,6 @@ Editor::~Editor(void) {
     delete referenceFormatter;
 }
 
-const char *Editor::getVersion(void) {
-    static const char *lib_version = WYEDIT_VERSION;
-    return (lib_version);
-}
-
 // Настроечные методы, вызываемые перед init()
 
 void Editor::initEnableAssembly(bool flag) {
@@ -86,14 +81,10 @@ void Editor::initDisableToolList(QStringList toolNames) {
     initDataDisableToolList = toolNames;
 }
 
-// Инициализация редактора
-// Если mode=WYEDIT_DESKTOP_MODE - происходит обычная инициализация
-// Если mode=WYEDIT_MOBILE_MODE - при инициализации в первую строку панели инструментов, слева, добавляется кнопка back
-void Editor::init(int mode) {
+
+void Editor::init() {
     // Информационный флаг, что был запущен метод init()
     isInit = true;
-
-    viewMode = mode; // todo: Избавиться от этого свойства?
 
     // Создается объект поддержки конфигурирования редактора
     editorConfig = new EditorConfig(initDataConfigFileName, this);
@@ -113,7 +104,7 @@ void Editor::init(int mode) {
     setupEditorTextArea();
     setupCursorPositionDetector();
     setupIndentSliderAssistant(); // Инициализируется обязательно только после TextArea
-    setupEditorToolBarAssistant(mode, textArea, initDataDisableToolList);
+    setupEditorToolBarAssistant(textArea, initDataDisableToolList);
     setupFormatters();
 
     setupSignals();
@@ -128,9 +119,9 @@ void Editor::init(int mode) {
 }
 
 // Создание и настройка панели инструментов редактора
-void Editor::setupEditorToolBarAssistant(int mode, EditorTextArea *textArea, QStringList disableToolList) {
+void Editor::setupEditorToolBarAssistant(EditorTextArea *textArea, QStringList disableToolList) {
     // Установлен this в качестве родителя, поэтому вручную удалять объект в деструкторе не нужно
-    editorToolBarAssistant = new EditorToolBarAssistant(this, mode, textArea, disableToolList);
+    editorToolBarAssistant = new EditorToolBarAssistant(this, textArea, disableToolList);
     editorToolBarAssistant->setObjectName("toolBarAssistant");
 }
 
@@ -519,12 +510,6 @@ void Editor::setupToolsSignals(void) {
     connect(editorToolBarAssistant->save, &QAction::triggered,
             this, &Editor::onSaveClicked);
 
-    connect(editorToolBarAssistant->mobileBack, &QAction::triggered,
-            this, &Editor::onBackClicked);
-
-    connect(editorToolBarAssistant->mobileFindInBase, &QAction::triggered,
-            this, &Editor::onFindInBaseClicked);
-
     connect(editorToolBarAssistant->showText, &QAction::triggered,
             this, &Editor::onShowTextClicked);
 
@@ -543,12 +528,9 @@ void Editor::assembly(void) {
     buttonsAndEditLayout->addWidget(editorToolBarAssistant);
 
     // Добавляется виджет линейки отступов
-    if (viewMode == WYEDIT_DESKTOP_MODE) // Виджет линейки отступов виден только в desktop интерфейсе
-    {
-        indentSliderAssistant->setVisible(true);
-        buttonsAndEditLayout->addWidget(indentSliderAssistant->getIndentSlider());
-    } else
-        indentSliderAssistant->setVisible(false);
+    indentSliderAssistant->setVisible(true);
+    buttonsAndEditLayout->addWidget(indentSliderAssistant->getIndentSlider());
+
 
     // Добавляется область редактирования
     buttonsAndEditLayout->addWidget(textArea);
@@ -1182,17 +1164,8 @@ void Editor::onSaveClicked(void) {
     saveTextarea();
 }
 
-void Editor::onBackClicked(void) {
-    // back_callback_func(qobject_cast<QObject *>(this));
-    backCallbackFunc();
-}
-
 void Editor::onToAttachClicked(void) {
     attachCallbackFunc();
-}
-
-void Editor::onFindInBaseClicked(void) {
-    emit wyeditFindInBaseClicked();
 }
 
 // Слот нажатия кнопки показа текста в отдельном открепляемом окне
@@ -1214,11 +1187,6 @@ void Editor::setTabSize() {
     textArea->setTabStopDistance(
         QFontMetrics(textArea->currentCharFormat().font()).averageCharWidth() *
         editorConfig->get_tab_size());
-
-    // Альтернатива, не учитывающая среднюю ширину глифов в шрифте
-    // textArea->setTabStopDistance(
-    //    textArea->fontMetrics().width(QLatin1Char('a')
-    // ) * editorConfig->get_tab_size() );
 }
 
 void Editor::setSaveCallback(void (*func)(QObject *editor, QString saveString)) {
@@ -1227,10 +1195,6 @@ void Editor::setSaveCallback(void (*func)(QObject *editor, QString saveString)) 
 
 void Editor::setLoadCallback(void (*func)(QObject *editor, QString &String)) {
     loadCallbackFunc = func;
-}
-
-void Editor::setBackCallback(void (*func)(void)) {
-    backCallbackFunc = func;
 }
 
 void Editor::setAttachCallback(void (*func)(void)) {
@@ -1254,8 +1218,7 @@ void Editor::clearAllMiscField(void) {
 
 void Editor::setDirFileEmptyReaction(int mode) {
     // Проверяется допустимость переданного значения
-    if (mode == DIRFILEEMPTY_REACTION_SHOW_ERROR ||
-        mode == DIRFILEEMPTY_REACTION_SUPPRESS_ERROR)
+    if (mode == DIRFILEEMPTY_REACTION_SHOW_ERROR || mode == DIRFILEEMPTY_REACTION_SUPPRESS_ERROR)
         dirFileEmptyReaction = mode;
     else
         criticalError("Editor::setDirFileEmptyReaction() : Unsupport mode " + QString::number(mode));

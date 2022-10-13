@@ -414,54 +414,6 @@ void MainWindow::initToolsMenu(void) {
     menu->addAction(actionToolsMenuPreferences);
 }
 
-// Заполнение подраздела меню Preferences (для мобильного интерфейса)
-void MainWindow::initPreferencesMenu(QMenu *menu) {
-    QMap<QString, QAction **> map;
-
-    map[tr("Main")] = &actionDirectPreferencesMain;
-    map[tr("Appearance")] = &actionDirectPreferencesAppearance;
-    map[tr("Syncro")] = &actionDirectPreferencesSyncro;
-    map[tr("Note Area")] = &actionDirectPreferencesRecordTable;
-    map[tr("Attaches")] = &actionDirectPreferencesAttach;
-    map[tr("Keyboard")] = &actionDirectPreferencesKeyboard;
-    map[tr("History")] = &actionDirectPreferencesHistory;
-    map[tr("Misc")] = &actionDirectPreferencesMisc;
-
-    for (auto kv = map.constKeyValueBegin(); kv != map.constKeyValueEnd(); ++kv) {
-        *kv->second = new QAction(kv->first, this);
-        menu->addAction(*kv->second);
-    }
-}
-
-void MainWindow::runDirectPreferences(QAction *action) {
-    QMap<QString, QAction *> map;
-
-    map["pageMain"] = actionDirectPreferencesMain;
-    map["pageAppearance"] = actionDirectPreferencesAppearance;
-    map["pageSynchro"] = actionDirectPreferencesSyncro;
-    map["pageRecordTable"] = actionDirectPreferencesRecordTable;
-    map["pageAttach"] = actionDirectPreferencesAttach;
-    map["pageKeyboard"] = actionDirectPreferencesKeyboard;
-    map["pageHistory"] = actionDirectPreferencesHistory;
-    map["pageMisc"] = actionDirectPreferencesMisc;
-
-    AppConfigDialog *dialog = nullptr;
-
-    for (auto kv = map.constKeyValueBegin(); kv != map.constKeyValueEnd(); ++kv) {
-        if (kv->second == action) {
-            dialog = new AppConfigDialog(kv->first, this);
-            break;
-        }
-    }
-
-    if (dialog != nullptr) {
-        dialog->setMenuListVisible(false);
-        dialog->exec();
-    }
-
-    delete dialog;
-}
-
 // Создание раздела меню Help
 void MainWindow::initHelpMenu(void) {
     // Создание меню
