@@ -2,39 +2,35 @@
 
 #include "Formatter.h"
 
-
 /// @brief Класс для работы с математическими выражениями
-class MathExpressionFormatter : public Formatter
-{
-  Q_OBJECT
+class MathExpressionFormatter : public Formatter {
+    Q_OBJECT
 
-public:
-  MathExpressionFormatter();
+  public:
+    MathExpressionFormatter();
 
-  QString mathExpressionOnSelect(void);
-  QString mathExpressionOnCursor(void);
+    QString mathExpressionOnSelect(void);
+    QString mathExpressionOnCursor(void);
 
-  void createGifFromMathExpression(QString iMathExpression, QString iFileName);
+    void createGifFromMathExpression(QString iMathExpression, QString iFileName);
 
-signals:
+  signals:
 
-public slots:
+  public slots:
 
-  void onMathExpressionClicked(void);
-  void onContextMenuEditMathExpression(void);
-  void onDoubleClickOnImage(void);
+    void onMathExpressionClicked(void);
+    void onContextMenuEditMathExpression(void);
+    void onDoubleClickOnImage(void);
 
-protected:
+  protected:
+    void addMathExpression(void);
+    void editMathExpression(QString iMathExpressionText);
 
-  void addMathExpression(void);
-  void editMathExpression(QString iMathExpressionText);
+    QString getMathExpressionFromUser(QString iMathExpressionText = "");
+    void insertMathExpressionToTextArea(QString iMathExpressionText);
 
-  QString getMathExpressionFromUser(QString iMathExpressionText="");
-  void insertMathExpressionToTextArea(QString iMathExpressionText);
+    QString getMathExpressionByImageName(QString resourceImageName);
 
-  QString getMathExpressionByImageName(QString resourceImageName);
-
-private:
-  QString m_mimetex_bin;
+  private:
+    QString m_mimetex_bin;
 };
-

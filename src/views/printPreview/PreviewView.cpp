@@ -1,19 +1,17 @@
-#include <QScrollBar>
 #include <QAbstractScrollArea>
-#include <QTextDocument>
-#include <QPalette>
-#include <QPainter>
-#include <QPaintEvent>
+#include <QAbstractTextDocumentLayout>
 #include <QColor>
 #include <QDebug>
-#include <QAbstractTextDocumentLayout>
 #include <QMouseEvent>
+#include <QPaintEvent>
+#include <QPainter>
+#include <QPalette>
+#include <QScrollBar>
+#include <QTextDocument>
 
 #include "PreviewView.h"
 
-
-PreviewView::PreviewView(QTextDocument *document)
-{
+PreviewView::PreviewView(QTextDocument *document) {
     verticalScrollBar()->setSingleStep(20);
     horizontalScrollBar()->setSingleStep(20);
 
@@ -24,25 +22,19 @@ PreviewView::PreviewView(QTextDocument *document)
     interPageSpacing = 30;
 }
 
-
-void PreviewView::zoomIn()
-{
+void PreviewView::zoomIn() {
     scale += 0.2;
     resizeEvent(0);
     viewport()->update();
 }
 
-
-void PreviewView::zoomOut()
-{
+void PreviewView::zoomOut() {
     scale -= 0.2;
     resizeEvent(0);
     viewport()->update();
 }
 
-
-void PreviewView::paintEvent(QPaintEvent *)
-{
+void PreviewView::paintEvent(QPaintEvent *) {
     QPainter p(viewport());
 
     p.translate(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
@@ -60,9 +52,7 @@ void PreviewView::paintEvent(QPaintEvent *)
     }
 }
 
-
-void PreviewView::paintPage(QPainter *painter, int page)
-{
+void PreviewView::paintPage(QPainter *painter, int page) {
     const QSizeF pgSize = doc->pageSize();
 
     QColor col(Qt::black);
@@ -87,14 +77,12 @@ void PreviewView::paintPage(QPainter *painter, int page)
     // look that nice
     ctx.palette.setColor(QPalette::Text, Qt::black);
 
-    painter->translate(0, - page * pgSize.height());
+    painter->translate(0, -page * pgSize.height());
     painter->setClipRect(docRect);
     doc->documentLayout()->draw(painter, ctx);
 }
 
-
-void PreviewView::resizeEvent(QResizeEvent *)
-{
+void PreviewView::resizeEvent(QResizeEvent *) {
     const QSize viewportSize = viewport()->size();
 
     QSize docSize;
@@ -109,18 +97,14 @@ void PreviewView::resizeEvent(QResizeEvent *)
     verticalScrollBar()->setPageStep(viewportSize.height());
 }
 
-
-void PreviewView::mousePressEvent(QMouseEvent *e)
-{
+void PreviewView::mousePressEvent(QMouseEvent *e) {
     mousePressPos = e->pos();
     scrollBarValuesOnMousePress.rx() = horizontalScrollBar()->value();
     scrollBarValuesOnMousePress.ry() = verticalScrollBar()->value();
     e->accept();
 }
 
-
-void PreviewView::mouseMoveEvent(QMouseEvent *e)
-{
+void PreviewView::mouseMoveEvent(QMouseEvent *e) {
     if (mousePressPos.isNull()) {
         e->ignore();
         return;
@@ -133,10 +117,7 @@ void PreviewView::mouseMoveEvent(QMouseEvent *e)
     e->accept();
 }
 
-
-void PreviewView::mouseReleaseEvent(QMouseEvent *e)
-{
+void PreviewView::mouseReleaseEvent(QMouseEvent *e) {
     mousePressPos = QPoint();
     e->accept();
 }
-

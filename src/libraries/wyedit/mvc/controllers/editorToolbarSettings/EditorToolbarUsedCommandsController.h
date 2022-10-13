@@ -2,17 +2,14 @@
 
 #include <QObject>
 
-#include "../../views/editorToolbarSettings/EditorToolbarCommandsListView.h"
 #include "../../models/editorToolbarSettings/EditorToolbarSettingsUsedToolsModel.h"
-
+#include "../../views/editorToolbarSettings/EditorToolbarCommandsListView.h"
 
 /// @brief Контроллер для представления и модели списка используемых команд для выбранной строки инструментов редактора текста
-class EditorToolbarUsedCommandsController : public QObject
-{
+class EditorToolbarUsedCommandsController : public QObject {
     Q_OBJECT
 
-public:
-
+  public:
     EditorToolbarUsedCommandsController(EditorToolbarSettingsUsedToolsModel::EditorToolbarLine tb, QObject *parent = nullptr);
     ~EditorToolbarUsedCommandsController();
 
@@ -37,18 +34,13 @@ public:
     // Перемещение выбранной команды в моделе команд выбранной строки панели инструментов
     void moveCommandUpDown(CommandMove direction);
 
-
-protected:
-
+  protected:
     EditorToolbarSettingsUsedToolsModel::EditorToolbarLine tb; // Номер обрабатываемой панели
 
     EditorToolbarCommandsListView *view;
     EditorToolbarSettingsUsedToolsModel *model;
 
-
-private:
-
+  private:
     // Перемещение выбранной команды в моделе команд выбранной строки панели инструментов
     void moveCommandUpDown(CommandMove direction, int selectedRow);
 };
-

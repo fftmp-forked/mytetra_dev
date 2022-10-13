@@ -3,21 +3,18 @@
 
 #include "EditorFontSizeComboBox.h"
 
-
-EditorFontSizeComboBox::EditorFontSizeComboBox(QWidget *parent) :
-    QComboBox(parent),
-    toolFocus(this)
-{
+EditorFontSizeComboBox::EditorFontSizeComboBox(QWidget *parent) : QComboBox(parent),
+                                                                  toolFocus(this) {
     Q_UNUSED(parent)
 
-    isProgrammChanged=false;
+    isProgrammChanged = false;
 
     // Пустой пункт в начале списка размеров шрифтов, используется для обозначения что в выделенном тексте несколько размеров
-    this->addItem("",0);
+    this->addItem("", 0);
 
     // Заполнение списка значениями размера шрифта
-    for(int i=MINIMUM_ALLOWED_FONT_SIZE; i<=MAXIMUM_ALLOWED_FONT_SIZE; i++)
-      this->addItem(QString("%1").arg(i),i);
+    for (int i = MINIMUM_ALLOWED_FONT_SIZE; i <= MAXIMUM_ALLOWED_FONT_SIZE; i++)
+        this->addItem(QString("%1").arg(i), i);
 
     // Значение по-умолчанию
     this->setCurrentIndex(this->findData(10));
@@ -26,43 +23,34 @@ EditorFontSizeComboBox::EditorFontSizeComboBox(QWidget *parent) :
     this->setMinimumContentsLength(2);
     this->setEditable(true);
 
-    previousIndex=this->currentIndex();
+    previousIndex = this->currentIndex();
 
     // Устанавливается валидатор, однако он не работат как требуется, поэтому нужен дополнительный контроль
     QValidator *fontsizeValidator = new QIntValidator(MINIMUM_ALLOWED_FONT_SIZE, MAXIMUM_ALLOWED_FONT_SIZE, this);
     this->setValidator(fontsizeValidator);
 
-
     connect(this, qOverload<int>(&EditorFontSizeComboBox::currentIndexChanged),
             this, &EditorFontSizeComboBox::onCurrentIndexChanged);
 }
 
-
-EditorFontSizeComboBox::~EditorFontSizeComboBox()
-{
-
+EditorFontSizeComboBox::~EditorFontSizeComboBox() {
 }
 
-
-void EditorFontSizeComboBox::setIsProgrammChanged(bool flag)
-{
-    isProgrammChanged=flag;
+void EditorFontSizeComboBox::setIsProgrammChanged(bool flag) {
+    isProgrammChanged = flag;
 }
-
 
 // Данный слот срабатывает уже после того, как в объекте выставлен индекс
-void EditorFontSizeComboBox::onCurrentIndexChanged(int index)
-{
+void EditorFontSizeComboBox::onCurrentIndexChanged(int index) {
     // Устанавливать неизвестный размер шрифта можно только программно
-    if(!isProgrammChanged && index==0) {
+    if (!isProgrammChanged && index == 0) {
         qDebug() << "EditorFontSizeComboBox::onCurrentTextChanged. Disable manual set dash.";
         this->setCurrentIndex(previousIndex);
         return;
     }
 
-    previousIndex=this->currentIndex();
+    previousIndex = this->currentIndex();
 }
-
 
 /*
 // Соответствующий сигнал выдается при каждом изменении хотя бы одной буквы/цифры в поле ввода
@@ -103,4 +91,3 @@ void EditorFontSizeComboBox::onCurrentTextChanged(QString text)
     previousText=this->currentText();
 }
 */
-

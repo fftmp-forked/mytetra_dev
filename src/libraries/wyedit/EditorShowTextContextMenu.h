@@ -1,42 +1,38 @@
 #pragma once
 
 #include <QMenu>
-#include <QTextEdit>
 #include <QSharedPointer>
+#include <QTextEdit>
 
 /// @brief
 /// Контекстное меню для открепляемого окна
-class EditorShowTextContextMenu : public QMenu
-{
- Q_OBJECT
+class EditorShowTextContextMenu : public QMenu {
+    Q_OBJECT
 
-public:
-  EditorShowTextContextMenu(QWidget *parent=nullptr);
-  ~EditorShowTextContextMenu(void);
+  public:
+    EditorShowTextContextMenu(QWidget *parent = nullptr);
+    ~EditorShowTextContextMenu(void);
 
- void update(void);
+    void update(void);
 
+  signals:
 
-signals:
+    void copy(void);
+    void selectAll(void);
+    void gotoNote(void);
 
-  void copy(void);
-  void selectAll(void);
-  void gotoNote(void);
+  private:
+    QAction *actionCopy;
+    QAction *actionSelectAll;
+    QAction *actionGotoNote;
 
-private:
+    void setupActions(void);
+    void setupSignals(void);
+    void setupMenu(void);
 
-  QAction *actionCopy;
-  QAction *actionSelectAll;
-  QAction *actionGotoNote;
+  protected slots:
 
-  void setupActions(void);
-  void setupSignals(void);
-  void setupMenu(void);
-
-protected slots:
-
-  void onActionCopy(void);
-  void onActionSelectAll(void);
-  void onActionGotoNote(void);
+    void onActionCopy(void);
+    void onActionSelectAll(void);
+    void onActionGotoNote(void);
 };
-

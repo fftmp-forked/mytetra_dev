@@ -3,21 +3,15 @@
 #include "EditorToolbarSettingsAvailableToolsModel.h"
 
 #include "../../../../../views/record/MetaEditor.h"
-#include "../../../EditorToolBarAssistant.h"
-#include "../../../EditorConfig.h"
-#include "../../../../helpers/ObjectHelper.h"
 #include "../../../../ShortcutManager/ShortcutManager.h"
+#include "../../../../helpers/ObjectHelper.h"
+#include "../../../EditorConfig.h"
+#include "../../../EditorToolBarAssistant.h"
 
-
-EditorToolbarSettingsAvailableToolsModel::EditorToolbarSettingsAvailableToolsModel(QObject *parent) :
-    EditorToolbarSettingsAbstractModel(parent)
-{
-
+EditorToolbarSettingsAvailableToolsModel::EditorToolbarSettingsAvailableToolsModel(QObject *parent) : EditorToolbarSettingsAbstractModel(parent) {
 }
 
-
-void EditorToolbarSettingsAvailableToolsModel::init()
-{
+void EditorToolbarSettingsAvailableToolsModel::init() {
     // Вначале модель полностью очищается, чтобы не было наложений от предыдущих открытий окна настроек
     this->clear();
 
@@ -28,31 +22,31 @@ void EditorToolbarSettingsAvailableToolsModel::init()
     // Список названий всех контролов (команд) панелей инструментов
     EditorToolBarAssistant *editorToolBarAssistant = find_object<MetaEditor>("editorScreen")->editorToolBarAssistant;
     QStringList controlsNameList = editorToolBarAssistant->getCommandNameList();
-    for (int i=0; i!=controlsNameList.size(); ++i) {
+    for (int i = 0; i != controlsNameList.size(); ++i) {
         QString command = controlsNameList.at(i);
 
         qDebug() << "Add available command " << command;
 
         // Для десктопной версии пропускаем кнопки, нужные для мобильной версии
         /// @todo: подумать, а надо ли это действие
-        if (editorToolBarAssistant->getViewMode() == Editor::WYEDIT_DESKTOP_MODE && (command=="back" || command=="findInBase")) {
+        if (editorToolBarAssistant->getViewMode() == Editor::WYEDIT_DESKTOP_MODE && (command == "back" || command == "findInBase")) {
             continue;
         }
 
         // Добавление только тех команд, которые отсутствуют на обоих панелях инструментов
-        if (commandsInToolsLine.indexOf(command)==-1) {
-            QStandardItem *item=new QStandardItem(command);
-            item->setIcon( editorToolBarAssistant->getIcon(command) );
-            item->setData( command, Qt::UserRole );
-            item->setData( ShortcutManager::get().getDescription(ShortcutManager::SECTION_EDITOR, command), Qt::DisplayRole );
+        if (commandsInToolsLine.indexOf(command) == -1) {
+            QStandardItem *item = new QStandardItem(command);
+            item->setIcon(editorToolBarAssistant->getIcon(command));
+            item->setData(command, Qt::UserRole);
+            item->setData(ShortcutManager::get().getDescription(ShortcutManager::SECTION_EDITOR, command), Qt::DisplayRole);
             this->appendRow(item); // Элемент отдается во владение модели
         }
     }
 
     // Создание неудаляемого элемента <Разделитель>
-    QStandardItem *separatorItem=new QStandardItem();
-    separatorItem->setData( "separator", Qt::UserRole );
-    separatorItem->setData( tr("<Separator>"), Qt::DisplayRole );
+    QStandardItem *separatorItem = new QStandardItem();
+    separatorItem->setData("separator", Qt::UserRole);
+    separatorItem->setData(tr("<Separator>"), Qt::DisplayRole);
     this->insertRow(0, separatorItem); // Элемент вставляется первым и отдается во владение модели
 
     emit layoutChanged();

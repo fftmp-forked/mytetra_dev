@@ -1,20 +1,18 @@
 #pragma once
 
-#include <QDialog>
-#include <QTextEdit>
-#include <QEvent>
 #include <QCloseEvent>
-
+#include <QDialog>
+#include <QEvent>
+#include <QTextEdit>
 
 /// @brief
 /// Класс открепляемого окна для просмотра текста записи без возможности редактирования
 class EditorShowTextContextMenu;
 
-class EditorShowText : public QDialog
-{
+class EditorShowText : public QDialog {
     Q_OBJECT
-public:
-    explicit EditorShowText(QWidget *parent = nullptr, Qt::WindowFlags f=Qt::WindowFlags());
+  public:
+    explicit EditorShowText(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
     virtual ~EditorShowText();
 
     void setNoteId(const QString &noteId);
@@ -29,26 +27,25 @@ public:
     // Действия при закрытии диалога
     void closeEvent(QCloseEvent *event);
 
-signals:
+  signals:
 
     void editorShowTextClose(const QString &noteId);
 
-protected slots:
+  protected slots:
 
     void onCustomContextMenuRequested(const QPoint &pos);
     void onGotoNote();
 
-private:
-
+  private:
     QString mNoteId;
     QSharedPointer<QTextEdit> mTextArea;
     QSharedPointer<QTextDocument> mTextDocument;
     QSharedPointer<EditorShowTextContextMenu> mContextMenu;
 
-    int mGeomX=0;
-    int mGeomY=0;
-    int mGeomW=0;
-    int mGeomH=0;
+    int mGeomX = 0;
+    int mGeomY = 0;
+    int mGeomW = 0;
+    int mGeomH = 0;
 
     void setupUi(void);
     void setupSignals(void);
@@ -57,4 +54,3 @@ private:
     void hideEvent(QHideEvent *event);
     void showEvent(QShowEvent *event);
 };
-

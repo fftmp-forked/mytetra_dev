@@ -2,20 +2,16 @@
 
 #include "TimerMonitoring.h"
 
-
-class PeriodicCheckBase : public TimerMonitoring
-{
+class PeriodicCheckBase : public TimerMonitoring {
     Q_OBJECT
 
-public:
+  public:
     void init();
 
-signals:
+  signals:
     void doUpdateDetachedWindows();
 
-protected:
+  protected:
     bool isStartEnabled() const;
     void timerEvent(QTimerEvent *event);
 };
-
-

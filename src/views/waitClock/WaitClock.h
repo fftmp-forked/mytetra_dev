@@ -1,37 +1,32 @@
 #pragma once
 
-#include <QWidget>
 #include <QHBoxLayout>
-#include <QTimer>
 #include <QLabel>
 #include <QPixmap>
+#include <QTimer>
+#include <QWidget>
 
+class WaitClock : public QWidget {
+    Q_OBJECT
 
-class WaitClock : public QWidget
-{
- Q_OBJECT
+  public:
+    WaitClock(QWidget *parent = nullptr);
+    ~WaitClock();
 
-public:
- WaitClock(QWidget *parent=nullptr);
- ~WaitClock();
+  private slots:
 
-private slots:
+    void iconUpdate();
 
- void iconUpdate();
+  private:
+    QHBoxLayout *centralLayout;
 
-private:
+    QLabel iconLabel;
 
- QHBoxLayout *centralLayout;
- 
- QLabel iconLabel;
+    QPixmap kadr_00;
+    QPixmap kadr_01;
+    QPixmap kadr_02;
 
- QPixmap kadr_00;
- QPixmap kadr_01;
- QPixmap kadr_02;
+    int currentIconNum;
 
- int currentIconNum;
-
- QTimer timer;
-
+    QTimer timer;
 };
-

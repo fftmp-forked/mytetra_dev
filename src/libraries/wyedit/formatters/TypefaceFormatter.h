@@ -4,21 +4,24 @@
 
 #include "Formatter.h"
 
-
 class QDomNode;
 class QTextCharFormat;
 
 /// @brief Класс форматирования для начертания текста
-class TypefaceFormatter : public Formatter
-{
+class TypefaceFormatter : public Formatter {
     Q_OBJECT
 
-public:
+  public:
     TypefaceFormatter();
 
-    enum EasyFormatType {Bold, Italic, Underline, StrikeOut, SuperScript, SubScript};
+    enum EasyFormatType { Bold,
+                          Italic,
+                          Underline,
+                          StrikeOut,
+                          SuperScript,
+                          SubScript };
 
-signals:
+  signals:
 
     void updateOutlineButtonHiglight();
 
@@ -29,7 +32,7 @@ signals:
     void changeFontcolor(const QColor &color);
     void changeBackgroundcolor(const QColor &color);
 
-public slots:
+  public slots:
 
     // Действия в области редактирования
     void onBoldClicked(void);
@@ -55,8 +58,7 @@ public slots:
     void onLowerCase(); // "Строчные"
     void onUpperCase(); // "ПРОПИСНЫЕ"
 
-private:
-
+  private:
     void mergeFormat(const QTextCharFormat &format);
     void smartFormat(int formatType);
     QString replaceSpacesOnlyTags(QString htmlCode);
@@ -78,4 +80,3 @@ private:
     // Обработка мягкого переноса
     void workingSoftCarryInSelection();
 };
-

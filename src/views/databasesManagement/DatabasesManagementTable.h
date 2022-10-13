@@ -1,34 +1,31 @@
 #pragma once
 
-#include <QWidget>
-#include <QTableView>
 #include <QMenu>
-
+#include <QTableView>
+#include <QWidget>
 
 class DatabasesManagementController;
 
 /// @brief Отображение таблицы известных баз данных (только таблица)
-class DatabasesManagementTable : public QTableView
-{
+class DatabasesManagementTable : public QTableView {
     Q_OBJECT
 
-public:
-    DatabasesManagementTable(QWidget *parent=nullptr) { Q_UNUSED(parent); };
-    virtual ~DatabasesManagementTable() {};
+  public:
+    DatabasesManagementTable(QWidget *parent = nullptr) { Q_UNUSED(parent); };
+    virtual ~DatabasesManagementTable(){};
 
     void init();
     void setController(DatabasesManagementController *pController) { controller = pController; };
 
-signals:
+  signals:
 
     void tapAndHoldGestureFinished(const QPoint &pos);
 
-protected slots:
+  protected slots:
 
     void onCustomContextMenuRequested(const QPoint &pos);
 
-protected:
-
+  protected:
     DatabasesManagementController *controller;
 
     QMenu contextMenu;
@@ -38,6 +35,4 @@ protected:
 
     void assemblyContextMenu(void);
     void setupSignals(void);
-
 };
-

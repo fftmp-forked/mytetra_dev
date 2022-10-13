@@ -2,14 +2,10 @@
 
 #include "TimerMonitoring.h"
 
+class PeriodicSynchro : public TimerMonitoring {
+    Q_OBJECT
 
-class PeriodicSynchro : public TimerMonitoring
-{
-  Q_OBJECT
-
-protected:
-  bool isStartEnabled() const;
-  void timerEvent(QTimerEvent *event);
+  protected:
+    bool isStartEnabled() const;
+    void timerEvent(QTimerEvent *event);
 };
-
-

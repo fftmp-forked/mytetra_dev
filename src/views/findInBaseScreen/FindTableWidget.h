@@ -6,39 +6,33 @@ class QModelIndex;
 class QTableView;
 class QStandardItemModel;
 
+class FindTableWidget : public QWidget {
+    Q_OBJECT
 
-class FindTableWidget : public QWidget
-{
-  Q_OBJECT
+  public:
+    FindTableWidget(QWidget *parent = nullptr);
+    virtual ~FindTableWidget(void) {}
 
-public:
+    void clearAll(void);
+    void addRow(QString title, QString branchName, QString tags, QStringList path, QString recordId);
+    int getRowCount();
+    void updateColumnsWidth(void);
+    void setOverdrawMessage(const QString iOverdrawMessage); // Установка надписи, которая появляется поверх виджета
 
-  FindTableWidget(QWidget *parent=nullptr);
-  virtual ~FindTableWidget(void) {}
+  private slots:
 
-  void clearAll(void);
-  void addRow(QString title, QString branchName, QString tags, QStringList path, QString recordId);
-  int  getRowCount();
-  void updateColumnsWidth(void);
-  void setOverdrawMessage(const QString iOverdrawMessage); // Установка надписи, которая появляется поверх виджета
+    // void selectCell(int row, int column);
+    void selectCell(const QModelIndex &index);
 
-private slots:
+  private:
+    QTableView *findTableView;
+    QStandardItemModel *findTableModel;
+    QString overdrawMessage;
 
-  // void selectCell(int row, int column);
-  void selectCell(const QModelIndex & index);
+    void setupUI(void);
+    void setupModels(void);
+    void setupSignals(void);
+    void assembly(void);
 
-private:
-
-  QTableView *findTableView;
-  QStandardItemModel *findTableModel;
-  QString overdrawMessage;
-
-  void setupUI(void);
-  void setupModels(void);
-  void setupSignals(void);
-  void assembly(void);
-
-  void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *event);
 };
-
-

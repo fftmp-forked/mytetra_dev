@@ -1,59 +1,53 @@
 #pragma once
 
-#include <QWidget>
+#include <QAction>
 #include <QToolBar>
 #include <QVBoxLayout>
-#include <QAction>
+#include <QWidget>
 
 class AttachTableView;
 class AttachTableController;
 
-
 // Виджет таблицы приаттаченных файлов (с кнопками)
 
-class AttachTableScreen : public QWidget
-{
-  Q_OBJECT
-public:
-  AttachTableScreen(QWidget *parent = nullptr);
-  virtual ~AttachTableScreen() {}
+class AttachTableScreen : public QWidget {
+    Q_OBJECT
+  public:
+    AttachTableScreen(QWidget *parent = nullptr);
+    virtual ~AttachTableScreen() {}
 
-  void clear(void);
+    void clear(void);
 
-  QAction *actionAddAttach; // Добавление локального файла
-  QAction *actionAddAttachFromUrl; // Добавление файла по интернет-Url
-  QAction *actionAddLink; // Добавление линка на локальный файл
-  QAction *actionEditFileName;
-  QAction *actionDeleteAttach;
-  QAction *actionOpenAttach;
-  QAction *actionSaveAsAttach;
-  QAction *actionShowAttachInfo;
+    QAction *actionAddAttach;        // Добавление локального файла
+    QAction *actionAddAttachFromUrl; // Добавление файла по интернет-Url
+    QAction *actionAddLink;          // Добавление линка на локальный файл
+    QAction *actionEditFileName;
+    QAction *actionDeleteAttach;
+    QAction *actionOpenAttach;
+    QAction *actionSaveAsAttach;
+    QAction *actionShowAttachInfo;
 
-  void setReadOnly(bool state);
+    void setReadOnly(bool state);
 
-public slots:
+  public slots:
 
-  void setupShortcuts(void);
+    void setupShortcuts(void);
 
-protected:
+  protected:
+    void setupActions(void);
+    void setupUI(void);
+    void setupSignals(void);
+    void assembly(void);
 
-  void setupActions(void);
-  void setupUI(void);
-  void setupSignals(void);
-  void assembly(void);
+    // Указатель на контроллер таблицы приаттаченных файлов
+    AttachTableController *attachTableController;
 
+    // Указатель на таблицу приаттаченных файлов (представление)
+    AttachTableView *attachTableView;
 
-  // Указатель на контроллер таблицы приаттаченных файлов
-  AttachTableController *attachTableController;
+    // Экранные элементы
+    QToolBar *toolsLine;
+    QVBoxLayout *screenLayout;
 
-  // Указатель на таблицу приаттаченных файлов (представление)
-  AttachTableView *attachTableView;
-
-  // Экранные элементы
-  QToolBar *toolsLine;
-  QVBoxLayout *screenLayout;
-
-  QAction *actionSwitchToEditor;
-
+    QAction *actionSwitchToEditor;
 };
-

@@ -1,23 +1,21 @@
 #pragma once
 
 #include <QAbstractListModel>
-#include <QModelIndex>
-#include <QVariant>
-#include <QObject>
-#include <QtXml>
-#include <QMap>
-#include <QString>
 #include <QByteArray>
+#include <QMap>
+#include <QModelIndex>
+#include <QObject>
+#include <QString>
+#include <QVariant>
+#include <QtXml>
 
 class TreeItem;
 class Record;
 
-
 /// @brief Это набор данных конечной таблицы, с которыми удобно работать
-class RecordTableData
-{
+class RecordTableData {
 
-public:
+  public:
     RecordTableData(void);
     virtual ~RecordTableData();
 
@@ -27,8 +25,8 @@ public:
     // Установка текста и картинок указанной записи
     void setTextAndPictures(int pos,
                             const QString &text,
-                            const QMap<QString, QByteArray> &picturesFiles=(QMap<QString, QByteArray>()) );
-    
+                            const QMap<QString, QByteArray> &picturesFiles = (QMap<QString, QByteArray>()));
+
     // Получение значения указанного поля для указанного элемента
     QString getField(QString name, int pos) const;
 
@@ -39,24 +37,21 @@ public:
     Record getRecordLite(int pos);
     Record getRecordFat(int pos);
 
-
     // Получение указателя на запись по известному номеру записи в таблице
     Record *getRecord(int pos);
 
     // Получение указателя на запись по известному id записи
     Record *getRecordById(const QString &id);
 
-
     // Получение списка идентификаторов всех записей в таблице
     QSet<QString> getRecordsIdList();
-
 
     // Первичное заполнение таблицы конечных записей
     void init(TreeItem *item, QDomElement domModel);
 
     // Удаление всех элементов таблицы конечных записей
     void deleteAllRecords(void);
-    
+
     // Количество записей в таблице данных
     unsigned int size(void) const;
 
@@ -88,24 +83,22 @@ public:
     void moveDn(int pos);
 
     static void editorLoadCallback(QObject *editor,
-                                     QString &loadText);
+                                   QString &loadText);
 
     static void editorSaveCallback(QObject *editor,
-                                     QString saveText);
+                                   QString saveText);
 
-    int  getWorkPos(void);
+    int getWorkPos(void);
     void setWorkPos(int pos);
 
     void checkAndCreateTextFile(int pos, QString fullFileName);
 
-
-private:
-
+  private:
     // Функция заполнения таблицы из DOM-документа
     void setupDataFromDom(QDomElement *domModel);
 
     // Таблица записей (в нормальном виде содержит только "легкие" объекты записей)
-    QList< Record > tableData;
+    QList<Record> tableData;
 
     // Ссылка на ветку, которой принадлежит данная таблица
     TreeItem *treeItem;
@@ -113,5 +106,3 @@ private:
     // Номер записи, с которой работал пользователь
     int workPos;
 };
-
-

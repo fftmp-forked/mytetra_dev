@@ -4,7 +4,6 @@
 
 #include "libraries/WalkHistory.h"
 
-
 // ----------------------------------------------------------
 // MyTetra - программа для накопления осмысленной информации
 // Волгодонск, Санкт-Петербург 2010 - 2020 г.
@@ -21,8 +20,8 @@
 #endif
 
 #ifdef Q_CC_MSVC
-[[noreturn]] __forceinline void __builtin_unreachable() {__assume(false);}
+[[noreturn]] __forceinline void __builtin_unreachable() { __assume(false); }
 #endif
 
-extern QObject * pMainWindow; // Указатель на основное окно программы
-extern WalkHistory * walkHistory; // Объект с историей посещаемых записей
+extern QObject *pMainWindow;     // Указатель на основное окно программы
+extern WalkHistory *walkHistory; // Объект с историей посещаемых записей

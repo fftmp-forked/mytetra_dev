@@ -1,29 +1,28 @@
 #pragma once
 
-#include <QPrinter>
-#include <QVBoxLayout>
 #include <QDialog>
+#include <QPrinter>
 #include <QToolButton>
+#include <QVBoxLayout>
 
 class PreviewView;
 class QTextDocument;
 
-class PrintPreview : public QDialog
-{
+class PrintPreview : public QDialog {
     Q_OBJECT
-public:
+  public:
     PrintPreview(const QTextDocument *document, QWidget *parent);
     virtual ~PrintPreview();
 
-public slots:
+  public slots:
 
-  void setupShortcuts(void);
+    void setupShortcuts(void);
 
-private slots:
+  private slots:
     void print();
     void pageSetup();
 
-private:
+  private:
     void setupPrintDoc();
     void setupUI();
     void setupSignals();
@@ -38,7 +37,6 @@ private:
     QToolButton *buttonZoomIn;
     QToolButton *buttonZoomOut;
     QToolButton *buttonClose;
-    
+
     QVBoxLayout *centralLayout;
 };
-

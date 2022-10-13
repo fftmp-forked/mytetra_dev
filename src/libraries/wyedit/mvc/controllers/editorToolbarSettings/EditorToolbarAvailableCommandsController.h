@@ -2,17 +2,14 @@
 
 #include <QObject>
 
-#include "../../views/editorToolbarSettings/EditorToolbarCommandsListView.h"
 #include "../../models/editorToolbarSettings/EditorToolbarSettingsAvailableToolsModel.h"
-
+#include "../../views/editorToolbarSettings/EditorToolbarCommandsListView.h"
 
 /// @brief Контроллер для представления и модели всех доступных инструментов редактора текста
-class EditorToolbarAvailableCommandsController : public QObject
-{
+class EditorToolbarAvailableCommandsController : public QObject {
     Q_OBJECT
 
-public:
-
+  public:
     EditorToolbarAvailableCommandsController(QObject *parent = nullptr);
     ~EditorToolbarAvailableCommandsController();
 
@@ -28,10 +25,7 @@ public:
     // Получение SelectionModel
     QItemSelectionModel *getSelectionModel() const;
 
-protected:
-
+  protected:
     EditorToolbarCommandsListView *view;
     EditorToolbarSettingsAvailableToolsModel *model;
-
 };
-

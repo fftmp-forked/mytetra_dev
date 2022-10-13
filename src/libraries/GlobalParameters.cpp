@@ -1,12 +1,12 @@
-#include <QSettings>
+#include <QDebug>
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
-#include <QDir>
-#include <QDebug>
+#include <QInputDialog>
 #include <QMessageBox>
+#include <QSettings>
 #include <QString>
 #include <QStringList>
-#include <QInputDialog>
 
 #include "GlobalParameters.h"
 
@@ -21,8 +21,7 @@
 #include <unistd.h>
 #endif
 
-
-GlobalParameters * GlobalParameters::_self;
+GlobalParameters *GlobalParameters::_self;
 
 GlobalParameters::GlobalParameters(QString filename) {
     mainProgramFile = filename;
@@ -36,79 +35,74 @@ GlobalParameters::GlobalParameters(QString filename) {
     initWorkDirectory(); // Инициализация рабочей директории
 }
 
-
 /// @brief Инициализация рабочей директории.
 /// Если рабочая директория уже существует, она будет установлена как рабочая.
 /// Иначе будет создана новая рабочая директория с начальными файлами и она будет установлена как рабочая
 void GlobalParameters::initWorkDirectory(void) {
     // Если рабочая директория найдена автоматически
-    if(findWorkDirectory())
+    if (findWorkDirectory())
         return;
     /// @todo: return portable mode
 }
 
-
 void GlobalParameters::createStandartProgramFiles(void) {
- qDebug() << "Create standard program files";
+    qDebug() << "Create standard program files";
 
- QDir userDir=QDir::home();
- QString dataDirName=".config/" + FixedParameters::appTextId;
- if(userDir.mkpath(dataDirName)) {
-   qDebug() << "Successfull create subdirectory " << dataDirName << " in directory " << userDir.absolutePath();
+    QDir userDir = QDir::home();
+    QString dataDirName = ".config/" + FixedParameters::appTextId;
+    if (userDir.mkpath(dataDirName)) {
+        qDebug() << "Successfull create subdirectory " << dataDirName << " in directory " << userDir.absolutePath();
 
-   QString createFilePath=userDir.absolutePath()+"/"+dataDirName; // Ранее использовался QDir::homePath()
+        QString createFilePath = userDir.absolutePath() + "/" + dataDirName; // Ранее использовался QDir::homePath()
 
-   createFirstProgramFiles(createFilePath);
-  } else {
-   criticalError("Can not create directory \""+dataDirName+"\" in user directory \""+QDir::homePath()+"\"");
-  }
+        createFirstProgramFiles(createFilePath);
+    } else {
+        criticalError("Can not create directory \"" + dataDirName + "\" in user directory \"" + QDir::homePath() + "\"");
+    }
 }
-
 
 void GlobalParameters::createPortableProgramFiles(void) {
- qDebug() << "Create portable program files";
+    qDebug() << "Create portable program files";
 
- // Путь к директории, где лежит бинарник
- QString createFilePath=QFileInfo(mainProgramFile).absolutePath();
+    // Путь к директории, где лежит бинарник
+    QString createFilePath = QFileInfo(mainProgramFile).absolutePath();
 
- createFirstProgramFiles(createFilePath);
+    createFirstProgramFiles(createFilePath);
 }
-
 
 /// @brief Создание первоначального набора файлов в указанной директории
 void GlobalParameters::createFirstProgramFiles(QString dirName) {
- qDebug() << "Create first program files in directory " << dirName;
+    qDebug() << "Create first program files in directory " << dirName;
 
- QDir dir(dirName);
+    QDir dir(dirName);
 
- // Создается дерево директорий в указанной директории
- dir.mkpath("data/base/1300000000aaaaaaaaa2");
+    // Создается дерево директорий в указанной директории
+    dir.mkpath("data/base/1300000000aaaaaaaaa2");
 
- // Создаются файлы конфигурации
+    // Создаются файлы конфигурации
 
- QFile::copy(":/standardconfig/conf.ini", dirName+"/conf.ini");
- QFile::setPermissions(dirName+"/conf.ini", QFile::ReadUser | QFile::WriteUser);
+    QFile::copy(":/standardconfig/conf.ini", dirName + "/conf.ini");
+    QFile::setPermissions(dirName + "/conf.ini", QFile::ReadUser | QFile::WriteUser);
 
- QFile::copy(":/standardconfig/editorconf.ini", dirName+"/editorconf.ini");
- QFile::setPermissions(dirName+"/editorconf.ini", QFile::ReadUser | QFile::WriteUser);
+    QFile::copy(":/standardconfig/editorconf.ini", dirName + "/editorconf.ini");
+    QFile::setPermissions(dirName + "/editorconf.ini", QFile::ReadUser | QFile::WriteUser);
 
- CssHelper::createStyleSheetFile(dirName);
+    CssHelper::createStyleSheetFile(dirName);
 
- // Создается файл базы данных
- QFile::copy(":/resource/standartdata/mytetra.xml", dirName+"/data/mytetra.xml");
- QFile::setPermissions(dirName+"/data/mytetra.xml", QFile::ReadUser | QFile::WriteUser);
+    // Создается файл базы данных
+    QFile::copy(":/resource/standartdata/mytetra.xml", dirName + "/data/mytetra.xml");
+    QFile::setPermissions(dirName + "/data/mytetra.xml", QFile::ReadUser | QFile::WriteUser);
 
- // Создается файл первой записи
- QFile::copy(":/resource/standartdata/base/1300000000aaaaaaaaa2/text.html", dirName+"/data/base/1300000000aaaaaaaaa2/text.html");
- QFile::setPermissions(dirName+"/data/base/1300000000aaaaaaaaa2/text.html", QFile::ReadUser | QFile::WriteUser);
+    // Создается файл первой записи
+    QFile::copy(":/resource/standartdata/base/1300000000aaaaaaaaa2/text.html", dirName + "/data/base/1300000000aaaaaaaaa2/text.html");
+    QFile::setPermissions(dirName + "/data/base/1300000000aaaaaaaaa2/text.html", QFile::ReadUser | QFile::WriteUser);
 
- // Синхронизация файловой системы, почему-то после создания файлы
- // не всегда доступны на Linux. Под windows такой утилиты нет в стандартной поставке
- #ifdef Q_OS_LINUX
- sync();
- #endif
+// Синхронизация файловой системы, почему-то после создания файлы
+// не всегда доступны на Linux. Под windows такой утилиты нет в стандартной поставке
+#ifdef Q_OS_LINUX
+    sync();
+#endif
 }
-
 
 /// @brief Автоопределение рабочей директории
 bool GlobalParameters::findWorkDirectory(void) {
@@ -123,37 +117,36 @@ bool GlobalParameters::findWorkDirectory(void) {
 
     qDebug() << "Check full current path " << fullCurrentPath;
 
-    if(isMytetraIniConfig(fullCurrentPath + "/conf.ini")) {
+    if (isMytetraIniConfig(fullCurrentPath + "/conf.ini")) {
         qDebug() << "Work directory set to path " << fullCurrentPath;
 
-        workDirectory=fullCurrentPath;
+        workDirectory = fullCurrentPath;
     } else {
         // Если в текущей директории запуска нет conf.ini
 
         // поиск conf.ini в "~/.config/имя_программы"
         auto dir = QDir::homePath() + "/.config/" + FixedParameters::appTextId;
 
-        if(isMytetraIniConfig(dir+"/conf.ini")) {
+        if (isMytetraIniConfig(dir + "/conf.ini")) {
             qDebug() << "Config init file success find in " << dir;
             workDirectory = dir;
         } else
             qDebug() << "Сan't' find conf.ini in " << dir;
     }
 
-    if(workDirectory.length() == 0) {
+    if (workDirectory.length() == 0) {
         qDebug() << "Can't find work directory with mytetra data";
         return false;
     } else {
         qDebug() << "Set work directory to " << workDirectory;
 
         // Устанавливается эта директория как рабочая
-        if(QDir::setCurrent(workDirectory))
+        if (QDir::setCurrent(workDirectory))
             return true;
         else
             criticalError("Can not set work directory as '" + workDirectory + "'. System problem.");
     }
 }
-
 
 /// @brief Проверка ini-файла
 bool GlobalParameters::isMytetraIniConfig(QString fileName) {
@@ -161,21 +154,21 @@ bool GlobalParameters::isMytetraIniConfig(QString fileName) {
 
     QFileInfo info(fileName);
 
-    if(!info.exists())
+    if (!info.exists())
         return false;
 
-   // Выясняется имя файла без пути к директории
-   auto shortFileName = info.fileName();
-   qDebug() << "Short config file name " << shortFileName;
+    // Выясняется имя файла без пути к директории
+    auto shortFileName = info.fileName();
+    qDebug() << "Short config file name " << shortFileName;
 
-   // Выясняется имя директории из имени файла
-   auto dirName = info.dir().absolutePath();
-   qDebug() << "Config directory name " << dirName;
+    // Выясняется имя директории из имени файла
+    auto dirName = info.dir().absolutePath();
+    qDebug() << "Config directory name " << dirName;
 
-   // Открывается хранилище настроек
-   QScopedPointer<QSettings> conf( new QSettings(fileName, QSettings::IniFormat) );
+    // Открывается хранилище настроек
+    QScopedPointer<QSettings> conf(new QSettings(fileName, QSettings::IniFormat));
 
-   if(!conf->contains("version") || !conf->contains("programm"))
-       return false;
+    if (!conf->contains("version") || !conf->contains("programm"))
+        return false;
     return conf->value("programm").toString() == FixedParameters::appTextId;
 }

@@ -1,30 +1,28 @@
 #pragma once
 
 #include <QDialog>
-#include <QWidget>
 #include <QDialogButtonBox>
-#include <QPushButton>
-#include <QVBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
 #include <QListWidget>
-#include <QTreeView>
+#include <QPushButton>
 #include <QStackedWidget>
+#include <QTreeView>
+#include <QVBoxLayout>
+#include <QWidget>
 
 class EditorToolbarAvailableCommandsController;
 class EditorToolbarUsedCommandsController;
 
-
 /// @brief Диалог выбора команд для панелей инструментов редактора текста
-class EditorToolbarSettingsScreen : public QDialog
-{
+class EditorToolbarSettingsScreen : public QDialog {
     Q_OBJECT
 
-public:
+  public:
     EditorToolbarSettingsScreen(QWidget *parent = nullptr);
     ~EditorToolbarSettingsScreen();
 
-protected slots:
+  protected slots:
 
     // Переключение видимости виджетов со списком кнопок
     void onCheckViewToolbarWidget();
@@ -44,8 +42,7 @@ protected slots:
     // Сохранение результата распределения команд по панелям инструментов
     void applyChanges();
 
-protected:
-
+  protected:
     // Доступные команды панелей инструментов
     QLabel *availableToolbarsCommandsLabel;
     EditorToolbarAvailableCommandsController *availableCommandsToolbarController;
@@ -57,11 +54,11 @@ protected:
     QLabel *exchangeButtonsLabel;
 
     // Кнопки для перемещения выбранных кнопок панелей
-    QPushButton *toUsedCommandsPushButton; // Кнопка для переноса команды в модель используемых команд панели инструментов
+    QPushButton *toUsedCommandsPushButton;      // Кнопка для переноса команды в модель используемых команд панели инструментов
     QPushButton *toAvailableCommandsPushButton; // Кнопка для переноса команды в модель всех доступных команд
-    QPushButton *usedCommandUpPushButton; // Кнопка для перемещения команды из модели используемых команд вверх в списке
-    QPushButton *usedCommandDownPushButton; // Кнопка для перемещения команды из модели используемых команд вниз в списке
-    QPushButton *infoPushButton; // Кнопка для отображения информации-подсказки
+    QPushButton *usedCommandUpPushButton;       // Кнопка для перемещения команды из модели используемых команд вверх в списке
+    QPushButton *usedCommandDownPushButton;     // Кнопка для перемещения команды из модели используемых команд вниз в списке
+    QPushButton *infoPushButton;                // Кнопка для отображения информации-подсказки
 
     // Слой, объединяющий команды для перемещения выбранных кнопок панелей
     QVBoxLayout *buttonsToMoveLayout;
@@ -77,7 +74,6 @@ protected:
 
     // Слой из трех столбцов: доступные кнопки, панель с кнопками перемещения, используемые кнопки
     QHBoxLayout *exchangeLayout;
-
 
     // Используемые комманды на панели инструментов
     QLabel *usedCommandsToolbarLabel;
@@ -95,8 +91,7 @@ protected:
     void setupSignals(void);
     void assembly(void);
 
-private:
-
+  private:
     // Контроллер для работы с моделью панели используемых команд, в зависимости от выбранной панели
     EditorToolbarUsedCommandsController *getUsedCommandsController();
 
@@ -104,6 +99,4 @@ private:
     QString loadedAvailableCommandsList;
     QString loadedToolBar1CommandsList;
     QString loadedToolBar2CommandsList;
-
 };
-

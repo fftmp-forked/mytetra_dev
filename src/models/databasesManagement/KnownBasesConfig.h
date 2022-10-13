@@ -9,16 +9,15 @@
 
 #define KNOWN_BASES_MAX_COUNT 256
 
-class KnownBasesConfig : public QObject
-{
+class KnownBasesConfig : public QObject {
     Q_OBJECT
 
-public:
-    KnownBasesConfig(QObject *pobj=nullptr);
+  public:
+    KnownBasesConfig(QObject *pobj = nullptr);
     ~KnownBasesConfig();
 
     void init(void);
-    bool isInit(void) const {return isInitFlag;}
+    bool isInit(void) const { return isInitFlag; }
 
     // Версия формата конфигфайла
     int getConfigVersion(void);
@@ -30,8 +29,7 @@ public:
     bool isDbParameterExists(const QString &name, const QString &value);
     int getExistsParameterNum(const QString &name, const QString &value);
 
-private:
-
+  private:
     static const QString sectionPrefix;
     static const QStringList fieldList;
 
@@ -40,4 +38,3 @@ private:
 
     bool isInitFlag;
 };
-

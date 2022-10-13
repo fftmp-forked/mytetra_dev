@@ -4,30 +4,25 @@
 
 class KnowTreeModel;
 
-class TimerMonitoring : public QObject
-{
-  Q_OBJECT
+class TimerMonitoring : public QObject {
+    Q_OBJECT
 
-public:
-  TimerMonitoring(void);
-  virtual ~TimerMonitoring(void) {}
+  public:
+    TimerMonitoring(void);
+    virtual ~TimerMonitoring(void) {}
 
-  virtual void init();
+    virtual void init();
 
-  void setDelay(int sec);
-  void start();
-  void stop();
+    void setDelay(int sec);
+    void start();
+    void stop();
 
- 
-protected:
+  protected:
+    virtual bool isStartEnabled() const = 0;
+    virtual void timerEvent(QTimerEvent *) = 0;
 
-  virtual bool isStartEnabled() const =0;
-  virtual void timerEvent(QTimerEvent *)=0;
+    bool isFirstStart;
 
-  bool isFirstStart;
-
-  int delay;
-  int timerId;
+    int delay;
+    int timerId;
 };
-
-

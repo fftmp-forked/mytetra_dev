@@ -5,19 +5,16 @@
 
 #include "EditorShowText.h"
 
-
 /// @brief
 /// Объект для управления открепляемыми окнами.
 /// Используется для создания окон, обновления содержимого, запоминания списка окон и их размещения
-class EditorShowTextDispatcher : public QObject
-{
+class EditorShowTextDispatcher : public QObject {
     Q_OBJECT
-public:
-
+  public:
     /// Класс в виде синглтона
     static EditorShowTextDispatcher *instance();
 
-    void createWindow(const QString &noteId, int x=-1, int y=-1, int w=-1, int h=-1, int vScroll=0);
+    void createWindow(const QString &noteId, int x = -1, int y = -1, int w = -1, int h = -1, int vScroll = 0);
 
     void updateWindow(const QString &noteId);
     void updateAllWindows();
@@ -26,7 +23,7 @@ public:
     void closeAllWindows();
     void closeAllWindowsForExit();
 
-    bool isWindowPresent( const QString &noteId );
+    bool isWindowPresent(const QString &noteId);
 
     void saveOpenWindows();
     void restoreOpenWindows();
@@ -34,19 +31,18 @@ public:
     void switchBehavior(const QString &mode);
     void restoreBehavior();
 
-signals:
+  signals:
 
-public slots:
+  public slots:
 
     void closeWindowByIdVector(const QVector<QString> &ids);
-    void closeWindowByIdSet(const QSet< QString > &ids);
+    void closeWindowByIdSet(const QSet<QString> &ids);
 
     void closeWindowForNonExistentRecords();
 
     void onCloseWindow(const QString &noteId);
 
-protected:
-
+  protected:
     explicit EditorShowTextDispatcher(QObject *parent = nullptr);
     virtual ~EditorShowTextDispatcher();
 
@@ -55,11 +51,9 @@ protected:
     QThread *mThread;
 
     // Список открытых окошек, ключ - это ID открытой записи
-    QHash<QString, QPointer<EditorShowText> > mWindowsList;
+    QHash<QString, QPointer<EditorShowText>> mWindowsList;
 
     // Текущее поведение сворачивания/разворачивания окон
     // Возможные значения "single" и "together"
     QString mBehavior;
-
 };
-

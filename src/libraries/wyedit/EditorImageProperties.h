@@ -1,67 +1,61 @@
 #pragma once
 
-#include <QtGlobal>
-#include <QWidget>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QLabel>
-#include <QSpinBox>
 #include <QPushButton>
+#include <QSpinBox>
+#include <QWidget>
+#include <QtGlobal>
 
+class EditorImageProperties : public QDialog {
+    Q_OBJECT
 
-class EditorImageProperties : public QDialog
-{
- Q_OBJECT
+  public:
+    EditorImageProperties(QWidget *parent = nullptr);
+    virtual ~EditorImageProperties();
 
-public:
- EditorImageProperties(QWidget *parent=nullptr);
- virtual ~EditorImageProperties();
+    void set_info(QString infoText);
+    void set_real_width(int width);
+    void set_real_height(int height);
+    void set_width(int width);
+    void set_height(int height);
 
- void set_info(QString infoText);
- void set_real_width(int width);
- void set_real_height(int height);
- void set_width(int width);
- void set_height(int height);
+    int get_width(void);
+    int get_height(void);
 
- int get_width(void);
- int get_height(void);
+    void update_percent(void);
 
- void update_percent(void);
+  private slots:
 
-private slots:
+    void on_changed_percent(int n);
+    void on_changed_width(int n);
+    void on_changed_height(int n);
 
- void on_changed_percent(int n);
- void on_changed_width(int n);
- void on_changed_height(int n);
+    void on_click_reset_size();
 
- void on_click_reset_size();
+  private:
+    QLabel *infoLabel;
 
-private:
+    QLabel *percentSizeLabel;
+    QSpinBox *percentSizeSpin;
 
- QLabel *infoLabel;
+    QLabel *widthLabel;
+    QSpinBox *widthSpin;
 
- QLabel *percentSizeLabel;
- QSpinBox *percentSizeSpin;
+    QLabel *heightLabel;
+    QSpinBox *heightSpin;
 
+    QPushButton *resetSizeButton;
 
- QLabel *widthLabel;
- QSpinBox *widthSpin;
+    QDialogButtonBox *buttonBox;
 
- QLabel *heightLabel;
- QSpinBox *heightSpin;
+    void setup_ui(void);
+    void setup_signals(void);
+    void assembly(void);
 
- QPushButton *resetSizeButton;
+    int imageRealWidth;
+    int imageRealHeight;
 
- QDialogButtonBox *buttonBox;
-
- void setup_ui(void);
- void setup_signals(void);
- void assembly(void);
-
- int imageRealWidth;
- int imageRealHeight;
-
- bool isRelateSizeSetted;
+    bool isRelateSizeSetted;
 };
-
-

@@ -1,40 +1,33 @@
 #pragma once
 
-#include <QWidget>
-#include <QSpinBox>
 #include <QLabel>
+#include <QSpinBox>
+#include <QWidget>
 
 #include "../../views/appConfigWindow/ConfigPage.h"
 
 class EditorConfig;
 
+class EditorConfigMathExpression : public ConfigPage {
+    Q_OBJECT
 
-class EditorConfigMathExpression : public ConfigPage
-{
- Q_OBJECT
+  public:
+    EditorConfigMathExpression(QWidget *parent = nullptr);
 
-public:
-  EditorConfigMathExpression(QWidget *parent = nullptr);
+    int applyChanges(void);
 
-  int applyChanges(void);
-    
-private slots:
-  void onClickedEditWyEditConfigFile(void);
- 
-private:
+  private slots:
+    void onClickedEditWyEditConfigFile(void);
 
-  // Счетчик для таймера обновления картинки формулы в редакторе формулы
-  QLabel *updateFormulaTimeLabel;
-  QSpinBox *updateFormulaTimeSpinBox;
-  QLabel *updateFormulaTimeSecLabel;
+  private:
+    // Счетчик для таймера обновления картинки формулы в редакторе формулы
+    QLabel *updateFormulaTimeLabel;
+    QSpinBox *updateFormulaTimeSpinBox;
+    QLabel *updateFormulaTimeSecLabel;
 
-  EditorConfig *conf;
+    EditorConfig *conf;
 
-  void setupUi(void);
-  void setupSignals(void);
-  void assembly(void);
-  
+    void setupUi(void);
+    void setupSignals(void);
+    void assembly(void);
 };
-
-
-

@@ -5,41 +5,37 @@
 
 class InfoFieldEnter;
 
-
 /// @brief Окно редактирования инфополей записи (не текста записи!).
 /// Оно появляется при двойном клике на записи или при клике на кнопку редактирования полей записи
-class RecordInfoFieldsEditor : public QDialog
-{
-  Q_OBJECT
+class RecordInfoFieldsEditor : public QDialog {
+    Q_OBJECT
 
-public:
-  RecordInfoFieldsEditor( QWidget * parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags() );
+  public:
+    RecordInfoFieldsEditor(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
-  ~RecordInfoFieldsEditor(){}
+    ~RecordInfoFieldsEditor() {}
 
-  QString getField(QString name);
-  void setField(QString name, QString value);
+    QString getField(QString name);
+    void setField(QString name, QString value);
 
-  void setReadOnly(bool state);
-  bool isReadOnly();
+    void setReadOnly(bool state);
+    bool isReadOnly();
 
-public slots:
+  public slots:
 
-  void setupShortcuts(void);
+    void setupShortcuts(void);
 
-private slots:
+  private slots:
 
-  void okClick(void);
+    void okClick(void);
 
-private:
+  private:
+    // Виджет ввода инфополей записи
+    InfoFieldEnter *infoField;
 
-  // Виджет ввода инфополей записи
-  InfoFieldEnter *infoField;
+    QDialogButtonBox *buttonBox;
 
-  QDialogButtonBox *buttonBox;
-
-  void setupUI(void);
-  void setupSignals(void);
-  void assembly(void);
+    void setupUI(void);
+    void setupSignals(void);
+    void assembly(void);
 };
-

@@ -1,101 +1,81 @@
+#include <QDebug>
 #include <QDir>
 #include <QFile>
-#include <QDebug>
 
 #include "KnownBasesConfig.h"
 
 #include "libraries/GlobalParameters.h"
 #include "libraries/helpers/DebugHelper.h"
 
-
-
-const QString KnownBasesConfig::sectionPrefix="num";
-const QStringList KnownBasesConfig::fieldList={"dbPath"};
-
+const QString KnownBasesConfig::sectionPrefix = "num";
+const QStringList KnownBasesConfig::fieldList = {"dbPath"};
 
 // Конструктор объекта настройки БД
-KnownBasesConfig::KnownBasesConfig(QObject *pobj)
-{
- Q_UNUSED(pobj)
+KnownBasesConfig::KnownBasesConfig(QObject *pobj) {
+    Q_UNUSED(pobj)
 
- isInitFlag=false;
+    isInitFlag = false;
 }
-
 
 // Деструктор объекта настройки БД
-KnownBasesConfig::~KnownBasesConfig()
-{
- if(isInitFlag)
-  {
-   qDebug() << "Save known bases config file";
-   conf->sync();
-  }
+KnownBasesConfig::~KnownBasesConfig() {
+    if (isInitFlag) {
+        qDebug() << "Save known bases config file";
+        conf->sync();
+    }
 }
 
+void KnownBasesConfig::init(void) {
+    // Создается имя файла конфигурации
+    auto configFileName = GlobalParameters::get().getWorkDirectory() + "/knownbases.ini";
 
-void KnownBasesConfig::init(void)
-{
- // Создается имя файла конфигурации
- auto configFileName = GlobalParameters::get().getWorkDirectory() + "/knownbases.ini";
+    // Проверяется, есть ли файл конфигурации
+    QFile confFile(configFileName);
+    if (!confFile.exists()) {
+        // Если файла нет, создается конфигфайл с начальным содержимым
+        QSettings tempConf(configFileName, QSettings::IniFormat);
 
- // Проверяется, есть ли файл конфигурации
- QFile confFile(configFileName);
- if(!confFile.exists())
-  {
-   // Если файла нет, создается конфигфайл с начальным содержимым
-   QSettings tempConf(configFileName, QSettings::IniFormat);
+        tempConf.setValue("version", 1);
 
-   tempConf.setValue("version", 1);
+        tempConf.sync();
+    }
 
-   tempConf.sync();
-  }
+    // Создается указатель на объект хранилища конфигурации
+    conf = new QSettings(configFileName, QSettings::IniFormat, this);
 
- // Создается указатель на объект хранилища конфигурации
- conf=new QSettings(configFileName, QSettings::IniFormat, this);
+    conf->sync();
 
- conf->sync();
-
- isInitFlag=true;
+    isInitFlag = true;
 }
-
 
 // Получение параметра по имени в виде строки с проверкой его существования
-QString KnownBasesConfig::getParameter(QString name)
-{
- QString t=conf->value(name).toString();
+QString KnownBasesConfig::getParameter(QString name) {
+    QString t = conf->value(name).toString();
 
- if(t.length()==0)
-  criticalError("In known bases config not found parameter " + name);
+    if (t.length() == 0)
+        criticalError("In known bases config not found parameter " + name);
 
- return t;
+    return t;
 }
-
 
 // --------------------
 // Номер версии конфига
 // --------------------
 
-int KnownBasesConfig::getConfigVersion(void)
-{
- if(conf->contains("version"))
-  return conf->value("version").toInt();
- else
-  return 0;
+int KnownBasesConfig::getConfigVersion(void) {
+    if (conf->contains("version"))
+        return conf->value("version").toInt();
+    else
+        return 0;
 }
 
-
-void KnownBasesConfig::setConfigVersion(int i)
-{
+void KnownBasesConfig::setConfigVersion(int i) {
     conf->setValue("version", i);
 }
 
-
-int KnownBasesConfig::getDbCount()
-{
-    for(int i=0; i<KNOWN_BASES_MAX_COUNT; ++i)
-    {
-        if( !conf->contains(sectionPrefix+QString::number(i)+"/"+fieldList[0]) )
-        {
+int KnownBasesConfig::getDbCount() {
+    for (int i = 0; i < KNOWN_BASES_MAX_COUNT; ++i) {
+        if (!conf->contains(sectionPrefix + QString::number(i) + "/" + fieldList[0])) {
             return i;
         }
     }
@@ -103,36 +83,25 @@ int KnownBasesConfig::getDbCount()
     return 0;
 }
 
+QString KnownBasesConfig::getDbParameter(const int &num, const QString &name) {
+    QVariant value = conf->value(sectionPrefix + QString::number(num) + "/" + name);
 
-QString KnownBasesConfig::getDbParameter(const int &num, const QString &name)
-{
-    QVariant value=conf->value(sectionPrefix+QString::number(num)+"/"+name);
-
-    if(value.isValid())
-    {
+    if (value.isValid()) {
         return value.toString();
-    }
-    else
-    {
+    } else {
         return "";
     }
 }
 
-
-void KnownBasesConfig::setDbParameter(const int &num, const QString &name, const QString &value)
-{
-    conf->setValue(sectionPrefix+QString::number(num)+"/"+name, value);
+void KnownBasesConfig::setDbParameter(const int &num, const QString &name, const QString &value) {
+    conf->setValue(sectionPrefix + QString::number(num) + "/" + name, value);
 }
 
+bool KnownBasesConfig::isDbParameterExists(const QString &name, const QString &value) {
+    for (int i = 0; i < KNOWN_BASES_MAX_COUNT; ++i) {
+        QVariant currentValue = conf->value(sectionPrefix + QString::number(i) + "/" + name);
 
-bool KnownBasesConfig::isDbParameterExists(const QString &name, const QString &value)
-{
-    for(int i=0; i<KNOWN_BASES_MAX_COUNT; ++i)
-    {
-        QVariant currentValue=conf->value( sectionPrefix+QString::number(i)+"/"+name );
-
-        if( currentValue.isValid() && currentValue.toString()==value )
-        {
+        if (currentValue.isValid() && currentValue.toString() == value) {
             return true;
         }
     }
@@ -140,15 +109,11 @@ bool KnownBasesConfig::isDbParameterExists(const QString &name, const QString &v
     return false;
 }
 
+int KnownBasesConfig::getExistsParameterNum(const QString &name, const QString &value) {
+    for (int i = 0; i < KNOWN_BASES_MAX_COUNT; ++i) {
+        QVariant currentValue = conf->value(sectionPrefix + QString::number(i) + "/" + name);
 
-int KnownBasesConfig::getExistsParameterNum(const QString &name, const QString &value)
-{
-    for(int i=0; i<KNOWN_BASES_MAX_COUNT; ++i)
-    {
-        QVariant currentValue=conf->value( sectionPrefix+QString::number(i)+"/"+name );
-
-        if( currentValue.isValid() && currentValue.toString()==value )
-        {
+        if (currentValue.isValid() && currentValue.toString() == value) {
             return i;
         }
     }

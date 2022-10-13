@@ -1,56 +1,52 @@
 #pragma once
 
-#include <QWidget>
+#include <QCheckBox>
 #include <QDialog>
 #include <QDialogButtonBox>
-#include <QTimer>
+#include <QHBoxLayout>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QRadioButton>
+#include <QScrollArea>
 #include <QSplitter>
 #include <QTextEdit>
-#include <QScrollArea>
-#include <QLabel>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
+#include <QTimer>
 #include <QToolButton>
-#include <QCheckBox>
-#include <QRadioButton>
-#include <QKeyEvent>
+#include <QVBoxLayout>
+#include <QWidget>
 
 #include "formatters/MathExpressionFormatter.h"
 
 // Диалог написания Tex формулы
 
 // Вспомогательный класс-наследник QTextEdit для отлова undo / redo
-class TexTextEdit : public QTextEdit
-{
+class TexTextEdit : public QTextEdit {
     Q_OBJECT
-public:
+  public:
     explicit TexTextEdit(QTextEdit *parent = nullptr) : QTextEdit(parent) {}
     virtual ~TexTextEdit() {}
 
-protected:
+  protected:
     void keyPressEvent(QKeyEvent *e) {
-        if (e->modifiers()==Qt::ControlModifier) {
-            if (e->key()==Qt::Key_Z)
+        if (e->modifiers() == Qt::ControlModifier) {
+            if (e->key() == Qt::Key_Z)
                 emit isUndo();
-            if (e->key()==Qt::Key_Y)
+            if (e->key() == Qt::Key_Y)
                 emit isRedo();
         }
         QTextEdit::keyPressEvent(e);
     }
 
-signals:
+  signals:
     void isUndo(); // Сообщение о том, что произошло событие undo
     void isRedo(); // Сообщение о том, что произошло событие redo
 };
 
-
 // Основной класс диалога написания Tex формулы
-class EditorMathExpressionDialog : public QDialog
-{
+class EditorMathExpressionDialog : public QDialog {
     Q_OBJECT
 
-public:
-
+  public:
     explicit EditorMathExpressionDialog(MathExpressionFormatter *mathExpressionFormatter, QWidget *parent = nullptr);
     virtual ~EditorMathExpressionDialog();
 
@@ -65,7 +61,7 @@ public:
 
     void setWordWrapMode(QTextOption::WrapMode mode);
 
-protected slots:
+  protected slots:
 
     // Обработка переключения режима масштабирования картинки формулы
     void onSwitchFitToScrollArea();
@@ -94,8 +90,7 @@ protected slots:
     // Перерисовка картинки формулы при действии redo
     void onRedo();
 
-protected:
-
+  protected:
     // Первая отрисовка картинки формулы
     void showEvent(QShowEvent *event);
 
@@ -106,8 +101,7 @@ protected:
     void setupSignals(void);
     void assembly(void);
 
-private:
-
+  private:
     // Обновление картинки формулы
     void updateFormulaPicture();
 
@@ -118,24 +112,24 @@ private:
     QSplitter *mathSplitter;
 
     // Область работы с картинкой формулы
-    QWidget *topWidget; // Виджет, объединяющий все контролы по работе с картинкой формулы (для сплитера)
-    QLabel *pictureFormalaLabel;                // Надпись Picture formula
-    QHBoxLayout *pictureFormulaControlLayout;   // Область контролов по работе с масштабированием картинки
-    QRadioButton *timerRadioButton;             // Обновление картинки формулы по таймеру
-    QRadioButton *realTimeRadioButton;          // Обновление картинки формулы в реальном времени
-    QCheckBox *fitToScrollAreaCheckBox;         // Масштабирование картинки до размеров ScrollArea
-    QVBoxLayout *pictureFormulaLayout;          // Компановщик всех контролов по работе с картинкой формулы
+    QWidget *topWidget;                       // Виджет, объединяющий все контролы по работе с картинкой формулы (для сплитера)
+    QLabel *pictureFormalaLabel;              // Надпись Picture formula
+    QHBoxLayout *pictureFormulaControlLayout; // Область контролов по работе с масштабированием картинки
+    QRadioButton *timerRadioButton;           // Обновление картинки формулы по таймеру
+    QRadioButton *realTimeRadioButton;        // Обновление картинки формулы в реальном времени
+    QCheckBox *fitToScrollAreaCheckBox;       // Масштабирование картинки до размеров ScrollArea
+    QVBoxLayout *pictureFormulaLayout;        // Компановщик всех контролов по работе с картинкой формулы
 
     // Область работы с текстом формулы
-    QWidget *bottomWidget;  // Виджет, объединяющий все контролы по работе с текстом формулы (для сплитера)
-    QLabel *textFormalaLabel;                   // Надпись Formula text
-    QToolButton *textFormulaZoomInPushButton;   // Увеличение масштаба области текста
-    QToolButton *textFormulaZoomOutPushButton;  // Уменьшение масштаба области текста
-    QHBoxLayout *textFormulaZoomLayout;         // Компановщик контролов работы с масштабом текста формулы
-    QVBoxLayout *textFormulaLayout; // Компановщик всех контролов по работе с текстом формулы
-    QLabel *imageLabel;             // Метка для отображения картинки формулы
-    QScrollArea *imageScrollArea;   // Область прокрутки метки
-    TexTextEdit *textArea;          // Текстовая область написания формулы
+    QWidget *bottomWidget;                     // Виджет, объединяющий все контролы по работе с текстом формулы (для сплитера)
+    QLabel *textFormalaLabel;                  // Надпись Formula text
+    QToolButton *textFormulaZoomInPushButton;  // Увеличение масштаба области текста
+    QToolButton *textFormulaZoomOutPushButton; // Уменьшение масштаба области текста
+    QHBoxLayout *textFormulaZoomLayout;        // Компановщик контролов работы с масштабом текста формулы
+    QVBoxLayout *textFormulaLayout;            // Компановщик всех контролов по работе с текстом формулы
+    QLabel *imageLabel;                        // Метка для отображения картинки формулы
+    QScrollArea *imageScrollArea;              // Область прокрутки метки
+    TexTextEdit *textArea;                     // Текстовая область написания формулы
 
     bool formulaModifiedTimePeriod; // Признак, было ли изменение формулы во время простоя таймера
 
@@ -143,9 +137,8 @@ private:
     QDialogButtonBox *dialogButtonBox;
 
     // Работа с таймером
-    QTimer *timer;                  // Таймер для отрисовки картинки формулы
-    int mathExpressionUpdateTime;   // Период обновления картинки по таймеру (сек.)
+    QTimer *timer;                // Таймер для отрисовки картинки формулы
+    int mathExpressionUpdateTime; // Период обновления картинки по таймеру (сек.)
 
     MathExpressionFormatter *mathExpressionFormatter; // Класс для работы с математическими выражениями
 };
-

@@ -2,15 +2,11 @@
 
 #include <QSortFilterProxyModel>
 
+class RecordTableProxyModel : public QSortFilterProxyModel {
+  public:
+    RecordTableProxyModel(QObject *pobj = nullptr) : QSortFilterProxyModel(pobj) {}
+    ~RecordTableProxyModel() {}
 
-class RecordTableProxyModel : public QSortFilterProxyModel
-{
-public:
-  RecordTableProxyModel(QObject *pobj=nullptr) : QSortFilterProxyModel(pobj) {}
-  ~RecordTableProxyModel() {}
-
-  // Метод удаления строк переопределен, чтобы в нем вызывалось обновление вида
-  bool removeRow(int row, const QModelIndex &parent = QModelIndex());
-
+    // Метод удаления строк переопределен, чтобы в нем вызывалось обновление вида
+    bool removeRow(int row, const QModelIndex &parent = QModelIndex());
 };
-

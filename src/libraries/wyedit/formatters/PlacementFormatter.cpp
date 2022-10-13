@@ -3,98 +3,82 @@
 #include "../EditorConfig.h"
 #include "../EditorTextArea.h"
 
-PlacementFormatter::PlacementFormatter()
-{
-
+PlacementFormatter::PlacementFormatter() {
 }
-
 
 /// @brief Добавление отступа
-void PlacementFormatter::onIndentplusClicked(void)
-{
-  // Выяснение текущего отступа
-  int currentIndent=(int) textArea->textCursor().blockFormat().leftMargin();
+void PlacementFormatter::onIndentplusClicked(void) {
+    // Выяснение текущего отступа
+    int currentIndent = (int)textArea->textCursor().blockFormat().leftMargin();
 
-  // Выяснение приращения отступа, заданного в конфиге редактора
-  int deltaIndent=editorConfig->get_indent_step();
+    // Выяснение приращения отступа, заданного в конфиге редактора
+    int deltaIndent = editorConfig->get_indent_step();
 
-  // Создание форматирования
-  QTextBlockFormat indentFormatting;
-  indentFormatting.setLeftMargin(currentIndent+deltaIndent); // Возможно, лучше воспользоваться setTextIndent
+    // Создание форматирования
+    QTextBlockFormat indentFormatting;
+    indentFormatting.setLeftMargin(currentIndent + deltaIndent); // Возможно, лучше воспользоваться setTextIndent
 
-  // Форматирование
-  textArea->textCursor().mergeBlockFormat(indentFormatting);
+    // Форматирование
+    textArea->textCursor().mergeBlockFormat(indentFormatting);
 
-  // editor->updateIndentsliderToActualFormat();
-  emit updateIndentsliderToActualFormat();
+    // editor->updateIndentsliderToActualFormat();
+    emit updateIndentsliderToActualFormat();
 }
-
 
 /// @brief Убирание отступа
-void PlacementFormatter::onIndentminusClicked(void)
-{
-  // Выяснение текущего отступа
-  int currentIndent=(int) textArea->textCursor().blockFormat().leftMargin();
+void PlacementFormatter::onIndentminusClicked(void) {
+    // Выяснение текущего отступа
+    int currentIndent = (int)textArea->textCursor().blockFormat().leftMargin();
 
-  // Выяснение приращения отступа, заданного в конфиге редактора
-  int deltaIndent=editorConfig->get_indent_step();
+    // Выяснение приращения отступа, заданного в конфиге редактора
+    int deltaIndent = editorConfig->get_indent_step();
 
-  // Отступ, который должен быть установлен
-  int indentForSet;
-  if((currentIndent-deltaIndent)>0)
-    indentForSet=currentIndent-deltaIndent;
-  else
-    indentForSet=0;
+    // Отступ, который должен быть установлен
+    int indentForSet;
+    if ((currentIndent - deltaIndent) > 0)
+        indentForSet = currentIndent - deltaIndent;
+    else
+        indentForSet = 0;
 
-  // Создание форматирования
-  QTextBlockFormat indentFormatting;
-  indentFormatting.setLeftMargin(indentForSet);
+    // Создание форматирования
+    QTextBlockFormat indentFormatting;
+    indentFormatting.setLeftMargin(indentForSet);
 
-  // Форматирование
-  textArea->textCursor().mergeBlockFormat(indentFormatting);
+    // Форматирование
+    textArea->textCursor().mergeBlockFormat(indentFormatting);
 
-  // editor->updateIndentsliderToActualFormat();
-  emit updateIndentsliderToActualFormat();
+    // editor->updateIndentsliderToActualFormat();
+    emit updateIndentsliderToActualFormat();
 }
-
 
 /// @brief Форматирование по левому краю
-void PlacementFormatter::onAlignleftClicked(void)
-{
-  alignText(Qt::AlignLeft);
+void PlacementFormatter::onAlignleftClicked(void) {
+    alignText(Qt::AlignLeft);
 }
-
 
 /// @brief Форматирование по центру
-void PlacementFormatter::onAligncenterClicked(void)
-{
-  alignText(Qt::AlignHCenter);
+void PlacementFormatter::onAligncenterClicked(void) {
+    alignText(Qt::AlignHCenter);
 }
-
 
 /// @brief Форматирование по правому краю
-void PlacementFormatter::onAlignrightClicked(void)
-{
-  alignText(Qt::AlignRight);
+void PlacementFormatter::onAlignrightClicked(void) {
+    alignText(Qt::AlignRight);
 }
-
 
 /// @brief Форматирование по ширине
-void PlacementFormatter::onAlignwidthClicked(void)
-{
-  alignText(Qt::AlignJustify);
+void PlacementFormatter::onAlignwidthClicked(void) {
+    alignText(Qt::AlignJustify);
 }
 
-
 /// @brief Выравнивание текста, вспомогательный метод
-void PlacementFormatter::alignText(Qt::AlignmentFlag mode)
-{
-  // Создание форматирования
-  QTextBlockFormat formatting;
-  formatting.setAlignment(mode);
+void PlacementFormatter::alignText(Qt::AlignmentFlag mode) {
+    // Создание форматирования
+    QTextBlockFormat formatting;
+    formatting.setAlignment(mode);
 
-  // Форматирование
-  textArea->textCursor().mergeBlockFormat(formatting);
+    // Форматирование
+    textArea->textCursor().mergeBlockFormat(formatting);
 
-  emit updateAlignButtonHiglight(true);
+    emit updateAlignButtonHiglight(true);
 }

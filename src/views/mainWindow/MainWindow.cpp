@@ -7,22 +7,21 @@
 #include <QString>
 
 #include "MainWindow.h"
-#include "models/appConfig/AppConfig.h"
-#include "models/tree/TreeItem.h"
-#include "models/tree/KnowTreeModel.h"
-#include "views/printPreview/PrintPreview.h"
-#include "views/appConfigWindow/AppConfigDialog.h"
-#include "views/tree/TreeScreen.h"
-#include "views/record/MetaEditor.h"
-#include "views/recordTable/RecordTableScreen.h"
-#include "views/findInBaseScreen/FindScreen.h"
-#include "views/consoleEmulator/CommandRun.h"
-#include "views/databasesManagement/DatabasesManagementScreen.h"
-#include "libraries/helpers/ObjectHelper.h"
-#include "libraries/wyedit/EditorShowTextDispatcher.h"
 #include "libraries/GlobalParameters.h"
 #include "libraries/ShortcutManager/ShortcutManager.h"
-
+#include "libraries/helpers/ObjectHelper.h"
+#include "libraries/wyedit/EditorShowTextDispatcher.h"
+#include "models/appConfig/AppConfig.h"
+#include "models/tree/KnowTreeModel.h"
+#include "models/tree/TreeItem.h"
+#include "views/appConfigWindow/AppConfigDialog.h"
+#include "views/consoleEmulator/CommandRun.h"
+#include "views/databasesManagement/DatabasesManagementScreen.h"
+#include "views/findInBaseScreen/FindScreen.h"
+#include "views/printPreview/PrintPreview.h"
+#include "views/record/MetaEditor.h"
+#include "views/recordTable/RecordTableScreen.h"
+#include "views/tree/TreeScreen.h"
 
 void MainWindow::init() {
     setObjectName("mainwindow");
@@ -42,42 +41,39 @@ void MainWindow::init() {
     setupIconActions();
     createTrayIcon();
     setIcon();
-    if(QSystemTrayIcon::isSystemTrayAvailable())
+    if (QSystemTrayIcon::isSystemTrayAvailable())
         trayIcon->show();
 
     // Закрывать ли по-настоящему окно при обнаружении сигнала closeEvent
-    enableRealClose=false;
+    enableRealClose = false;
 
     srand(time(NULL));
 }
 
-
-void MainWindow::setupUI(void)
-{
+void MainWindow::setupUI(void) {
     // При создании объектов не указывается parent, так как он буден задан в момент вставки в layout в методе assembly()
 
-    treeScreen=new TreeScreen( this );
+    treeScreen = new TreeScreen(this);
     treeScreen->setObjectName("treeScreen");
 
-    recordTableScreen=new RecordTableScreen( this );
+    recordTableScreen = new RecordTableScreen(this);
     recordTableScreen->setObjectName("recordTableScreen");
 
-    findScreenDisp=new FindScreen( this );
+    findScreenDisp = new FindScreen(this);
     findScreenDisp->setObjectName("findScreenDisp");
     GlobalParameters::get().setFindScreen(findScreenDisp);
 
-    editorScreen=new MetaEditor( this );
+    editorScreen = new MetaEditor(this);
     editorScreen->setObjectName("editorScreen");
 
-    statusBar=new QStatusBar( this );
+    statusBar = new QStatusBar(this);
     statusBar->setObjectName("statusBar");
     setStatusBar(statusBar);
     GlobalParameters::get().setStatusBar(statusBar);
 
     // Вспомогательный объект с виджетом синхронизации базы знаний
-    synchroCommandRun=new CommandRun( this );
+    synchroCommandRun = new CommandRun(this);
 }
-
 
 void MainWindow::setupSignals(void) {
     connect(editorScreen, &MetaEditor::send_expand_edit_area, this, &MainWindow::onExpandEditArea);
@@ -87,7 +83,6 @@ void MainWindow::setupSignals(void) {
 
     connect(qApp, &QApplication::focusChanged, this, &MainWindow::onFocusChanged);
 
-
     // Сигналы пунктов меню
     connect(actionFileMenuDatabasesManagement, &QAction::triggered, this, &MainWindow::fileDatabasesManagement);
     connect(actionFileMenuExportTreeItem, &QAction::triggered, this, &MainWindow::fileExportBranch);
@@ -96,7 +91,6 @@ void MainWindow::setupSignals(void) {
     connect(actionFileMenuPrintPreview, &QAction::triggered, this, &MainWindow::filePrintPreview);
     connect(actionFileMenuExportPdf, &QAction::triggered, this, &MainWindow::filePrintPdf);
     connect(actionFileMenuQuit, &QAction::triggered, this, &MainWindow::applicationExit);
-
 
     // Поиск по базе в стандартном меню
     connect(actionToolsMenuFindInBase, &QAction::triggered, this, &MainWindow::toolsFindInBase);
@@ -125,33 +119,30 @@ void MainWindow::setupSignals(void) {
     connect(&ShortcutManager::get(), &ShortcutManager::updateWidgetShortcut, this, &MainWindow::setupShortcuts);
 }
 
-
 void MainWindow::assembly(void) {
-    vSplitter=new QSplitter(Qt::Vertical);
+    vSplitter = new QSplitter(Qt::Vertical);
     vSplitter->addWidget(recordTableScreen); // Список конечных записей
     vSplitter->addWidget(editorScreen);      // Текст записи
-    vSplitter->setCollapsible(0,false); // Список конечных записей не может смыкаться
-    vSplitter->setCollapsible(1,false); // Содержимое записи не может смыкаться
+    vSplitter->setCollapsible(0, false);     // Список конечных записей не может смыкаться
+    vSplitter->setCollapsible(1, false);     // Содержимое записи не может смыкаться
 
-    hSplitter=new QSplitter(Qt::Horizontal);
+    hSplitter = new QSplitter(Qt::Horizontal);
     hSplitter->addWidget(treeScreen); // Дерево веток
     hSplitter->addWidget(vSplitter);
-    hSplitter->setCollapsible(0,false); // Дерево веток не может смыкаться
-    hSplitter->setCollapsible(1,false); // Столбец со списком и содержимым записи не может смыкаться
+    hSplitter->setCollapsible(0, false); // Дерево веток не может смыкаться
+    hSplitter->setCollapsible(1, false); // Столбец со списком и содержимым записи не может смыкаться
 
-    findSplitter=new QSplitter(Qt::Vertical);
+    findSplitter = new QSplitter(Qt::Vertical);
     findSplitter->addWidget(hSplitter);
     findSplitter->addWidget(findScreenDisp);
-    findSplitter->setCollapsible(0,false); // Верхняя часть не должна смыкаться
-    findSplitter->setCollapsible(1,false); // Часть для поиска не должна смыкаться
+    findSplitter->setCollapsible(0, false); // Верхняя часть не должна смыкаться
+    findSplitter->setCollapsible(1, false); // Часть для поиска не должна смыкаться
     findSplitter->setObjectName("findsplitter");
 
     setCentralWidget(findSplitter);
 }
 
-
-void MainWindow::saveAllState(void)
-{
+void MainWindow::saveAllState(void) {
     // Сохранение данных в поле редактирования
     saveTextarea();
 
@@ -166,116 +157,101 @@ void MainWindow::saveAllState(void)
     AppConfig::get().sync();
 }
 
-
 // Слот, срабатывающий когда происходит выход из оконной системы
-void MainWindow::commitData(QSessionManager& manager)
-{
+void MainWindow::commitData(QSessionManager &manager) {
     Q_UNUSED(manager)
     qDebug() << "Session manager send commit data signal.";
 
     applicationFastExit();
 }
 
-
 // Слот, обрабатывающий внешние сообщения
 // Используется для обработки ссобщений, приходящих от других экземпляров MyTetra
-void MainWindow::messageHandler(QString message)
-{
-    qDebug() << "MainWindow recieved message: "+message;
+void MainWindow::messageHandler(QString message) {
+    qDebug() << "MainWindow recieved message: " + message;
 
-    if(message=="show")
-    {
+    if (message == "show") {
         showWindow();
     }
 
-    if(message=="hide")
-    {
+    if (message == "hide") {
         hide();
     }
 
-    if(message=="quit")
-    {
+    if (message == "quit") {
         applicationExit();
     }
 
-    else if(message=="reload")
-    {
+    else if (message == "reload") {
         reload();
     }
 
-    else if(message.split(" ").at(0)=="openNote")
-    {
-        QString recordId=message.split(" ").at(1);
+    else if (message.split(" ").at(0) == "openNote") {
+        QString recordId = message.split(" ").at(1);
 
         // Если аргумент опции --openNote не обнаружен
-        if(recordId.length()==0)
+        if (recordId.length() == 0)
             return;
 
         // Нахождение ветки, в которой лежит запись с указанным идентификатором
-        QStringList pathToRecord=treeScreen->knowTreeModel->getRecordPath(recordId);
+        QStringList pathToRecord = treeScreen->knowTreeModel->getRecordPath(recordId);
 
         // Установка курсора в дереве и в таблице конечных записей
-        setTreePosition( pathToRecord );
-        setRecordtablePositionById( recordId );
+        setTreePosition(pathToRecord);
+        setRecordtablePositionById(recordId);
     }
 
-    else if(message=="addNoteDialog")
-    {
+    else if (message == "addNoteDialog") {
         // Определение, было ли окно MyTetra скрыто при обработке сообщения
-        bool isHidden=this->isHidden();
+        bool isHidden = this->isHidden();
 
         // Окно показыается, чтобы небыло некорректного выхода QtSingleApplication при свернутом окне после добавления записи
-        if(isHidden) {
+        if (isHidden) {
             this->showWindow();
         }
 
         // Нажимается кнопка добавления записи
-        if( recordTableScreen->actionAddNewToEnd->isEnabled() ) {
+        if (recordTableScreen->actionAddNewToEnd->isEnabled()) {
             recordTableScreen->actionAddNewToEnd->trigger();
         } else {
             qDebug() << "Can not initial add new note dialog. Add new note action is disable now. Try again.";
         }
 
         // Окно скрывается
-        if(isHidden) {
+        if (isHidden) {
             this->hide();
         }
     }
 
-    else if(message.split(" ").at(0)=="openTreeItem")
-    {
-        QString branchId=message.split(" ").at(1);
+    else if (message.split(" ").at(0) == "openTreeItem") {
+        QString branchId = message.split(" ").at(1);
 
         // Если аргумент опции --openTreeItem (устаревшее --openBranch) не обнаружен
-        if(branchId.length()==0)
+        if (branchId.length() == 0)
             return;
 
         // Установка курсора в дереве
-        treeScreen->setCursorToId( branchId );
+        treeScreen->setCursorToId(branchId);
     }
 }
 
-
 // Восстанавливается геометрия окна и позиции основных разделителей
-void MainWindow::restoreWindowGeometry(void)
-{
-    restoreGeometry( AppConfig::get().get_mainwingeometry() );
+void MainWindow::restoreWindowGeometry(void) {
+    restoreGeometry(AppConfig::get().get_mainwingeometry());
 
     vSplitter->setSizes(AppConfig::get().get_vspl_size_list());
     hSplitter->setSizes(AppConfig::get().get_hspl_size_list());
     findSplitter->setSizes(AppConfig::get().get_findsplitter_size_list());
 }
 
-
 /// @brief Запоминается геометрия окна и позиции основных разделителей
 void MainWindow::saveWindowGeometry(void) {
     qDebug() << "Save window geometry and splitter sizes";
 
-    AppConfig::get().set_mainwingeometry( saveGeometry() );
+    AppConfig::get().set_mainwingeometry(saveGeometry());
 
     AppConfig::get().set_vspl_size_list(vSplitter->sizes());
     AppConfig::get().set_hspl_size_list(hSplitter->sizes());
-
 
     // Запоминается размер сплиттера только при видимом виджете поиска,
     // т.к. если виджета поиска невидно, будет запомнен нулевой размер
@@ -284,13 +260,11 @@ void MainWindow::saveWindowGeometry(void) {
     // данный метод вызывается из декструктора главного окна, и к этому моменту
     // виджет уже не виден
 
-    if(AppConfig::get().get_findscreen_show())
+    if (AppConfig::get().get_findscreen_show())
         AppConfig::get().set_findsplitter_size_list(findSplitter->sizes());
 }
 
-
-void MainWindow::restoreTreePosition(void)
-{
+void MainWindow::restoreTreePosition(void) {
     // Путь к последнему выбранному в дереве элементу
     QStringList path = AppConfig::get().get_tree_position();
 
@@ -299,106 +273,85 @@ void MainWindow::restoreTreePosition(void)
     setTreePosition(path);
 }
 
-
-void MainWindow::saveTreePosition(void)
-{
+void MainWindow::saveTreePosition(void) {
     // Получение QModelIndex выделенного в дереве элемента
-    QModelIndex index=treeScreen->getCurrentItemIndex();
+    QModelIndex index = treeScreen->getCurrentItemIndex();
 
     // Получаем указатель вида TreeItem
-    TreeItem *item =treeScreen->knowTreeModel->getItem(index);
+    TreeItem *item = treeScreen->knowTreeModel->getItem(index);
 
     // Сохраняем путь к элементу item
     AppConfig::get().set_tree_position(item->getPath());
 }
 
-
-void MainWindow::setTreePosition(QStringList path)
-{
-    if(treeScreen->knowTreeModel->isItemValid(path)==false)
+void MainWindow::setTreePosition(QStringList path) {
+    if (treeScreen->knowTreeModel->isItemValid(path) == false)
         return;
 
     // Получаем указатель на элемент вида TreeItem, используя путь, этот указатель может вернуть и корень (если путь пустой)
-    TreeItem *item =treeScreen->knowTreeModel->getItem(path);
+    TreeItem *item = treeScreen->knowTreeModel->getItem(path);
 
     // qDebug() << "Set tree position to " << item->getField("name") << " id " << item->getField("id");
 
     // Из указателя на элемент TreeItem получаем QModelIndex
-    QModelIndex setto=treeScreen->knowTreeModel->getIndexByItem(item);
+    QModelIndex setto = treeScreen->knowTreeModel->getIndexByItem(item);
 
     // Курсор устанавливается в нужную позицию
     treeScreen->setCursorToIndex(setto);
 }
 
+void MainWindow::restoreRecordTablePosition(void) {
+    QString id = AppConfig::get().get_recordtable_selected_record_id();
 
-void MainWindow::restoreRecordTablePosition(void)
-{
-    QString id=AppConfig::get().get_recordtable_selected_record_id();
-
-    if(id.length()>0)
+    if (id.length() > 0)
         setRecordtablePositionById(id);
 }
 
-
-void MainWindow::saveRecordTablePosition(void)
-{
-    QString id=recordTableScreen->getFirstSelectionId();
+void MainWindow::saveRecordTablePosition(void) {
+    QString id = recordTableScreen->getFirstSelectionId();
 
     AppConfig::get().set_recordtable_selected_record_id(id);
 }
 
-
-void MainWindow::setRecordtablePositionById(QString id)
-{
+void MainWindow::setRecordtablePositionById(QString id) {
     recordTableScreen->setSelectionToId(id);
 }
 
-
-void MainWindow::saveEditorCursorPosition(void)
-{
-    int n=editorScreen->getCursorPosition();
+void MainWindow::saveEditorCursorPosition(void) {
+    int n = editorScreen->getCursorPosition();
 
     AppConfig::get().setEditorCursorPosition(n);
 }
 
-
-void MainWindow::restoreEditorCursorPosition(void)
-{
-    int n=AppConfig::get().getEditorCursorPosition();
+void MainWindow::restoreEditorCursorPosition(void) {
+    int n = AppConfig::get().getEditorCursorPosition();
 
     editorScreen->setCursorPosition(n);
 }
 
-
-void MainWindow::saveEditorScrollBarPosition(void)
-{
-    int n=editorScreen->getScrollBarPosition();
+void MainWindow::saveEditorScrollBarPosition(void) {
+    int n = editorScreen->getScrollBarPosition();
 
     AppConfig::get().setEditorScrollBarPosition(n);
 }
 
-
-void MainWindow::restoreEditorScrollBarPosition(void)
-{
-    int n=AppConfig::get().getEditorScrollBarPosition();
+void MainWindow::restoreEditorScrollBarPosition(void) {
+    int n = AppConfig::get().getEditorScrollBarPosition();
 
     editorScreen->setScrollBarPosition(n);
 }
 
-
-void MainWindow::restoreFindOnBaseVisible(void)
-{
-    bool n=AppConfig::get().get_findscreen_show();
+void MainWindow::restoreFindOnBaseVisible(void) {
+    bool n = AppConfig::get().get_findscreen_show();
 
     // Определяется ссылка на виджет поиска
-    FindScreen *findScreenRel=find_object<FindScreen>("findScreenDisp");
+    FindScreen *findScreenRel = find_object<FindScreen>("findScreenDisp");
 
-    if(n)
+    if (n)
         findScreenRel->show();
     else
         findScreenRel->hide();
 }
-
 
 void MainWindow::restoreAllWindowState(void) {
     restoreFindOnBaseVisible();
@@ -409,17 +362,13 @@ void MainWindow::restoreAllWindowState(void) {
     restoreEditorScrollBarPosition();
 }
 
-
-void MainWindow::restoreDockableWindowsState()
-{
+void MainWindow::restoreDockableWindowsState() {
     // Восстанавливаются открепляемые окна
     EditorShowTextDispatcher::instance()->restoreOpenWindows();
 }
 
-
 // Создание раздела меню File
-void MainWindow::initFileMenu(void)
-{
+void MainWindow::initFileMenu(void) {
     // Создание меню
     QMenu *menu = new QMenu(tr("&File"), this);
     this->menuBar()->addMenu(menu);
@@ -450,10 +399,8 @@ void MainWindow::initFileMenu(void)
     menu->addAction(actionFileMenuQuit);
 }
 
-
 // Создание раздела меню Tools
-void MainWindow::initToolsMenu(void)
-{
+void MainWindow::initToolsMenu(void) {
     // Создание меню
     QMenu *menu = new QMenu(tr("&Tools"), this);
     this->menuBar()->addMenu(menu);
@@ -467,55 +414,47 @@ void MainWindow::initToolsMenu(void)
     menu->addAction(actionToolsMenuPreferences);
 }
 
-
 // Заполнение подраздела меню Preferences (для мобильного интерфейса)
-void MainWindow::initPreferencesMenu(QMenu *menu)
-{
-    QMap< QString, QAction **> map;
+void MainWindow::initPreferencesMenu(QMenu *menu) {
+    QMap<QString, QAction **> map;
 
-    map[tr("Main")]      = &actionDirectPreferencesMain;
-    map[tr("Appearance")]= &actionDirectPreferencesAppearance;
-    map[tr("Syncro")]    = &actionDirectPreferencesSyncro;
+    map[tr("Main")] = &actionDirectPreferencesMain;
+    map[tr("Appearance")] = &actionDirectPreferencesAppearance;
+    map[tr("Syncro")] = &actionDirectPreferencesSyncro;
     map[tr("Note Area")] = &actionDirectPreferencesRecordTable;
-    map[tr("Attaches")]  = &actionDirectPreferencesAttach;
-    map[tr("Keyboard")]  = &actionDirectPreferencesKeyboard;
-    map[tr("History")]   = &actionDirectPreferencesHistory;
-    map[tr("Misc")]      = &actionDirectPreferencesMisc;
+    map[tr("Attaches")] = &actionDirectPreferencesAttach;
+    map[tr("Keyboard")] = &actionDirectPreferencesKeyboard;
+    map[tr("History")] = &actionDirectPreferencesHistory;
+    map[tr("Misc")] = &actionDirectPreferencesMisc;
 
-    for(auto kv = map.constKeyValueBegin(); kv != map.constKeyValueEnd(); ++kv)
-    {
+    for (auto kv = map.constKeyValueBegin(); kv != map.constKeyValueEnd(); ++kv) {
         *kv->second = new QAction(kv->first, this);
         menu->addAction(*kv->second);
     }
 }
 
+void MainWindow::runDirectPreferences(QAction *action) {
+    QMap<QString, QAction *> map;
 
-void MainWindow::runDirectPreferences(QAction *action)
-{
-    QMap< QString, QAction *> map;
-
-    map["pageMain"]       = actionDirectPreferencesMain;
+    map["pageMain"] = actionDirectPreferencesMain;
     map["pageAppearance"] = actionDirectPreferencesAppearance;
-    map["pageSynchro"]    = actionDirectPreferencesSyncro;
-    map["pageRecordTable"]= actionDirectPreferencesRecordTable;
-    map["pageAttach"]     = actionDirectPreferencesAttach;
-    map["pageKeyboard"]   = actionDirectPreferencesKeyboard;
-    map["pageHistory"]    = actionDirectPreferencesHistory;
-    map["pageMisc"]       = actionDirectPreferencesMisc;
+    map["pageSynchro"] = actionDirectPreferencesSyncro;
+    map["pageRecordTable"] = actionDirectPreferencesRecordTable;
+    map["pageAttach"] = actionDirectPreferencesAttach;
+    map["pageKeyboard"] = actionDirectPreferencesKeyboard;
+    map["pageHistory"] = actionDirectPreferencesHistory;
+    map["pageMisc"] = actionDirectPreferencesMisc;
 
-    AppConfigDialog *dialog=nullptr;
+    AppConfigDialog *dialog = nullptr;
 
-    for(auto kv = map.constKeyValueBegin(); kv != map.constKeyValueEnd(); ++kv)
-    {
-        if(kv->second == action)
-        {
-            dialog=new AppConfigDialog(kv->first, this);
+    for (auto kv = map.constKeyValueBegin(); kv != map.constKeyValueEnd(); ++kv) {
+        if (kv->second == action) {
+            dialog = new AppConfigDialog(kv->first, this);
             break;
         }
     }
 
-    if(dialog!=nullptr)
-    {
+    if (dialog != nullptr) {
         dialog->setMenuListVisible(false);
         dialog->exec();
     }
@@ -523,10 +462,8 @@ void MainWindow::runDirectPreferences(QAction *action)
     delete dialog;
 }
 
-
 // Создание раздела меню Help
-void MainWindow::initHelpMenu(void)
-{
+void MainWindow::initHelpMenu(void) {
     // Создание меню
     QMenu *menu = new QMenu(tr("&Help"), this);
     this->menuBar()->addMenu(menu);
@@ -541,10 +478,8 @@ void MainWindow::initHelpMenu(void)
     menu->addAction(actionHelpMenuTechnicalInfo);
 }
 
-
 // Создание скрытых действий для работы прочих шорткатов уровня приложения
-void MainWindow::initHiddenActions(void)
-{
+void MainWindow::initHiddenActions(void) {
     // Действия добавляются в сам виджет
     // Для таких действий нет визуального представления, но горячие клавиши для них работают
     actionFocusTree = new QAction(this);
@@ -557,43 +492,35 @@ void MainWindow::initHiddenActions(void)
     this->addAction(actionFocusEditor);
 }
 
-
-void MainWindow::setupShortcuts(void)
-{
+void MainWindow::setupShortcuts(void) {
     qDebug() << "Setup shortcut for" << staticMetaObject.className();
-    QList<QPair<QString, QAction*>> miscActions {
-        {"print", actionFileMenuPrint },
-        {"exportPdf", actionFileMenuExportPdf },
-        {"quit", actionFileMenuQuit },
-        {"findInBase", actionToolsMenuFindInBase },
-        {"focusTree", actionFocusTree },
-        {"focusNoteTable", actionFocusNoteTable },
-        {"focusEditor", actionFocusEditor },
+    QList<QPair<QString, QAction *>> miscActions{
+        {"print", actionFileMenuPrint},
+        {"exportPdf", actionFileMenuExportPdf},
+        {"quit", actionFileMenuQuit},
+        {"findInBase", actionToolsMenuFindInBase},
+        {"focusTree", actionFocusTree},
+        {"focusNoteTable", actionFocusNoteTable},
+        {"focusEditor", actionFocusEditor},
     };
     ShortcutManager ::get().initActions(ShortcutManager::SECTION_MISC, miscActions);
 }
 
-
 // Сохранить текущую статью
-bool MainWindow::fileSave(void)
-{
+bool MainWindow::fileSave(void) {
     /// @todo: сделать функционал
 
     return true;
 }
-
 
 // Сохранить текущую статью как файл
-bool MainWindow::fileSaveAs(void)
-{
+bool MainWindow::fileSaveAs(void) {
     /// @todo: сделать функционал
     return true;
 }
 
-
 // Напечатать текущую статью
-void MainWindow::filePrint(void)
-{
+void MainWindow::filePrint(void) {
 #ifndef QT_NO_PRINTER
     QPrinter printer(QPrinter::HighResolution);
     printer.setFullPage(true);
@@ -608,10 +535,8 @@ void MainWindow::filePrint(void)
 #endif
 }
 
-
 // Предпросмотр печати текущей статьи
-void MainWindow::filePrintPreview(void)
-{
+void MainWindow::filePrintPreview(void) {
     PrintPreview *preview = new PrintPreview(editorScreen->getTextareaDocument(), this);
 
     preview->setModal(true);
@@ -619,15 +544,12 @@ void MainWindow::filePrintPreview(void)
     preview->show();
 }
 
-
 // Вывод текущей статьи в PDF файл
-void MainWindow::filePrintPdf(void)
-{
+void MainWindow::filePrintPdf(void) {
 #ifndef QT_NO_PRINTER
     QString fileName = QFileDialog::getSaveFileName(this, "Export PDF", QString(), "*.pdf");
-    if (!fileName.isEmpty())
-    {
-        if(QFileInfo(fileName).suffix().isEmpty())
+    if (!fileName.isEmpty()) {
+        if (QFileInfo(fileName).suffix().isEmpty())
             fileName.append(".pdf");
 
         QPrinter printer(QPrinter::HighResolution);
@@ -638,43 +560,36 @@ void MainWindow::filePrintPdf(void)
 #endif
 }
 
-
 // Раздел меню File, управление базами данных
-void MainWindow::fileDatabasesManagement(void)
-{
+void MainWindow::fileDatabasesManagement(void) {
     DatabasesManagementScreen databasesManagementScreen(this);
     databasesManagementScreen.exec();
 }
 
-
 // Раздел меню File, экспорт текущей ветки и всех ее подветок
-void MainWindow::fileExportBranch(void)
-{
+void MainWindow::fileExportBranch(void) {
     // Создается окно выбора директории назначения
     QFileDialog directorySelectDialog(this);
     directorySelectDialog.setFileMode(QFileDialog::Directory);
     directorySelectDialog.setWindowTitle(tr("Select an empty directory to export data"));
     directorySelectDialog.setDirectory("/");
 
-    if( directorySelectDialog.exec() )
-        if( !directorySelectDialog.directory().absolutePath().isEmpty() ) // Если была выбрана директория (а не нажат Cancel)
-            treeScreen->exportBranchToDirectory( directorySelectDialog.directory().absolutePath() );
+    if (directorySelectDialog.exec())
+        if (!directorySelectDialog.directory().absolutePath().isEmpty()) // Если была выбрана директория (а не нажат Cancel)
+            treeScreen->exportBranchToDirectory(directorySelectDialog.directory().absolutePath());
 }
 
-
-void MainWindow::fileImportBranch(void)
-{
+void MainWindow::fileImportBranch(void) {
     // Создается окно выбора директории, откуда необходимо сделать импорт
     QFileDialog directorySelectDialog(this);
     directorySelectDialog.setFileMode(QFileDialog::Directory);
     directorySelectDialog.setWindowTitle(tr("Select directory to import data"));
     directorySelectDialog.setDirectory("/");
 
-    if( directorySelectDialog.exec() )
-        if( !directorySelectDialog.directory().absolutePath().isEmpty() ) // Если была выбрана директория (а не нажат Cancel)
-            treeScreen->importBranchFromDirectory( directorySelectDialog.directory().absolutePath() );
+    if (directorySelectDialog.exec())
+        if (!directorySelectDialog.directory().absolutePath().isEmpty()) // Если была выбрана директория (а не нажат Cancel)
+            treeScreen->importBranchFromDirectory(directorySelectDialog.directory().absolutePath());
 }
-
 
 /// @brief Слот - Нормальный выход из программы
 void MainWindow::applicationExit(void) {
@@ -683,7 +598,7 @@ void MainWindow::applicationExit(void) {
     // Если происходит первая инициализация выхода из программы
     // И если в конфиге настроено, что нужно синхронизироваться при выходе
     // И задана команда синхронизации
-    if(!enableRealClose && AppConfig::get().get_synchroonexit() && AppConfig::get().get_synchrocommand().trimmed().length() > 0) {
+    if (!enableRealClose && AppConfig::get().get_synchroonexit() && AppConfig::get().get_synchrocommand().trimmed().length() > 0) {
         enableRealClose = true;
         synchronization(); // В конце синхронизации будет вызван слот onSynchroCommandFinishWork()
     }
@@ -693,41 +608,34 @@ void MainWindow::applicationExit(void) {
     close();
 }
 
-
 // Быстрый выход из программы, без возможности синхронизации
-void MainWindow::applicationFastExit(void)
-{
+void MainWindow::applicationFastExit(void) {
     saveAllState();
 
     // Запуск выхода из программы
-    enableRealClose=true;
+    enableRealClose = true;
     close();
 }
 
-
-void MainWindow::toolsFindInBase(void)
-{
+void MainWindow::toolsFindInBase(void) {
     // Определяется ссылка на виджет поиска
-    FindScreen *findScreenRel=find_object<FindScreen>("findScreenDisp");
+    FindScreen *findScreenRel = find_object<FindScreen>("findScreenDisp");
 
-    if( !(findScreenRel->isVisible()) )
+    if (!(findScreenRel->isVisible()))
         findScreenRel->widgetShow();
     else
         findScreenRel->widgetHide();
 }
 
-
-void MainWindow::toolsPreferences(void)
-{
+void MainWindow::toolsPreferences(void) {
     AppConfigDialog dialog("", this); // this нужен чтобы пробрасывать иконку приложения
     dialog.exec();
 }
 
-
 /// @brief Слот, срабатывающий при нажатии в редакторе кнопки "распахнуть"
 /// @param flag true - распахнуть область отводимую редактору, false - сделать область, отводимую редактору, обычной
 void MainWindow::onExpandEditArea(bool flag) {
-    if(flag) {
+    if (flag) {
         treeScreen->hide();
         recordTableScreen->hide();
     } else {
@@ -736,10 +644,8 @@ void MainWindow::onExpandEditArea(bool flag) {
     }
 }
 
-
-void MainWindow::onClickHelpAboutMyTetra(void)
-{
-    QString version=APPLICATION_VERSION;
+void MainWindow::onClickHelpAboutMyTetra(void) {
+    QString version = APPLICATION_VERSION;
 
     QString infoProgramName;
     QString infoVersion;
@@ -747,27 +653,24 @@ void MainWindow::onClickHelpAboutMyTetra(void)
     QString infoEmail;
     QString infoLicense;
 
-    infoProgramName="<b>MyTetra</b> - smart manager<br/>for information collecting<br/><br/>";
-    infoVersion=version+"<br/><br/>";
-    infoAuthor="Author: Sergey M. Stepanov<br/>";
-    infoEmail="Author Email:<i>xintrea@gmail.com</i><br/><br/>";
-    infoLicense="GNU General Public License v.3.0<br/><br/>";
+    infoProgramName = "<b>MyTetra</b> - smart manager<br/>for information collecting<br/><br/>";
+    infoVersion = version + "<br/><br/>";
+    infoAuthor = "Author: Sergey M. Stepanov<br/>";
+    infoEmail = "Author Email:<i>xintrea@gmail.com</i><br/><br/>";
+    infoLicense = "GNU General Public License v.3.0<br/><br/>";
 
-    QString info=infoProgramName+
-            infoVersion+
-            infoAuthor+
-            infoEmail+
-            infoLicense;
+    QString info = infoProgramName +
+                   infoVersion +
+                   infoAuthor +
+                   infoEmail +
+                   infoLicense;
 
-    QMessageBox(this).about(this, "MyTetra v."+version, info);
+    QMessageBox(this).about(this, "MyTetra v." + version, info);
 }
 
-
-void MainWindow::onClickHelpAboutQt(void)
-{
+void MainWindow::onClickHelpAboutQt(void) {
     QMessageBox(this).aboutQt(this);
 }
-
 
 void MainWindow::onClickHelpTechnicalInfo(void) {
     QString infoProgramFile;
@@ -777,72 +680,60 @@ void MainWindow::onClickHelpTechnicalInfo(void) {
     QString infoPhysicalDpiX;
     QString infoPhysicalDpiY;
 
-    infoProgramFile="Program file: " + GlobalParameters::get().getMainProgramFile() + "<br/>";
-    infoWorkDirectory="Work directory: " + GlobalParameters::get().getWorkDirectory() + "<br/>";
+    infoProgramFile = "Program file: " + GlobalParameters::get().getMainProgramFile() + "<br/>";
+    infoWorkDirectory = "Work directory: " + GlobalParameters::get().getWorkDirectory() + "<br/>";
 
-    infoDevicePixelRatio="Device pixel ratio: " + (QString::number( qApp->devicePixelRatio(), 'f', 2 )) + "<br/>";
-    infoPhysicalDpi="Physical DPI: " + (QString::number( QApplication::screens().at(0)->physicalDotsPerInch(), 'f', 2 )) + "<br/>";
-    QString info = infoProgramFile+
-            infoWorkDirectory+
-            infoDevicePixelRatio+
-            infoPhysicalDpi+
-            infoPhysicalDpiX+
-            infoPhysicalDpiY;
+    infoDevicePixelRatio = "Device pixel ratio: " + (QString::number(qApp->devicePixelRatio(), 'f', 2)) + "<br/>";
+    infoPhysicalDpi = "Physical DPI: " + (QString::number(QApplication::screens().at(0)->physicalDotsPerInch(), 'f', 2)) + "<br/>";
+    QString info = infoProgramFile +
+                   infoWorkDirectory +
+                   infoDevicePixelRatio +
+                   infoPhysicalDpi +
+                   infoPhysicalDpiX +
+                   infoPhysicalDpiY;
 
     QMessageBox msgBox(this);
-    msgBox.setIcon( QMessageBox::Information );
+    msgBox.setIcon(QMessageBox::Information);
     msgBox.setWindowTitle(tr("Technical info"));
     msgBox.setText(tr("<b>Technical info</b>"));
     msgBox.setInformativeText(info);
     msgBox.exec();
 }
 
-
-void MainWindow::onClickFocusTree(void)
-{
+void MainWindow::onClickFocusTree(void) {
     treeScreen->setFocusToBaseWidget();
 }
 
-
-void MainWindow::onClickFocusNoteTable(void)
-{
+void MainWindow::onClickFocusNoteTable(void) {
     recordTableScreen->setFocusToBaseWidget();
 }
 
-
-void MainWindow::onClickFocusEditor(void)
-{
+void MainWindow::onClickFocusEditor(void) {
     editorScreen->setFocusToBaseWidget();
 }
 
-
 // Перечитывание всей базы знаний
-void MainWindow::reload(void)
-{
-  reloadSaveStage();
+void MainWindow::reload(void) {
+    reloadSaveStage();
 
-  // Стадия Load идет сразу после стадии Save, флаг о наличии задержки не выставляется
-  reloadLoadStage(false);
+    // Стадия Load идет сразу после стадии Save, флаг о наличии задержки не выставляется
+    reloadLoadStage(false);
 }
-
 
 // Перечитывание дерева знаний, стадия Save
-void MainWindow::reloadSaveStage(void)
-{
-  // Сохраняются данные в поле редактирования
-  saveTextarea();
+void MainWindow::reloadSaveStage(void) {
+    // Сохраняются данные в поле редактирования
+    saveTextarea();
 
-  // Сохраняются данные о курсорах в дереве и таблице конечных записей
-  saveTreePosition();
-  saveRecordTablePosition();
-  saveEditorCursorPosition();
-  saveEditorScrollBarPosition();
+    // Сохраняются данные о курсорах в дереве и таблице конечных записей
+    saveTreePosition();
+    saveRecordTablePosition();
+    saveEditorCursorPosition();
+    saveEditorScrollBarPosition();
 }
 
-
 // Перечитывание дерева знаний, стадия Load
-void MainWindow::reloadLoadStage(bool isLongTimeReload)
-{
+void MainWindow::reloadLoadStage(bool isLongTimeReload) {
     // Блокируется история
     walkHistory->setDrop(true);
 
@@ -851,8 +742,7 @@ void MainWindow::reloadLoadStage(bool isLongTimeReload)
     // Поэтому для такого случая перед перечитыванием модели нужно обязательно
     // сохранить положение пользователя в дереве, чтобы восстановить именно
     // актуальное состояние после перечитывания модели
-    if( isLongTimeReload )
-    {
+    if (isLongTimeReload) {
         saveTreePosition();
         saveRecordTablePosition();
         saveEditorCursorPosition();
@@ -861,8 +751,7 @@ void MainWindow::reloadLoadStage(bool isLongTimeReload)
 
     // Если дерево успешно перечитано и обнаружено, что оно было изменено
     // (При этом модель будет полностью пересоздана, все индексы будут новые)
-    if( treeScreen->reloadKnowTree() )
-    {
+    if (treeScreen->reloadKnowTree()) {
         // Чтобы при дальнейшей работе небыло сегфолтов, так как индексы изменились,
         // нужно восстановить положение пользователя в дереве знаний
         restoreTreePosition();
@@ -875,11 +764,10 @@ void MainWindow::reloadLoadStage(bool isLongTimeReload)
     walkHistory->setDrop(false);
 }
 
-
 /// @brief Старт синхронизации
 void MainWindow::synchronization(bool visible) {
     // Если кнопка синхронизации заблокирована, начинать синхронизацию нельзя
-    if(!recordTableScreen->actionSynchro->isEnabled())
+    if (!recordTableScreen->actionSynchro->isEnabled())
         return;
 
     // Блокируется кнопка синхронизации, чтобы два раза случайно не нажать синхронизацию (окно синхронизации не модально)
@@ -891,8 +779,7 @@ void MainWindow::synchronization(bool visible) {
     auto command = AppConfig::get().get_synchrocommand();
 
     // Если команда синхронизации пуста
-    if(command.trimmed().length()==0)
-    {
+    if (command.trimmed().length() == 0) {
         QMessageBox::warning(this,
                              tr("MyTetra: can't synchronization"),
                              tr("Do not set synchronization command.<br>Check the setting in \"Sync\" section in \"Tools\" menu"),
@@ -905,8 +792,8 @@ void MainWindow::synchronization(bool visible) {
     }
 
     auto cmdArgs = QProcess::splitCommand(command);
-    QDir databaseDir( AppConfig::get().get_tetradir() );
-    QString databasePath=databaseDir.canonicalPath();
+    QDir databaseDir(AppConfig::get().get_tetradir());
+    QString databasePath = databaseDir.canonicalPath();
 
     cmdArgs.replaceInStrings("%a", databasePath);
 
@@ -919,10 +806,8 @@ void MainWindow::synchronization(bool visible) {
     synchroCommandRun->run(visible);
 }
 
-
 // Завершение синхронизации
-void MainWindow::onSynchroCommandFinishWork()
-{
+void MainWindow::onSynchroCommandFinishWork() {
     // Функция перечитывания дерева знаний вызывается с флагом,
     // что от предыдущей стадии была большая задержка
     reloadLoadStage(true);
@@ -938,15 +823,12 @@ void MainWindow::onSynchroCommandFinishWork()
     emit doUpdateDetachedWindows();
 
     // В конце синхронизации нужно проверить, не происходит ли выход из программы
-    if(enableRealClose==true)
-    {
+    if (enableRealClose == true) {
         this->applicationExit();
     }
 }
 
-
-void MainWindow::setupIconActions(void)
-{
+void MainWindow::setupIconActions(void) {
     actionTrayRestore = new QAction(tr("&Restore window"), this);
     connect(actionTrayRestore, &QAction::triggered, this, &MainWindow::showWindow);
 
@@ -960,9 +842,7 @@ void MainWindow::setupIconActions(void)
     connect(actionTrayQuit, &QAction::triggered, this, &MainWindow::applicationExit);
 }
 
-
-void MainWindow::showWindow()
-{
+void MainWindow::showWindow() {
     activateWindow();
     showNormal();
     raise();
@@ -971,9 +851,7 @@ void MainWindow::showWindow()
     EditorShowTextDispatcher::instance()->restoreBehavior();
 }
 
-
-void MainWindow::createTrayIcon(void)
-{
+void MainWindow::createTrayIcon(void) {
     trayIconMenu = new QMenu(this);
     trayIconMenu->addAction(actionTrayRestore);
     trayIconMenu->addAction(actionTrayMaximize);
@@ -985,11 +863,9 @@ void MainWindow::createTrayIcon(void)
     trayIcon->setContextMenu(trayIconMenu);
 }
 
-
-void MainWindow::setIcon(void)
-{
+void MainWindow::setIcon(void) {
     connect(trayIcon, &QSystemTrayIcon::activated,
-            this,     &MainWindow::iconActivated);
+            this, &MainWindow::iconActivated);
 
     QIcon icon = QIcon(":/resource/pic/logo.svg");
     trayIcon->setIcon(icon);
@@ -998,21 +874,17 @@ void MainWindow::setIcon(void)
     // tray_icon->setToolTip(iconComboBox->itemText(index));
 }
 
-
-void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
-{
-    if(QSystemTrayIcon::isSystemTrayAvailable()==false)
+void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
+    if (QSystemTrayIcon::isSystemTrayAvailable() == false)
         return;
 
     qDebug() << "Click on tray icon";
 
-    switch (reason)
-    {
+    switch (reason) {
     case QSystemTrayIcon::Trigger:
     case QSystemTrayIcon::DoubleClick:
         // Если окно видно
-        if(isVisible())
-        {
+        if (isVisible()) {
             // Если окно неактивно, значит активно другое (и возможно оно перекрывает окно MyTetra)
             // Не работает в Windows, в Linux не проверял
             // Причина неработоспособности - при клике на иконку, окно MyTera всегда становится неактивным (т.к. активен систрей)
@@ -1023,48 +895,37 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
             //   return;
             // }
 
-            if(isMinimized())
-            {
+            if (isMinimized()) {
                 qDebug() << "If visible and minimized";
                 showWindow();
                 return;
-            }
-            else
-            {
+            } else {
                 qDebug() << "Hide";
                 hide();
                 return;
             }
-        }
-        else
-        {
+        } else {
             qDebug() << "If not visible";
             showWindow();
             return;
             // if(isMinimized()) showNormal();
             // else show();
         }
-    default:
-        ;
+    default:;
     }
 }
 
-
 // Слот закрытия окна
-void MainWindow::closeEvent(QCloseEvent *event)
-{
-    if(enableRealClose==false)
-    {
-        if(QSystemTrayIcon::isSystemTrayAvailable()==false)
-        {
+void MainWindow::closeEvent(QCloseEvent *event) {
+    if (enableRealClose == false) {
+        if (QSystemTrayIcon::isSystemTrayAvailable() == false) {
             return;
         }
 
         // При приходе события закрыть окно, событие игнорируется
         // и окно просто делается невидимым. Это нужно чтобы при закрытии окна
         // программа не завершала работу
-        if(trayIcon->isVisible())
-        {
+        if (trayIcon->isVisible()) {
             hide();
             event->ignore();
             return;
@@ -1076,8 +937,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     // Так как закрытие программы может происходить не с первого раза, например при
     // настройке синхронизации при закрытии программы, то действия
     // которые должны выполняться при закрытии должны срабатывать только единожды
-    if(exitCounter==0)
-    {
+    if (exitCounter == 0) {
         // Запоминается список и состояния открепляемых окон,
         // данное действие нельзя делать в saveAllState(), вызываемое из деструктора, так как если
         // все открепляемые окна не будут закрыты (см. следующею команду), то деструктор
@@ -1095,16 +955,13 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
-
-bool MainWindow::eventFilter( QObject *o, QEvent * e )
-{
+bool MainWindow::eventFilter(QObject *o, QEvent *e) {
     // Q_UNUSED(o);
     // qDebug() << "Event: " << e->type();
 
     // Отлавливание потери фокуса
     // QEvent::ActivationChange
-    if(o==this && e->type() == QEvent::WindowDeactivate)
-    {
+    if (o == this && e->type() == QEvent::WindowDeactivate) {
         qDebug() << "Main window focus deactivate, save all state.";
         saveAllState();
     }
@@ -1112,96 +969,83 @@ bool MainWindow::eventFilter( QObject *o, QEvent * e )
     // Продолжать оработку событий дальше
     // return false;
     return QMainWindow::eventFilter(o, e);
-}    
-
+}
 
 // Обработчик отлавливает нажатия клавиш
-void MainWindow::keyPressEvent(QKeyEvent *event)
-{
+void MainWindow::keyPressEvent(QKeyEvent *event) {
     // Проброс нажатия клавиши Ctrl в редактор, даже если он не активный (не в фокусе)
-    if( event->key() == Qt::Key_Control )
-        if(editorScreen!=nullptr)
+    if (event->key() == Qt::Key_Control)
+        if (editorScreen != nullptr)
             emit globalPressKey(Qt::Key_Control);
 
     QMainWindow::keyPressEvent(event);
 }
 
-
 // Обработчик отлавливает отжатия клавиш
-void MainWindow::keyReleaseEvent(QKeyEvent *event)
-{
+void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     // Если отжата клавиша Ctrl
-    if( event->key() == Qt::Key_Control )
-        if(editorScreen!=nullptr)
+    if (event->key() == Qt::Key_Control)
+        if (editorScreen != nullptr)
             emit globalReleaseKey(Qt::Key_Control);
 
     QMainWindow::keyReleaseEvent(event);
 }
 
-
-void MainWindow::goWalkHistoryPrevious(void)
-{
+void MainWindow::goWalkHistoryPrevious(void) {
     editorScreen->saveTextarea();
 
     // Идентификатор текущей записи запоминается в историю
-    QString id=editorScreen->getMiscField("id");
+    QString id = editorScreen->getMiscField("id");
     walkHistory->add(id, editorScreen->getCursorPosition(), editorScreen->getScrollBarPosition(), WALK_HISTORY_GO_PREVIOUS);
 
     goWalkHistory();
 }
 
-
-void MainWindow::goWalkHistoryNext(void)
-{
+void MainWindow::goWalkHistoryNext(void) {
     editorScreen->saveTextarea();
 
     // Идентификатор текущей записи запоминается в историю
-    QString id=editorScreen->getMiscField("id");
+    QString id = editorScreen->getMiscField("id");
     walkHistory->add(id, editorScreen->getCursorPosition(), editorScreen->getScrollBarPosition(), WALK_HISTORY_GO_NEXT);
 
     goWalkHistory();
 }
 
-
-void MainWindow::goWalkHistory(void)
-{
+void MainWindow::goWalkHistory(void) {
     // Выясняется идентификатор записи, на которую надо переключиться
-    QString id=walkHistory->getId();
+    QString id = walkHistory->getId();
 
-    if(id.length()==0)
+    if (id.length() == 0)
         return;
 
     // Выясняется путь к ветке, где находится данная запись
-    QStringList path=treeScreen->knowTreeModel->getRecordPath(id);
+    QStringList path = treeScreen->knowTreeModel->getRecordPath(id);
 
     // Проверяем, есть ли такая ветка
-    if(treeScreen->knowTreeModel->isItemValid(path)==false)
+    if (treeScreen->knowTreeModel->isItemValid(path) == false)
         return;
 
-
     // Выясняется позицию записи в таблице конечных записей
-    TreeItem *item =treeScreen->knowTreeModel->getItem(path);
+    TreeItem *item = treeScreen->knowTreeModel->getItem(path);
 
     // Проверяем, есть ли такая позиция
-    if(item->recordtableGetTableData()->isRecordExists(id)==false)
+    if (item->recordtableGetTableData()->isRecordExists(id) == false)
         return;
 
     setTreePosition(path);
     setRecordtablePositionById(id);
 
-    if(AppConfig::get().getRememberCursorAtHistoryNavigation()) {
-        editorScreen->setCursorPosition( walkHistory->getCursorPosition(id) );
-        editorScreen->setScrollBarPosition( walkHistory->getScrollBarPosition(id) );
+    if (AppConfig::get().getRememberCursorAtHistoryNavigation()) {
+        editorScreen->setCursorPosition(walkHistory->getCursorPosition(id));
+        editorScreen->setScrollBarPosition(walkHistory->getScrollBarPosition(id));
     }
 }
-
 
 // Метод, вызываемый из всех точек интерфейса, в которых происходит
 // переход к другой записи. Метод вызывается до перехода, чтобы сохранить
 // текст редактируемой записи
-void MainWindow::saveTextarea(void)
-{
-    QString id=editorScreen->getMiscField("id");
+void MainWindow::saveTextarea(void) {
+    QString id = editorScreen->getMiscField("id");
 
     qDebug() << "MainWindow::saveTextarea() : id :" << id;
 
@@ -1210,17 +1054,14 @@ void MainWindow::saveTextarea(void)
     walkHistory->add(id, editorScreen->getCursorPosition(), editorScreen->getScrollBarPosition());
 }
 
-
 // Слот, обрабатывающий смену фокуса на виджетах
-void MainWindow::onFocusChanged(QWidget *widgetFrom, QWidget *widgetTo)
-{
-    Q_UNUSED (widgetFrom)
+void MainWindow::onFocusChanged(QWidget *widgetFrom, QWidget *widgetTo) {
+    Q_UNUSED(widgetFrom)
 
-    if(widgetTo==nullptr)
+    if (widgetTo == nullptr)
         return;
 
     qDebug() << "MainWindow::onFocusChanged() to " << widgetTo->objectName();
 
     return; // Временно ничего не делает
 }
-

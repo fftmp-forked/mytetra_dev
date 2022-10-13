@@ -1,32 +1,25 @@
-#include <QVBoxLayout>
 #include <QDebug>
 #include <QIcon>
 #include <QScrollBar>
+#include <QVBoxLayout>
 
+#include "../../models/tree/KnowTreeModel.h"
+#include "../../views/mainWindow/MainWindow.h"
+#include "../../views/tree/KnowTreeView.h"
+#include "../helpers/ObjectHelper.h"
 #include "EditorShowText.h"
 #include "EditorShowTextContextMenu.h"
-#include "../helpers/ObjectHelper.h"
-#include "../../models/tree/KnowTreeModel.h"
-#include "../../views/tree/KnowTreeView.h"
-#include "../../views/mainWindow/MainWindow.h"
 
-
-EditorShowText::EditorShowText(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
-{
+EditorShowText::EditorShowText(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f) {
     setupUi();
     setupSignals();
     assembly();
 }
 
-
-EditorShowText::~EditorShowText()
-{
-
+EditorShowText::~EditorShowText() {
 }
 
-
-void EditorShowText::setupUi()
-{
+void EditorShowText::setupUi() {
     QSizePolicy sizePolicy;
     sizePolicy.setHorizontalPolicy(QSizePolicy::Expanding);
     sizePolicy.setVerticalPolicy(QSizePolicy::Expanding);
@@ -35,7 +28,7 @@ void EditorShowText::setupUi()
 
     // Задается иконка окна
     QIcon icon = QIcon(":/resource/pic/detach_window_icon.svg");
-    this->setWindowIcon( icon );
+    this->setWindowIcon(icon);
 
     // Создается новая область редактора и запоминается указательна него
     mTextArea.reset(new QTextEdit(this));
@@ -43,16 +36,14 @@ void EditorShowText::setupUi()
     // Настраивается область редактора
     mTextArea.get()->setAcceptRichText(true);
     mTextArea.get()->setSizePolicy(sizePolicy);
-    mTextArea.get()->setReadOnly(true); // Показываемый текст можно только просматривать
+    mTextArea.get()->setReadOnly(true);                           // Показываемый текст можно только просматривать
     mTextArea.get()->setContextMenuPolicy(Qt::CustomContextMenu); // Меню определяется в программе
 
     // Создается контекстное меню
-    mContextMenu.reset( new EditorShowTextContextMenu(this) );
+    mContextMenu.reset(new EditorShowTextContextMenu(this));
 }
 
-
-void EditorShowText::setupSignals()
-{
+void EditorShowText::setupSignals() {
     // Соединение сигнал-слот чтобы показать контекстное меню по правому клику в редакторе
     connect(mTextArea.data(), &QTextEdit::customContextMenuRequested,
             this, &EditorShowText::onCustomContextMenuRequested);
@@ -61,31 +52,23 @@ void EditorShowText::setupSignals()
             this, &EditorShowText::onGotoNote);
 }
 
-
-void EditorShowText::assembly()
-{
-    QVBoxLayout *mainLayout=new QVBoxLayout(this);
+void EditorShowText::assembly() {
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(0, 0, 0, 0);
 
     // Добавляется область текста
-    mainLayout->addWidget( mTextArea.get() );
+    mainLayout->addWidget(mTextArea.get());
 }
 
-
-void EditorShowText::setNoteId(const QString &noteId)
-{
-    mNoteId=noteId;
+void EditorShowText::setNoteId(const QString &noteId) {
+    mNoteId = noteId;
 }
 
-
-void EditorShowText::setHtml(QString text)
-{
+void EditorShowText::setHtml(QString text) {
     mTextArea.get()->setHtml(text);
 }
 
-
-void EditorShowText::setDocument(QSharedPointer<QTextDocument> pDocument)
-{
+void EditorShowText::setDocument(QSharedPointer<QTextDocument> pDocument) {
     // Очистка указателя внутри mTextArea на область документа, куда указывал mTextDocument
     // Данное действие необходимо производить перед вызовом mTextArea.get()->setDocument()
     // так как mTextArea является родителем mTextDocument, а согласно документации
@@ -97,93 +80,75 @@ void EditorShowText::setDocument(QSharedPointer<QTextDocument> pDocument)
     // и это приводит к сегфолту. При установке nullptr, похоже, что предыдущий
     // документ не удаляется, и это используется для предотвращения порчи памяти
     // в последующем вызове setDocument(). Надо разобраться дальше
-    mTextArea.get()->setDocument( nullptr );
+    mTextArea.get()->setDocument(nullptr);
 
     // Указатель на документ запоминается
-    mTextDocument=pDocument;
+    mTextDocument = pDocument;
 
     // Полученный документ устанавливается как содержимое области редактирования
-    if(mTextArea.get()->document()!=mTextDocument.get())
-    {
-        mTextArea.get()->setDocument( mTextDocument.get() );
-        mTextArea.get()->document()->setParent( mTextArea.get() );
+    if (mTextArea.get()->document() != mTextDocument.get()) {
+        mTextArea.get()->setDocument(mTextDocument.get());
+        mTextArea.get()->document()->setParent(mTextArea.get());
     }
 }
 
-
-bool EditorShowText::hasTextSelection()
-{
-    return  mTextArea.data()->textCursor().hasSelection();
+bool EditorShowText::hasTextSelection() {
+    return mTextArea.data()->textCursor().hasSelection();
 }
 
-
-int EditorShowText::getTextVerticalScroll()
-{
+int EditorShowText::getTextVerticalScroll() {
     return mTextArea.data()->verticalScrollBar()->value();
 }
 
-
-void EditorShowText::setTextVerticalScroll(int vScroll)
-{
+void EditorShowText::setTextVerticalScroll(int vScroll) {
     mTextArea.data()->verticalScrollBar()->setValue(vScroll);
 }
 
-
-void EditorShowText::closeEvent(QCloseEvent *event)
-{
-    emit editorShowTextClose( mNoteId );
+void EditorShowText::closeEvent(QCloseEvent *event) {
+    emit editorShowTextClose(mNoteId);
 
     event->accept();
 }
 
-
-void EditorShowText::hideEvent(QHideEvent *event)
-{
-    int x=this->x();
-    int y=this->y();
-    int w=this->width();
-    int h=this->height();
+void EditorShowText::hideEvent(QHideEvent *event) {
+    int x = this->x();
+    int y = this->y();
+    int w = this->width();
+    int h = this->height();
 
     qDebug() << "Hide event of EditorShowText dialog, window X " << x << " Y " << y << " W " << w << " H " << h;
 
     // Если геометрия допустимая
-    if( x>=0 && y>=0 && w>0 && h>0 )
-    {
+    if (x >= 0 && y >= 0 && w > 0 && h > 0) {
         // Запоминается геометрия
-        mGeomX=x;
-        mGeomY=y;
-        mGeomW=w;
-        mGeomH=h;
+        mGeomX = x;
+        mGeomY = y;
+        mGeomW = w;
+        mGeomH = h;
     }
 
     QWidget::hideEvent(event);
 }
 
-
-void EditorShowText::showEvent(QShowEvent *event)
-{
-    int x=this->x();
-    int y=this->y();
-    int w=this->width();
-    int h=this->height();
+void EditorShowText::showEvent(QShowEvent *event) {
+    int x = this->x();
+    int y = this->y();
+    int w = this->width();
+    int h = this->height();
 
     qDebug() << "Show event of EditorShowText dialog";
 
     // Если была запомнена геометрия окна, устанавливается прежняя геометрия
-    if(!(mGeomX==0 && mGeomY==0 && mGeomW==0 && mGeomH==0))
-    {
+    if (!(mGeomX == 0 && mGeomY == 0 && mGeomW == 0 && mGeomH == 0)) {
         // Установка геометрии происходит только если текущая геометрия не совпадает с запомненной
-        if(x!=mGeomX ||
-           y!=mGeomY ||
-           w!=mGeomW ||
-           h!=mGeomH)
-        {
+        if (x != mGeomX ||
+            y != mGeomY ||
+            w != mGeomW ||
+            h != mGeomH) {
             this->move(mGeomX, mGeomY);
             this->resize(mGeomW, mGeomH);
         }
-    }
-    else
-    {
+    } else {
         qDebug() << "Previos geometry of EditorShowText dialog is not setted";
         qDebug() << "Strange geometry X " << mGeomX << " Y " << mGeomY << " W " << mGeomW << " H " << mGeomH;
     }
@@ -191,34 +156,29 @@ void EditorShowText::showEvent(QShowEvent *event)
     QWidget::showEvent(event);
 }
 
-
-void EditorShowText::onCustomContextMenuRequested(const QPoint &pos)
-{
+void EditorShowText::onCustomContextMenuRequested(const QPoint &pos) {
     qDebug() << "In EditorShowText onCustomContextMenuRequested";
 
     // Контекстное меню обновляется
     mContextMenu->update();
 
     // Контекстное меню запускается
-    mContextMenu->exec( mTextArea.get()->viewport()->mapToGlobal(pos) );
+    mContextMenu->exec(mTextArea.get()->viewport()->mapToGlobal(pos));
 }
 
-
 // Переход на запись в интерфейсе MyTetra, текст которой содержится в открепляемом окне
-void EditorShowText::onGotoNote()
-{
+void EditorShowText::onGotoNote() {
     qDebug() << "Goto note: " << mNoteId;
 
     // Выясняется ссылка на модель дерева данных
-    KnowTreeModel *knowTreeModel=static_cast<KnowTreeModel*>(find_object<KnowTreeView>("knowTreeView")->model());
+    KnowTreeModel *knowTreeModel = static_cast<KnowTreeModel *>(find_object<KnowTreeView>("knowTreeView")->model());
 
     // Нахождение ветки, в которой лежит запись с указанным идентификатором
-    QStringList path=knowTreeModel->getRecordPath(mNoteId);
+    QStringList path = knowTreeModel->getRecordPath(mNoteId);
 
     find_object<MainWindow>("mainwindow")->setTreePosition(path);
     find_object<MainWindow>("mainwindow")->setRecordtablePositionById(mNoteId);
 }
-
 
 /*
 // Говорят, что hideEvent/showEvent не относится к свертке/развертке, т.е. "свернутые" окна по-прежнему считаются видимыми.

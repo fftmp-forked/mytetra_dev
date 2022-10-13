@@ -11,104 +11,98 @@ class KnowTreeModel;
 class KnowTreeView;
 class ClipboardBranch;
 
+class TreeScreen : public QWidget {
+    Q_OBJECT
 
-class TreeScreen : public QWidget
-{
- Q_OBJECT
+  public:
+    TreeScreen(QWidget *parent = nullptr);
+    virtual ~TreeScreen() {}
 
-public:
- TreeScreen(QWidget *parent=nullptr);
- virtual ~TreeScreen() {}
+    KnowTreeModel *knowTreeModel;
 
- KnowTreeModel *knowTreeModel;
+    void saveKnowTree(void);
+    bool reloadKnowTree(void);
 
- void saveKnowTree(void);
- bool reloadKnowTree(void);
+    void updateSelectedBranch(void);
 
- void updateSelectedBranch(void);
+    int getFirstSelectedItemIndex(void);
+    QModelIndex getCurrentItemIndex(void);
 
- int getFirstSelectedItemIndex(void);
- QModelIndex getCurrentItemIndex(void);
- 
- QItemSelectionModel *getSelectionModel(void);
+    QItemSelectionModel *getSelectionModel(void);
 
- void exportBranchToDirectory(QString exportDir);
- void importBranchFromDirectory(QString importDir);
- 
- // Установка курсора на указанный элемент
- void setCursorToIndex(QModelIndex index);
- void setCursorToId(QString nodeId);
- 
- void updateBranchOnScreen(const QModelIndex &index);
+    void exportBranchToDirectory(QString exportDir);
+    void importBranchFromDirectory(QString importDir);
 
- void setFocusToBaseWidget(void);
+    // Установка курсора на указанный элемент
+    void setCursorToIndex(QModelIndex index);
+    void setCursorToId(QString nodeId);
 
-signals:
+    void updateBranchOnScreen(const QModelIndex &index);
+
+    void setFocusToBaseWidget(void);
+
+  signals:
 
     void treeScreenFindInBaseClicked();
 
-public slots:
+  public slots:
 
     void setupShortcuts(void);
 
-private slots:
+  private slots:
 
- void expandAllSubbranch(void);
- void collapseAllSubbranch(void);
- void expandOrCollapseRecurse(QModelIndex modelIndex, bool mode);
- void insSubbranch(void);
- void insBranch(void);
- void editBranch(void);
- void setIcon(void);
+    void expandAllSubbranch(void);
+    void collapseAllSubbranch(void);
+    void expandOrCollapseRecurse(QModelIndex modelIndex, bool mode);
+    void insSubbranch(void);
+    void insBranch(void);
+    void editBranch(void);
+    void setIcon(void);
 
- void delBranch(QString mode="delete");
+    void delBranch(QString mode = "delete");
 
- void moveUpBranch(void);
- void moveDownBranch(void);
- void cutBranch(void);
- bool copyBranch(void);
- void pasteBranch(void);
- void pasteSubbranch(void);
+    void moveUpBranch(void);
+    void moveDownBranch(void);
+    void cutBranch(void);
+    bool copyBranch(void);
+    void pasteBranch(void);
+    void pasteSubbranch(void);
 
- // Действия при клике на ветку дерева
- void onKnowtreeClicked(const QModelIndex &index);
+    // Действия при клике на ветку дерева
+    void onKnowtreeClicked(const QModelIndex &index);
 
- // Открытие контекстного меню
- void onCustomContextMenuRequested(const QPoint &pos);
+    // Открытие контекстного меню
+    void onCustomContextMenuRequested(const QPoint &pos);
 
-private:
+  private:
+    QMap<QString, QAction *> actionList;
 
- QMap<QString, QAction *> actionList;
+    QToolBar *toolsLine;
 
- QToolBar *toolsLine;
+    KnowTreeView *knowTreeView;
 
- KnowTreeView  *knowTreeView;
+    QVBoxLayout *treeScreenLayout;
 
- QVBoxLayout *treeScreenLayout;
+    QDateTime lastKnowTreeModifyDateTime;
+    qint64 lastKnowTreeSize;
 
- QDateTime lastKnowTreeModifyDateTime;
- qint64    lastKnowTreeSize;
+    void setupUI(void);
+    void setupModels(void);
+    void setupSignals(void);
+    void setupActions(void);
+    void assembly(void);
 
- void setupUI(void);
- void setupModels(void);
- void setupSignals(void);
- void setupActions(void);
- void assembly(void);
- 
- void moveUpDownBranch(int direction);
- bool moveCheckEnable(void);
+    void moveUpDownBranch(int direction);
+    bool moveCheckEnable(void);
 
- void insBranchSmart(bool is_branch);
- void insBranchProcess(QModelIndex index, QString name, bool is_branch);
+    void insBranchSmart(bool is_branch);
+    void insBranchProcess(QModelIndex index, QString name, bool is_branch);
 
- void addBranchToClipboard(ClipboardBranch *branch_clipboard_data, QStringList path, bool is_root);
+    void addBranchToClipboard(ClipboardBranch *branch_clipboard_data, QStringList path, bool is_root);
 
- void pasteBranchSmart(bool is_branch);
+    void pasteBranchSmart(bool is_branch);
 
- void treeEmptyControl(void);
+    void treeEmptyControl(void);
 
- void updateLastKnowTreeData(QFileInfo fileInfo, bool fileInfoValid);
+    void updateLastKnowTreeData(QFileInfo fileInfo, bool fileInfoValid);
 };
-
-
-

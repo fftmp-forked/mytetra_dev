@@ -2,32 +2,26 @@
 
 #include <QObject>
 
-#include "views/databasesManagement/DatabasesManagementTable.h"
 #include "models/databasesManagement/DatabasesManagementModel.h"
+#include "views/databasesManagement/DatabasesManagementTable.h"
 
+class DatabasesManagementController : public QObject {
+    Q_OBJECT
 
-class DatabasesManagementController : public QObject
-{
-  Q_OBJECT
+  public:
+    DatabasesManagementController(QObject *parent = nullptr);
+    virtual ~DatabasesManagementController();
 
-public:
+    DatabasesManagementTable *getView(void);
 
-  DatabasesManagementController(QObject *parent = nullptr);
-  virtual ~DatabasesManagementController();
+  public slots:
 
-  DatabasesManagementTable *getView(void);
+    void onSelectClicked();
+    void onCreateClicked();
+    void onAddClicked();
+    void onCopyClicked();
 
-public slots:
-
-  void onSelectClicked();
-  void onCreateClicked();
-  void onAddClicked();
-  void onCopyClicked();
-
-protected:
-
-  DatabasesManagementTable *view;
-  DatabasesManagementModel *model;
-
+  protected:
+    DatabasesManagementTable *view;
+    DatabasesManagementModel *model;
 };
-

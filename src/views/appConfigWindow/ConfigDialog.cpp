@@ -1,26 +1,22 @@
-#include <QStackedWidget>
-#include <QListWidget>
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
+#include <QListWidget>
 #include <QMessageBox>
 #include <QScrollArea>
+#include <QStackedWidget>
 
 #include "ConfigDialog.h"
 #include "ConfigPage.h"
 
-
-ConfigDialog::ConfigDialog(QWidget *parent) : QDialog(parent)
-{
- setupUi();
- setupSignals();
- assembly();
+ConfigDialog::ConfigDialog(QWidget *parent) : QDialog(parent) {
+    setupUi();
+    setupSignals();
+    assembly();
 }
 
-
-void ConfigDialog::setupUi(void)
-{
+void ConfigDialog::setupUi(void) {
     // Список конфигурирующих виджетов
-    contentsWidget = new QListWidget( this );
+    contentsWidget = new QListWidget(this);
     contentsWidget->setViewMode(QListView::ListMode);
     contentsWidget->setMovement(QListView::Static);
     // contentsWidget->setMinimumWidth(100); // contentsWidget->setMaximumWidth(150);
@@ -33,7 +29,7 @@ void ConfigDialog::setupUi(void)
     // scrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     // Область переключения конфигурирующих виджетов
-    pagesWidget = new QStackedWidget( this );
+    pagesWidget = new QStackedWidget(this);
     pagesWidget->setMinimumWidth(250);
     pagesWidget->setMinimumHeight(250);
     pagesWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -42,17 +38,13 @@ void ConfigDialog::setupUi(void)
     confirmButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
 }
 
-
-void ConfigDialog::setupSignals(void)
-{
+void ConfigDialog::setupSignals(void) {
     connect(confirmButtons, &QDialogButtonBox::accepted, this, &ConfigDialog::applyChanges);
     connect(confirmButtons, &QDialogButtonBox::rejected, this, &ConfigDialog::reject);
     connect(contentsWidget, &QListWidget::currentItemChanged, this, &ConfigDialog::changePage);
 }
 
-
-void ConfigDialog::assembly(void)
-{
+void ConfigDialog::assembly(void) {
     QHBoxLayout *horizontalLayout = new QHBoxLayout;
     horizontalLayout->addWidget(contentsWidget);
     horizontalLayout->addWidget(pagesWidget, 1); // horizontalLayout->addWidget(pagesWidget, 1);
@@ -71,65 +63,55 @@ void ConfigDialog::assembly(void)
     this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 }
 
+QListWidgetItem *ConfigDialog::addWidget(QWidget *inswidget, QString name) {
+    pagesWidget->addWidget(inswidget);
 
-QListWidgetItem *ConfigDialog::addWidget(QWidget *inswidget, QString name)
-{
- pagesWidget->addWidget(inswidget);
-
- return createItems(name);
+    return createItems(name);
 }
-
 
 // Создаются пункты для вызова нужных конфигурирующих виджетов
-QListWidgetItem *ConfigDialog::createItems(QString name)
-{
- QListWidgetItem *item = new QListWidgetItem(contentsWidget);
- item->setText(name);
- item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+QListWidgetItem *ConfigDialog::createItems(QString name) {
+    QListWidgetItem *item = new QListWidgetItem(contentsWidget);
+    item->setText(name);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
- return item;
+    return item;
 }
-
 
 // Приватный слот, переключение виджета настройки при клике по списку настроечных виджетов
-void ConfigDialog::changePage(QListWidgetItem *current, QListWidgetItem *previous)
-{
-  if (!current)
-    current = previous;
+void ConfigDialog::changePage(QListWidgetItem *current, QListWidgetItem *previous) {
+    if (!current)
+        current = previous;
 
-  pagesWidget->setCurrentIndex(contentsWidget->row(current));
+    pagesWidget->setCurrentIndex(contentsWidget->row(current));
 }
 
-
-void ConfigDialog::updateListWidth(void)
-{
- contentsWidget->updateGeometry();
- contentsWidget->update();
+void ConfigDialog::updateListWidth(void) {
+    contentsWidget->updateGeometry();
+    contentsWidget->update();
 }
-
 
 void ConfigDialog::applyChanges(void) {
- int difficultFlag=0;
+    int difficultFlag = 0;
 
- // Перебираются виджеты настройки
- for(int i=0;i<pagesWidget->count();i++) {
-   // Выясняется указатель на виджет
-   ConfigPage *currentConfigPage=qobject_cast<ConfigPage *>(pagesWidget->widget(i));
-    
-   // Вызывается метод apply_changes() для текущего перебираемого виджета
-   if( currentConfigPage->applyChanges()==1 )
-    difficultFlag=1;
-  }
- 
- // Если требуется перезапустить программу для принятия изменений
- if(difficultFlag==1) {
-   QMessageBox::warning(this, tr("Warning"),
-                              tr("The program will have to be restarted for changes to take effect."),
-                              QMessageBox::Ok); 
-   exit(0);
-  }
+    // Перебираются виджеты настройки
+    for (int i = 0; i < pagesWidget->count(); i++) {
+        // Выясняется указатель на виджет
+        ConfigPage *currentConfigPage = qobject_cast<ConfigPage *>(pagesWidget->widget(i));
 
- // Диалог настройки закрывается
- close();
+        // Вызывается метод apply_changes() для текущего перебираемого виджета
+        if (currentConfigPage->applyChanges() == 1)
+            difficultFlag = 1;
+    }
+
+    // Если требуется перезапустить программу для принятия изменений
+    if (difficultFlag == 1) {
+        QMessageBox::warning(this, tr("Warning"),
+                             tr("The program will have to be restarted for changes to take effect."),
+                             QMessageBox::Ok);
+        exit(0);
+    }
+
+    // Диалог настройки закрывается
+    close();
 }
-

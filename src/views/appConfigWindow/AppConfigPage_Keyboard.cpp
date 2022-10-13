@@ -1,79 +1,64 @@
-#include <QWidget>
 #include <QBoxLayout>
 #include <QDir>
 #include <QLineEdit>
+#include <QWidget>
 
 #include "AppConfigPage_Keyboard.h"
 #include "views/shortcutSettings/ShortcutSettingsScreen.h"
 
-
-AppConfigPage_Keyboard::AppConfigPage_Keyboard(QWidget *parent) : ConfigPage(parent)
-{
-  setupUi();
-  setupSignals();
-  assembly();
+AppConfigPage_Keyboard::AppConfigPage_Keyboard(QWidget *parent) : ConfigPage(parent) {
+    setupUi();
+    setupSignals();
+    assembly();
 }
 
-
-AppConfigPage_Keyboard::~AppConfigPage_Keyboard()
-{
-
+AppConfigPage_Keyboard::~AppConfigPage_Keyboard() {
 }
 
+void AppConfigPage_Keyboard::setupUi(void) {
+    qDebug() << "Create keyboard config page";
 
-void AppConfigPage_Keyboard::setupUi(void)
-{
-  qDebug() << "Create keyboard config page";
-
-  // Кнопка редактирования файла конфигурации горячих клавиш
-  editShortcutConfigFile=new QPushButton(this);
-  editShortcutConfigFile->setText(tr("Edit shortcuts"));
-  editShortcutConfigFile->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed, QSizePolicy::ToolButton));
+    // Кнопка редактирования файла конфигурации горячих клавиш
+    editShortcutConfigFile = new QPushButton(this);
+    editShortcutConfigFile->setText(tr("Edit shortcuts"));
+    editShortcutConfigFile->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed, QSizePolicy::ToolButton));
 }
 
-
-void AppConfigPage_Keyboard::setupSignals(void)
-{
-  connect(editShortcutConfigFile, &QPushButton::clicked, this, &AppConfigPage_Keyboard::onClickedEditShortcutConfigFile);
+void AppConfigPage_Keyboard::setupSignals(void) {
+    connect(editShortcutConfigFile, &QPushButton::clicked, this, &AppConfigPage_Keyboard::onClickedEditShortcutConfigFile);
 }
 
+void AppConfigPage_Keyboard::assembly(void) {
+    // Объединяющая рамка
+    shortcutBox = new QGroupBox(this);
+    shortcutBox->setTitle(tr("Keyboard preferences"));
 
-void AppConfigPage_Keyboard::assembly(void)
-{
-  // Объединяющая рамка
-  shortcutBox=new QGroupBox(this);
-  shortcutBox->setTitle(tr("Keyboard preferences"));
+    // Виджеты вставляются в объединяющую рамку
+    QVBoxLayout *shortcutLayout = new QVBoxLayout(this);
+    shortcutLayout->addWidget(editShortcutConfigFile);
+    shortcutBox->setLayout(shortcutLayout);
 
-  // Виджеты вставляются в объединяющую рамку
-  QVBoxLayout *shortcutLayout = new QVBoxLayout(this);
-  shortcutLayout->addWidget(editShortcutConfigFile);
-  shortcutBox->setLayout(shortcutLayout);
+    // Собирается основной слой
+    QVBoxLayout *centralLayout = new QVBoxLayout(this);
+    centralLayout->addWidget(shortcutBox);
+    centralLayout->addStretch();
 
-  // Собирается основной слой
-  QVBoxLayout *centralLayout=new QVBoxLayout(this);
-  centralLayout->addWidget(shortcutBox);
-  centralLayout->addStretch();
-
-  // Основной слой устанавливается
-  setLayout(centralLayout);
+    // Основной слой устанавливается
+    setLayout(centralLayout);
 }
 
-
-void AppConfigPage_Keyboard::onClickedEditShortcutConfigFile(void)
-{
+void AppConfigPage_Keyboard::onClickedEditShortcutConfigFile(void) {
     ShortcutSettingsScreen shortcutSettingsScreen;
     shortcutSettingsScreen.setWindowTitle(tr("Keyboard config"));
 
     shortcutSettingsScreen.exec();
 }
 
-
 // Метод должен возвращать уровень сложности сделанных изменений
 // 0 - изменения не требуют перезапуска программы
 // 1 - изменения требуют перезапуска программы
-int AppConfigPage_Keyboard::applyChanges(void)
-{
-  qDebug() << "Apply changes keyboard";
+int AppConfigPage_Keyboard::applyChanges(void) {
+    qDebug() << "Apply changes keyboard";
 
-  return 0;
+    return 0;
 }

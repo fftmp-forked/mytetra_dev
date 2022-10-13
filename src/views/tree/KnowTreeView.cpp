@@ -1,197 +1,171 @@
-#include <QDebug>
-#include <QMimeData>
 #include <QAbstractItemModel>
+#include <QDebug>
 #include <QMessageBox>
+#include <QMimeData>
 
 #include "KnowTreeView.h"
 #include "TreeScreen.h"
+#include "controllers/recordTable/RecordTableController.h"
 #include "libraries/ClipboardRecords.h"
-#include "libraries/GlobalParameters.h"
 #include "libraries/FixedParameters.h"
+#include "libraries/GlobalParameters.h"
 #include "libraries/helpers/ObjectHelper.h"
-#include "models/tree/KnowTreeModel.h"
 #include "models/recordTable/RecordTableData.h"
+#include "models/tree/KnowTreeModel.h"
 #include "models/tree/TreeItem.h"
+#include "views/record/MetaEditor.h"
 #include "views/recordTable/RecordTableScreen.h"
 #include "views/recordTable/RecordTableView.h"
-#include "views/record/MetaEditor.h"
-#include "controllers/recordTable/RecordTableController.h"
 
+KnowTreeView::KnowTreeView(QWidget *parent) : QTreeView(parent) {
+    // Разрешение принимать Drop-события
+    setAcceptDrops(true);
+    setDropIndicatorShown(true);
 
-
-KnowTreeView::KnowTreeView(QWidget *parent) : QTreeView(parent)
-{
- // Разрешение принимать Drop-события
- setAcceptDrops(true);
- setDropIndicatorShown(true);
-
- // Разрешение принимать жест QTapAndHoldGesture
- grabGesture(Qt::TapAndHoldGesture);
+    // Разрешение принимать жест QTapAndHoldGesture
+    grabGesture(Qt::TapAndHoldGesture);
 }
 
-
-KnowTreeView::~KnowTreeView()
-{
-
+KnowTreeView::~KnowTreeView() {
 }
-
 
 // Обработчик событий, нужен только для QTapAndHoldGesture (долгое нажатие)
-bool KnowTreeView::event(QEvent *event)
-{
-    if (event->type() == QEvent::Gesture)
-     {
+bool KnowTreeView::event(QEvent *event) {
+    if (event->type() == QEvent::Gesture) {
         qDebug() << "In gesture event(): " << event << " Event type: " << event->type();
         return true; /// @todo: ошмётки android
-     }
+    }
 
     return QTreeView::event(event);
 }
 
-
-void KnowTreeView::dragEnterEvent(QDragEnterEvent *event)
-{
- if( isDragableData(event) )
-  {
-   event->setDropAction(Qt::MoveAction);
-   event->accept();
-  }
+void KnowTreeView::dragEnterEvent(QDragEnterEvent *event) {
+    if (isDragableData(event)) {
+        event->setDropAction(Qt::MoveAction);
+        event->accept();
+    }
 }
 
+void KnowTreeView::dragMoveEvent(QDragMoveEvent *event) {
+    if (isDragableData(event)) {
+        event->acceptProposedAction();
 
-void KnowTreeView::dragMoveEvent(QDragMoveEvent *event)
-{
- if( isDragableData(event) )
-  {
-   event->acceptProposedAction();
+        // Выясняется элемент дерева, над которым находится курсор
+        QModelIndex index = indexAt(event->position().toPoint());
+        // Указатель на родительский элемент, чтобы далее получить модель данных
+        TreeScreen *parentPointer = qobject_cast<TreeScreen *>(parent());
 
-   // Выясняется элемент дерева, над которым находится курсор
-   QModelIndex index=indexAt(event->position().toPoint());
-   // Указатель на родительский элемент, чтобы далее получить модель данных
-   TreeScreen *parentPointer=qobject_cast<TreeScreen *>( parent() );
-
-   // В модели данных отмечается элемент дерева, над которым находится курсор
-   parentPointer->knowTreeModel->setData(index, QVariant(true), Qt::UserRole);
-  }
- else
-  event->ignore();
+        // В модели данных отмечается элемент дерева, над которым находится курсор
+        parentPointer->knowTreeModel->setData(index, QVariant(true), Qt::UserRole);
+    } else
+        event->ignore();
 }
-
 
 template <class X>
-bool KnowTreeView::isDragableData(X *event)
-{
+bool KnowTreeView::isDragableData(X *event) {
     // Проверяется, содержит ли объект переноса данные нужного формата
-    const QMimeData *mimeData=event->mimeData();
-    if(mimeData==nullptr)
+    const QMimeData *mimeData = event->mimeData();
+    if (mimeData == nullptr)
         return false;
-    if( ! (mimeData->hasFormat(FixedParameters::appTextId+"/records")) )
+    if (!(mimeData->hasFormat(FixedParameters::appTextId + "/records")))
         return false;
 
-    QObject *sourceObject=qobject_cast<QObject *>( event->source() );
+    QObject *sourceObject = qobject_cast<QObject *>(event->source());
 
-    if( sourceObject->objectName()=="recordTableView" )
+    if (sourceObject->objectName() == "recordTableView")
         return true;
     else
         return false;
 }
 
+void KnowTreeView::dropEvent(QDropEvent *event) {
+    qDebug() << "dropEvent() - Start";
 
-void KnowTreeView::dropEvent(QDropEvent *event)
-{
- qDebug() << "dropEvent() - Start";
+    emit dropEventHandleCatch();
 
- emit dropEventHandleCatch();
+    if (isDragableData(event)) {
+        qDebug() << "Try move record by drag and drop";
 
- if( isDragableData(event) )
-  {
-   qDebug() << "Try move record by drag and drop";
+        // Извлечение объекта
+        const ClipboardRecords *clipboardRecords;
+        clipboardRecords = qobject_cast<const ClipboardRecords *>(event->mimeData());
 
-   // Извлечение объекта
-   const ClipboardRecords *clipboardRecords;
-   clipboardRecords=qobject_cast<const ClipboardRecords *>(event->mimeData());
+        // Печать в консоль содержимого перетаскиваемого объекта (для отладки)
+        clipboardRecords->print();
 
-   // Печать в консоль содержимого перетаскиваемого объекта (для отладки)
-   clipboardRecords->print();
+        // Выясняется элемент дерева, над которым был сделан Drop
+        QModelIndex index = indexAt(event->position().toPoint());
+        // Если отпускание мышки произошло не на ветке дерева, а на свободном пустом месте в области виджета дерева
+        if (!index.isValid())
+            return;
 
-   // Выясняется элемент дерева, над которым был сделан Drop
-   QModelIndex index=indexAt(event->position().toPoint());
-   // Если отпускание мышки произошло не на ветке дерева, а на свободном пустом месте в области виджета дерева
-   if(!index.isValid())
-    return;
+        // Указатель на родительский виджет
+        TreeScreen *parentPointer = qobject_cast<TreeScreen *>(parent());
 
-   // Указатель на родительский виджет
-   TreeScreen *parentPointer=qobject_cast<TreeScreen *>( parent() );
+        // Выясняется ссылка на элемент дерева (на ветку), над которым был совершен Drop
+        TreeItem *treeItemDrop = parentPointer->knowTreeModel->getItem(index);
 
-   // Выясняется ссылка на элемент дерева (на ветку), над которым был совершен Drop
-   TreeItem *treeItemDrop=parentPointer->knowTreeModel->getItem(index);
+        // Выясняется ссылка на таблицу данных ветки, над которой совершен Drop
+        RecordTableData *recordTableData = treeItemDrop->recordtableGetTableData();
 
-   // Выясняется ссылка на таблицу данных ветки, над которой совершен Drop
-   RecordTableData *recordTableData=treeItemDrop->recordtableGetTableData();
+        // Исходная ветка в момент Drop (откуда переностся запись) - это выделенная курсором ветка
+        QModelIndex indexFrom = find_object<TreeScreen>("treeScreen")->getCurrentItemIndex();
 
-   // Исходная ветка в момент Drop (откуда переностся запись) - это выделенная курсором ветка
-   QModelIndex indexFrom = find_object<TreeScreen>("treeScreen")->getCurrentItemIndex();
+        // Если перенос происходит в ту же самую ветку
+        if (indexFrom == index)
+            return;
 
-   // Если перенос происходит в ту же самую ветку
-   if(indexFrom==index)
-    return;
+        // Перенос записей, хранящихся в MimeData
+        // В настоящий момент в MimeData попадает только одна запись,
+        // но в дальнейшем планируется переносить несколько записей
+        // и здесь код подготовлен для переноса нескольких записей
+        RecordTableController *recordTableController = find_object<RecordTableController>("recordTableController"); // Указатель на контроллер таблицы конечных записей
+        for (int i = 0; i < clipboardRecords->getCount(); i++) {
+            // Полные данные записи
+            Record record = clipboardRecords->getRecord(i);
 
-   // Перенос записей, хранящихся в MimeData
-   // В настоящий момент в MimeData попадает только одна запись,
-   // но в дальнейшем планируется переносить несколько записей
-   // и здесь код подготовлен для переноса нескольких записей
-   RecordTableController *recordTableController=find_object<RecordTableController>("recordTableController");  // Указатель на контроллер таблицы конечных записей
-   for(int i=0; i<clipboardRecords->getCount(); i++)
-    {
-     // Полные данные записи
-     Record record=clipboardRecords->getRecord(i);
+            qDebug() << " Before delete, cursor at row: " << recordTableController->getView()->currentIndex().row();
 
-     qDebug() << " Before delete, cursor at row: " << recordTableController->getView()->currentIndex().row();
+            // Удаление записи из исходной ветки, удаление должно быть вначале, чтобы сохранился ID записи
+            // В этот момент вид таблицы конечных записей показывает таблицу, из которой совершается Drag
+            // TreeItem *treeItemFrom=parentPointer->knowTreeModel->getItem(indexFrom);
+            recordTableController->removeRowById(record.getField("id"));
 
-     // Удаление записи из исходной ветки, удаление должно быть вначале, чтобы сохранился ID записи
-     // В этот момент вид таблицы конечных записей показывает таблицу, из которой совершается Drag
-     // TreeItem *treeItemFrom=parentPointer->knowTreeModel->getItem(indexFrom);
-     recordTableController->removeRowById( record.getField("id") );
+            qDebug() << " After delete, cursor at row: " << recordTableController->getView()->currentIndex().row();
 
-     qDebug() << " After delete, cursor at row: " << recordTableController->getView()->currentIndex().row();
+            // Если после удаления перемещаемой записи в таблице остались еще какие-то записи
+            if (recordTableController->getRowCount() > 0) {
+                // Происходит виртуальный клик по записи, на которой
+                // стоит курсор после удаления переносимой записи.
+                // Это нужно чтобы обновился текст записи, так как курсор в таблице записей
+                // после удаления остается на месте и никаких событий изменения
+                // selection model не генерируются, соответственно автоматического
+                // обновления не происходит, и нужно делать виртуальный клик
+                recordTableController->clickToRecord(recordTableController->getView()->currentIndex());
+            } else {
+                // Иначе таблица конечных записей после удаления перемещенной записи стала пустой
+                // Нужно очистить поле редактирования чтобы не видно было текста последней удаленной записи
+                find_object<MetaEditor>("editorScreen")->clearAll();
+            }
 
-     // Если после удаления перемещаемой записи в таблице остались еще какие-то записи
-     if(recordTableController->getRowCount()>0)
-     {
-         // Происходит виртуальный клик по записи, на которой
-         // стоит курсор после удаления переносимой записи.
-         // Это нужно чтобы обновился текст записи, так как курсор в таблице записей
-         // после удаления остается на месте и никаких событий изменения
-         // selection model не генерируются, соответственно автоматического
-         // обновления не происходит, и нужно делать виртуальный клик
-         recordTableController->clickToRecord( recordTableController->getView()->currentIndex() );
-     }
-      else
-     {
-         // Иначе таблица конечных записей после удаления перемещенной записи стала пустой
-         // Нужно очистить поле редактирования чтобы не видно было текста последней удаленной записи
-         find_object<MetaEditor>("editorScreen")->clearAll();
-     }
+            find_object<RecordTableScreen>("recordTableScreen")->toolsUpdate();
 
-     find_object<RecordTableScreen>("recordTableScreen")->toolsUpdate();
+            // Добавление записи в базу
+            recordTableData->insertNewRecord(GlobalParameters::AddNewRecordBehavior::ADD_TO_END,
+                                             0,
+                                             record);
 
-     // Добавление записи в базу
-     recordTableData->insertNewRecord(GlobalParameters::AddNewRecordBehavior::ADD_TO_END,
-                                      0,
-                                      record);
+            // Сохранение дерева веток
+            find_object<TreeScreen>("treeScreen")->saveKnowTree();
+        }
 
-     // Сохранение дерева веток
-     find_object<TreeScreen>("treeScreen")->saveKnowTree();
+        // Обновление исходной ветки чтобы было видно что записей убавилось
+        parentPointer->updateBranchOnScreen(indexFrom);
+
+        // Обновлении конечной ветки чтобы было видно что записей прибавилось
+        parentPointer->updateBranchOnScreen(index);
+
+        // В модели данных дерева обнуляется элемент, который подсвечивался при Drag And Drop
+        parentPointer->knowTreeModel->setData(QModelIndex(), QVariant(false), Qt::UserRole);
     }
-
-   // Обновление исходной ветки чтобы было видно что записей убавилось
-   parentPointer->updateBranchOnScreen(indexFrom);
-
-   // Обновлении конечной ветки чтобы было видно что записей прибавилось
-   parentPointer->updateBranchOnScreen(index);
-
-   // В модели данных дерева обнуляется элемент, который подсвечивался при Drag And Drop
-   parentPointer->knowTreeModel->setData(QModelIndex(), QVariant(false), Qt::UserRole);
-  }
 }
-

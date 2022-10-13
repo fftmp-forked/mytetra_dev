@@ -1,47 +1,41 @@
 #pragma once
 
-#include <QtGlobal>
-#include <QWidget>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QTextEdit>
-
+#include <QWidget>
+#include <QtGlobal>
 
 class RecordTableProxyModel;
 
+class RecordTablePrint : public QDialog {
+    Q_OBJECT
 
-class RecordTablePrint : public QDialog
-{
- Q_OBJECT
+  public:
+    RecordTablePrint(QWidget *parent = nullptr);
+    virtual ~RecordTablePrint();
 
-public:
- RecordTablePrint(QWidget *parent=nullptr);
- virtual ~RecordTablePrint();
+    void setModel(RecordTableProxyModel *iModel);
+    void generateHtmlTableFromModel(void);
+    void setTitleToHtml(QString title);
 
- void setModel(RecordTableProxyModel *iModel);
- void generateHtmlTableFromModel(void);
- void setTitleToHtml(QString title);
+  protected slots:
 
-protected slots:
+    void print(void);
+    void save(void);
 
- void print(void);
- void save(void);
+  private:
+    QTextEdit *textArea;         // Отображение текста с таблицей, выводимой на печать
+    QDialogButtonBox *buttonBox; // Линейка с кнопками
 
-private:
+    QPushButton *printButton;
+    QPushButton *saveButton;
+    QPushButton *cancelButton;
 
- QTextEdit *textArea; // Отображение текста с таблицей, выводимой на печать
- QDialogButtonBox *buttonBox; // Линейка с кнопками
+    RecordTableProxyModel *model;
 
- QPushButton *printButton;
- QPushButton *saveButton;
- QPushButton *cancelButton;
-
- RecordTableProxyModel *model;
-
- void setup_ui(void);
- void setup_signals(void);
- void assembly(void);
+    void setup_ui(void);
+    void setup_signals(void);
+    void assembly(void);
 };
-
-

@@ -5,9 +5,7 @@
 
 /// @brief Выдача на экран простого окна с сообщением
 inline void showMessageBox(QString message) {
-  QMessageBox msgBox;
-  msgBox.setText(message);
-  msgBox.exec();
+    QMessageBox msgBox;
+    msgBox.setText(message);
+    msgBox.exec();
 }
-
-

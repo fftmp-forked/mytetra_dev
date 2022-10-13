@@ -1,49 +1,42 @@
 #pragma once
 
-#include <QWidget>
-#include <QLineEdit>
 #include <QFontComboBox>
-#include <QSpinBox>
-#include <QPushButton>
 #include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QWidget>
 
 #include "../../views/appConfigWindow/ConfigPage.h"
 
 class EditorConfig;
 
+class EditorConfigMisc : public ConfigPage {
+    Q_OBJECT
 
-class EditorConfigMisc : public ConfigPage
-{
- Q_OBJECT
+  public:
+    EditorConfigMisc(QWidget *parent = nullptr);
 
-public:
-  EditorConfigMisc(QWidget *parent = nullptr);
-  
-  int applyChanges(void);
-    
-private slots:
-  void onClickedEditWyEditConfigFile(void);
- 
-private:
+    int applyChanges(void);
 
-  QLabel *indentStepLabel;
-  QLabel *indentStepFlexion;
-  QSpinBox *indentStep;
+  private slots:
+    void onClickedEditWyEditConfigFile(void);
 
-  // Размер табуляции для клавиши Tab
-  QLabel *tabStopDistanceLabel;
-  QLabel *tabStopDistanceFlexionLabel;
-  QSpinBox *tabStopDistanceSpinBox;
+  private:
+    QLabel *indentStepLabel;
+    QLabel *indentStepFlexion;
+    QSpinBox *indentStep;
 
-  QPushButton *editWyEditConfigFile;
-  
-  EditorConfig *conf;
+    // Размер табуляции для клавиши Tab
+    QLabel *tabStopDistanceLabel;
+    QLabel *tabStopDistanceFlexionLabel;
+    QSpinBox *tabStopDistanceSpinBox;
 
-  void setupUi(void);
-  void setupSignals(void);
-  void assembly(void);
-  
+    QPushButton *editWyEditConfigFile;
+
+    EditorConfig *conf;
+
+    void setupUi(void);
+    void setupSignals(void);
+    void assembly(void);
 };
-
-
-

@@ -1,38 +1,34 @@
 #pragma once
 
-#include <QTextImageFormat>
 #include <QTextDocumentFragment>
+#include <QTextImageFormat>
 
 #include "Formatter.h"
 
-
 /// @brief Класс для работы с картинками в тексте
-class ImageFormatter : public Formatter
-{
-  Q_OBJECT
+class ImageFormatter : public Formatter {
+    Q_OBJECT
 
-public:
-  ImageFormatter();
+  public:
+    ImageFormatter();
 
-  QTextImageFormat imageFormatOnSelect(void);
-  QTextImageFormat imageFormatOnCursor(void);
+    QTextImageFormat imageFormatOnSelect(void);
+    QTextImageFormat imageFormatOnCursor(void);
 
-  void editImageProperties(void);
+    void editImageProperties(void);
 
-signals:
+  signals:
 
-  void downloadImagesSuccessfull(const QString html,
-                                 const QMap<QString, QByteArray> referencesAndMemoryFiles,
-                                 const QMap<QString, QString> referencesAndInternalNames);
+    void downloadImagesSuccessfull(const QString html,
+                                   const QMap<QString, QByteArray> referencesAndMemoryFiles,
+                                   const QMap<QString, QString> referencesAndInternalNames);
 
-public slots:
+  public slots:
 
-  void onInsertImageFromFileClicked(void);
-  void onContextMenuEditImageProperties(void);
+    void onInsertImageFromFileClicked(void);
+    void onContextMenuEditImageProperties(void);
 
-  void onDownloadImages(const QString html);
+    void onDownloadImages(const QString html);
 
-  void onDoubleClickOnImage(void);
-
+    void onDoubleClickOnImage(void);
 };
-

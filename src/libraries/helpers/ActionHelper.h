@@ -3,6 +3,4 @@
 class QToolBar;
 class QAction;
 
-void insertActionAsButton(QToolBar *tools_line, QAction *action, bool isVisible=true);
-
-
+void insertActionAsButton(QToolBar *tools_line, QAction *action, bool isVisible = true);

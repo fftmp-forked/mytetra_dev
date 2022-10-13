@@ -1,23 +1,20 @@
 #pragma once
 
-#include <QWidget>
-#include <QGroupBox>
 #include <QCheckBox>
+#include <QGroupBox>
+#include <QWidget>
 
 #include "ConfigPage.h"
 
-
-class AppConfigPage_History : public ConfigPage
-{
+class AppConfigPage_History : public ConfigPage {
     Q_OBJECT
-public:
+  public:
     AppConfigPage_History(QWidget *parent = nullptr);
     virtual ~AppConfigPage_History();
 
     int applyChanges(void);
 
   protected:
-
     void setupUi(void);
     void setupSignals(void);
     void assembly(void);
@@ -28,4 +25,3 @@ public:
     QCheckBox *rememberAtHistoryNavigationCheckBox;
     QCheckBox *rememberAtOrdinarySelectionCheckBox;
 };
-

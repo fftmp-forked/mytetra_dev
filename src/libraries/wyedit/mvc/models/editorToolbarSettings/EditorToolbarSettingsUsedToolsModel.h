@@ -6,13 +6,11 @@
 
 class EditorConfig;
 
-
 /// @brief Модель списка используемых команд на выбранной строке панели инструментов редактора
-class EditorToolbarSettingsUsedToolsModel : public EditorToolbarSettingsAbstractModel
-{
+class EditorToolbarSettingsUsedToolsModel : public EditorToolbarSettingsAbstractModel {
     Q_OBJECT
 
-public:
+  public:
     /// Указание на обрабатываемую панель инструментов редактора текста
     enum class EditorToolbarLine {
         First = 0,
@@ -22,6 +20,4 @@ public:
 
     // Первичное наполнение модели
     void init(EditorToolbarLine tb);
-
 };
-

@@ -1,23 +1,15 @@
 #include "EditorToolbarAvailableCommandsController.h"
 
-
-EditorToolbarAvailableCommandsController::EditorToolbarAvailableCommandsController(QObject *parent) : QObject(parent)
-{
-
+EditorToolbarAvailableCommandsController::EditorToolbarAvailableCommandsController(QObject *parent) : QObject(parent) {
 }
 
-
-EditorToolbarAvailableCommandsController::~EditorToolbarAvailableCommandsController()
-{
-
+EditorToolbarAvailableCommandsController::~EditorToolbarAvailableCommandsController() {
 }
-
 
 /// @brief Инициализация представления
-void EditorToolbarAvailableCommandsController::init()
-{
+void EditorToolbarAvailableCommandsController::init() {
     // Создается вид со списком кнопок для панели всех доступных кнопок
-    view = new EditorToolbarCommandsListView( qobject_cast<QWidget *>(parent()) );
+    view = new EditorToolbarCommandsListView(qobject_cast<QWidget *>(parent()));
     view->setObjectName("editorToolbarAvailableCommandsView");
 
     // Создание модели данных
@@ -29,35 +21,28 @@ void EditorToolbarAvailableCommandsController::init()
     view->init();
 
     // Выбор первого элемента модели
-    QStandardItem *item = model->item(0,0);
+    QStandardItem *item = model->item(0, 0);
     if (item->index().isValid()) {
         // Выделение первого элемента модели
         this->getSelectionModel()->select(
-              item->index(), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows
-        );
+            item->index(), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
 
         // Фокус на первом элементе модели
         this->getView()->setCurrentIndex(item->index());
     }
 }
 
-
 /// @brief Получение представления
-EditorToolbarCommandsListView *EditorToolbarAvailableCommandsController::getView() const
-{
+EditorToolbarCommandsListView *EditorToolbarAvailableCommandsController::getView() const {
     return view;
 }
 
-
 /// @brief Получение модели
-EditorToolbarSettingsAvailableToolsModel *EditorToolbarAvailableCommandsController::getModel() const
-{
+EditorToolbarSettingsAvailableToolsModel *EditorToolbarAvailableCommandsController::getModel() const {
     return model;
 }
 
-
 /// @brief Получение SelectionModel
-QItemSelectionModel *EditorToolbarAvailableCommandsController::getSelectionModel() const
-{
+QItemSelectionModel *EditorToolbarAvailableCommandsController::getSelectionModel() const {
     return view->selectionModel();
 }

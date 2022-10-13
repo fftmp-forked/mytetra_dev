@@ -4,46 +4,34 @@
 #include "AppConfigPage_History.h"
 #include "models/appConfig/AppConfig.h"
 
-
-AppConfigPage_History::AppConfigPage_History(QWidget *parent) : ConfigPage(parent)
-{
+AppConfigPage_History::AppConfigPage_History(QWidget *parent) : ConfigPage(parent) {
     setupUi();
     setupSignals();
     assembly();
 }
 
-
-AppConfigPage_History::~AppConfigPage_History()
-{
-
+AppConfigPage_History::~AppConfigPage_History() {
 }
 
-
-void AppConfigPage_History::setupUi()
-{
+void AppConfigPage_History::setupUi() {
     qDebug() << "Create history config page";
 
     // Настройки курсора при навигации по истории
-    rememberAtHistoryNavigationCheckBox=new QCheckBox(this);
+    rememberAtHistoryNavigationCheckBox = new QCheckBox(this);
     rememberAtHistoryNavigationCheckBox->setText(tr("Remember cursor position at history navigation"));
     rememberAtHistoryNavigationCheckBox->setChecked(AppConfig::get().getRememberCursorAtHistoryNavigation());
 
-    rememberAtOrdinarySelectionCheckBox=new QCheckBox(this);
+    rememberAtOrdinarySelectionCheckBox = new QCheckBox(this);
     rememberAtOrdinarySelectionCheckBox->setText(tr("Try remember cursor position at ordinary selection"));
     rememberAtOrdinarySelectionCheckBox->setChecked(AppConfig::get().getRememberCursorAtOrdinarySelection());
 }
 
-
-void AppConfigPage_History::setupSignals()
-{
-
+void AppConfigPage_History::setupSignals() {
 }
 
-
-void AppConfigPage_History::assembly()
-{
+void AppConfigPage_History::assembly() {
     // Группировщик виджетов для настроек курсора при навигации по истории
-    historyBox=new QGroupBox(this);
+    historyBox = new QGroupBox(this);
     historyBox->setTitle(tr("History of visited notes"));
 
     // Виджеты вставляются в группировщик настроек курсора при навигации по истории
@@ -53,7 +41,7 @@ void AppConfigPage_History::assembly()
     historyBox->setLayout(historyLayout);
 
     // Собирается основной слой
-    QVBoxLayout *centralLayout=new QVBoxLayout();
+    QVBoxLayout *centralLayout = new QVBoxLayout();
     centralLayout->addWidget(historyBox);
     centralLayout->addStretch();
 
@@ -61,23 +49,21 @@ void AppConfigPage_History::assembly()
     setLayout(centralLayout);
 }
 
-
 // Метод должен возвращать уровень сложности сделанных изменений
 // 0 - изменения не требуют перезапуска программы
 // 1 - изменения требуют перезапуска программы
-int AppConfigPage_History::applyChanges()
-{
+int AppConfigPage_History::applyChanges() {
     qDebug() << "Apply changes history";
 
-    int result=0;
+    int result = 0;
 
     // Сохраняется настройка нужно ли вспоминать позицию курсора при перемещении по истории
-    if(AppConfig::get().getRememberCursorAtHistoryNavigation()!=rememberAtHistoryNavigationCheckBox->isChecked())
-      AppConfig::get().setRememberCursorAtHistoryNavigation(rememberAtHistoryNavigationCheckBox->isChecked());
+    if (AppConfig::get().getRememberCursorAtHistoryNavigation() != rememberAtHistoryNavigationCheckBox->isChecked())
+        AppConfig::get().setRememberCursorAtHistoryNavigation(rememberAtHistoryNavigationCheckBox->isChecked());
 
     // Сохраняется настройка нужно ли пытаться вспоминать позицию курсора при обычном выборе записи
-    if(AppConfig::get().getRememberCursorAtOrdinarySelection()!=rememberAtOrdinarySelectionCheckBox->isChecked())
-      AppConfig::get().setRememberCursorAtOrdinarySelection(rememberAtOrdinarySelectionCheckBox->isChecked());
+    if (AppConfig::get().getRememberCursorAtOrdinarySelection() != rememberAtOrdinarySelectionCheckBox->isChecked())
+        AppConfig::get().setRememberCursorAtOrdinarySelection(rememberAtOrdinarySelectionCheckBox->isChecked());
 
     return result;
 }

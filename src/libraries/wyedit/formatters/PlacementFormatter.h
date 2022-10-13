@@ -2,34 +2,29 @@
 
 #include "Formatter.h"
 
-
 /// @brief Класс форматирования размещения текста (выравнивание, отступы и т. п.)
-class PlacementFormatter : public Formatter
-{
-  Q_OBJECT
+class PlacementFormatter : public Formatter {
+    Q_OBJECT
 
-public:
-  PlacementFormatter();
+  public:
+    PlacementFormatter();
 
-signals:
+  signals:
 
-  void updateIndentsliderToActualFormat();
-  void updateAlignButtonHiglight(bool);
+    void updateIndentsliderToActualFormat();
+    void updateAlignButtonHiglight(bool);
 
-public slots:
+  public slots:
 
-  // Действия в области редактирования
-  void onIndentplusClicked(void);
-  void onIndentminusClicked(void);
+    // Действия в области редактирования
+    void onIndentplusClicked(void);
+    void onIndentminusClicked(void);
 
-  void onAlignleftClicked(void);
-  void onAligncenterClicked(void);
-  void onAlignrightClicked(void);
-  void onAlignwidthClicked(void);
+    void onAlignleftClicked(void);
+    void onAligncenterClicked(void);
+    void onAlignrightClicked(void);
+    void onAlignwidthClicked(void);
 
-protected:
-
-  void alignText(Qt::AlignmentFlag mode);
-
+  protected:
+    void alignText(Qt::AlignmentFlag mode);
 };
-

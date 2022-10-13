@@ -1,29 +1,27 @@
 #pragma once
 
-#include <QDialog>
-#include <QWidget>
 #include <QAction>
+#include <QDialog>
 #include <QDialogButtonBox>
-#include <QPushButton>
-#include <QVBoxLayout>
 #include <QGridLayout>
 #include <QGroupBox>
+#include <QKeySequenceEdit>
 #include <QLabel>
 #include <QLineEdit>
-#include <QKeySequenceEdit>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QWidget>
 
-#include "controllers/shortcutSettings/ShortcutSettingsController.h"
 #include "HotKeyGrabber.h"
+#include "controllers/shortcutSettings/ShortcutSettingsController.h"
 
-
-class ShortcutSettingsScreen : public QDialog
-{
+class ShortcutSettingsScreen : public QDialog {
     Q_OBJECT
-public:
+  public:
     ShortcutSettingsScreen(QWidget *parent = nullptr);
     ~ShortcutSettingsScreen() {}
 
-protected slots:
+  protected slots:
 
     void onShortcutSelect(const QModelIndex &index);
     void onShortcutKeysChange(const QString &text);
@@ -33,8 +31,7 @@ protected slots:
     void onResetShortcutToDefaultClick();
     void onResetAllShortcutsToDefaultClick();
 
-protected:
-
+  protected:
     ShortcutSettingsController *shortcutSettingsController;
 
     QPushButton *buttonGrabShortcut;
@@ -65,6 +62,4 @@ protected:
     void setupUI(void);
     void setupSignals(void);
     void assembly(void);
-
 };
-

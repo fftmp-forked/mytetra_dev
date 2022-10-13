@@ -1,77 +1,72 @@
 #pragma once
 
+#include <QColor>
 #include <QDialog>
-#include <QToolButton> // Почему-то не работает предварительное определение класса (этап линковки), приходится включать инклюдом
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QSpinBox>
-#include <QDialogButtonBox>
-#include <QColor>
+#include <QToolButton> // Почему-то не работает предварительное определение класса (этап линковки), приходится включать инклюдом
 
+class EditorTablePropertiesForm : public QDialog {
+    Q_OBJECT
 
-class EditorTablePropertiesForm : public QDialog
-{
- Q_OBJECT
+  public:
+    enum TableAlign { Left,
+                      Center,
+                      Right };
 
-public:
+    EditorTablePropertiesForm();
+    virtual ~EditorTablePropertiesForm();
 
-  enum TableAlign{Left,
-                  Center,
-                  Right};
+    void setTableWidth(int iWidth);
+    int getTableWidth(void);
 
-  EditorTablePropertiesForm();
-  virtual ~EditorTablePropertiesForm();
+    void setBorderWidth(int iWidth);
+    int getBorderWidth(void);
 
-  void setTableWidth(int iWidth);
-  int getTableWidth(void);
+    void setBackgroundColor(QColor iColor);
+    QColor getBackgroundColor(void);
 
-  void setBorderWidth(int iWidth);
-  int getBorderWidth(void);
+    void setTableAlign(TableAlign iAlign);
+    int getTableAlign();
 
-  void setBackgroundColor(QColor iColor);
-  QColor getBackgroundColor(void);
+  protected slots:
 
-  void setTableAlign(TableAlign iAlign);
-  int getTableAlign();
+    void onClickedButtonBackgroundColor();
 
-protected slots:
+    void onToggleButtonAlignLeft();
+    void onToggleButtonAlignCenter();
+    void onToggleButtonAlignRight();
 
-  void onClickedButtonBackgroundColor();
+  private:
+    // Ширина таблицы
+    QLabel labelTableWidth;
+    QLabel labelTablePercent;
+    QSpinBox spinTableWidth;
 
-  void onToggleButtonAlignLeft();
-  void onToggleButtonAlignCenter();
-  void onToggleButtonAlignRight();
+    // Толщина линий таблицы
+    QLabel labelBorderWidth;
+    QLabel labelBorderPix;
+    QSpinBox spinBorderWidth;
 
-private:
+    // Цвет фона таблицы
+    QLabel labelBackgroundColor;
+    QToolButton buttonBackgroundColor;
+    QColor backgroundColor;
 
-  // Ширина таблицы
-  QLabel labelTableWidth;
-  QLabel labelTablePercent;
-  QSpinBox spinTableWidth;
+    QLabel labelAlign;
+    QToolButton buttonAlignLeft;
+    QToolButton buttonAlignCenter;
+    QToolButton buttonAlignRight;
+    TableAlign tableAlign;
+    bool directSetAlign; // Флаг, включаемый при программной установке нажатой кнопки. Он нужен, чтобы исключить рекурсию
 
-  // Толщина линий таблицы
-  QLabel labelBorderWidth;
-  QLabel labelBorderPix;
-  QSpinBox spinBorderWidth;
+    // Кнопки Ok и Concel
+    QDialogButtonBox buttonBox;
 
-  // Цвет фона таблицы
-  QLabel labelBackgroundColor;
-  QToolButton buttonBackgroundColor;
-  QColor backgroundColor;
+    void setupUi();
+    void setupSignals();
+    void assembly();
 
-  QLabel labelAlign;
-  QToolButton buttonAlignLeft;
-  QToolButton buttonAlignCenter;
-  QToolButton buttonAlignRight;
-  TableAlign tableAlign;
-  bool directSetAlign; // Флаг, включаемый при программной установке нажатой кнопки. Он нужен, чтобы исключить рекурсию
-
-  // Кнопки Ok и Concel
-  QDialogButtonBox buttonBox;
-
-  void setupUi();
-  void setupSignals();
-  void assembly();
-
-  void setColorForButtonBackgroundColor(QColor iColor);
+    void setColorForButtonBackgroundColor(QColor iColor);
 };
-

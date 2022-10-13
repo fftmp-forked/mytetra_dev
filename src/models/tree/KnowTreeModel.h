@@ -1,22 +1,21 @@
 #pragma once
 
-#include <QModelIndex>
 #include <QDateTime>
 #include <QDomElement>
-#include <QXmlStreamWriter>
+#include <QModelIndex>
 #include <QSet>
+#include <QXmlStreamWriter>
 
 #include "TreeModel.h"
 
 class ClipboardBranch;
 class Record;
 
-
 /// @brief класс с удобными методами для управления данными дерева
 class KnowTreeModel : public TreeModel {
     Q_OBJECT
 
-public:
+  public:
     KnowTreeModel(QObject *parent = nullptr);
     ~KnowTreeModel();
 
@@ -43,7 +42,7 @@ public:
 
     // Получение индекса подчиненного элемента с указанным номером
     QModelIndex indexChildren(const QModelIndex &parent, int n) const;
-    
+
     QModelIndex getIndexByItem(TreeItem *item);
 
     // Получение ветки с указанным ID (поиск ветки)
@@ -51,7 +50,7 @@ public:
 
     // Возвращает общее количество записей, хранимых в дереве
     int getAllRecordCount(void);
-    
+
     // Возвращает количество записей в ветке и всех подветках
     int getRecordCountForItem(TreeItem *item);
 
@@ -71,10 +70,10 @@ public:
     bool isRecordIdExists(QString findId) const;
 
     // Получение списка всех идентификаторов записей в ветке и ее подветках
-    QSharedPointer< QSet<QString> > getRecordsIdList(TreeItem *item) const;
+    QSharedPointer<QSet<QString>> getRecordsIdList(TreeItem *item) const;
 
     // Получение списка всех идентификаторов записей в базе
-    QSharedPointer< QSet<QString> > getAllRecordsIdList() const;
+    QSharedPointer<QSet<QString>> getAllRecordsIdList() const;
 
     void deleteItemsByModelIndexList(QModelIndexList &selectItems);
 
@@ -84,16 +83,15 @@ public:
     // Загрузка отдельной базы MyTetra в виде подветки (импорт)
     QString importBranchFromDirectory(TreeItem *startItem, QString importDir);
 
-    QDateTime getLastAccess() const {return lastAccess;}
+    QDateTime getLastAccess() const { return lastAccess; }
 
-    QString getXmlFileName() const {return xmlFileName;}
+    QString getXmlFileName() const { return xmlFileName; }
 
-signals:
+  signals:
 
-    void doCloseDetachedWindowByIdSet( QSet<QString> ids );
+    void doCloseDetachedWindowByIdSet(QSet<QString> ids);
 
-private:
-
+  private:
     QString xmlFileName;
 
     QDateTime lastAccess;
@@ -108,18 +106,18 @@ private:
 
     // Преобразование Item в DOM модель
     void parseTreeToDom(QDomDocument *doc, QDomElement *xmlData, TreeItem *currItem);
-    void parseTreeToStreamWriter( QXmlStreamWriter *xmlWriter, TreeItem *currItem);
+    void parseTreeToStreamWriter(QXmlStreamWriter *xmlWriter, TreeItem *currItem);
 
     // Стандартный DOM-документ для сохранения дерева знаний
     QDomDocument createStandartDocument();
 
     // Стандартный root-элемент с информацией о версии формата данных
     QDomElement createStandartRootElement(QDomDocument &doc);
-    
-    // Перемещение ветки вверх или вниз
-    QModelIndex moveUpDownBranch(const QModelIndex &index,int direction);
 
-    int getAllRecordCountRecurse(TreeItem *item,int mode);
+    // Перемещение ветки вверх или вниз
+    QModelIndex moveUpDownBranch(const QModelIndex &index, int direction);
+
+    int getAllRecordCountRecurse(TreeItem *item, int mode);
 
     QString pasteSubbranchRecurse(TreeItem *item,
                                   QString startBranchId,
@@ -155,10 +153,9 @@ private:
 
     // Методы, используемые при импорте
     QMap<QString, QString> getAttributeTranslateTable(QDomDocument &doc, QString elementName, QString attributeName);
-    bool copyImportRecordDirectories( QDomDocument &doc,
-                                      QString importDir,
-                                      QMap<QString, QString> idRecordTranslate,
-                                      QMap<QString, QString> dirRecordTranslate );
-    void translateImportDomData(QDomDocument &doc, QString elementName, QString elementAttribute, QMap<QString, QString> translateTable );
+    bool copyImportRecordDirectories(QDomDocument &doc,
+                                     QString importDir,
+                                     QMap<QString, QString> idRecordTranslate,
+                                     QMap<QString, QString> dirRecordTranslate);
+    void translateImportDomData(QDomDocument &doc, QString elementName, QString elementAttribute, QMap<QString, QString> translateTable);
 };
-

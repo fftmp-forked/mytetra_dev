@@ -5,14 +5,12 @@
 #include <QPushButton>
 #include <QScrollBar>
 
-#include "EditorConfig.h"
 #include "../../views/mainWindow/MainWindow.h"
 #include "../helpers/ObjectHelper.h"
 #include "../helpers/UniqueIdHelper.h"
+#include "EditorConfig.h"
 
-
-EditorMathExpressionDialog::EditorMathExpressionDialog(MathExpressionFormatter *mathExpressionFormatter, QWidget *parent) : QDialog(parent)
-{
+EditorMathExpressionDialog::EditorMathExpressionDialog(MathExpressionFormatter *mathExpressionFormatter, QWidget *parent) : QDialog(parent) {
     // Период обновления картинки по таймеру (сек.)
     EditorConfig *conf = find_object<EditorConfig>("editorconfig");
     mathExpressionUpdateTime = conf->getMathExpressionUpdateTime();
@@ -24,11 +22,9 @@ EditorMathExpressionDialog::EditorMathExpressionDialog(MathExpressionFormatter *
 
     // Задание размеров диалога
     setMinimumHeight(
-        int( 0.25 * static_cast<double>(find_object<MainWindow>("mainwindow")->height()) )
-    );
+        int(0.25 * static_cast<double>(find_object<MainWindow>("mainwindow")->height())));
     setMinimumWidth(
-        int( 0.25 * static_cast<double>(find_object<MainWindow>("mainwindow")->width()) )
-    );
+        int(0.25 * static_cast<double>(find_object<MainWindow>("mainwindow")->width())));
 
     /// @todo: переделать на восстановление запомненных размеров и положения диалога
     resize(QGuiApplication::primaryScreen()->availableSize() / 2);
@@ -46,44 +42,36 @@ EditorMathExpressionDialog::EditorMathExpressionDialog(MathExpressionFormatter *
     onStartTimer();
 }
 
-EditorMathExpressionDialog::~EditorMathExpressionDialog()
-{
-    if (textArea!=nullptr)
+EditorMathExpressionDialog::~EditorMathExpressionDialog() {
+    if (textArea != nullptr)
         delete textArea;
 }
 
-
-void EditorMathExpressionDialog::setMathExpressionText(QString text)
-{
+void EditorMathExpressionDialog::setMathExpressionText(QString text) {
     textArea->setPlainText(text);
 }
 
-QString EditorMathExpressionDialog::getMathExpressionText()
-{
+QString EditorMathExpressionDialog::getMathExpressionText() {
     return textArea->toPlainText();
 }
 
 // Был ли изменен текст, показанный в диалоге
-bool EditorMathExpressionDialog::isModified()
-{
+bool EditorMathExpressionDialog::isModified() {
     return textArea->document()->isModified();
 }
 
-void EditorMathExpressionDialog::setWordWrapMode(QTextOption::WrapMode mode)
-{
+void EditorMathExpressionDialog::setWordWrapMode(QTextOption::WrapMode mode) {
     textArea->setWordWrapMode(mode);
 }
 
-void EditorMathExpressionDialog::showEvent(QShowEvent *event)
-{
+void EditorMathExpressionDialog::showEvent(QShowEvent *event) {
     // Первая отрисовка картинки формулы
     updateFormulaPicture();
     QDialog::showEvent(event);
 }
 
 // Масштабирование картинки формулы в зависимости от изменения размеров диалога
-void EditorMathExpressionDialog::resizeEvent(QResizeEvent *event)
-{
+void EditorMathExpressionDialog::resizeEvent(QResizeEvent *event) {
     if (imageLabel && !imageLabel->pixmap().isNull()) {
         if (fitToScrollAreaCheckBox->isChecked()) {
             // Масштабирование картинки формулы
@@ -96,9 +84,7 @@ void EditorMathExpressionDialog::resizeEvent(QResizeEvent *event)
     QDialog::resizeEvent(event);
 }
 
-
-void EditorMathExpressionDialog::setupUi()
-{
+void EditorMathExpressionDialog::setupUi() {
     // Таймер для отрисовки картинки формулы
     timer = new QTimer(this);
 
@@ -108,12 +94,10 @@ void EditorMathExpressionDialog::setupUi()
     // Виджет для сборки всех контролов по работе с текстом формулы
     bottomWidget = new QWidget(this);
 
-
     // Разделитель области написания формулы от области отображения формулы в графическом виде
     mathSplitter = new QSplitter(Qt::Orientation::Vertical, this);
     mathSplitter->setBackgroundRole(QPalette::Mid);
-    //mathSplitter->setHandleWidth(5);
-
+    // mathSplitter->setHandleWidth(5);
 
     /* Область работы с картинкой формулы */
     // Метка, обозначающая зону отображения картинки формулы
@@ -141,7 +125,6 @@ void EditorMathExpressionDialog::setupUi()
     imageScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     imageScrollArea->setWidget(imageLabel);
 
-
     /* Область работы с текстом формулы */
     // Текстовая область для написания формулы
     textArea = new TexTextEdit();
@@ -159,13 +142,11 @@ void EditorMathExpressionDialog::setupUi()
     textFormulaZoomOutPushButton->setIcon(QIcon(":/resource/pic/edit_zoom-out.svg"));
     textFormulaZoomOutPushButton->setToolTip(tr("Zoom out"));
 
-
     // Создание набора диалоговых кнопок
     dialogButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
 }
 
-void EditorMathExpressionDialog::setupSignals()
-{
+void EditorMathExpressionDialog::setupSignals() {
     // Обработка переключения режима масштабирования картинки формулы
     connect(fitToScrollAreaCheckBox, &QCheckBox::clicked, this, &EditorMathExpressionDialog::onSwitchFitToScrollArea);
 
@@ -196,8 +177,7 @@ void EditorMathExpressionDialog::setupSignals()
     connect(timer, &QTimer::timeout, this, &EditorMathExpressionDialog::onTimerAlarm);
 }
 
-void EditorMathExpressionDialog::assembly()
-{
+void EditorMathExpressionDialog::assembly() {
     /* Формирование области контролов масштабирования работы с картинкой формулы */
     // Область контролов по работе с картинкой
     pictureFormulaControlLayout = new QHBoxLayout();
@@ -216,7 +196,6 @@ void EditorMathExpressionDialog::assembly()
 
     // Сборка на виджет всех контролом по работе с текстом формулы
     topWidget->setLayout(pictureFormulaLayout);
-
 
     /* Формирование области контролов масштабирования работы с текстом формулы */
     // Компоновка контролов масштабирования текста формулы
@@ -256,8 +235,7 @@ void EditorMathExpressionDialog::assembly()
 }
 
 // Обработка переключения режима масштабирования картинки формулы
-void EditorMathExpressionDialog::onSwitchFitToScrollArea()
-{
+void EditorMathExpressionDialog::onSwitchFitToScrollArea() {
     if (!fitToScrollAreaCheckBox->isChecked()) {
         // Обновление картинки формулы
         updateFormulaPicture();
@@ -273,32 +251,27 @@ void EditorMathExpressionDialog::onSwitchFitToScrollArea()
 }
 
 // Увеличение масштаба области текста формулы
-void EditorMathExpressionDialog::onTextZoomIn()
-{
-     textArea->zoomIn(2);
+void EditorMathExpressionDialog::onTextZoomIn() {
+    textArea->zoomIn(2);
 }
 
 // Уменьшение масштаба области текста формулы
-void EditorMathExpressionDialog::onTextZoomOut()
-{
+void EditorMathExpressionDialog::onTextZoomOut() {
     textArea->zoomIn(-2);
 }
 
 // Включение таймера обновления картинки формулы
-void EditorMathExpressionDialog::onStartTimer()
-{
-    timer->start(mathExpressionUpdateTime*1000); // отработка таймера в секундах
+void EditorMathExpressionDialog::onStartTimer() {
+    timer->start(mathExpressionUpdateTime * 1000); // отработка таймера в секундах
 }
 
 // Отключение таймера обновления картинки формулы
-void EditorMathExpressionDialog::onStopTimer()
-{
+void EditorMathExpressionDialog::onStopTimer() {
     timer->stop();
 }
 
 // Обновление картинки формулы по таймеру
-void EditorMathExpressionDialog::onTimerAlarm()
-{
+void EditorMathExpressionDialog::onTimerAlarm() {
     if (textArea->document()->isModified() && formulaModifiedTimePeriod) {
         // Обновление картинки формулы
         updateFormulaPicture();
@@ -309,8 +282,7 @@ void EditorMathExpressionDialog::onTimerAlarm()
 }
 
 // Изменение картинки при изменении текста (для действий undo/redo редатора формулы)
-void EditorMathExpressionDialog::onTextChanged()
-{
+void EditorMathExpressionDialog::onTextChanged() {
     if (textArea->document()->isModified()) {
         // Установка флага изменения формулы при наборе символов
         formulaModifiedTimePeriod = true;
@@ -322,8 +294,7 @@ void EditorMathExpressionDialog::onTextChanged()
     }
 }
 
-void EditorMathExpressionDialog::onUndo()
-{
+void EditorMathExpressionDialog::onUndo() {
     textArea->undo();
     // Установка флага изменения формулы при наборе символов
     formulaModifiedTimePeriod = true;
@@ -331,8 +302,7 @@ void EditorMathExpressionDialog::onUndo()
     updateFormulaPicture();
 }
 
-void EditorMathExpressionDialog::onRedo()
-{
+void EditorMathExpressionDialog::onRedo() {
     textArea->redo();
     // Установка флага изменения формулы при наборе символов
     formulaModifiedTimePeriod = true;
@@ -341,10 +311,9 @@ void EditorMathExpressionDialog::onRedo()
 }
 
 // Обновление картинки формулы
-void EditorMathExpressionDialog::updateFormulaPicture()
-{
-    QString tempGifFileName = QDir::tempPath()+"/"+getUniqueId()+".gif";
-    mathExpressionFormatter->createGifFromMathExpression( textArea->toPlainText(), tempGifFileName );
+void EditorMathExpressionDialog::updateFormulaPicture() {
+    QString tempGifFileName = QDir::tempPath() + "/" + getUniqueId() + ".gif";
+    mathExpressionFormatter->createGifFromMathExpression(textArea->toPlainText(), tempGifFileName);
 
     QPixmap currentPixmap(tempGifFileName);
 
@@ -355,13 +324,13 @@ void EditorMathExpressionDialog::updateFormulaPicture()
         }
 
         // Замена картинки на новую
-        if (imageLabel!=nullptr) {
+        if (imageLabel != nullptr) {
             delete imageLabel;
         }
 
         imageLabel = new QLabel(this);
         imageLabel->setBackgroundRole(QPalette::Base);
-        //imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+        // imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
         imageLabel->setContentsMargins(10, 10, 10, 10);
         imageLabel->setScaledContents(true);
         imageLabel->setPixmap(currentPixmap);
@@ -371,7 +340,7 @@ void EditorMathExpressionDialog::updateFormulaPicture()
 
         // Масштабирование картинки формулы
         if (fitToScrollAreaCheckBox->isChecked()) {
-           pictureZoom();
+            pictureZoom();
         }
 
         // Автопрокрутка до правого края картинки (последний введенный символ в тексте формулы)
@@ -380,12 +349,11 @@ void EditorMathExpressionDialog::updateFormulaPicture()
 }
 
 // Масштабирование картинки формулы
-void EditorMathExpressionDialog::pictureZoom()
-{
+void EditorMathExpressionDialog::pictureZoom() {
     double pixHeight = imageLabel->pixmap().height();
     double pixWidth = imageLabel->pixmap().width();
-    double imageScrollAreaHeight = imageScrollArea->geometry().height()-10;
-    double imageScrollAreaWidth = imageScrollArea->geometry().width()-10;
+    double imageScrollAreaHeight = imageScrollArea->geometry().height() - 10;
+    double imageScrollAreaWidth = imageScrollArea->geometry().width() - 10;
     if (pixHeight > imageScrollAreaHeight || pixWidth > imageScrollAreaWidth) {
         double factor = imageScrollAreaWidth / pixWidth;
         imageLabel->setFixedWidth(int(factor * pixWidth));

@@ -6,85 +6,82 @@
 #include <QNetworkAccessManager>
 #include <QTableWidget>
 
+class Downloader : public QDialog {
+    Q_OBJECT
 
-class Downloader : public QDialog
-{
-  Q_OBJECT
+  public:
+    Downloader();
+    ~Downloader();
 
-public:
-  Downloader();
-  ~Downloader();
+    enum downloadModeType { disk,
+                            memory };
 
-  enum downloadModeType{disk, memory};
+    void setDownloadMode(int iMode);
 
-  void setDownloadMode(int iMode);
+    void setSaveDirectory(QString iDir);
+    QString getSaveDirectory();
 
-  void setSaveDirectory(QString iDir);
-  QString getSaveDirectory();
+    void setReferencesList(QStringList iReferencesList);
 
-  void setReferencesList(QStringList iReferencesList);
+    void setAboutText(QString iAboutText);
+    QString getAboutText(void);
 
-  void setAboutText(QString iAboutText);
-  QString getAboutText(void);
+    QVector<QByteArray> getMemoryFiles() const;
+    QMap<QString, QByteArray> getReferencesAndMemoryFiles() const;
+    QMap<QString, QString> getReferencesAndFileNames() const;
+    QStringList getDiskFilesList() const;
+    QStringList getReferencesList() const;
 
-  QVector<QByteArray> getMemoryFiles() const;
-  QMap<QString, QByteArray> getReferencesAndMemoryFiles() const;
-  QMap<QString, QString> getReferencesAndFileNames() const;
-  QStringList getDiskFilesList() const;
-  QStringList getReferencesList() const;
+    void run();
 
-  void run();
+    bool isSuccess();
 
-  bool isSuccess();
+    QString getErrorLog();
 
-  QString getErrorLog();
+  signals:
 
-signals:
+    void cancelDownload(void);
 
-  void cancelDownload(void);
+  private slots:
 
-private slots:
+    void onFileDownloadFinished(QNetworkReply *pReply); // Слот, вызываемый при завершении загрузки очередного файла
+    void onDownloadProgress(qint64 read, qint64 total);
+    void onSslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
+    void onCancelClicked();
 
- void onFileDownloadFinished(QNetworkReply* pReply); // Слот, вызываемый при завершении загрузки очередного файла
- void onDownloadProgress(qint64 read, qint64 total);
- void onSslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
- void onCancelClicked();
+  protected:
+    int downloadMode;
+    QString saveDirectory;
+    QStringList referencesList;
 
-protected:
+    QVector<QByteArray> memoryFiles; // Содержимое файлов при скачивании в режиме memory
+    QVector<QString> diskFilesNames; // Имена файлов на диске при скачивании в режиме disk
 
-  int downloadMode;
-  QString saveDirectory;
-  QStringList referencesList;
+    bool isSuccessFlag;
 
-  QVector<QByteArray> memoryFiles; // Содержимое файлов при скачивании в режиме memory
-  QVector<QString> diskFilesNames; // Имена файлов на диске при скачивании в режиме disk
+    QString errorLog;
 
-  bool isSuccessFlag;
+    int currentReferenceNum;
 
-  QString errorLog;
+    QStringList colsName;     // Список имен колонок в таблице, определяется в конструкторе
+    int downloadReferenceCol; // Номер колонки со ссылкой
+    int downloadPercentCol;   // Номер колонки с процентами загрузки, определяется в конструкторе
 
-  int currentReferenceNum;
+    QNetworkAccessManager webManager; // Объект для работы с HTTP
+    QNetworkReply *networkReply;
 
-  QStringList colsName; // Список имен колонок в таблице, определяется в конструкторе
-  int downloadReferenceCol; // Номер колонки со ссылкой
-  int downloadPercentCol; // Номер колонки с процентами загрузки, определяется в конструкторе
+    QTableWidget *table;
+    QPushButton *cancelButton;
+    QLabel *aboutLabel;
 
-  QNetworkAccessManager webManager; // Объект для работы с HTTP
-  QNetworkReply *networkReply;
+    void setupUI();
+    void setupSignals();
+    void assembly();
 
-  QTableWidget *table;
-  QPushButton *cancelButton;
-  QLabel *aboutLabel;
+    void startNextDownload();
+    QUrl checkedRedirectUrl(const QUrl &possibleRedirectUrl) const;
 
-  void setupUI();
-  void setupSignals();
-  void assembly();
+    void addErrorLog(const QString text);
 
-  void startNextDownload();
-  QUrl checkedRedirectUrl(const QUrl& possibleRedirectUrl) const;
-
-  void addErrorLog(const QString text);
-
-  void reconnectSignalsNetworkReply(QNetworkReply *networkReply);
+    void reconnectSignalsNetworkReply(QNetworkReply *networkReply);
 };
-

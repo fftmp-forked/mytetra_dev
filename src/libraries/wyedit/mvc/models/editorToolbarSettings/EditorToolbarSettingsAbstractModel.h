@@ -5,13 +5,11 @@
 
 class EditorConfig;
 
-
 /// @brief Универсальная модель для хранения левого и правого списка инструментов в окне настроек панели инструметов редактора
-class EditorToolbarSettingsAbstractModel : public QStandardItemModel
-{
+class EditorToolbarSettingsAbstractModel : public QStandardItemModel {
     Q_OBJECT
 
-public:
+  public:
     EditorToolbarSettingsAbstractModel(QObject *parent = nullptr);
     virtual ~EditorToolbarSettingsAbstractModel();
 
@@ -28,9 +26,6 @@ public:
     // в виде строки с разделителем-запятая
     QString getCommandsList() const;
 
-protected:
-
+  protected:
     EditorConfig *editorConfig; // Конфигурация редактора
-
 };
-

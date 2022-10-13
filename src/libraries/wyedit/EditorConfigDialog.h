@@ -1,17 +1,14 @@
 #pragma once
 
-#include <QWidget>
 #include "../../views/appConfigWindow/ConfigDialog.h"
+#include <QWidget>
 
+class EditorConfigDialog : public QWidget {
+    Q_OBJECT
 
-class EditorConfigDialog : public QWidget
-{
- Q_OBJECT
+  public:
+    EditorConfigDialog(QWidget *parent = nullptr);
 
-public:
- EditorConfigDialog(QWidget *parent=nullptr);
-    
-private:
- ConfigDialog *configDialog;
+  private:
+    ConfigDialog *configDialog;
 };
-

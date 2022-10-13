@@ -3,28 +3,29 @@
 #include <QAbstractScrollArea>
 #include <QTextDocument>
 
-
-class PreviewView : public QAbstractScrollArea
-{
+class PreviewView : public QAbstractScrollArea {
     Q_OBJECT
 
-public:
+  public:
     PreviewView(QTextDocument *document);
 
-    inline void updateLayout() { resizeEvent(nullptr); viewport()->update(); }
+    inline void updateLayout() {
+        resizeEvent(nullptr);
+        viewport()->update();
+    }
 
-public slots:
+  public slots:
     void zoomIn();
     void zoomOut();
 
-protected:
+  protected:
     virtual void paintEvent(QPaintEvent *e);
     virtual void resizeEvent(QResizeEvent *);
     virtual void mousePressEvent(QMouseEvent *e);
     virtual void mouseMoveEvent(QMouseEvent *e);
     virtual void mouseReleaseEvent(QMouseEvent *e);
 
-private:
+  private:
     void paintPage(QPainter *painter, int page);
     QTextDocument *doc;
     qreal scale;
@@ -32,4 +33,3 @@ private:
     QPoint mousePressPos;
     QPoint scrollBarValuesOnMousePress;
 };
-

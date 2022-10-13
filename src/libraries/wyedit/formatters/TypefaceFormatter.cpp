@@ -1,209 +1,175 @@
 #include <QApplication>
-#include <QTextBlock>
-#include <QDebug>
-#include <QColorDialog>
 #include <QColor>
+#include <QColorDialog>
+#include <QDebug>
 #include <QDomNode>
+#include <QTextBlock>
 #include <QTextTable>
 
 #include "TypefaceFormatter.h"
 
+#include "../../helpers/MessageHelper.h"
 #include "../Editor.h"
 #include "../EditorConfig.h"
+#include "../EditorCursorPositionDetector.h"
 #include "../EditorTextArea.h"
 #include "../EditorToolBarAssistant.h"
-#include "../EditorCursorPositionDetector.h"
-#include "../../helpers/MessageHelper.h"
 
-
-TypefaceFormatter::TypefaceFormatter()
-{
-
+TypefaceFormatter::TypefaceFormatter() {
 }
 
-
 /// @brief Форматирование Bold
-void TypefaceFormatter::onBoldClicked(void)
-{
+void TypefaceFormatter::onBoldClicked(void) {
     smartFormat(Bold);
 }
 
-
 /// @brief Форматирование Italic
-void TypefaceFormatter::onItalicClicked(void)
-{
+void TypefaceFormatter::onItalicClicked(void) {
     smartFormat(Italic);
 }
 
-
 /// @brief Форматирование подчеркивания
-void TypefaceFormatter::onUnderlineClicked(void)
-{
+void TypefaceFormatter::onUnderlineClicked(void) {
     smartFormat(Underline);
 }
 
-
 /// @brief Форматирование Strike
-void TypefaceFormatter::onStrikeOutClicked(void)
-{
+void TypefaceFormatter::onStrikeOutClicked(void) {
     smartFormat(StrikeOut);
 }
 
-
 /// @brief Форматирование SuperScript
-void TypefaceFormatter::onSuperScriptClicked(void)
-{
+void TypefaceFormatter::onSuperScriptClicked(void) {
     smartFormat(SuperScript);
 }
 
-
 /// @brief Форматирование SubScript
-void TypefaceFormatter::onSubScriptClicked(void)
-{
+void TypefaceFormatter::onSubScriptClicked(void) {
     smartFormat(SubScript);
 }
 
-
-void TypefaceFormatter::smartFormat(int formatType)
-{
+void TypefaceFormatter::smartFormat(int formatType) {
     // Если выделение есть
-    if(textArea->textCursor().hasSelection())
-    {
+    if (textArea->textCursor().hasSelection()) {
         // Переназначение позиций выделения, иначе снятие форматирования не срабатывает
         // в случае выделения справа-налево (снизу-вверх)
         QTextCursor cursor = textArea->textCursor();
         const int anchor = cursor.anchor();
         const int position = cursor.position();
-        if (anchor > position)
-        {
+        if (anchor > position) {
             cursor.setPosition(position, QTextCursor::MoveAnchor);
             cursor.setPosition(anchor, QTextCursor::KeepAnchor);
             textArea->setTextCursor(cursor);
         }
 
-        if(formatType==Bold)
-        {
-            if(textArea->fontWeight() != QFont::Bold)
+        if (formatType == Bold) {
+            if (textArea->fontWeight() != QFont::Bold)
                 textArea->setFontWeight(QFont::Bold); // Bold
             else
                 textArea->setFontWeight(QFont::Normal); // Remove Bold
         }
 
-        if(formatType==Italic)
-        {
-            if(!textArea->fontItalic())
+        if (formatType == Italic) {
+            if (!textArea->fontItalic())
                 textArea->setFontItalic(true);
             else
                 textArea->setFontItalic(false);
         }
 
-        if(formatType==Underline)
-        {
-            if(!textArea->fontUnderline())
+        if (formatType == Underline) {
+            if (!textArea->fontUnderline())
                 textArea->setFontUnderline(true);
             else
                 textArea->setFontUnderline(false);
         }
 
-        if(formatType==StrikeOut)
-        {
+        if (formatType == StrikeOut) {
             QTextCharFormat format;
-            if(!textArea->textCursor().charFormat().fontStrikeOut())
+            if (!textArea->textCursor().charFormat().fontStrikeOut())
                 format.setFontStrikeOut(true);
             else
                 format.setFontStrikeOut(false);
             textArea->textCursor().mergeCharFormat(format);
         }
 
-        if(formatType==SuperScript)
-        {
+        if (formatType == SuperScript) {
             QTextCharFormat format;
-            if(textArea->textCursor().charFormat().verticalAlignment() != QTextCharFormat::AlignSuperScript)
+            if (textArea->textCursor().charFormat().verticalAlignment() != QTextCharFormat::AlignSuperScript)
                 format.setVerticalAlignment(QTextCharFormat::AlignSuperScript);
             else
                 format.setVerticalAlignment(QTextCharFormat::AlignNormal);
             textArea->textCursor().mergeCharFormat(format);
         }
 
-        if(formatType==SubScript)
-        {
+        if (formatType == SubScript) {
             QTextCharFormat format;
-            if(textArea->textCursor().charFormat().verticalAlignment() != QTextCharFormat::AlignSubScript)
+            if (textArea->textCursor().charFormat().verticalAlignment() != QTextCharFormat::AlignSubScript)
                 format.setVerticalAlignment(QTextCharFormat::AlignSubScript);
             else
                 format.setVerticalAlignment(QTextCharFormat::AlignNormal);
             textArea->textCursor().mergeCharFormat(format);
         }
-    }
-    else
-    {
+    } else {
         // Иначе надо выделить дополнительным курсором слово на котором стоит курсор
-        QTextCursor cursor=textArea->textCursor();
+        QTextCursor cursor = textArea->textCursor();
 
-        int cursorPosition=cursor.position();
+        int cursorPosition = cursor.position();
 
         // Выделяется последний символ
         cursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
-        QString prevCharacterAsString=cursor.selectedText();
+        QString prevCharacterAsString = cursor.selectedText();
         QChar prevCharacter;
-        if(prevCharacterAsString.length()==1)
-            prevCharacter=prevCharacterAsString[0];
+        if (prevCharacterAsString.length() == 1)
+            prevCharacter = prevCharacterAsString[0];
 
         // Если последний символ не является пробелом
-        if( !prevCharacter.isSpace() )
-        {
+        if (!prevCharacter.isSpace()) {
             // Выделяется все слово
-            cursor.setPosition(cursorPosition); // Сначала сбрасывается позиция на ту, которая была в начале до выделения последнего символа
+            cursor.setPosition(cursorPosition);          // Сначала сбрасывается позиция на ту, которая была в начале до выделения последнего символа
             cursor.select(QTextCursor::WordUnderCursor); // Учесть, что WordUnderCursor - это выделение слова и пробельных символов после него
         }
 
         // К выделению применяется/отменяется форматирование
         QTextCharFormat format;
 
-        if(formatType==Bold)
-        {
-            if(cursor.charFormat().fontWeight() != QFont::Bold)
+        if (formatType == Bold) {
+            if (cursor.charFormat().fontWeight() != QFont::Bold)
                 format.setFontWeight(QFont::Bold);
             else
                 format.setFontWeight(QFont::Normal); // Remove Bold
         }
 
-        if(formatType==Italic)
-        {
-            if(!cursor.charFormat().fontItalic())
+        if (formatType == Italic) {
+            if (!cursor.charFormat().fontItalic())
                 format.setFontItalic(true);
             else
                 format.setFontItalic(false);
         }
 
-        if(formatType==Underline)
-        {
-            if(!cursor.charFormat().fontUnderline())
+        if (formatType == Underline) {
+            if (!cursor.charFormat().fontUnderline())
                 format.setFontUnderline(true);
             else
                 format.setFontUnderline(false);
         }
 
-        if(formatType==StrikeOut)
-        {
-            if(!cursor.charFormat().fontStrikeOut())
+        if (formatType == StrikeOut) {
+            if (!cursor.charFormat().fontStrikeOut())
                 format.setFontStrikeOut(true);
             else
                 format.setFontStrikeOut(false);
         }
 
-        if(formatType==SuperScript)
-        {
-            if(cursor.charFormat().verticalAlignment() != QTextCharFormat::AlignSuperScript)
+        if (formatType == SuperScript) {
+            if (cursor.charFormat().verticalAlignment() != QTextCharFormat::AlignSuperScript)
                 format.setVerticalAlignment(QTextCharFormat::AlignSuperScript);
             else
                 format.setVerticalAlignment(QTextCharFormat::AlignNormal);
             textArea->mergeCurrentCharFormat(format);
         }
 
-        if(formatType==SubScript)
-        {
-            if(cursor.charFormat().verticalAlignment() != QTextCharFormat::AlignSubScript)
+        if (formatType == SubScript) {
+            if (cursor.charFormat().verticalAlignment() != QTextCharFormat::AlignSubScript)
                 format.setVerticalAlignment(QTextCharFormat::AlignSubScript);
             else
                 format.setVerticalAlignment(QTextCharFormat::AlignNormal);
@@ -216,10 +182,8 @@ void TypefaceFormatter::smartFormat(int formatType)
     emit updateOutlineButtonHiglight();
 }
 
-
 /// @brief Форматирование моноширинным шрифтом
-void TypefaceFormatter::onMonospaceClicked(void)
-{
+void TypefaceFormatter::onMonospaceClicked(void) {
     textArea->textCursor().beginEditBlock();
 
     // Устанавливается шрифт
@@ -232,24 +196,21 @@ void TypefaceFormatter::onMonospaceClicked(void)
 
     // Если в настройках разрешена автоматическая установка нужного размера
     // моноширинного шрифта
-    if(editorConfig->get_monospace_font_size_apply()==true)
-    {
+    if (editorConfig->get_monospace_font_size_apply() == true) {
         // Устанавливается нужный размер
         emit changeFontPointSize(editorConfig->get_monospace_font_size());
 
         // В выпадающем списке размеров выставляется установленный размер
-        emit changeFontsizeOnDisplay( editorConfig->get_monospace_font_size() );
+        emit changeFontsizeOnDisplay(editorConfig->get_monospace_font_size());
     }
 
     textArea->textCursor().endEditBlock();
 }
 
-
 /// @brief Форматирование в качестве кода
-void TypefaceFormatter::onCodeClicked(void)
-{
+void TypefaceFormatter::onCodeClicked(void) {
     // Если выделения нет
-    if(!textArea->textCursor().hasSelection())
+    if (!textArea->textCursor().hasSelection())
         return;
 
     textArea->textCursor().beginEditBlock();
@@ -258,14 +219,13 @@ void TypefaceFormatter::onCodeClicked(void)
     // Обработка мягкого переноса в выделенном тексте
     // Учитываются мягкие переносы до выделенного текста (1-й символ до выделения) и в выделенных абзацах
     workingSoftCarryInSelection();
-    
+
     bool enableIndent;
 
     // Проверяется, выбран ли четко блок (блоки) текста,
     // это нужно знать для того, чтобы форматировать/не форматировать отступы
     // Блок - это текст между <p>...</p>
-    if(!editor->cursorPositionDetector->isBlockSelect())
-    {
+    if (!editor->cursorPositionDetector->isBlockSelect()) {
         // Если выбран не четко блок (блоки)
 
         // Нужно определить, находится ли выделение в пределах одного блока
@@ -273,27 +233,25 @@ void TypefaceFormatter::onCodeClicked(void)
 
         // Выясняются позиции начала и конца блока
         QTextBlock currentBlock = textArea->textCursor().block();
-        int blockStart=currentBlock.position();
-        int blockStop=currentBlock.position()+currentBlock.length();
+        int blockStart = currentBlock.position();
+        int blockStop = currentBlock.position() + currentBlock.length();
 
         // Выясняются позиции начала и конца выделения
-        int selectStart=textArea->textCursor().selectionStart();
-        int selectStop =textArea->textCursor().selectionEnd();
+        int selectStart = textArea->textCursor().selectionStart();
+        int selectStop = textArea->textCursor().selectionEnd();
 
         qDebug() << "Code format action, block " << blockStart << blockStop << " selection " << selectStart << selectStop;
 
-        if(blockStart<=selectStart && blockStop>=selectStop)
-            enableIndent=false; // Выбран кусок текста в пределах блока
-        else{
+        if (blockStart <= selectStart && blockStop >= selectStop)
+            enableIndent = false; // Выбран кусок текста в пределах блока
+        else {
             qDebug() << "The selection is outside one block";
             //Хорошо бы писать в статусную строку сообщение, почему форматирование не выполнено
             textArea->textCursor().endEditBlock();
             return;
         }
-    }
-    else
-        enableIndent=true; // Выбран четко блок (блоки) текста, нужно делать отступ
-
+    } else
+        enableIndent = true; // Выбран четко блок (блоки) текста, нужно делать отступ
 
     // Вначале происходит преобразование фрагмента в чистый текст (onClearClicked() не подходит, так как съедается табуляция)
     onTextOnlyClicked();
@@ -307,8 +265,7 @@ void TypefaceFormatter::onCodeClicked(void)
     emit changeFontselectOnDisplay(font.family());
 
     // Если в настройках разрешена автоматическая установка нужного размера
-    if(editorConfig->get_code_font_size_apply()==true)
-    {
+    if (editorConfig->get_code_font_size_apply() == true) {
         // Устанавливается нужный размер
         emit changeFontPointSize(editorConfig->get_code_font_size());
 
@@ -317,14 +274,13 @@ void TypefaceFormatter::onCodeClicked(void)
     }
 
     // Устанавливается цвет текста
-    QColor codeColor(editorConfig->get_code_font_color ());
+    QColor codeColor(editorConfig->get_code_font_color());
     textArea->setTextColor(codeColor);
 
     // Если в настройках разрешена автоматическая установка нужного отступа
     // И выбран четко блок (блоки)
-    if(editorConfig->get_code_indent_size_apply()==true &&
-            enableIndent==true)
-    {
+    if (editorConfig->get_code_indent_size_apply() == true &&
+        enableIndent == true) {
         // Создание форматирования
         QTextBlockFormat indentFormatting;
         indentFormatting.setLeftMargin(editorConfig->get_code_indent_size());
@@ -339,57 +295,48 @@ void TypefaceFormatter::onCodeClicked(void)
     textArea->textCursor().endEditBlock();
 }
 
-
 /// @brief Очистка форматирования, т.е. установка стандартного шрифта, размера и убирание утолщения, наклона, подчеркивания.
 /// Картинки и таблицы не удаляются
-void TypefaceFormatter::onClearClicked(void)
-{
-    int startCursorPos=textArea->textCursor().anchor(); // Начало выделения
-    int stopCursorPos=textArea->textCursor().position(); // Конец выделения
+void TypefaceFormatter::onClearClicked(void) {
+    int startCursorPos = textArea->textCursor().anchor();  // Начало выделения
+    int stopCursorPos = textArea->textCursor().position(); // Конец выделения
     qDebug() << "Cursor start position: " << startCursorPos << "Cursor stop position: " << stopCursorPos;
 
     // Если выделение было сзаду-наперед, надо поменять начальную и конечную позицию местами
-    bool isSelectionReverse=false;
-    if(startCursorPos>stopCursorPos)
-    {
+    bool isSelectionReverse = false;
+    if (startCursorPos > stopCursorPos) {
         std::swap(startCursorPos, stopCursorPos);
-        isSelectionReverse=true;
+        isSelectionReverse = true;
     }
     // qDebug() << "Cursor start position: " << startCursorPos << "Cursor stop position: " << stopCursorPos;
 
-    bool flag_cursor_on_empty_line=editor->cursorPositionDetector->isCursorOnEmptyLine();
-    bool flag_cursor_on_space_line=editor->cursorPositionDetector->isCursorOnSpaceLine();
+    bool flag_cursor_on_empty_line = editor->cursorPositionDetector->isCursorOnEmptyLine();
+    bool flag_cursor_on_space_line = editor->cursorPositionDetector->isCursorOnSpaceLine();
 
     // Очистка возможна только если что-то выделено
     // Или курсор стоит на пустой строке с одним символом перевода строки
     // Или курсор стоит на строке, в которой нет текста (одни пробелы)
-    if(!(textArea->textCursor().hasSelection() ||
-         flag_cursor_on_empty_line ||
-         flag_cursor_on_space_line))
+    if (!(textArea->textCursor().hasSelection() ||
+          flag_cursor_on_empty_line ||
+          flag_cursor_on_space_line))
         return;
-
 
     // Запоминается положение прокрутки окна редактирования.
     // Это нужно, чтобы вернуться к такому положению после всех действий.
     // Иначе прокрутка перепрыгнет наверх документа
-    int scrollBarPosition=editor->getScrollBarPosition();
-
+    int scrollBarPosition = editor->getScrollBarPosition();
 
     // Начало изменения текста
     textArea->textCursor().beginEditBlock();
 
-
     // Если выбран НЕ четко блок, и есть форматирование списка
-    if(editor->cursorPositionDetector->isBlockSelect()==false &&
-            textArea->textCursor().currentList()!=nullptr)
-    {
+    if (editor->cursorPositionDetector->isBlockSelect() == false &&
+        textArea->textCursor().currentList() != nullptr) {
         // Выделение части строки в списке нельзя очищать обычным способом, так как появится перенос строки
         clearSimple(); // Запускается упрощенная очистка
-    }
-    else
-    {
+    } else {
         // Если курсор стоит на строке, в которой нет текста (одни пробелы) - нужно выделить эту строку
-        if(flag_cursor_on_space_line)
+        if (flag_cursor_on_space_line)
             (textArea->textCursor()).select(QTextCursor::LineUnderCursor);
 
         // К выделению применяется стандартный шрифт
@@ -403,10 +350,10 @@ void TypefaceFormatter::onClearClicked(void)
         // *****************************
 
         // Получение HTML-кода очищенного фрагмента
-        QString htmlCode=clearTypeFace( replaceSpacesOnlyTags( textArea->textCursor().selection().toHtml() ) );
+        QString htmlCode = clearTypeFace(replaceSpacesOnlyTags(textArea->textCursor().selection().toHtml()));
 
         // Замена в HTML-коде пробелов на неразывные пробелы, иначе все повторяющиеся пробелы будут удален Qt-движком
-        htmlCode=replaceSpaces(htmlCode);
+        htmlCode = replaceSpaces(htmlCode);
         // qDebug() << "After replace spaces" << htmlSimplyfier( htmlCode );
 
         // Замена в HTML-коде табуляции на спецкоды, иначе символы табуляции будут удален Qt-движком
@@ -419,9 +366,9 @@ void TypefaceFormatter::onClearClicked(void)
         // qDebug() << "After remove selected text: "<< htmlSimplyfier( textArea->toHtml() );
 
         // С помощью дополнительного курсора выясняется последняя позиция в тексте, в котором удален выделенный фрагмент
-        QTextCursor cursor=textArea->textCursor();
+        QTextCursor cursor = textArea->textCursor();
         cursor.movePosition(QTextCursor::End);
-        int afterRemoveSelectionLen=cursor.position();
+        int afterRemoveSelectionLen = cursor.position();
         // qDebug() << "After remove selection length: " << afterRemoveSelectionLen;
 
         // Вставка очищенного фрагмента
@@ -430,15 +377,15 @@ void TypefaceFormatter::onClearClicked(void)
 
         // С помощью дополнительного курсора выясняется последняя позиция в тексте, в котором вставлен очищенный фрагмент
         cursor.movePosition(QTextCursor::End);
-        int afterClearLen=cursor.position();
+        int afterClearLen = cursor.position();
         // qDebug() << "After clear length: " << afterClearLen;
 
         // Вычисляется последняя позиция выделения очищенного текста
-        int calculateEndCursorPos=startCursorPos + (afterClearLen - afterRemoveSelectionLen);
+        int calculateEndCursorPos = startCursorPos + (afterClearLen - afterRemoveSelectionLen);
         // qDebug() << "Calculate end cursor pos: " << calculateEndCursorPos;
 
         // Удаление самопроизвольно вставляемых Qt концевых пробелов в каждой текстовой ноде (компенсация поведения insertHtml())
-        calculateEndCursorPos=removeSpaces(startCursorPos, calculateEndCursorPos);
+        calculateEndCursorPos = removeSpaces(startCursorPos, calculateEndCursorPos);
 
         // Замена заранее внесенных символов ReplacementCharacter на пробелы (компенсация поведения insertHtml())
         replaceReplacementCharacterToSpaceInSelectedText(startCursorPos, calculateEndCursorPos);
@@ -447,32 +394,28 @@ void TypefaceFormatter::onClearClicked(void)
         // Выделение вставленного фрагмента
         // Если его не сделать, то первая строка получит дополнительные вертикальные отступы. Это особенность Qt
         // ********************************
-        if(!isSelectionReverse)
-        {
+        if (!isSelectionReverse) {
             cursor.setPosition(startCursorPos, QTextCursor::MoveAnchor);
             cursor.setPosition(calculateEndCursorPos, QTextCursor::KeepAnchor);
-        }
-        else
-        {
+        } else {
             cursor.setPosition(calculateEndCursorPos, QTextCursor::MoveAnchor);
             cursor.setPosition(startCursorPos, QTextCursor::KeepAnchor);
         }
         textArea->setTextCursor(cursor);
         // qDebug() << "Select text after insert HTML: " << htmlSimplyfier( textArea->textCursor().selection().toHtml() );
 
-
         // Установка форматирования абзаца
         // Если выделен блок
         // или курсор на пустой линии
         // или курсор на линии на которой нет символов
-        if(editor->cursorPositionDetector->isBlockSelect() ||
-                flag_cursor_on_empty_line ||
-                flag_cursor_on_space_line)
+        if (editor->cursorPositionDetector->isBlockSelect() ||
+            flag_cursor_on_empty_line ||
+            flag_cursor_on_space_line)
             applyPureBlockFormatForSelection();
 
         // Если была работа со строкой, в которой нет символов,
         // курсор переносится на начало строки, чтобы не путать пользователя
-        if(flag_cursor_on_space_line)
+        if (flag_cursor_on_space_line)
             textArea->moveCursor(QTextCursor::StartOfLine);
     }
 
@@ -490,13 +433,11 @@ void TypefaceFormatter::onClearClicked(void)
     emit updateOutlineButtonHiglight();
 }
 
-
-void TypefaceFormatter::applyStandartFontForSelection()
-{
+void TypefaceFormatter::applyStandartFontForSelection() {
     // Создается стандартный шрифт
     QFont font;
-    font.fromString( editorConfig->get_default_font() ); // Стандартное начертание взятое из конфига
-    font.setPointSize( editorConfig->get_default_font_size() ); // Стандартный размер взятый из конфига
+    font.fromString(editorConfig->get_default_font());        // Стандартное начертание взятое из конфига
+    font.setPointSize(editorConfig->get_default_font_size()); // Стандартный размер взятый из конфига
 
     // К выделенному тексту применяется стандартный шрифт
     textArea->setCurrentFont(font);
@@ -508,17 +449,15 @@ void TypefaceFormatter::applyStandartFontForSelection()
     emit changeFontsizeOnDisplay(editorConfig->get_default_font_size());
 }
 
-
-void TypefaceFormatter::applyPureBlockFormatForSelection()
-{
+void TypefaceFormatter::applyPureBlockFormatForSelection() {
     // qDebug() << "Set default text format";
 
     QTextBlockFormat format;
 
     // Убираются отступы
-    format.setLeftMargin(0);   // Убирается левый отступ (который, возможно был установлен слайдером или кнопками изменения отступа)
+    format.setLeftMargin(0); // Убирается левый отступ (который, возможно был установлен слайдером или кнопками изменения отступа)
     format.setRightMargin(0);
-    format.setTopMargin(0);    // Убираются межстрочные интервалы, которые самопроизвольно появляются при вставке из других программ
+    format.setTopMargin(0); // Убираются межстрочные интервалы, которые самопроизвольно появляются при вставке из других программ
     format.setBottomMargin(0);
     format.setAlignment(Qt::AlignLeft); // Выравнивание по левому краю
 
@@ -528,9 +467,7 @@ void TypefaceFormatter::applyPureBlockFormatForSelection()
     // qDebug() << "Select text after apply format: " << textArea->textCursor().selection().toHtml();
 }
 
-
-void TypefaceFormatter::removeAnchorDataForSelection()
-{
+void TypefaceFormatter::removeAnchorDataForSelection() {
     QTextCharFormat format;
     format.setAnchor(false);
     format.setAnchorHref("");
@@ -539,33 +476,27 @@ void TypefaceFormatter::removeAnchorDataForSelection()
     textArea->textCursor().mergeCharFormat(format);
 }
 
-
-void TypefaceFormatter::clearColorForSelection()
-{
+void TypefaceFormatter::clearColorForSelection() {
     QTextCharFormat format;
-    format.setForeground( qApp->palette("EditorTextArea").text() ); // QColor color=qApp->palette.text().color();
+    format.setForeground(qApp->palette("EditorTextArea").text()); // QColor color=qApp->palette.text().color();
 
     // Применение форматирование
     textArea->textCursor().mergeCharFormat(format);
 }
 
-
 /// @brief В настоящий момент этот метод не нужен, так как очистка происходит в стилях (через полное удаление атрибуторв стиля)
-void TypefaceFormatter::clearBackgroundColorForSelection()
-{
+void TypefaceFormatter::clearBackgroundColorForSelection() {
     // Сбрасывается цвет заднего фона
     QColor clearColor;
-    QBrush clearBrush( clearColor );
+    QBrush clearBrush(clearColor);
     QTextCharFormat clearCharFormat;
-    clearCharFormat.setForeground( clearBrush );
+    clearCharFormat.setForeground(clearBrush);
     textArea->textCursor().mergeCharFormat(clearCharFormat);
 }
 
-
 /// @brief Замена пробелов внутри тегов <span>, содержимое которых состоит из одних только пробелов
-QString TypefaceFormatter::replaceSpacesOnlyTags(QString htmlCode)
-{
-    qDebug() << "In TypefaceFormatter::replaceSpacesOnlyTags(): " << htmlSimplyfier( htmlCode );
+QString TypefaceFormatter::replaceSpacesOnlyTags(QString htmlCode) {
+    qDebug() << "In TypefaceFormatter::replaceSpacesOnlyTags(): " << htmlSimplyfier(htmlCode);
 
     static const QRegularExpression replaceSpaceTagsEx("<span[^>]*>\\s*</span>", QRegularExpression::InvertedGreedinessOption);
 
@@ -576,36 +507,33 @@ QString TypefaceFormatter::replaceSpacesOnlyTags(QString htmlCode)
         list << m.next().captured();
 
     // Замена найденных тегов на теги с RC-символом вместо пробелов
-    for( int n = 0; n < list.size(); n++)
-    {
-        QString line=list.at(n);
+    for (int n = 0; n < list.size(); n++) {
+        QString line = list.at(n);
 
         // Здесь однозначно известно, что строка имеет вид "<span атрибуты>пробелы</span>"
-        int spaceFrom=line.indexOf(">")+1;
-        int spaceTo=line.indexOf("<", spaceFrom)-1;
-        int spaceLen=spaceTo-spaceFrom+1;
+        int spaceFrom = line.indexOf(">") + 1;
+        int spaceTo = line.indexOf("<", spaceFrom) - 1;
+        int spaceLen = spaceTo - spaceFrom + 1;
         // qDebug() << "Space length:" << spaceLen;
 
         QString spaceLine;
-        for(int i=0; i<spaceLen; ++i)
+        for (int i = 0; i < spaceLen; ++i)
             spaceLine.append(QChar::ReplacementCharacter); // spaceLine+="&#65533;" - это была вставка как HTML-код, она работала, но лучше сразу вставлять Unicode символ
 
-        QString replaceLineLeft=line.mid(0, spaceFrom);
-        QString replaceLineRight=line.mid(spaceTo+1);
-        QString replaceLine=replaceLineLeft+spaceLine+replaceLineRight;
+        QString replaceLineLeft = line.mid(0, spaceFrom);
+        QString replaceLineRight = line.mid(spaceTo + 1);
+        QString replaceLine = replaceLineLeft + spaceLine + replaceLineRight;
 
         // qDebug() << "Replace space line from: " << list.at(n);
         // qDebug() << "Replace space line to  : " << replaceLine;
-        htmlCode.replace( list.at(n), replaceLine);
+        htmlCode.replace(list.at(n), replaceLine);
     }
 
     return htmlCode;
 }
 
-
 /// @brief Очистка начертания символов
-QString TypefaceFormatter::clearTypeFace(QString htmlCode)
-{
+QString TypefaceFormatter::clearTypeFace(QString htmlCode) {
     // Удаление какого-либо форматирования стилем
     // qDebug() << "Before clearTypeFace apply: " << htmlCode;
 
@@ -640,25 +568,23 @@ QString TypefaceFormatter::clearTypeFace(QString htmlCode)
     htmlCode.replace("<!--EndFragment-->", "");
     // qDebug() << "After replace EndFragment: " << htmlCode;
 
-
     // Замена конструкции <p ...><br /></p>, которая вставляется автоматически Qt в конец HTML текста,
     // и тем самым создает лишнюю пустую строку
     // Жадная регулярка не всегда корректно захватывает строку (почему-то работает как ленивая), приходится разбивать на подстроки
     // Кроме того, в Qt нет возможности переключать режим multiline/не-multiline в регулярных выражениях
     static const QRegularExpression regex("\\n");
-    QStringList list=htmlCode.split(regex);
+    QStringList list = htmlCode.split(regex);
     QString tempHtmlCode;
-    for(int lineNum=0; lineNum<list.count(); ++lineNum)
-    {
+    for (int lineNum = 0; lineNum < list.count(); ++lineNum) {
         // qDebug() << "L" << lineNum << " " << list[lineNum];
         static const QRegularExpression replacePBrP("<p.*><br.?\\/><\\/p.*>", QRegularExpression::InvertedGreedinessOption);
 
         list[lineNum].replace(replacePBrP, "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; \"></p>");
         // qDebug() << "L" << lineNum << " " << list[lineNum];
 
-        tempHtmlCode+=list[lineNum]+"\n";
+        tempHtmlCode += list[lineNum] + "\n";
     }
-    htmlCode=tempHtmlCode;
+    htmlCode = tempHtmlCode;
     // qDebug() << "After replace p br p: " << htmlCode;
 
     static const QRegularExpression replaceOpenHeaderEx("<[hH]\\d.*>", QRegularExpression::InvertedGreedinessOption);
@@ -667,21 +593,19 @@ QString TypefaceFormatter::clearTypeFace(QString htmlCode)
     static const QRegularExpression replaceCloseHeaderEx("</[hH]\\d.*>", QRegularExpression::InvertedGreedinessOption);
     htmlCode.replace(replaceCloseHeaderEx, "</p>");
 
-    QStringList chunks=htmlCode.split("<body>"); // Вместо удаления ".*<body>" через медленную регулярку
-    if(chunks.length()==2)
-        htmlCode=chunks.at(1);
+    QStringList chunks = htmlCode.split("<body>"); // Вместо удаления ".*<body>" через медленную регулярку
+    if (chunks.length() == 2)
+        htmlCode = chunks.at(1);
 
-    chunks=htmlCode.split("</body>"); // Вместо удаления "</body>.*" через медленную регулярку
-    if(chunks.length()==2)
-        htmlCode=chunks.at(0);
+    chunks = htmlCode.split("</body>"); // Вместо удаления "</body>.*" через медленную регулярку
+    if (chunks.length() == 2)
+        htmlCode = chunks.at(0);
 
     return htmlCode;
 }
 
-
 /// @brief Метод, применяемый при выводе отладочной информации, чтобы проще было смотреть на код
-QString TypefaceFormatter::htmlSimplyfier(QString htmlCode)
-{
+QString TypefaceFormatter::htmlSimplyfier(QString htmlCode) {
     static const QRegularExpression rx("style=\"([^\"]*)\"", QRegularExpression::InvertedGreedinessOption);
     htmlCode.replace(rx, "");
     // qDebug() << "After replace htmlSimplyfier: " << htmlCode;
@@ -689,15 +613,12 @@ QString TypefaceFormatter::htmlSimplyfier(QString htmlCode)
     return htmlCode;
 }
 
-
 /// @brief Замена в HTML-коде пробелов на спец-последовательности, иначе все повторяющиеся пробелы будут удален Qt-движком
-QString TypefaceFormatter::replaceSpaces(QString htmlCode)
-{
+QString TypefaceFormatter::replaceSpaces(QString htmlCode) {
     QDomDocument doc;
-    bool isDocParse=doc.setContent("<root>"+htmlCode+"</root>");
+    bool isDocParse = doc.setContent("<root>" + htmlCode + "</root>");
 
-    if(!isDocParse)
-    {
+    if (!isDocParse) {
         // Вывод сообщения: Слишком сложное форматирование текста. Не могу разобрать выделенный текст. Возможно некоторое нарушение верстки
         showMessageBox(tr("Unreliable parsing of complexly formatted text. Expect formatting inconsistencies."));
         return htmlCode;
@@ -707,7 +628,7 @@ QString TypefaceFormatter::replaceSpaces(QString htmlCode)
     recurseReplaceSpaces(doc.documentElement());
 
     // Особенность Qt. Преобразование DOM-XML портит символ амперсанда. Поэтому он восстанавливается
-    htmlCode=doc.toString(0).replace("&amp;#65533;", "&#65533;");
+    htmlCode = doc.toString(0).replace("&amp;#65533;", "&#65533;");
 
     htmlCode.replace("<root>", "");
     htmlCode.replace("</root>", "");
@@ -715,20 +636,16 @@ QString TypefaceFormatter::replaceSpaces(QString htmlCode)
     return htmlCode;
 }
 
-
-void TypefaceFormatter::recurseReplaceSpaces(const QDomNode &node)
-{
+void TypefaceFormatter::recurseReplaceSpaces(const QDomNode &node) {
     QDomNode domNode = node.firstChild();
 
     // Если текущий узел существует
-    while(!(domNode.isNull()))
-    {
-        if(domNode.isText()) // Если текущий узел - это текст
+    while (!(domNode.isNull())) {
+        if (domNode.isText()) // Если текущий узел - это текст
         {
             QDomText domText = domNode.toText();
-            if(!domText.isNull())
-            {
-                QString text=domText.data();
+            if (!domText.isNull()) {
+                QString text = domText.data();
                 // qDebug() << "Found text node: " << text;
 
                 // Чтобы не смыкаликись повторяющиеся пробелы, они временно заменяются на RC
@@ -744,28 +661,23 @@ void TypefaceFormatter::recurseReplaceSpaces(const QDomNode &node)
     }
 }
 
-
 /// @brief Замена заранее внесенных символов ReplacementCharacter на пробелы.
 /// Если предварительно не заменять пробелы на ReplacementCharacter, то пробелы исчезнут,
 /// ибо Qt самопроизвольно удаляет ведущие пробелы при вызове textArea->textCursor().insertHtml(htmlCode);
-void TypefaceFormatter::replaceReplacementCharacterToSpaceInSelectedText(int startCursorPos, int endCursorPos)
-{
-    QTextCursor replacementCursor=textArea->textCursor();
+void TypefaceFormatter::replaceReplacementCharacterToSpaceInSelectedText(int startCursorPos, int endCursorPos) {
+    QTextCursor replacementCursor = textArea->textCursor();
 
-    for(int pos=startCursorPos; pos<endCursorPos; pos++)
-    {
+    for (int pos = startCursorPos; pos < endCursorPos; pos++) {
         // Выделяется один символ
         replacementCursor.setPosition(pos, QTextCursor::MoveAnchor);
-        replacementCursor.setPosition(pos+1, QTextCursor::KeepAnchor);
+        replacementCursor.setPosition(pos + 1, QTextCursor::KeepAnchor);
 
         // Если выделение символа прошло успешно
-        if(replacementCursor.selectedText().length()>0)
-        {
-            QChar currentChar=replacementCursor.selectedText().at(0);
+        if (replacementCursor.selectedText().length() > 0) {
+            QChar currentChar = replacementCursor.selectedText().at(0);
             // qDebug() << "Pos: " << pos << " Char: " << currentChar << " Char code: " << currentChar.unicode();
 
-            if(currentChar==QChar::ReplacementCharacter)
-            {
+            if (currentChar == QChar::ReplacementCharacter) {
                 replacementCursor.insertText(" ");
                 // qDebug() << "Replace RC to space in position: " << pos;
             }
@@ -773,29 +685,24 @@ void TypefaceFormatter::replaceReplacementCharacterToSpaceInSelectedText(int sta
     }
 }
 
-
 /// @brief Удаление пробелов.
 /// Происходит из предположения о том, что во вставляем тексте вообще не должно быть пробелов,
 /// т. к. все пробелы были предварительно заменены на RC-символ
-int TypefaceFormatter::removeSpaces(int startCursorPos, int calculateEndCursorPos)
-{
+int TypefaceFormatter::removeSpaces(int startCursorPos, int calculateEndCursorPos) {
     // qDebug() << "Replace spaces from pos" << startCursorPos << "to pos" << calculateEndCursorPos;
 
-    QTextCursor replacementCursor=textArea->textCursor();
+    QTextCursor replacementCursor = textArea->textCursor();
 
-    for(int pos=startCursorPos; pos<calculateEndCursorPos; pos++)
-    {
+    for (int pos = startCursorPos; pos < calculateEndCursorPos; pos++) {
         // Выделяется один символ
         replacementCursor.setPosition(pos, QTextCursor::MoveAnchor);
-        replacementCursor.setPosition(pos+1, QTextCursor::KeepAnchor);
+        replacementCursor.setPosition(pos + 1, QTextCursor::KeepAnchor);
 
         // Если выделение символа прошло успешно
-        if(replacementCursor.selectedText().length()>0)
-        {
-            QChar currentChar=replacementCursor.selectedText().at(0);
+        if (replacementCursor.selectedText().length() > 0) {
+            QChar currentChar = replacementCursor.selectedText().at(0);
 
-            if(currentChar==QChar::Space)
-            {
+            if (currentChar == QChar::Space) {
                 // qDebug() << "Find space in pos" << pos;
 
                 // Удаляется пробел
@@ -806,7 +713,6 @@ int TypefaceFormatter::removeSpaces(int startCursorPos, int calculateEndCursorPo
 
                 // Так как символ удален, длина всего вставляемого фрагмента уменьшается на единицу
                 --calculateEndCursorPos;
-
             }
         }
     }
@@ -814,51 +720,46 @@ int TypefaceFormatter::removeSpaces(int startCursorPos, int calculateEndCursorPo
     return calculateEndCursorPos; // Возвращается последняя позиция в выделении, так как количество символов в выделении изменилось
 }
 
-
-QString TypefaceFormatter::replaceTabs(QString htmlCode)
-{
+QString TypefaceFormatter::replaceTabs(QString htmlCode) {
     htmlCode.replace(QChar::Tabulation, "&#9;");
     return htmlCode;
 }
-
 
 /// @brief Упрощенная очистка начертания текста.
 /// Используется для очистки начертания в строках, отформатированных как нумерованное или ненумерованное перечисление,
 /// Так как при использовании стандартного более агрессивного метода очистки, происходит создание новой строки в месте выделения,
 /// а условие в агресивный метод невозможно вставить, так как на вход очищающего кода (даже в случае одного слова из нумерованной строки)
 /// подается конструкция <ul><li>слово</li></ul>, которую невозможно отличить от конструкции с реальным одельным пунктом перечисления
-void TypefaceFormatter::clearSimple(void)
-{
-    bool flagCursorOnEmptyLine=editor->cursorPositionDetector->isCursorOnEmptyLine();
-    bool flagCursorOnSpaceLine=editor->cursorPositionDetector->isCursorOnSpaceLine();
+void TypefaceFormatter::clearSimple(void) {
+    bool flagCursorOnEmptyLine = editor->cursorPositionDetector->isCursorOnEmptyLine();
+    bool flagCursorOnSpaceLine = editor->cursorPositionDetector->isCursorOnSpaceLine();
 
     // Очистка возможна только если что-то выделено
     // Или курсор стоит на пустой строке с одним символом перевода строки
     // Или курсор стоит на строке, в которой нет текста
-    if(!(textArea->textCursor().hasSelection() ||
-         flagCursorOnEmptyLine ||
-         flagCursorOnSpaceLine))
+    if (!(textArea->textCursor().hasSelection() ||
+          flagCursorOnEmptyLine ||
+          flagCursorOnSpaceLine))
         return;
 
-    if(flagCursorOnSpaceLine)
+    if (flagCursorOnSpaceLine)
         (textArea->textCursor()).select(QTextCursor::LineUnderCursor);
 
     applyStandartFontForSelection();
 
     // Очищается формат символов
     QColor clearColor;
-    QBrush clearBrush( clearColor );
+    QBrush clearBrush(clearColor);
     QTextCharFormat clearCharFormat;
-    clearCharFormat.setForeground( clearBrush );
-    textArea->setCurrentCharFormat( clearCharFormat );
+    clearCharFormat.setForeground(clearBrush);
+    textArea->setCurrentCharFormat(clearCharFormat);
 
     // Если выделен блок
     // или курсор на пустой линии
     // или курсор на линии на которой нет символов
-    if(editor->cursorPositionDetector->isBlockSelect() ||
-            flagCursorOnEmptyLine ||
-            flagCursorOnSpaceLine)
-    {
+    if (editor->cursorPositionDetector->isBlockSelect() ||
+        flagCursorOnEmptyLine ||
+        flagCursorOnSpaceLine) {
         QTextBlockFormat format;
         // Убираются отступы
         format.setLeftMargin(0); // Убирается левый отступ (который, возможно был установлен слайдером или кнопками изменения отступа)
@@ -872,64 +773,61 @@ void TypefaceFormatter::clearSimple(void)
 
     // Если была работа со строкой, в которой нет символов,
     // курсор переносится на начало строки, чтобы не путать пользователя
-    if(flagCursorOnSpaceLine)
+    if (flagCursorOnSpaceLine)
         textArea->moveCursor(QTextCursor::StartOfLine);
 }
 
-
-void TypefaceFormatter::onTextOnlyClicked()
-{
-    int startCursorPos=textArea->textCursor().anchor(); // Начало выделения
-    int stopCursorPos=textArea->textCursor().position(); // Конец выделения
+void TypefaceFormatter::onTextOnlyClicked() {
+    int startCursorPos = textArea->textCursor().anchor();  // Начало выделения
+    int stopCursorPos = textArea->textCursor().position(); // Конец выделения
     // qDebug() << "Cursor start position: " << startCursorPos << "Cursor stop position: " << stopCursorPos;
 
     // Если выделение было сзаду-наперед, надо поменять начальную и конечную позицию местами
-    bool isSelectionReverse=false;
-    if(startCursorPos>stopCursorPos)
-    {
+    bool isSelectionReverse = false;
+    if (startCursorPos > stopCursorPos) {
         std::swap(startCursorPos, stopCursorPos);
-        isSelectionReverse=true;
+        isSelectionReverse = true;
     }
     // qDebug() << "Cursor start position: " << startCursorPos << "Cursor stop position: " << stopCursorPos;
 
-    bool flag_cursor_on_empty_line=editor->cursorPositionDetector->isCursorOnEmptyLine();
-    bool flag_cursor_on_space_line=editor->cursorPositionDetector->isCursorOnSpaceLine();
+    bool flag_cursor_on_empty_line = editor->cursorPositionDetector->isCursorOnEmptyLine();
+    bool flag_cursor_on_space_line = editor->cursorPositionDetector->isCursorOnSpaceLine();
 
     // Очистка возможна только если что-то выделено
     // Или курсор стоит на пустой строке с одним символом перевода строки
     // Или курсор стоит на строке, в которой нет текста
-    if(!(textArea->textCursor().hasSelection() ||
-         flag_cursor_on_empty_line ||
-         flag_cursor_on_space_line))
+    if (!(textArea->textCursor().hasSelection() ||
+          flag_cursor_on_empty_line ||
+          flag_cursor_on_space_line))
         return;
 
     // Запоминается положение прокрутки окна редактирования.
     // Это нужно, чтобы вернуться к такому положению после всех действий.
     // Иначе прокрутка перепрыгнет наверх документа
-    int scrollBarPosition=editor->getScrollBarPosition();
+    int scrollBarPosition = editor->getScrollBarPosition();
 
     textArea->textCursor().beginEditBlock();
 
     // Если курсор на строке, у которой нет текста
-    if(flag_cursor_on_space_line)
+    if (flag_cursor_on_space_line)
         (textArea->textCursor()).select(QTextCursor::LineUnderCursor);
 
     // Запоминается выделенный текст - только текст, без форматирования
-    QString text=textArea->textCursor().selectedText();
+    QString text = textArea->textCursor().selectedText();
     // qDebug() << "Text without formatting: " << text;
 
     // Удаляются спецсимволы, замещающие картинки. Если этого не сделать, после вставки на экране текст будет виден,
     // а во внутреннем представлении исчезнет целый абзац, где была картинка, и текст абзаца не будет сохранен
-    text=text.replace(QChar::ObjectReplacementCharacter, QChar::Space);
+    text = text.replace(QChar::ObjectReplacementCharacter, QChar::Space);
     // qDebug() << "Text without difficul characters: " << text;
 
     // Удаление выделенного фрагмента
     textArea->textCursor().removeSelectedText();
 
     // С помощью дополнительного курсора выясняется последняя позиция в тексте, в котором удален выделенный фрагмент
-    QTextCursor cursor=textArea->textCursor();
+    QTextCursor cursor = textArea->textCursor();
     cursor.movePosition(QTextCursor::End);
-    int afterRemoveSelectionLen=cursor.position();
+    int afterRemoveSelectionLen = cursor.position();
     // qDebug() << "After remove selection length: " << afterRemoveSelectionLen;
 
     // Вставка запомненного текста
@@ -938,25 +836,21 @@ void TypefaceFormatter::onTextOnlyClicked()
 
     // С помощью дополнительного курсора выясняется последняя позиция в тексте, в котором вставлен очищенный фрагмент
     cursor.movePosition(QTextCursor::End);
-    int afterClearLen=cursor.position();
+    int afterClearLen = cursor.position();
     // qDebug() << "After clear length: " << afterClearLen;
 
     // Вычисляется последняя позиция выделения очищенного текста
-    int calculateEndCursorPos=startCursorPos + (afterClearLen - afterRemoveSelectionLen);
+    int calculateEndCursorPos = startCursorPos + (afterClearLen - afterRemoveSelectionLen);
     // qDebug() << "Calculate end cursor pos: " << calculateEndCursorPos;
-
 
     // ********************************
     // Выделение вставленного фрагмента
     // Если его не сделать, то первая строка получит дополнительные вертикальные отступы. Это особенность Qt
     // ********************************
-    if(!isSelectionReverse)
-    {
+    if (!isSelectionReverse) {
         cursor.setPosition(startCursorPos, QTextCursor::MoveAnchor);
         cursor.setPosition(calculateEndCursorPos, QTextCursor::KeepAnchor);
-    }
-    else
-    {
+    } else {
         cursor.setPosition(calculateEndCursorPos, QTextCursor::MoveAnchor);
         cursor.setPosition(startCursorPos, QTextCursor::KeepAnchor);
     }
@@ -969,14 +863,14 @@ void TypefaceFormatter::onTextOnlyClicked()
     // Если выделен блок
     // или курсор на пустой линии
     // или курсор на линии на которой нет символов
-    if(editor->cursorPositionDetector->isBlockSelect() ||
-            flag_cursor_on_empty_line ||
-            flag_cursor_on_space_line)
+    if (editor->cursorPositionDetector->isBlockSelect() ||
+        flag_cursor_on_empty_line ||
+        flag_cursor_on_space_line)
         applyPureBlockFormatForSelection();
 
     // Если была работа со строкой, в которой нет символов,
     // курсор переносится на начало строки, чтобы не путать пользователя
-    if(flag_cursor_on_space_line)
+    if (flag_cursor_on_space_line)
         textArea->moveCursor(QTextCursor::StartOfLine);
 
     textArea->textCursor().endEditBlock();
@@ -991,16 +885,14 @@ void TypefaceFormatter::onTextOnlyClicked()
     emit updateOutlineButtonHiglight();
 }
 
-
-void TypefaceFormatter::onFixBreakSymbolClicked()
-{
+void TypefaceFormatter::onFixBreakSymbolClicked() {
     textArea->textCursor().beginEditBlock();
 
-    int startCursorPos=textArea->textCursor().position();
-    int stopCursorPos=textArea->textCursor().anchor();
+    int startCursorPos = textArea->textCursor().position();
+    int stopCursorPos = textArea->textCursor().anchor();
 
     // Получение исходного кода выделенного фрагмента
-    QString htmlCode=textArea->textCursor().selection().toHtml();
+    QString htmlCode = textArea->textCursor().selection().toHtml();
 
     // qDebug() << "Before replace break in onFixBreakSymbolClicked: " << htmlCode;
 
@@ -1024,15 +916,13 @@ void TypefaceFormatter::onFixBreakSymbolClicked()
     textArea->textCursor().endEditBlock();
 }
 
-
 /// @brief Слот, срабатывающий при изменении шрифта в списке шрифтов
-void TypefaceFormatter::onFontselectChanged(const QFont &font)
-{
-    if( !(editor->editorToolBarAssistant->getFlagSetFontParametersEnabled()) )
+void TypefaceFormatter::onFontselectChanged(const QFont &font) {
+    if (!(editor->editorToolBarAssistant->getFlagSetFontParametersEnabled()))
         return;
 
     // Нельзя устанавливать через интерфейс пользователя неизвестный шрифт
-    if(font.family()=="") {
+    if (font.family() == "") {
         return;
     }
 
@@ -1044,17 +934,15 @@ void TypefaceFormatter::onFontselectChanged(const QFont &font)
     textArea->setFocus();
 }
 
-
 /// @brief Слот, срабатывающий когда изменен размер шрифта через список размеров
-void TypefaceFormatter::onFontsizeChanged(int n)
-{
-    if( !(editor->editorToolBarAssistant->getFlagSetFontParametersEnabled()) )
+void TypefaceFormatter::onFontsizeChanged(int n) {
+    if (!(editor->editorToolBarAssistant->getFlagSetFontParametersEnabled()))
         return;
 
     // Номер выбранного размера преобразуется в размер
-    n=editor->editorToolBarAssistant->getFontSizeByNum(n);
+    n = editor->editorToolBarAssistant->getFontSizeByNum(n);
 
-    if(n<MINIMUM_ALLOWED_FONT_SIZE || n>MAXIMUM_ALLOWED_FONT_SIZE)
+    if (n < MINIMUM_ALLOWED_FONT_SIZE || n > MAXIMUM_ALLOWED_FONT_SIZE)
         return;
 
     // textArea->setFontPointSize(n);
@@ -1065,10 +953,8 @@ void TypefaceFormatter::onFontsizeChanged(int n)
     textArea->setFocus();
 }
 
-
 /// @brief Слот, срабатыващий при нажатии на кнопку выбора цвета текста
-void TypefaceFormatter::onFontcolorClicked()
-{
+void TypefaceFormatter::onFontcolorClicked() {
     // Текущий цвет шрифта возле курсором
     QColor currentColor = textArea->textColor();
 
@@ -1081,25 +967,22 @@ void TypefaceFormatter::onFontcolorClicked()
     // Если нет ForegroundBrush в тексте под курсором, то
     // за цвет кнопки берется цвет foreground редактора textArea (QTextEdit)
     // (это позволяет учитывать также цвет шрифта, заданный в файле stylesheet.css)
-    if(!hasForegroundBrush)
+    if (!hasForegroundBrush)
         currentColor = textArea->palette().windowText().color();
 
     // Диалог запроса цвета текста
     QColor selectedColor = QColorDialog::getColor(currentColor, editor, tr("Select text color"));
 
     // Если цвет выбран, и он правильный
-    if(selectedColor.isValid())
-    {
+    if (selectedColor.isValid()) {
         // Меняется цвет кнопки
-        emit changeFontcolor( selectedColor );
+        emit changeFontcolor(selectedColor);
     }
 }
 
-
 /// @brief Вставка горизонтальной линии в "пустой" абзац, где расположен курсор (пустой абзац заменяется на горизонтальную линию).
 /// Если есть выделение в тексте, или курсор стоит на тексте, вставка не производится
-void TypefaceFormatter::onInsertHorizontalLineClicked()
-{
+void TypefaceFormatter::onInsertHorizontalLineClicked() {
     // Если есть выделение в тексте, то вставка не производится
     if (textArea->textCursor().hasSelection())
         return;
@@ -1109,7 +992,7 @@ void TypefaceFormatter::onInsertHorizontalLineClicked()
 
     // Если курсор стоит на тексте, то вставка не производится
     textCursor.select(QTextCursor::LineUnderCursor);
-    if(!textCursor.selectedText().isNull())
+    if (!textCursor.selectedText().isNull())
         return;
 
     int cursorPosition = textCursor.position();
@@ -1117,7 +1000,7 @@ void TypefaceFormatter::onInsertHorizontalLineClicked()
     // Выбираем 1 символ слева от позиции курсора
     textCursor = textArea->textCursor();
     textCursor.movePosition(QTextCursor::StartOfLine);
-    textCursor.setPosition(cursorPosition-1, QTextCursor::MoveAnchor);
+    textCursor.setPosition(cursorPosition - 1, QTextCursor::MoveAnchor);
     textCursor.setPosition(cursorPosition, QTextCursor::KeepAnchor);
 
     // Определяем, не является ли этот символ слева от курсора мягким переносом
@@ -1125,8 +1008,7 @@ void TypefaceFormatter::onInsertHorizontalLineClicked()
     static const QRegularExpression regExp("<span\\s+style=\"(?:(?:(?:\\s*font-family:'(?:[^<]+)';)(?:\\s*font-size:(?:\\d+)pt;))|(?:(?:\\s*font-size:(?:\\d+)pt;)(?:\\s*font-family:'(?:[^<]+)';)))\">\\s*<br\\s*/\\s*>\\s*</span>",
                                            QRegularExpression::InvertedGreedinessOption);
 
-    if(html.indexOf(regExp) != -1)
-    {
+    if (html.indexOf(regExp) != -1) {
         // Если это мягкий перенос - заменяем его на абзац
         textArea->setTextCursor(textCursor);
         textArea->textCursor().insertText("\n");
@@ -1134,7 +1016,7 @@ void TypefaceFormatter::onInsertHorizontalLineClicked()
 
     // Вставка горизонтальной линии в "пустой" абзац (заменяем его на <hr>)
     textCursor.setPosition(cursorPosition, QTextCursor::MoveAnchor);
-    textCursor.setPosition(cursorPosition+1, QTextCursor::KeepAnchor);
+    textCursor.setPosition(cursorPosition + 1, QTextCursor::KeepAnchor);
     textArea->setTextCursor(textCursor);
     textArea->textCursor().removeSelectedText();
     textArea->moveCursor(QTextCursor::Left);
@@ -1143,35 +1025,32 @@ void TypefaceFormatter::onInsertHorizontalLineClicked()
     textArea->moveCursor(QTextCursor::StartOfLine);
 }
 
-
 /// @brief Обработка мягкого переноса.
 /// Учитываются мягкие переносы до выделенного текста (1-й символ до выделения), после выделенного текста и в выделенных абзацах
-void TypefaceFormatter::workingSoftCarryInSelection()
-{
+void TypefaceFormatter::workingSoftCarryInSelection() {
     // Если нет выделения, то возврат
-    if(!textArea->textCursor().hasSelection())
+    if (!textArea->textCursor().hasSelection())
         return;
 
-    int scrollBarPosition=editor->getScrollBarPosition();
+    int scrollBarPosition = editor->getScrollBarPosition();
 
     // Запоминаем первоначальное выделение текста
     int selectionStart = textArea->textCursor().selectionStart();
-    int selectionEnd   = textArea->textCursor().selectionEnd();
+    int selectionEnd = textArea->textCursor().selectionEnd();
 
     // Выбираем 1 символ слева от начала выделения текста
     QTextCursor textCursor = textArea->textCursor();
     textCursor.movePosition(QTextCursor::StartOfLine);
-    textCursor.setPosition(selectionStart-1, QTextCursor::MoveAnchor);
+    textCursor.setPosition(selectionStart - 1, QTextCursor::MoveAnchor);
     textCursor.setPosition(selectionStart, QTextCursor::KeepAnchor);
 
     // Определяем, является ли этот 1-й символ слева от выделения текста мягким переносом
-    if(textCursor.anchor() != 0 && textCursor.position() != 0) // Пропускаем начало документо
+    if (textCursor.anchor() != 0 && textCursor.position() != 0) // Пропускаем начало документо
     {
         QString html = textCursor.selection().toHtml();
         static const QRegularExpression regExp("<span\\s+style=\"(?:(?:(?:\\s*font-family:'(?:[^<]+)';)(?:\\s*font-size:(?:\\d+)pt;))|(?:(?:\\s*font-size:(?:\\d+)pt;)(?:\\s*font-family:'(?:[^<]+)';)))\">\\s*(?:<br\\s*/\\s*>\\s*){1,}\\s*</span>",
                                                QRegularExpression::InvertedGreedinessOption);
-        if(html.indexOf(regExp) != -1)
-        {
+        if (html.indexOf(regExp) != -1) {
             // Если это мягкий перенос - заменяем его на абзац
             textArea->setTextCursor(textCursor);
             textArea->textCursor().insertText("\n");
@@ -1180,15 +1059,14 @@ void TypefaceFormatter::workingSoftCarryInSelection()
 
     // Расширяем выделение на 1 символ вправо, чтобы захватить мягкий перенос в конце выделения, если он есть
     textCursor.setPosition(selectionStart, QTextCursor::MoveAnchor);
-    textCursor.setPosition(selectionEnd+1, QTextCursor::KeepAnchor);
+    textCursor.setPosition(selectionEnd + 1, QTextCursor::KeepAnchor);
     textArea->setTextCursor(textCursor);
 
     // Ищем мягкий перенос в качестве пустого абзаца в расширенном вправо выделении
     QString htmlCode = textArea->textCursor().selection().toHtml();
     static const QRegularExpression regExp_1("<span\\s+style=\"(?:(?:(?:\\s*font-family:'(?:[^<]+)';)(?:\\s*font-size:(?:\\d+)pt;))|(?:(?:\\s*font-size:(?:\\d+)pt;)(?:\\s*font-family:'(?:[^<]+)';)))\">\\s*(?:<br\\s*/\\s*>\\s*){1,}\\s*</span>",
                                              QRegularExpression::InvertedGreedinessOption);
-    if(htmlCode.indexOf(regExp_1) != -1)
-    {
+    if (htmlCode.indexOf(regExp_1) != -1) {
         // Заменяем проблемный код в html
         htmlCode.replace(regExp_1, "</p><p><br/>");
         textArea->textCursor().insertHtml(htmlCode);
@@ -1198,8 +1076,7 @@ void TypefaceFormatter::workingSoftCarryInSelection()
     htmlCode = textArea->textCursor().selection().toHtml();
     static const QRegularExpression regExp_2("(<span\\s+style=\"\\s*((?:[^<]+);\">)(?:.+)\\s*)(?:(?:<br\\s*/\\s*>\\s*){1,}\\s*)(</span>)",
                                              QRegularExpression::InvertedGreedinessOption);
-    if(htmlCode.indexOf(regExp_2) != -1)
-    {
+    if (htmlCode.indexOf(regExp_2) != -1) {
         // Удаляем в html код <br/>
         htmlCode.replace(regExp_2, "\\1");
         textArea->textCursor().insertHtml(htmlCode);
@@ -1213,64 +1090,52 @@ void TypefaceFormatter::workingSoftCarryInSelection()
     editor->setScrollBarPosition(scrollBarPosition);
 }
 
-
-void TypefaceFormatter::onLowerCase()
-{
+void TypefaceFormatter::onLowerCase() {
     this->replaceSymbolCase(QChar::Letter_Lowercase);
 }
 
-
-void TypefaceFormatter::onUpperCase()
-{
+void TypefaceFormatter::onUpperCase() {
     this->replaceSymbolCase(QChar::Letter_Uppercase);
 }
 
-
-void TypefaceFormatter::replaceSymbolCase(const QChar::Category &category)
-{
+void TypefaceFormatter::replaceSymbolCase(const QChar::Category &category) {
     QTextCursor cursor = textArea->textCursor();
     if (!cursor.hasSelection())
         cursor.select(QTextCursor::WordUnderCursor);
 
-    int startCursorPos=cursor.anchor(); // Начало выделения
-    int stopCursorPos=cursor.position(); // Конец выделения
+    int startCursorPos = cursor.anchor();  // Начало выделения
+    int stopCursorPos = cursor.position(); // Конец выделения
 
     // Если выделение было сзаду-наперед, надо поменять начальную и конечную позицию местами
-    bool isSelectionReverse=false;
-    if(startCursorPos>stopCursorPos)
-    {
-        int tempCursorPos=startCursorPos;
-        startCursorPos=stopCursorPos;
-        stopCursorPos=tempCursorPos;
+    bool isSelectionReverse = false;
+    if (startCursorPos > stopCursorPos) {
+        int tempCursorPos = startCursorPos;
+        startCursorPos = stopCursorPos;
+        stopCursorPos = tempCursorPos;
 
-        isSelectionReverse=true;
+        isSelectionReverse = true;
     }
 
-    if( isSelectionReverse )
-    {
+    if (isSelectionReverse) {
         cursor.setPosition(startCursorPos, QTextCursor::MoveAnchor);
         cursor.setPosition(stopCursorPos, QTextCursor::KeepAnchor);
     }
 
-    QTextCursor replacementCursor=textArea->textCursor();
+    QTextCursor replacementCursor = textArea->textCursor();
 
     replacementCursor.beginEditBlock();
 
-    for(int pos=startCursorPos; pos<stopCursorPos; pos++)
-    {
+    for (int pos = startCursorPos; pos < stopCursorPos; pos++) {
         // Выделяется один символ
         replacementCursor.setPosition(pos, QTextCursor::MoveAnchor);
-        replacementCursor.setPosition(pos+1, QTextCursor::KeepAnchor);
+        replacementCursor.setPosition(pos + 1, QTextCursor::KeepAnchor);
 
-        QString symbol=replacementCursor.selectedText();
+        QString symbol = replacementCursor.selectedText();
 
-        if( category==QChar::Letter_Lowercase )
-        {
-            symbol=symbol.toLower();
-        }
-        else if ( category==QChar::Letter_Uppercase )
-        {
-            symbol=symbol.toUpper();
+        if (category == QChar::Letter_Lowercase) {
+            symbol = symbol.toLower();
+        } else if (category == QChar::Letter_Uppercase) {
+            symbol = symbol.toUpper();
         }
 
         replacementCursor.insertText(symbol);
@@ -1279,10 +1144,8 @@ void TypefaceFormatter::replaceSymbolCase(const QChar::Category &category)
     replacementCursor.endEditBlock();
 }
 
-
 /// @brief Слот, срабатыващий при нажатии на кнопку выбора цвета фона текста
-void TypefaceFormatter::onBackgroundcolorClicked()
-{
+void TypefaceFormatter::onBackgroundcolorClicked() {
     // Текущий цвет фона под курсором
     QColor currentColor = textArea->textBackgroundColor();
 
@@ -1293,19 +1156,15 @@ void TypefaceFormatter::onBackgroundcolorClicked()
     bool hasTextBackgroundBrush = textAreaCharFormat.hasProperty(QTextFormat::BackgroundBrush);
 
     // Есть ли BackgroundBrush в тексте под курсором
-    if(hasTextBackgroundBrush)
-    {
+    if (hasTextBackgroundBrush) {
         // Если есть BackgroundBrush в тексте под курсором, то
         // в диалог выбора цвета передаем цвет заливки текста под курсором
         currentColor = textArea->textBackgroundColor();
-    }
-    else
-    {
+    } else {
         // Проверка, есть ли таблица под курсором и/или подключены стили из stylesheet.css
         QTextCursor txtCursor = textArea->textCursor();
         QTextTable *textTable = txtCursor.currentTable();
-        if(textTable != nullptr)
-        {
+        if (textTable != nullptr) {
             // Если курсор находится в таблице
             QTextTableFormat textTableFormat = textTable->format();
             QTextTableCell tableCell = textTable->cellAt(txtCursor);
@@ -1319,31 +1178,24 @@ void TypefaceFormatter::onBackgroundcolorClicked()
             // Есть ли BackgroundBrush в ячейке под курсором
             bool hasCelBackgroundBrush = tableCellFormat.hasProperty(QTextFormat::BackgroundBrush);
 
-            if(hasTableBackgroundBrush && hasCelBackgroundBrush && charColor.isValid())
-            {
+            if (hasTableBackgroundBrush && hasCelBackgroundBrush && charColor.isValid()) {
                 // Если есть BackgroundBrush в таблице под курсором и
                 // есть BackgroundBrush в ячейке под курсором, то
                 // в диалог выбора цвета передаем цвет заливки ячейки
                 currentColor = charColor;
-            }
-            else if(hasTableBackgroundBrush && !hasCelBackgroundBrush && tableColor.isValid())
-            {
+            } else if (hasTableBackgroundBrush && !hasCelBackgroundBrush && tableColor.isValid()) {
                 // Если есть BackgroundBrush в таблице под курсором но
                 // нет BackgroundBrush в ячейке под курсором, то
                 // в диалог выбора цвета передаем цвет заливки таблицы
                 currentColor = tableColor;
-            }
-            else
-            {
+            } else {
                 // Если нет BackgroundBrush в таблице под курсором и
                 // нет BackgroundBrush в ячейке под курсором, то
                 // в диалог выбора цвета передаем цвет background редактора textArea (QTextEdit)
                 // (это позволяет учитывать также цвет фона, заданный в файле stylesheet.css)
                 currentColor = textArea->palette().window().color();
             }
-        }
-        else
-        {
+        } else {
             // Если нет BackgroundBrush в тексте под курсором, то
             // в диалог выбора цвета передаем цвет background редактора textArea (QTextEdit)
             // (это позволяет учитывать также цвет фона, заданный в файле stylesheet.css)
@@ -1355,9 +1207,8 @@ void TypefaceFormatter::onBackgroundcolorClicked()
     QColor selectedColor = QColorDialog::getColor(currentColor, editor, tr("Select background color"));
 
     // Если цвет выбран, и он правильный
-    if(selectedColor.isValid())
-    {
+    if (selectedColor.isValid()) {
         // Меняется цвет кнопки
-        emit changeBackgroundcolor( selectedColor );
+        emit changeBackgroundcolor(selectedColor);
     }
 }

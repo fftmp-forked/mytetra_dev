@@ -1,75 +1,66 @@
+#include <QDir>
 #include <QDomElement>
 #include <QMap>
-#include <QString>
-#include <QDir>
 #include <QMessageBox>
+#include <QString>
 
 #include "Record.h"
 #include "RecordTableData.h"
 
-#include "models/appConfig/AppConfig.h"
-#include "models/tree/TreeItem.h"
-#include "models/tree/KnowTreeModel.h"
-#include "views/tree/KnowTreeView.h"
 #include "libraries/helpers/DiskHelper.h"
+#include "models/appConfig/AppConfig.h"
+#include "models/tree/KnowTreeModel.h"
+#include "models/tree/TreeItem.h"
+#include "views/tree/KnowTreeView.h"
 
-#include "libraries/wyedit/Editor.h"
+#include "libraries/GlobalParameters.h"
 #include "libraries/helpers/ObjectHelper.h"
 #include "libraries/helpers/UniqueIdHelper.h"
-#include "libraries/GlobalParameters.h"
-
+#include "libraries/wyedit/Editor.h"
 
 RecordTableData::RecordTableData(void) {
-    treeItem=nullptr;
-    workPos=-1;
+    treeItem = nullptr;
+    workPos = -1;
 }
-
 
 RecordTableData::~RecordTableData() {
     this->empty();
 }
 
-
 // Получение значения указанного поля для указанного имени поля
 // Имя поля - все возможные имена полей, кроме text (такого поля теперь вообще нет, текст запрашивается как отдельное свойство)
-QString RecordTableData::getField(QString name, int pos) const
-{
+QString RecordTableData::getField(QString name, int pos) const {
     // Если индекс недопустимый
-    if(pos<0 || pos>=tableData.size())
-    {
+    if (pos < 0 || pos >= tableData.size()) {
         QString i;
         i.setNum(pos);
-        criticalError("RecordTableData::getField() : get unavailable record index "+i);
+        criticalError("RecordTableData::getField() : get unavailable record index " + i);
     }
 
     return tableData.at(pos).getField(name);
 }
 
-
 /// @brief Установка значения указанного поля для указанного элемента
 void RecordTableData::setField(QString name, QString value, int pos) {
     // Если индекс недопустимый
-    if(pos<0 || pos>=tableData.size())
-    {
+    if (pos < 0 || pos >= tableData.size()) {
         QString i;
         i.setNum(pos);
-        criticalError("In RecordTableData::setField() unavailable record index "+i+" in table while field "+name+" try set to "+value);
+        criticalError("In RecordTableData::setField() unavailable record index " + i + " in table while field " + name + " try set to " + value);
     }
 
     tableData[pos].setField(name, value);
 }
 
-
 // Получение значения текста указанной записи
 // Если возникнет проблема, что файла с текстом записи нет, будет создан пустой файл
 QString RecordTableData::getText(int pos) {
     // Если индекс недопустимый, возвращается пустая строка
-    if(pos<0 || pos>=(int)size())
+    if (pos < 0 || pos >= (int)size())
         return QString();
 
     return tableData[pos].getTextDirect();
 }
-
 
 /// @brief Функция, которая заменяет стандартную функцию редактора по считыванию редактируемого текста.
 /// Ее вызывает редактор, передавая указатель на себя и ссылку на переменную loadText, которую надо заполнить
@@ -78,24 +69,23 @@ void RecordTableData::editorLoadCallback(QObject *editor, QString &loadText) {
     // qDebug() << "RecordTableScreen::editor_load_callback() : Dir" << dir << "File" << file;
 
     // Ссылка на объект редактора
-    Editor *currEditor=qobject_cast<Editor *>(editor);
+    Editor *currEditor = qobject_cast<Editor *>(editor);
 
     // Файл, с которым работает редактор
-    QString fileName=currEditor->getWorkDirectory()+"/"+currEditor->getFileName();
+    QString fileName = currEditor->getWorkDirectory() + "/" + currEditor->getFileName();
 
     QFile f(fileName);
 
     // Если нужный файл не существует
-    if(!f.exists())
-        criticalError("File "+fileName+" not found");
+    if (!f.exists())
+        criticalError("File " + fileName + " not found");
 
     // Открывается файл
-    if(!f.open(QIODevice::ReadOnly))
-        criticalError("File "+fileName+" not readable. Check permission.");
+    if (!f.open(QIODevice::ReadOnly))
+        criticalError("File " + fileName + " not readable. Check permission.");
 
-    loadText=QString::fromUtf8( f.readAll() );
+    loadText = QString::fromUtf8(f.readAll());
 }
-
 
 /// @brief Функция, которая заменяет стандартную функцию редактора по записыванию редактируемого текста.
 /// Ее вызывает редактор, передавая указатель на себя и текст который надо записать в переменной saveText
@@ -104,15 +94,15 @@ void RecordTableData::editorSaveCallback(QObject *editor, QString saveText) {
     // qDebug() << "RecordTableScreen::editor_load_callback() : Dir" << dir << "File" << file;
 
     // Ссылка на объект редактора
-    Editor *currEditor=qobject_cast<Editor *>(editor);
+    Editor *currEditor = qobject_cast<Editor *>(editor);
 
-    QString fileName=currEditor->getWorkDirectory()+"/"+currEditor->getFileName();
+    QString fileName = currEditor->getWorkDirectory() + "/" + currEditor->getFileName();
 
     // Текст сохраняется в файл
     QFile wfile(fileName);
 
-    if(!wfile.open(QIODevice::WriteOnly | QIODevice::Text))
-        criticalError("RecordTableData::editor_save_callback() : Can't open text file "+fileName+" for write.");
+    if (!wfile.open(QIODevice::WriteOnly | QIODevice::Text))
+        criticalError("RecordTableData::editor_save_callback() : Can't open text file " + fileName + " for write.");
 
     QTextStream out(&wfile);
     out << saveText;
@@ -121,114 +111,94 @@ void RecordTableData::editorSaveCallback(QObject *editor, QString saveText) {
     currEditor->saveTextareaImages(Editor::SAVE_IMAGES_REMOVE_UNUSED);
 }
 
-
 // Получение копии легкого образа записи
 // Эти образы используются для хранения в дереве знаний
-Record RecordTableData::getRecordLite(int pos)
-{
+Record RecordTableData::getRecordLite(int pos) {
     // Если индекс недопустимый, возвращается пустая запись
-    if(pos<0 || pos>=(int)size())
+    if (pos < 0 || pos >= (int)size())
         return Record();
 
     // Хранимая в дереве запись не может быть "тяжелой"
-    if(!tableData.at(pos).isLite())
+    if (!tableData.at(pos).isLite())
         criticalError("In RecordTableData::getRecordLite() try get fat record");
 
     return tableData.at(pos);
 }
 
-
 // Получение копии полного образа записи
 // Возвращается запись с "сырыми" данными.
-Record RecordTableData::getRecordFat(int pos)
-{
+Record RecordTableData::getRecordFat(int pos) {
     // Копия записи из дерева
-    Record resultRecord=getRecordLite(pos);
+    Record resultRecord = getRecordLite(pos);
 
     // Переключение копии записи на режим с хранением полного содержимого
     resultRecord.switchToFat();
 
     // Добавление текста записи
-    resultRecord.setText( getText(pos) );
+    resultRecord.setText(getText(pos));
 
     // Добавление бинарных образов файлов картинок
-    QString directory=AppConfig::get().get_tetradir()+"/base/"+resultRecord.getField("dir");
-    resultRecord.setPictureFiles( DiskHelper::getFilesFromDirectory(directory, "*.png") );
+    QString directory = AppConfig::get().get_tetradir() + "/base/" + resultRecord.getField("dir");
+    resultRecord.setPictureFiles(DiskHelper::getFilesFromDirectory(directory, "*.png"));
 
     return resultRecord;
 }
 
-
-Record *RecordTableData::getRecord(int pos)
-{
+Record *RecordTableData::getRecord(int pos) {
     // Если индекс недопустимый, возвращается пустая запись
-    if(pos<0 || pos>=(int)size())
+    if (pos < 0 || pos >= (int)size())
         return nullptr;
 
     return &(tableData[pos]);
 }
 
+Record *RecordTableData::getRecordById(const QString &id) {
+    int pos = this->getPosById(id);
 
-Record *RecordTableData::getRecordById(const QString &id)
-{
-    int pos=this->getPosById(id);
-
-    if(pos==-1)
-    {
+    if (pos == -1) {
         return nullptr;
-    }
-    else
-    {
+    } else {
         return this->getRecord(pos);
     }
 }
 
-
-QSet<QString> RecordTableData::getRecordsIdList()
-{
+QSet<QString> RecordTableData::getRecordsIdList() {
     QSet<QString> ids;
 
-    for( const auto & record : std::as_const(tableData))
-    {
+    for (const auto &record : std::as_const(tableData)) {
         ids << record.getField("id");
     }
 
     return ids;
 }
 
-
 // Инициализация таблицы данных на основе переданного DOM-элемента
-void RecordTableData::init(TreeItem *item, QDomElement iDomElement)
-{
+void RecordTableData::init(TreeItem *item, QDomElement iDomElement) {
     // Создание таблицы
-    if(!iDomElement.isNull())
-    {
-        QDomElement *domElement=&iDomElement;
+    if (!iDomElement.isNull()) {
+        QDomElement *domElement = &iDomElement;
         setupDataFromDom(domElement);
     }
 
     // Запоминается ссылка на ветку, которой принадлежит данная таблица
-    treeItem=item;
+    treeItem = item;
 }
 
-
 // Разбор DOM модели и преобразование ее в таблицу
-void RecordTableData::setupDataFromDom(QDomElement *domModel)
-{
+void RecordTableData::setupDataFromDom(QDomElement *domModel) {
     // QDomElement n = dommodel.documentElement();
     // QDomElement n = dommodel;
 
     // qDebug() << "In recordtabledata setup_data_from_dom() start";
 
     // Если принятый элемент не является таблицей
-    if(domModel->tagName()!="recordtable")
+    if (domModel->tagName() != "recordtable")
         return;
 
     // Определяется указатель на первый элемент с записью
-    QDomElement currentRecordDom=domModel->firstChildElement("record");
+    QDomElement currentRecordDom = domModel->firstChildElement("record");
 
-    while(!currentRecordDom.isNull())
-    {
+    while (!currentRecordDom.isNull()) {
         // Структура, куда будет помещена текущая запись
         Record currentRecord;
 
@@ -239,47 +209,42 @@ void RecordTableData::setupDataFromDom(QDomElement *domModel)
         // чтобы в подчиненных объектах прописались правильные указатели на данную запись
         (tableData.last()).setupDataFromDom(currentRecordDom);
 
-        currentRecordDom=currentRecordDom.nextSiblingElement("record");
+        currentRecordDom = currentRecordDom.nextSiblingElement("record");
     } // Закрылся цикл перебора тегов <record ...>
 
     return;
 }
 
-
 // Преобразование таблицы конечных записей в Dom документ
-QDomElement RecordTableData::exportDataToDom(QDomDocument *doc) const
-{
+QDomElement RecordTableData::exportDataToDom(QDomDocument *doc) const {
     // Если у ветки нет таблицы конечных записей, возвращается пустой документ
-    if(tableData.size()==0)
+    if (tableData.size() == 0)
         return QDomElement();
 
-    QDomElement recordTableDomData=doc->createElement("recordtable");
+    QDomElement recordTableDomData = doc->createElement("recordtable");
 
     // Пробегаются все записи в таблице
-    for(int i=0; i<tableData.size(); i++)
-        recordTableDomData.appendChild( tableData.at(i).exportDataToDom( doc ) ); // К элементу recordtabledata прикрепляются конечные записи
+    for (int i = 0; i < tableData.size(); i++)
+        recordTableDomData.appendChild(tableData.at(i).exportDataToDom(doc)); // К элементу recordtabledata прикрепляются конечные записи
 
     // qDebug() << "In export_modeldata_to_dom() recordtabledata " << doc.toString();
 
     return recordTableDomData;
 }
 
-
-void RecordTableData::exportDataToStreamWriter(QXmlStreamWriter *xmlWriter) const
-{
+void RecordTableData::exportDataToStreamWriter(QXmlStreamWriter *xmlWriter) const {
     // Если у ветки нет таблицы конечных записей
-    if(tableData.size()==0)
+    if (tableData.size() == 0)
         return;
 
     xmlWriter->writeStartElement("recordtable");
 
     // Пробегаются все записи в таблице
-    for(int i=0; i<tableData.size(); i++)
-        tableData.at(i).exportDataToStreamWriter( xmlWriter );
+    for (int i = 0; i < tableData.size(); i++)
+        tableData.at(i).exportDataToStreamWriter(xmlWriter);
 
     xmlWriter->writeEndElement(); // Закрылся recordtable
 }
-
 
 // Добавление новой записи
 // Метод только добавляет во внутреннее представление новые данные,
@@ -292,22 +257,20 @@ void RecordTableData::exportDataToStreamWriter(QXmlStreamWriter *xmlWriter) cons
 // Метод принимает "тяжелый" объект записи
 int RecordTableData::insertNewRecord(int mode,
                                      int pos,
-                                     Record record)
-{
+                                     Record record) {
     qDebug() << "RecordTableData::insert_new_record() : Insert new record to tree item " << treeItem->getAllFields();
 
     // Мотод должен принять полновесный объект записи
-    if(record.isLite()==true)
+    if (record.isLite() == true)
         criticalError("RecordTableData::insertNewRecord() can't insert lite record");
 
     // Выясняется, есть ли в дереве запись с указанным ID
     // Если есть, то генерируются новые ID для записи и новая директория хранения
     // Если нет, то это значит что запись была вырезана, но хранится в буфере,
     // и ее желательно вставить с прежним ID и прежним именем директории
-    KnowTreeModel *dataModel=static_cast<KnowTreeModel*>(find_object<KnowTreeView>("knowTreeView")->model());
-    if(record.getField("id").length()==0 ||
-            dataModel->isRecordIdExists( record.getField("id") ) )
-    {
+    KnowTreeModel *dataModel = static_cast<KnowTreeModel *>(find_object<KnowTreeView>("knowTreeView")->model());
+    if (record.getField("id").length() == 0 ||
+        dataModel->isRecordIdExists(record.getField("id"))) {
         // Создается новая запись (ID был пустой) или
         // Запись с таким ID в дереве есть, поэтому выделяются новый ID и новая директория хранения (чтобы не затереть существующие)
 
@@ -316,20 +279,18 @@ int RecordTableData::insertNewRecord(int mode,
         record.setField("file", "text.html");
 
         // Уникальный идентификатор XML записи
-        QString id=getUniqueId();
+        QString id = getUniqueId();
         record.setField("id", id);
     }
-
 
     // В список переданных полей добавляются вычислимые в данном месте поля
 
     // Время создания данной записи создается, если в принятом слепке записи нет
     // указанного поля (запись совершенно новая).
     // Если же в слепке время есть, оно сохраняется тем, которым было
-    if( record.getField("ctime").isEmpty() )
-    {
-        QDateTime ctime_dt=QDateTime::currentDateTime();
-        QString ctime=ctime_dt.toString("yyyyMMddhhmmss");
+    if (record.getField("ctime").isEmpty()) {
+        QDateTime ctime_dt = QDateTime::currentDateTime();
+        QString ctime = ctime_dt.toString("yyyyMMddhhmmss");
         record.setField("ctime", ctime);
     }
 
@@ -339,21 +300,19 @@ int RecordTableData::insertNewRecord(int mode,
     record.switchToLite();
 
     // Запись добавляется в таблицу конечных записей
-    int insertPos=-1;
-    if(mode==GlobalParameters::AddNewRecordBehavior::ADD_TO_END) // В конец списка
+    int insertPos = -1;
+    if (mode == GlobalParameters::AddNewRecordBehavior::ADD_TO_END) // В конец списка
     {
         tableData << record;
-        insertPos=tableData.size()-1;
-    }
-    else if(mode==GlobalParameters::AddNewRecordBehavior::ADD_BEFORE) // Перед указанной позицией
+        insertPos = tableData.size() - 1;
+    } else if (mode == GlobalParameters::AddNewRecordBehavior::ADD_BEFORE) // Перед указанной позицией
     {
         tableData.insert(pos, record);
-        insertPos=pos;
-    }
-    else if(mode==GlobalParameters::AddNewRecordBehavior::ADD_AFTER) // После указанной позиции
+        insertPos = pos;
+    } else if (mode == GlobalParameters::AddNewRecordBehavior::ADD_AFTER) // После указанной позиции
     {
-        tableData.insert(pos+1, record);
-        insertPos=pos+1;
+        tableData.insert(pos + 1, record);
+        insertPos = pos + 1;
     }
 
     qDebug() << "RecordTableData::insert_new_record() : New record pos" << QString::number(insertPos);
@@ -365,40 +324,34 @@ int RecordTableData::insertNewRecord(int mode,
     return insertPos;
 }
 
-
 // Замена в указанной записи переданных полей на новые значения
-void RecordTableData::editRecordFields(int pos, QMap<QString, QString> editFields)
-{
+void RecordTableData::editRecordFields(int pos, QMap<QString, QString> editFields) {
     qDebug() << "In recordtabledata method edit_record()";
 
     QMapIterator<QString, QString> i(editFields);
-    while(i.hasNext())
-    {
+    while (i.hasNext()) {
         i.next();
         setField(i.key(), i.value(), pos);
     }
 }
 
-
 /// @brief Удаление записи с указанным индексом
 /// @todo: добавить удаление приаттаченных файлов и очистку таблицы приаттаченных файлов
-void RecordTableData::deleteRecord(int i)
-{
+void RecordTableData::deleteRecord(int i) {
     qDebug() << "Try delete record num " << i << " table count " << tableData.size();
 
     // Нельзя удалять с недопустимым индексом
-    if(i>=tableData.size())
+    if (i >= tableData.size())
         return;
 
     // Удаление директории и файлов внутри, с сохранением в резервной директории
-    QString dirForDelete=AppConfig::get().get_tetradir()+"/base/"+getField("dir",i);
+    QString dirForDelete = AppConfig::get().get_tetradir() + "/base/" + getField("dir", i);
     qDebug() << "Remove dir " << dirForDelete;
     QDir(dirForDelete).removeRecursively();
 
-
     // Удаление позиции курсора из истории
-    QString id=getField("id", i);
-    if(id.length()>0)
+    QString id = getField("id", i);
+    if (id.length() > 0)
         walkHistory->removeHistoryData(id);
 
     // Удаляется элемент
@@ -406,83 +359,66 @@ void RecordTableData::deleteRecord(int i)
     qDebug() << "Delete record succesfull";
 }
 
-
-void RecordTableData::deleteRecordById(QString id)
-{
-    for(unsigned int i=0; i<size(); i++)
-        if(getField("id", i)==id)
+void RecordTableData::deleteRecordById(QString id) {
+    for (unsigned int i = 0; i < size(); i++)
+        if (getField("id", i) == id)
             deleteRecord(i); // Так как id уникальный, удаляться будет только одна запись
 }
 
-
 // Удаление всех элементов таблицы конечных записей
-void RecordTableData::deleteAllRecords(void)
-{
-    int tableSize=size(); // Запоминается размер таблицы, так как он при удалении меняется
+void RecordTableData::deleteAllRecords(void) {
+    int tableSize = size(); // Запоминается размер таблицы, так как он при удалении меняется
 
-    for(int i=0; i<tableSize; ++i)
+    for (int i = 0; i < tableSize; ++i)
         deleteRecord(0); // Удаляется самая первая запись много раз
 }
-
 
 // Метод мягкого удаления данных
 // Данные очищаются только у объекта
 // а физически данные на диске не затрагиваются
-void RecordTableData::empty(void)
-{
+void RecordTableData::empty(void) {
     tableData.clear();
-    treeItem=nullptr;
+    treeItem = nullptr;
 }
 
-
-bool RecordTableData::isRecordExists(QString id)
-{
-    for(unsigned int i=0; i<size(); i++)
-        if(getField("id", i)==id)
+bool RecordTableData::isRecordExists(QString id) {
+    for (unsigned int i = 0; i < size(); i++)
+        if (getField("id", i) == id)
             return true;
 
     return false;
 }
 
-
-bool RecordTableData::isBlockRecordExists()
-{
-    for(unsigned int i=0; i<size(); i++)
-        if(getField("block", i)=="1")
+bool RecordTableData::isBlockRecordExists() {
+    for (unsigned int i = 0; i < size(); i++)
+        if (getField("block", i) == "1")
             return true;
 
     return false;
 }
 
-
-int RecordTableData::getPosById(QString id)
-{
+int RecordTableData::getPosById(QString id) {
     qDebug() << "RecordTableData - getPosById() - id:" << id;
     qDebug() << "RecordTableData - this:" << this;
     qDebug() << "RecordTableData - this - size()" << size();
 
-    for(unsigned int i=0; i<size(); i++)
-        if(getField("id", i)==id)
+    for (unsigned int i = 0; i < size(); i++)
+        if (getField("id", i) == id)
             return i;
 
     return -1;
 }
 
-
 // Количество записей в таблице данных
-unsigned int RecordTableData::size(void) const
-{
+unsigned int RecordTableData::size(void) const {
     return tableData.size();
 }
 
-
 // Перемещение записи вверх на одну строку
-void RecordTableData::moveUp(int pos)
-{
-    if(pos>0)
-    {
+void RecordTableData::moveUp(int pos) {
+    if (pos > 0) {
         // Данные перемещаются
-        tableData.move(pos,pos-1);
+        tableData.move(pos, pos - 1);
 
         // Обновляется экран
         // QModelIndex from=index(pos-1);
@@ -491,14 +427,11 @@ void RecordTableData::moveUp(int pos)
     }
 }
 
-
 // Перемещение записи вниз на одну строку
-void RecordTableData::moveDn(int pos)
-{
-    if(pos<tableData.count())
-    {
+void RecordTableData::moveDn(int pos) {
+    if (pos < tableData.count()) {
         // Данные перемещаются
-        tableData.move(pos,pos+1);
+        tableData.move(pos, pos + 1);
 
         // Обновляется экран
         // QModelIndex from=index(pos);
@@ -507,22 +440,16 @@ void RecordTableData::moveDn(int pos)
     }
 }
 
-
 // Получение ссылки на объект ветки, которой принадлежит таблица
-TreeItem *RecordTableData::getItem(void)
-{
+TreeItem *RecordTableData::getItem(void) {
     return treeItem;
 }
 
-
-int RecordTableData::getWorkPos(void)
-{
+int RecordTableData::getWorkPos(void) {
     return workPos;
 }
 
-
-void RecordTableData::setWorkPos(int pos)
-{
+void RecordTableData::setWorkPos(int pos) {
     qDebug() << "RecordTableData save work cursor position as " << pos;
-    workPos=pos;
+    workPos = pos;
 }

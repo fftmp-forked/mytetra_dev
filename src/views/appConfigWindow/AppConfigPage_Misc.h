@@ -1,39 +1,33 @@
 #pragma once
 
-#include <QWidget>
 #include <QCheckBox>
 #include <QGroupBox>
 #include <QPushButton>
+#include <QWidget>
 
 #include "ConfigPage.h"
 
+class AppConfigPage_Misc : public ConfigPage {
+    Q_OBJECT
 
-class AppConfigPage_Misc : public ConfigPage
-{
- Q_OBJECT
+  public:
+    AppConfigPage_Misc(QWidget *parent = nullptr);
+    virtual ~AppConfigPage_Misc(void){};
 
-public:
-  AppConfigPage_Misc(QWidget *parent = nullptr);
-  virtual ~AppConfigPage_Misc(void) {};
+    int applyChanges(void);
 
-  int applyChanges(void);
+  private slots:
+    void onClickedEditMyTetraConfigFile(void);
 
-private slots:
-  void onClickedEditMyTetraConfigFile(void);
+  protected:
+    void setupUi(void);
+    void setupSignals(void);
+    void assembly(void);
 
-protected:
+    QCheckBox *cutBranchConfirm;   // Требуется ли показывать предупреждение при вырезании ветки
+    QCheckBox *printDebugMessages; // Выводить ли в консоль отладочные сообщения
+    QPushButton *editMyTetraConfigFile;
 
-  void setupUi(void);
-  void setupSignals(void);
-  void assembly(void);
-
-  QCheckBox *cutBranchConfirm;        // Требуется ли показывать предупреждение при вырезании ветки
-  QCheckBox *printDebugMessages;      // Выводить ли в консоль отладочные сообщения
-  QPushButton *editMyTetraConfigFile;
-
-  // Объединяющая рамка для блока с кнопкой редактирования конфиг-файла
-  QGroupBox *dangerBox;
+    // Объединяющая рамка для блока с кнопкой редактирования конфиг-файла
+    QGroupBox *dangerBox;
 };
-
-
-

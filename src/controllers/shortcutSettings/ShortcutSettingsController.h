@@ -1,15 +1,12 @@
 #pragma once
 
-#include <QObject>
-#include "views/shortcutSettings/ShortcutSettingsView.h"
 #include "models/shortcutSettings/ShortcutSettingsModel.h"
+#include "views/shortcutSettings/ShortcutSettingsView.h"
+#include <QObject>
 
-
-class ShortcutSettingsController : public QObject
-{
+class ShortcutSettingsController : public QObject {
     Q_OBJECT
-public:
-
+  public:
     struct ShortcutData {
         QString section;
         QString command;
@@ -18,24 +15,21 @@ public:
         QString defaultKeys;
     };
 
-    ShortcutSettingsController(QObject *parent = nullptr) {Q_UNUSED(parent);};
-    ~ShortcutSettingsController() {};
+    ShortcutSettingsController(QObject *parent = nullptr) { Q_UNUSED(parent); };
+    ~ShortcutSettingsController(){};
 
     void init();
     void applyChanges();
 
-    ShortcutSettingsView* getView() const {return view;}
+    ShortcutSettingsView *getView() const { return view; }
 
     ShortcutData getShortcutData(const QModelIndex &index) const;
     ShortcutData getEmptyShortcutData() const;
 
     void setShortcut(QString shortcutFullName, QString sequenceText);
-    void resetAllShortcutsToDefault() {model->resetAllShortcutsToDefault();}
+    void resetAllShortcutsToDefault() { model->resetAllShortcutsToDefault(); }
 
-protected:
-
+  protected:
     ShortcutSettingsView *view;
     ShortcutSettingsModel *model;
-
 };
-

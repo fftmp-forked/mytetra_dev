@@ -1,36 +1,30 @@
 #include <QAbstractScrollArea>
-#include <QPrintDialog>
-#include <QToolBar>
-#include <QAction>
-#include <QTextFormat>
-#include <QMouseEvent>
-#include <QTextFrame>
-#include <QTextDocument>
 #include <QAbstractTextDocumentLayout>
-#include <QPainter>
+#include <QAction>
 #include <QDebug>
+#include <QMouseEvent>
 #include <QPageSetupDialog>
+#include <QPainter>
+#include <QPrintDialog>
+#include <QTextDocument>
+#include <QTextFormat>
+#include <QTextFrame>
+#include <QToolBar>
 
+#include "../../libraries/ShortcutManager/ShortcutManager.h"
 #include "PreviewView.h"
 #include "PrintPreview.h"
-#include "../../libraries/ShortcutManager/ShortcutManager.h"
 
-
-static inline int inchesToPixels(float inches, QPaintDevice *device)
-{
+static inline int inchesToPixels(float inches, QPaintDevice *device) {
     return qRound(inches * device->logicalDpiY());
 }
 
-
-static inline qreal mmToInches(double mm)
-{
-    return mm*0.039370147;
+static inline qreal mmToInches(double mm) {
+    return mm * 0.039370147;
 }
 
-
 PrintPreview::PrintPreview(const QTextDocument *document, QWidget *parent)
-    : QDialog(parent), printer(QPrinter::HighResolution)
-{
+    : QDialog(parent), printer(QPrinter::HighResolution) {
     setWindowTitle(tr("MyTetra - Print Preview"));
 
     printer.setFullPage(true);
@@ -47,15 +41,11 @@ PrintPreview::PrintPreview(const QTextDocument *document, QWidget *parent)
     assembly();
 }
 
-
-PrintPreview::~PrintPreview()
-{
+PrintPreview::~PrintPreview() {
     delete doc; // todo: Проверить на утечку памяти, добавить объекты для удаления если необходимо
 }
 
-
-void PrintPreview::setupPrintDoc()
-{
+void PrintPreview::setupPrintDoc() {
     QSizeF page = printer.pageLayout().paintRectPoints().size();
     page.setWidth(page.width() * view->logicalDpiX() / printer.logicalDpiX());
     page.setHeight(page.height() * view->logicalDpiY() / printer.logicalDpiY());
@@ -74,43 +64,37 @@ void PrintPreview::setupPrintDoc()
     doc->setDefaultFont(f);
 }
 
-
-void PrintPreview::setupUI()
-{
+void PrintPreview::setupUI() {
     // Кнопки на панели инструментов
-    buttonPrint=new QToolButton(this);
+    buttonPrint = new QToolButton(this);
     buttonPrint->setText(tr("Print..."));
     buttonPrint->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-    buttonPageSetup=new QToolButton(this);
+    buttonPageSetup = new QToolButton(this);
     buttonPageSetup->setText(tr("Page Setup..."));
     buttonPageSetup->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-    buttonZoomIn=new QToolButton(this);
+    buttonZoomIn = new QToolButton(this);
     buttonZoomIn->setText(tr("Zoom In"));
     buttonZoomIn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-    buttonZoomOut=new QToolButton(this);
+    buttonZoomOut = new QToolButton(this);
     buttonZoomOut->setText(tr("Zoom Out"));
     buttonZoomOut->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-    buttonClose=new QToolButton(this);
+    buttonClose = new QToolButton(this);
     buttonClose->setText(tr("Close"));
     buttonClose->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 }
 
-
-void PrintPreview::setupShortcuts()
-{
+void PrintPreview::setupShortcuts() {
     qDebug() << "Setup shortcut for" << staticMetaObject.className();
 
-    buttonPrint->setShortcut( ShortcutManager::get().getKeySequence(ShortcutManager::SECTION_MISC, "print") ); // Устанавливается шорткат
-    buttonPrint->setToolTip( ShortcutManager::get().getKeySequenceAsText(ShortcutManager::SECTION_MISC, "print") ); // ToolTip зависит от шортката
+    buttonPrint->setShortcut(ShortcutManager::get().getKeySequence(ShortcutManager::SECTION_MISC, "print"));      // Устанавливается шорткат
+    buttonPrint->setToolTip(ShortcutManager::get().getKeySequenceAsText(ShortcutManager::SECTION_MISC, "print")); // ToolTip зависит от шортката
 }
 
-
-void PrintPreview::setupSignals()
-{
+void PrintPreview::setupSignals() {
     connect(buttonPrint, &QToolButton::clicked, this, &PrintPreview::print);
     connect(buttonPageSetup, &QToolButton::clicked, this, &PrintPreview::pageSetup);
     connect(buttonZoomIn, &QToolButton::clicked, view, &PreviewView::zoomIn);
@@ -121,11 +105,9 @@ void PrintPreview::setupSignals()
     connect(&ShortcutManager::get(), &ShortcutManager::updateWidgetShortcut, this, &PrintPreview::setupShortcuts);
 }
 
-
-void PrintPreview::assembly()
-{
+void PrintPreview::assembly() {
     // Панель инструментов
-    QHBoxLayout *toolsbox=new QHBoxLayout();
+    QHBoxLayout *toolsbox = new QHBoxLayout();
     toolsbox->addWidget(buttonPrint);
     toolsbox->addWidget(buttonPageSetup);
     toolsbox->addWidget(buttonZoomIn);
@@ -133,22 +115,18 @@ void PrintPreview::assembly()
     toolsbox->addWidget(buttonClose);
     toolsbox->addStretch();
 
-
     // Сборка содержимого окна
-    centralLayout=new QVBoxLayout();
+    centralLayout = new QVBoxLayout();
     centralLayout->addLayout(toolsbox);
     centralLayout->addWidget(view);
     centralLayout->setSpacing(1);
-    centralLayout->setContentsMargins(1,1,1,1);
+    centralLayout->setContentsMargins(1, 1, 1, 1);
 
     setLayout(centralLayout);
     resize(800, 600);
 }
 
-
-
-void PrintPreview::print()
-{
+void PrintPreview::print() {
     QPrintDialog *dlg = new QPrintDialog(&printer, this);
     if (dlg->exec() == QDialog::Accepted) {
         doc->print(&printer);
@@ -156,9 +134,7 @@ void PrintPreview::print()
     delete dlg;
 }
 
-
-void PrintPreview::pageSetup()
-{
+void PrintPreview::pageSetup() {
     QPageSetupDialog dlg(&printer, this);
     if (dlg.exec() == QDialog::Accepted) {
         setupPrintDoc(); // setup();

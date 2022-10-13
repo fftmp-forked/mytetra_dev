@@ -1,62 +1,54 @@
 #pragma once
 
-#include <QWidget>
 #include <QDialog>
 #include <QProcess>
-
+#include <QWidget>
 
 class ConsoleEmulator;
 
+class CommandRun : public QObject {
+    Q_OBJECT
 
-class CommandRun : public QObject
-{
- Q_OBJECT
+  public:
+    CommandRun(QObject *parent = nullptr) { Q_UNUSED(parent) };
+    virtual ~CommandRun();
 
-public:
- CommandRun(QObject *parent=nullptr) {Q_UNUSED(parent)};
- virtual ~CommandRun();
+    void setCommand(QString cmd);
+    void setArgs(QStringList args);
+    void run(bool visible = true);
+    int runSimple();
 
- void setCommand(QString cmd);
- void setArgs(QStringList args);
- void run(bool visible=true);
- int runSimple();
+    void setWindowTitle(QString title);
+    void setMessageText(QString text);
 
- void setWindowTitle(QString title);
- void setMessageText(QString text);
+  signals:
 
-signals:
+    // Оповещение других объектов MyTetra о том что работа выполняемой команды закончилась
+    // Должно вызываться при закрытии окна консоли
+    void finishWork();
 
- // Оповещение других объектов MyTetra о том что работа выполняемой команды закончилась
- // Должно вызываться при закрытии окна консоли
- void finishWork();
+  private slots:
 
-private slots:
+    void onManualCloseProcess(void);
+    void onProcessError(QProcess::ProcessError error);
 
- void onManualCloseProcess(void);
- void onProcessError(QProcess::ProcessError error);
+    void onReadyReadStandardOutput();
+    void onProcessFinish(int exitCode, QProcess::ExitStatus exitStatus);
 
- void onReadyReadStandardOutput();
- void onProcessFinish(int exitCode, QProcess::ExitStatus exitStatus);
+  private:
+    void printOutput() const;
 
-private:
+    void createProcessAndConsole(void);
+    void removeProcessAndConsole(void);
 
- void printOutput() const;
+    QString m_command;
+    QStringList m_args;
+    QString m_windowTitle;
+    QString m_messageText;
 
- void createProcessAndConsole(void);
- void removeProcessAndConsole(void);
+    QProcess *m_process = nullptr;
 
+    ConsoleEmulator *m_console = nullptr;
 
- QString m_command;
- QStringList m_args;
- QString m_windowTitle;
- QString m_messageText;
-
- QProcess *m_process=nullptr;
-
- ConsoleEmulator *m_console=nullptr;
-
- bool m_isError;
-
+    bool m_isError;
 };
-
-

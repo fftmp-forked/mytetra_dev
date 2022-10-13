@@ -1,63 +1,52 @@
-#include <QTextBlock>
-#include <QTextFragment>
 #include <QDebug>
 #include <QFileDialog>
 #include <QImage>
 #include <QImageReader>
-#include <QTextDocumentFragment>
 #include <QMessageBox>
-#include <QImage>
+#include <QTextBlock>
+#include <QTextDocumentFragment>
+#include <QTextFragment>
 
 #include "ImageFormatter.h"
 
 #include "../Editor.h"
-#include "../EditorTextArea.h"
-#include "../EditorImageProperties.h"
 #include "../EditorCursorPositionDetector.h"
+#include "../EditorImageProperties.h"
+#include "../EditorTextArea.h"
 
 #include "../../Downloader.h"
 #include "../../helpers/UniqueIdHelper.h"
 
-
-ImageFormatter::ImageFormatter()
-{
-
+ImageFormatter::ImageFormatter() {
 }
 
-
 /// @brief Формат картинки, которая выделена (если выделена единственная картинка)
-QTextImageFormat ImageFormatter::imageFormatOnSelect(void)
-{
+QTextImageFormat ImageFormatter::imageFormatOnSelect(void) {
     // Если выбрано изображение
-    if(editor->cursorPositionDetector->isImageSelect()) {
+    if (editor->cursorPositionDetector->isImageSelect()) {
         return editor->cursorPositionDetector->getImageSelectFormat();
     }
 
     return QTextImageFormat();
 }
 
-
 /// @brief Формат картинки на которой находится курсор
-QTextImageFormat ImageFormatter::imageFormatOnCursor(void)
-{
-  // Проверка срабатывает только если нет выделения
-  if(textArea->textCursor().hasSelection()==false)
-  {
-    QTextImageFormat imageFormat = textArea->textCursor().charFormat().toImageFormat();
+QTextImageFormat ImageFormatter::imageFormatOnCursor(void) {
+    // Проверка срабатывает только если нет выделения
+    if (textArea->textCursor().hasSelection() == false) {
+        QTextImageFormat imageFormat = textArea->textCursor().charFormat().toImageFormat();
 
-    if(imageFormat.isValid())
-      return imageFormat;
-  }
+        if (imageFormat.isValid())
+            return imageFormat;
+    }
 
-  return QTextImageFormat();
+    return QTextImageFormat();
 }
 
-
-void ImageFormatter::editImageProperties(void)
-{
+void ImageFormatter::editImageProperties(void) {
     // Для картинки с формулой свойства изображения редактироваться не должны
-    if(editor->cursorPositionDetector->isMathExpressionSelect() ||
-            editor->cursorPositionDetector->isCursorOnMathExpression()) {
+    if (editor->cursorPositionDetector->isMathExpressionSelect() ||
+        editor->cursorPositionDetector->isCursorOnMathExpression()) {
         return;
     }
 
@@ -65,25 +54,24 @@ void ImageFormatter::editImageProperties(void)
     QTextImageFormat imageFormat;
 
     // Если выбрано изображение
-    if(editor->cursorPositionDetector->isImageSelect()) {
-        imageFormat=imageFormatOnSelect();
-    }
-    else if(editor->cursorPositionDetector->isCursorOnImage()) {
+    if (editor->cursorPositionDetector->isImageSelect()) {
+        imageFormat = imageFormatOnSelect();
+    } else if (editor->cursorPositionDetector->isCursorOnImage()) {
         // Если изображение не выбрано, но курсор находится в позиции изображения
-        imageFormat=imageFormatOnCursor();
+        imageFormat = imageFormatOnCursor();
     }
 
     // Выясняется имя картинки в ресурсах документа
-    QString imageName=imageFormat.name();
+    QString imageName = imageFormat.name();
 
     // По имени из ресурсов вытягивается кратинка
     QUrl urlName(imageName);
-    QVariant imageData=textArea->document()->resource(QTextDocument::ImageResource, urlName);
-    QImage image=imageData.value<QImage>();
+    QVariant imageData = textArea->document()->resource(QTextDocument::ImageResource, urlName);
+    QImage image = imageData.value<QImage>();
 
     // Выяснятся реальные размеры картики
-    int realImageWidth=image.width();
-    int realImageHeight=image.height();
+    int realImageWidth = image.width();
+    int realImageHeight = image.height();
 
     qDebug() << "Real image width " << realImageWidth << " height " << realImageHeight;
     qDebug() << "Format image width " << imageFormat.width() << " height " << imageFormat.height();
@@ -99,14 +87,11 @@ void ImageFormatter::editImageProperties(void)
     dialog.set_real_height(realImageHeight);
 
     // Если в форматировании картинки не задан размер картинки
-    if(imageFormat.width()==0 && imageFormat.height()==0)
-    {
+    if (imageFormat.width() == 0 && imageFormat.height() == 0) {
         // В окне настройки стартовый размер задается как размер картинки
         dialog.set_width(realImageWidth);
         dialog.set_height(realImageHeight);
-    }
-    else
-    {
+    } else {
         // В окне настройки стартовый размер задается согласно форматированию
         dialog.set_width(imageFormat.width());
         dialog.set_height(imageFormat.height());
@@ -114,21 +99,18 @@ void ImageFormatter::editImageProperties(void)
 
     dialog.update_percent();
 
-
     // Запуск диалога на выполнение
-    if(dialog.exec()!=QDialog::Accepted)
+    if (dialog.exec() != QDialog::Accepted)
         return;
 
     imageFormat.setWidth(dialog.get_width());
     imageFormat.setHeight(dialog.get_height());
 
     // Если в новом формате картинки нет никаких ошибок
-    if(imageFormat.isValid())
-    {
+    if (imageFormat.isValid()) {
 
         // Если выбрано изображение
-        if(editor->cursorPositionDetector->isImageSelect())
-        {
+        if (editor->cursorPositionDetector->isImageSelect()) {
             QTextFragment fragment;
 
             // Блок, в пределах которого находится курсор
@@ -137,24 +119,23 @@ void ImageFormatter::editImageProperties(void)
 
             // Перебиратся фрагметы блока
             // Так как известно, что картинка выделена, поиск фрагмента будет успешным
-            for(it = currentBlock.begin(); !(it.atEnd()); ++it)
-            {
+            for (it = currentBlock.begin(); !(it.atEnd()); ++it) {
                 fragment = it.fragment();
 
                 // Если фрагмент содержит изображение, для которого редактировались свойства
-                if(fragment.isValid() &&
-                        fragment.charFormat().isImageFormat() &&
-                        fragment.charFormat().toImageFormat().name()==imageName) {
+                if (fragment.isValid() &&
+                    fragment.charFormat().isImageFormat() &&
+                    fragment.charFormat().toImageFormat().name() == imageName) {
 
-                    int fragmentStart=fragment.position();
-                    int fragmentEnd=fragmentStart+fragment.length();
-                    int selectionStart=textArea->textCursor().selectionStart();
-                    int selectionEnd=textArea->textCursor().selectionEnd();
+                    int fragmentStart = fragment.position();
+                    int fragmentEnd = fragmentStart + fragment.length();
+                    int selectionStart = textArea->textCursor().selectionStart();
+                    int selectionEnd = textArea->textCursor().selectionEnd();
 
                     // Если начало и конец фрагмента совпадает с координатами выделения
                     // Проверяется и случай, когда выделение было в обратную сторону
-                    if( (fragmentStart==selectionStart && fragmentEnd==selectionEnd) ||
-                            (fragmentStart==selectionEnd && fragmentEnd==selectionStart) ) {
+                    if ((fragmentStart == selectionStart && fragmentEnd == selectionEnd) ||
+                        (fragmentStart == selectionEnd && fragmentEnd == selectionStart)) {
                         break; // Переменная fragment содержит только картинку, для которой редактируются свойства
                     }
                 }
@@ -167,17 +148,15 @@ void ImageFormatter::editImageProperties(void)
             helpCursor.setCharFormat(imageFormat);
         }
 
-
         // Если изображение не выбрано, но курсор находится в позиции изображения
-        if(editor->cursorPositionDetector->isCursorOnImage())
-        {
-            int cursorPosition=textArea->textCursor().position();
+        if (editor->cursorPositionDetector->isCursorOnImage()) {
+            int cursorPosition = textArea->textCursor().position();
 
-            QTextCursor helper=textArea->textCursor();
+            QTextCursor helper = textArea->textCursor();
 
             helper.setPosition(cursorPosition);
 
-            if(textArea->textCursor().atBlockStart())
+            if (textArea->textCursor().atBlockStart())
                 helper.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
             else
                 helper.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
@@ -185,236 +164,207 @@ void ImageFormatter::editImageProperties(void)
             helper.setCharFormat(imageFormat);
         }
     }
-
 }
-
 
 // Обработка клавиши добавления картинки
-void ImageFormatter::onInsertImageFromFileClicked(void)
-{
+void ImageFormatter::onInsertImageFromFileClicked(void) {
 
-  // Если выделена картинка
-  if(editor->cursorPositionDetector->isImageSelect() ||
-     editor->cursorPositionDetector->isCursorOnImage())
-  {
-    qDebug() << "Image selected";
+    // Если выделена картинка
+    if (editor->cursorPositionDetector->isImageSelect() ||
+        editor->cursorPositionDetector->isCursorOnImage()) {
+        qDebug() << "Image selected";
 
-    editImageProperties();
-  }
-  else
-  {
-    // Иначе картинка не выделена, и срабатывает режим добавления
-    // картинки из файла
+        editImageProperties();
+    } else {
+        // Иначе картинка не выделена, и срабатывает режим добавления
+        // картинки из файла
 
-    // Диалог выбора файлов катинок
-    QFileDialog imageSelectDialog(editor);
-    imageSelectDialog.setFileMode(QFileDialog::ExistingFiles); // QFileDialog::ExistingFile
-    imageSelectDialog.setNameFilter("*.png *.jpg *.gif");
-    imageSelectDialog.setWindowTitle(tr("Insert image"));
-    imageSelectDialog.setDirectory(QDir::homePath());
-    int result=imageSelectDialog.exec();
+        // Диалог выбора файлов катинок
+        QFileDialog imageSelectDialog(editor);
+        imageSelectDialog.setFileMode(QFileDialog::ExistingFiles); // QFileDialog::ExistingFile
+        imageSelectDialog.setNameFilter("*.png *.jpg *.gif");
+        imageSelectDialog.setWindowTitle(tr("Insert image"));
+        imageSelectDialog.setDirectory(QDir::homePath());
+        int result = imageSelectDialog.exec();
 
-    // Если не было нажато "Ок"
-    if(result!=QDialog::Accepted)
-    {
-        return;
-    }
+        // Если не было нажато "Ок"
+        if (result != QDialog::Accepted) {
+            return;
+        }
 
-    // Выясняется список выбранных файлов
-    QStringList files=imageSelectDialog.selectedFiles();
+        // Выясняется список выбранных файлов
+        QStringList files = imageSelectDialog.selectedFiles();
 
-    // Если ни один файл не выбран
-    if(files.size()==0)
-    {
-        return;
-    }
+        // Если ни один файл не выбран
+        if (files.size() == 0) {
+            return;
+        }
 
-    // Перебираются файлы выбранных картинок
-    for(int i=0; i<files.size(); ++i)
-    {
-      // Текущее имя файла
-      QString currFileName=files.at(i);
+        // Перебираются файлы выбранных картинок
+        for (int i = 0; i < files.size(); ++i) {
+            // Текущее имя файла
+            QString currFileName = files.at(i);
 
-      // Картинка загружается из файла
-      QImage image = QImageReader(currFileName).read();
+            // Картинка загружается из файла
+            QImage image = QImageReader(currFileName).read();
 
-      // Внутреннее имя картинки
-      QString imageName=getUniqueImageName();
+            // Внутреннее имя картинки
+            QString imageName = getUniqueImageName();
 
-      // Картинка добавляется в хранилище документа
-      textArea->document()->addResource(QTextDocument::ImageResource, QUrl(imageName), image );
+            // Картинка добавляется в хранилище документа
+            textArea->document()->addResource(QTextDocument::ImageResource, QUrl(imageName), image);
 
-      // Создается описание форматированной картинки
-      // QTextImageFormat imageFormat;
-      // imageFormat.setName(link.toString());
+            // Создается описание форматированной картинки
+            // QTextImageFormat imageFormat;
+            // imageFormat.setName(link.toString());
 
-      // Картинка вставляется в текст
-      QTextCursor cursor=textArea->textCursor();
-      cursor.insertImage(imageName);
-    } // Закончился цикл перебора файлов картинок
-  } // Завершилось условие что картинка не выбрана и нужно добавлять из файла
-
+            // Картинка вставляется в текст
+            QTextCursor cursor = textArea->textCursor();
+            cursor.insertImage(imageName);
+        } // Закончился цикл перебора файлов картинок
+    }     // Завершилось условие что картинка не выбрана и нужно добавлять из файла
 }
-
 
 // Вызов окна настройки свойств изображения
-void ImageFormatter::onContextMenuEditImageProperties()
-{
-  // Для картинки с формулой свойства изображения редактироваться не должны
-  if(editor->cursorPositionDetector->isMathExpressionSelect() ||
-     editor->cursorPositionDetector->isCursorOnMathExpression()) {
-    return;
-  }
+void ImageFormatter::onContextMenuEditImageProperties() {
+    // Для картинки с формулой свойства изображения редактироваться не должны
+    if (editor->cursorPositionDetector->isMathExpressionSelect() ||
+        editor->cursorPositionDetector->isCursorOnMathExpression()) {
+        return;
+    }
 
-  // Если выделена картинка
-  if(editor->cursorPositionDetector->isImageSelect() ||
-     editor->cursorPositionDetector->isCursorOnImage())
-  {
-    qDebug() << "Image selected";
+    // Если выделена картинка
+    if (editor->cursorPositionDetector->isImageSelect() ||
+        editor->cursorPositionDetector->isCursorOnImage()) {
+        qDebug() << "Image selected";
 
-    editImageProperties();
-  }
+        editImageProperties();
+    }
 }
 
-
-void ImageFormatter::onDoubleClickOnImage(void)
-{
+void ImageFormatter::onDoubleClickOnImage(void) {
     onContextMenuEditImageProperties();
 }
 
+void ImageFormatter::onDownloadImages(const QString html) {
+    // qDebug() << "HTML for download images: " << html;
 
-void ImageFormatter::onDownloadImages(const QString html)
-{
-  // qDebug() << "HTML for download images: " << html;
+    // Создается временный документ на основе HTML (именно документ, так как у QTextDocumentFragment нет методов перебора блоков текста)
+    QTextDocument textDocument;
+    QTextCursor textCursor(&textDocument);
+    textCursor.insertHtml(html);
 
-  // Создается временный документ на основе HTML (именно документ, так как у QTextDocumentFragment нет методов перебора блоков текста)
-  QTextDocument textDocument;
-  QTextCursor textCursor(&textDocument);
-  textCursor.insertHtml(html);
+    QStringList downloadReferences; // Список ссылок на изображения, которые надо загрузить
 
-  QStringList downloadReferences; // Список ссылок на изображения, которые надо загрузить
+    QMap<QString, QString> referencesAndInternalNames; // Соответствие ссылок на изображения и внутренних имен изображений
 
-  QMap<QString, QString> referencesAndInternalNames; // Соответствие ссылок на изображения и внутренних имен изображений
+    QMessageBox msgBox;
 
-  QMessageBox msgBox;
+    QTextBlock textBlock = textDocument.begin();
+    while (textBlock.isValid()) {
+        bool resetBlock = false;
 
-  QTextBlock textBlock = textDocument.begin();
-  while(textBlock.isValid())
-  {
-    bool resetBlock=false;
+        QTextBlock::iterator it;
 
-    QTextBlock::iterator it;
+        for (it = textBlock.begin(); !(it.atEnd()); ++it) {
+            QTextFragment currentFragment = it.fragment();
+            if (currentFragment.isValid()) {
+                if (currentFragment.charFormat().isImageFormat()) // Если найден блок с картинкой
+                {
+                    // qDebug() << "Fragment text: " << currentFragment.text();
 
-    for(it = textBlock.begin(); !(it.atEnd()); ++it)
-    {
-      QTextFragment currentFragment = it.fragment();
-      if(currentFragment.isValid())
-      {
-        if(currentFragment.charFormat().isImageFormat()) // Если найден блок с картинкой
-        {
-          // qDebug() << "Fragment text: " << currentFragment.text();
+                    // Выясняется формат картинки
+                    QTextImageFormat imgFmt = currentFragment.charFormat().toImageFormat();
 
-          // Выясняется формат картинки
-          QTextImageFormat imgFmt = currentFragment.charFormat().toImageFormat();
+                    // Из формата выясняется имя картинки
+                    QString imageName = imgFmt.name();
+                    qDebug() << "Find " << imageName << "\n"; // имя файла
 
-          // Из формата выясняется имя картинки
-          QString imageName=imgFmt.name();
-          qDebug() << "Find " << imageName << "\n"; // имя файла
+                    // Если имя файла не является "внутренним", значит картинка еще не добавлена
+                    static const QRegularExpression re("^image\\d{10}[a-z0-9]+.png$");
+                    if (!imageName.contains(re)) {
+                        if (msgBox.text().length() == 0) {
+                            msgBox.setText(tr("Images download initiating..."));
+                            msgBox.setStandardButtons(QMessageBox::NoButton);
+                            msgBox.setWindowModality(Qt::WindowModal);
+                            msgBox.show();
+                            qApp->processEvents();
+                        }
 
-          // Если имя файла не является "внутренним", значит картинка еще не добавлена
-          static const QRegularExpression re("^image\\d{10}[a-z0-9]+.png$");
-          if(!imageName.contains(re))
-          {
-            if(msgBox.text().length()==0)
-            {
-              msgBox.setText(tr("Images download initiating..."));
-              msgBox.setStandardButtons(QMessageBox::NoButton);
-              msgBox.setWindowModality(Qt::WindowModal);
-              msgBox.show();
-              qApp->processEvents();
+                        qDebug() << "Set file for download" << imageName;
+
+                        QString internalImageName;
+
+                        // Если ссылки на картинку еще нет в списке загружаемых
+                        if (!downloadReferences.contains(imageName)) {
+                            // Ссылка на картинку добавляется в массив скачиваемых файлов
+                            downloadReferences << imageName;
+
+                            // Ссылке ставится в соответствие уникальное внутреннее имя картинки
+                            internalImageName = getUniqueImageName();
+                            referencesAndInternalNames[imageName] = internalImageName;
+                        } else {
+                            // Иначе картинка повторяется
+
+                            // Внутреннее имя картинки берется из уже существующих
+                            internalImageName = referencesAndInternalNames[imageName];
+                        }
+
+                        // Символ внешней картинки заменяется на символ внутренней
+                        unsigned int position = currentFragment.position();
+                        textCursor.setPosition(position);
+                        textCursor.deleteChar();                   // Удаляется символ - внешняя картинка (попробовать deletePreviousChar)
+                        textCursor.insertImage(internalImageName); // Вставляется символ - внутренняя картинка
+
+                        // Выход из цикла перебора фрагмента, т. к. документ изменился
+                        resetBlock = true;
+                        break;
+                    }
+                }
             }
-
-            qDebug() << "Set file for download" << imageName;
-
-            QString internalImageName;
-
-            // Если ссылки на картинку еще нет в списке загружаемых
-            if(!downloadReferences.contains(imageName))
-            {
-              // Ссылка на картинку добавляется в массив скачиваемых файлов
-              downloadReferences << imageName;
-
-              // Ссылке ставится в соответствие уникальное внутреннее имя картинки
-              internalImageName=getUniqueImageName();
-              referencesAndInternalNames[imageName]=internalImageName;
-            }
-            else
-            {
-              // Иначе картинка повторяется
-
-              // Внутреннее имя картинки берется из уже существующих
-              internalImageName=referencesAndInternalNames[imageName];
-            }
-
-            // Символ внешней картинки заменяется на символ внутренней
-            unsigned int position=currentFragment.position();
-            textCursor.setPosition(position);
-            textCursor.deleteChar(); // Удаляется символ - внешняя картинка (попробовать deletePreviousChar)
-            textCursor.insertImage(internalImageName); // Вставляется символ - внутренняя картинка
-
-            // Выход из цикла перебора фрагмента, т. к. документ изменился
-            resetBlock=true;
-            break;
-          }
         }
-      }
+
+        if (resetBlock)
+            textBlock = textDocument.begin(); // Документ изменился, его надо обрабатывать с самого начала
+        else
+            textBlock = textBlock.next();
     }
 
-    if(resetBlock)
-      textBlock = textDocument.begin(); // Документ изменился, его надо обрабатывать с самого начала
-    else
-      textBlock = textBlock.next();
-  }
+    // Если есть изображения, которые надо скачать
+    if (downloadReferences.count() > 0) {
+        msgBox.hide();
 
+        // Виджет скачивания файлов
+        Downloader downloader;
+        downloader.setAboutText(tr("Download images"));
+        downloader.setDownloadMode(Downloader::memory);
+        downloader.setReferencesList(downloadReferences);
 
-  // Если есть изображения, которые надо скачать
-  if(downloadReferences.count()>0)
-  {
-    msgBox.hide();
+        // Установка ширины для виджета скачивания файлов
+        int dialogWidth = int(0.8 * (float)textArea->width());
+        downloader.setMinimumWidth(dialogWidth);
+        downloader.resize(downloader.size());
 
-    // Виджет скачивания файлов
-    Downloader downloader;
-    downloader.setAboutText(tr("Download images"));
-    downloader.setDownloadMode(Downloader::memory);
-    downloader.setReferencesList(downloadReferences);
+        // На передний план
+        downloader.raise();
 
-    // Установка ширины для виджета скачивания файлов
-    int dialogWidth=int(0.8*(float)textArea->width());
-    downloader.setMinimumWidth( dialogWidth );
-    downloader.resize( downloader.size() );
+        // Запуск виджета скачивания файлов
+        downloader.run();
 
-    // На передний план
-    downloader.raise();
+        // Если при скачивании изображений появились какие-то ошибки
+        if (!downloader.isSuccess()) {
+            QMessageBox msgBox;
+            msgBox.setText(tr("Probably error in a process of images download."));
 
-    // Запуск виджета скачивания файлов
-    downloader.run();
+            if (downloader.getErrorLog().length() > 0)
+                msgBox.setDetailedText(downloader.getErrorLog());
 
-    // Если при скачивании изображений появились какие-то ошибки
-    if(!downloader.isSuccess())
-    {
-      QMessageBox msgBox;
-      msgBox.setText(tr("Probably error in a process of images download."));
+            msgBox.exec();
+        }
 
-      if(downloader.getErrorLog().length()>0)
-        msgBox.setDetailedText(downloader.getErrorLog());
-
-      msgBox.exec();
+        emit downloadImagesSuccessfull(textDocument.toHtml(), downloader.getReferencesAndMemoryFiles(), referencesAndInternalNames);
+        return;
     }
 
-    emit downloadImagesSuccessfull( textDocument.toHtml(), downloader.getReferencesAndMemoryFiles(), referencesAndInternalNames );
-    return;
-  }
-
-  emit downloadImagesSuccessfull( html, QMap<QString, QByteArray>(), QMap<QString, QString>() );
+    emit downloadImagesSuccessfull(html, QMap<QString, QByteArray>(), QMap<QString, QString>());
 }
-

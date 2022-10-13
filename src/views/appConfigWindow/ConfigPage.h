@@ -2,16 +2,12 @@
 
 #include <QWidget>
 
-
-class ConfigPage : public QWidget
-{
+class ConfigPage : public QWidget {
     Q_OBJECT
 
-public:
+  public:
     ConfigPage(QWidget *parent = nullptr) { Q_UNUSED(parent); };
-    virtual ~ConfigPage() {};
+    virtual ~ConfigPage(){};
 
-    virtual int applyChanges(void) {return 0;};
+    virtual int applyChanges(void) { return 0; };
 };
-
-

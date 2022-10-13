@@ -1,59 +1,50 @@
-#include <algorithm>
 #include <QAbstractButton>
 #include <QApplication>
 #include <QClipboard>
-#include <QObject>
-#include <QHeaderView>
-#include <QFileDialog>
-#include <QMessageBox>
 #include <QDesktopServices>
 #include <QDialogButtonBox>
+#include <QFileDialog>
+#include <QHeaderView>
+#include <QMessageBox>
 #include <QModelIndexList>
+#include <QObject>
+#include <algorithm>
 
 #include "DatabasesManagementController.h"
 #include "qclipboard.h"
 #include "views/databasesManagement/DatabasesManagementTable.h"
 
-
-DatabasesManagementController::DatabasesManagementController(QObject *parent) : QObject(parent)
-{
+DatabasesManagementController::DatabasesManagementController(QObject *parent) : QObject(parent) {
     // Создается область со списком записей лога
-    view=new DatabasesManagementTable( qobject_cast<QWidget *>(parent) ); // Вид размещается внутри виджета Screen
+    view = new DatabasesManagementTable(qobject_cast<QWidget *>(parent)); // Вид размещается внутри виджета Screen
     view->setObjectName("DatabasesManagementTable");
     view->setController(this);
 
     // Создание модели данных
-    model=new DatabasesManagementModel(this);
+    model = new DatabasesManagementModel(this);
     model->setObjectName("DatabasesManagementModel");
 
     // Модель данных задается для вида
     view->setModel(model);
 }
 
-
-DatabasesManagementController::~DatabasesManagementController()
-{
+DatabasesManagementController::~DatabasesManagementController() {
     delete view;
     delete model;
 }
 
-
-DatabasesManagementTable *DatabasesManagementController::getView(void)
-{
+DatabasesManagementTable *DatabasesManagementController::getView(void) {
     return view;
 }
 
-
-void DatabasesManagementController::onSelectClicked()
-{
+void DatabasesManagementController::onSelectClicked() {
     QModelIndexList indexList = view->selectionModel()->selectedRows();
 
-    if(indexList.size()!=1)
-    {
+    if (indexList.size() != 1) {
         return;
     }
 
-    int row=indexList[0].row();
+    int row = indexList[0].row();
 
     // Установка пометки выбора базы данных
     model->selectDatabase(row);
@@ -63,18 +54,14 @@ void DatabasesManagementController::onSelectClicked()
     view->setCurrentIndex(index);
 }
 
-
-void DatabasesManagementController::onCreateClicked()
-{
-
+void DatabasesManagementController::onCreateClicked() {
 }
-
 
 /// @brief Добавление существующей базы
 void DatabasesManagementController::onAddClicked() {
     QString dbPath;
 
-    QString title=tr("Append exists database");
+    QString title = tr("Append exists database");
 
     // Диалог, поясняющий что нужно выбрать директорию с существующей БД
     QMessageBox firstBox;
@@ -84,9 +71,8 @@ void DatabasesManagementController::onAddClicked() {
     firstBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     firstBox.setDefaultButton(QMessageBox::Ok);
     firstBox.button(QMessageBox::Ok)->setText(tr("I understand"));
-    firstBox.setIconPixmap( QIcon(":/resource/pic/dbmanagement_db_icon.svg").pixmap(QSize(32, 32)) );
-    if( firstBox.exec()!=QMessageBox::Ok )
-    {
+    firstBox.setIconPixmap(QIcon(":/resource/pic/dbmanagement_db_icon.svg").pixmap(QSize(32, 32)));
+    if (firstBox.exec() != QMessageBox::Ok) {
         return;
     }
 
@@ -95,36 +81,28 @@ void DatabasesManagementController::onAddClicked() {
     tetradirSelectDialog.setFileMode(QFileDialog::Directory);
     tetradirSelectDialog.setWindowTitle(tr("Select directory with exists database"));
     tetradirSelectDialog.setDirectory("");
-    if( tetradirSelectDialog.exec()==QDialog::Accepted )
-    {
-        if( !tetradirSelectDialog.directory().absolutePath().isEmpty() )
-        {
+    if (tetradirSelectDialog.exec() == QDialog::Accepted) {
+        if (!tetradirSelectDialog.directory().absolutePath().isEmpty()) {
             // Запоминается выбранный пользователем путь
-            dbPath=tetradirSelectDialog.directory().absolutePath();
+            dbPath = tetradirSelectDialog.directory().absolutePath();
 
             // Выход, если в директории нет файла mytetra.xml
-            QFileInfo checkFile(dbPath+"/mytetra.xml");
-            if( !(checkFile.exists() && checkFile.isFile()) )
-            {
+            QFileInfo checkFile(dbPath + "/mytetra.xml");
+            if (!(checkFile.exists() && checkFile.isFile())) {
                 QMessageBox msgBox;
                 msgBox.setText(tr("Can not find file mytetra.xml in this directory"));
                 msgBox.exec();
                 return;
             }
-        }
-        else
-        {
+        } else {
             return; // Выход, если был установлен пустой путь
         }
-    }
-    else
-    {
+    } else {
         return; // Выход, если была нажата отмена в диалоге выбора директории
     }
 
     // Если добавляемая директория уже есть в списке баз данных
-    if( model->isDbPathExists(dbPath) )
-    {
+    if (model->isDbPathExists(dbPath)) {
         QMessageBox msgBox;
         msgBox.setText(tr("This database directory already using in databses list"));
         msgBox.exec();
@@ -134,23 +112,20 @@ void DatabasesManagementController::onAddClicked() {
     model->addDatabaseByUser(dbPath);
 }
 
-
-void DatabasesManagementController::onCopyClicked()
-{
+void DatabasesManagementController::onCopyClicked() {
     // Перечень индексов ячеек, которые были выбраны
-    QModelIndexList indexes=view->selectionModel()->selectedIndexes();
+    QModelIndexList indexes = view->selectionModel()->selectedIndexes();
 
-    if(indexes.size() < 1)
+    if (indexes.size() < 1)
         return;
 
     // Индексы выбранных ячеек идут не так как на экране, поэтому их нужно отсортировать
-    std::sort( indexes.begin(), indexes.end() );
+    std::sort(indexes.begin(), indexes.end());
 
     // Размещаемый в буфере обмена текст
     QString selectedText;
 
-    for (int i=0; i<indexes.size(); ++i)
-    {
+    for (int i = 0; i < indexes.size(); ++i) {
         QVariant data = model->data(indexes.at(i));
         QString text = data.toString();
 
@@ -158,9 +133,8 @@ void DatabasesManagementController::onCopyClicked()
         selectedText.append(text);
 
         // Если не последняя ячейка
-        if(i<indexes.size()-1)
-        {
-            if(indexes.at(i).row() == indexes.at(i+1).row()) // Если текущая ячейка на той же строке что и последующая ячейка
+        if (i < indexes.size() - 1) {
+            if (indexes.at(i).row() == indexes.at(i + 1).row()) // Если текущая ячейка на той же строке что и последующая ячейка
                 selectedText.append('\t');
             else // Иначе последующая ячейка на другой строке
                 selectedText.append('\n');
@@ -169,4 +143,3 @@ void DatabasesManagementController::onCopyClicked()
 
     QApplication::clipboard()->setText(selectedText);
 }
-

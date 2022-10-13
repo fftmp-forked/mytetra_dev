@@ -1,21 +1,13 @@
 #include "EditorToolbarCommandsListView.h"
 
-
-EditorToolbarCommandsListView::EditorToolbarCommandsListView(QWidget *parent) : QTreeView(parent)
-{
-
+EditorToolbarCommandsListView::EditorToolbarCommandsListView(QWidget *parent) : QTreeView(parent) {
 }
 
-
-EditorToolbarCommandsListView::~EditorToolbarCommandsListView()
-{
-
+EditorToolbarCommandsListView::~EditorToolbarCommandsListView() {
 }
-
 
 /// @brief Инициализация представления
-void EditorToolbarCommandsListView::init()
-{
+void EditorToolbarCommandsListView::init() {
     this->setAlternatingRowColors(true);
     this->setAutoFillBackground(true);
     this->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -24,6 +16,6 @@ void EditorToolbarCommandsListView::init()
     this->resizeColumnToContents(0);
 
     // Обновление размеров виджета
-    this->setMinimumWidth( this->columnWidth(0) + 30 );
+    this->setMinimumWidth(this->columnWidth(0) + 30);
     this->resize(this->size());
 }

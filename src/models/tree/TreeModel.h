@@ -2,21 +2,19 @@
 
 #include <QAbstractItemModel>
 #include <QModelIndex>
+#include <QObject>
 #include <QPersistentModelIndex>
 #include <QVariant>
-#include <QObject>
-
 
 class TreeItem;
 
 /// @brief вспомогательный класс! От него наследуется KnowTreeModel
-class TreeModel : public QAbstractItemModel
-{
+class TreeModel : public QAbstractItemModel {
     Q_OBJECT
 
-public:
-    TreeModel(QObject *parent = nullptr) {Q_UNUSED(parent);};
-    ~TreeModel(void) {};
+  public:
+    TreeModel(QObject *parent = nullptr) { Q_UNUSED(parent); };
+    ~TreeModel(void){};
 
     QVariant data(const QModelIndex &index, int role) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
@@ -26,7 +24,6 @@ public:
 
     int rowCount(const QModelIndex &itemIndex = QModelIndex()) const;
     int columnCount(const QModelIndex &itemIndex = QModelIndex()) const;
-
 
     Qt::ItemFlags flags(const QModelIndex &index) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
@@ -51,8 +48,7 @@ public:
 
     TreeItem *rootItem; // Ссылка на первый (корневой) item-объект
 
-private:
-
+  private:
     QModelIndex getIndexRecurse(QModelIndex modelIndex, TreeItem *item, int mode);
 
     // Элемент, над которым проносят курсор. Используется при Drag And Drop.
@@ -61,4 +57,3 @@ private:
     // и непостоянный индекс будет приводить к сегфолту
     QPersistentModelIndex cursorOverIndex;
 };
-

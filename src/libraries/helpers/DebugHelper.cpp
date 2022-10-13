@@ -4,45 +4,42 @@
 #include "DebugHelper.h"
 #include "main.h"
 
-
 void criticalError(QString message) {
-  qDebug() << " ";
-  qDebug() << "---------------";
-  qDebug() << "Critical error!";
-  qDebug() << "---------------";
-  qDebug() << message;
-  qDebug() << "---------------";
-  qDebug() << " ";
+    qDebug() << " ";
+    qDebug() << "---------------";
+    qDebug() << "Critical error!";
+    qDebug() << "---------------";
+    qDebug() << message;
+    qDebug() << "---------------";
+    qDebug() << " ";
 
-  QMessageBox::critical(qobject_cast<QWidget *>(pMainWindow), "Critical error", message+"\n\nProgram was closed.");
+    QMessageBox::critical(qobject_cast<QWidget *>(pMainWindow), "Critical error", message + "\n\nProgram was closed.");
 
-  exit(1);
+    exit(1);
 }
-
 
 /// @brief Рекурсивная печать дерева объектов, т.к. dumpObjectInfo() и dumpObjectTree() не работают
 static void printObjectTreeRecurse(const QObject *obj) {
-  static int indent = 0;
+    static int indent = 0;
 
-  for(const auto & curobj : obj->children()) {
-    QString indentline(indent, '.');
+    for (const auto &curobj : obj->children()) {
+        QString indentline(indent, '.');
 
-    if((curobj->objectName()).length()==0)
-      qDebug("%s%s", indentline.toLocal8Bit().data(), curobj->metaObject()->className());
-    else
-      qDebug("%s%s, NAME %s", indentline.toLocal8Bit().data(),
-                              curobj->metaObject()->className(),
-                              (curobj->objectName()).toLocal8Bit().data() );
+        if ((curobj->objectName()).length() == 0)
+            qDebug("%s%s", indentline.toLocal8Bit().data(), curobj->metaObject()->className());
+        else
+            qDebug("%s%s, NAME %s", indentline.toLocal8Bit().data(),
+                   curobj->metaObject()->className(),
+                   (curobj->objectName()).toLocal8Bit().data());
 
-    ++indent;
-    printObjectTreeRecurse(curobj);
-    --indent;
-  }
+        ++indent;
+        printObjectTreeRecurse(curobj);
+        --indent;
+    }
 }
 
+void printObjectTree(const QObject *obj) {
+    qDebug() << "Object tree";
 
-void printObjectTree(const QObject * obj) {
-  qDebug() << "Object tree";
-
-  printObjectTreeRecurse(obj);
+    printObjectTreeRecurse(obj);
 }

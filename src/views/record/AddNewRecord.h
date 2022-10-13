@@ -6,47 +6,42 @@
 #include "libraries/wyedit/Editor.h"
 #include "views/record/InfoFieldEnter.h"
 
-
 /// @brief Окно добавления новой записи
-class AddNewRecord : public QDialog
-{
-Q_OBJECT
+class AddNewRecord : public QDialog {
+    Q_OBJECT
 
-public:
+  public:
+    AddNewRecord(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
- AddNewRecord( QWidget * parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags() );
+    ~AddNewRecord(){};
 
- ~AddNewRecord() {};
+    QString getField(QString name);
+    QString getImagesDirectory(void);
 
- QString getField(QString name);
- QString getImagesDirectory(void);
+  public slots:
 
-public slots:
+    void setupShortcuts(void);
 
-  void setupShortcuts(void);
+  private slots:
 
-private slots:
+    void okClick(void);
 
- void okClick(void);
+  private:
+    // Ввод инфополей записи
+    InfoFieldEnter infoField;
 
-private:
+    // Ввод текста записи
+    Editor recordTextEditor;
 
- // Ввод инфополей записи
- InfoFieldEnter infoField;
+    QDialogButtonBox buttonBox;
 
- // Ввод текста записи
- Editor recordTextEditor;
+    QString imagesDirName;
 
- QDialogButtonBox buttonBox;
+    void setupUI(void);
+    void setupSignals(void);
+    void assembly(void);
 
- QString imagesDirName;
+    void setupEventFilter(void);
 
- void setupUI(void);
- void setupSignals(void);
- void assembly(void);
-
- void setupEventFilter(void);
-
- virtual bool eventFilter(QObject *object, QEvent *event);
+    virtual bool eventFilter(QObject *object, QEvent *event);
 };
-

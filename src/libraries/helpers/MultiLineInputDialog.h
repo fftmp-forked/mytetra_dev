@@ -1,32 +1,32 @@
 #pragma once
 
-#include <QtGlobal>
-#include <QWidget>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QTextEdit>
+#include <QWidget>
+#include <QtGlobal>
 
-
-class MultiLineInputDialog : public QDialog
-{
+class MultiLineInputDialog : public QDialog {
     Q_OBJECT
 
-public:
-    MultiLineInputDialog(QWidget *parent=nullptr);
+  public:
+    MultiLineInputDialog(QWidget *parent = nullptr);
     virtual ~MultiLineInputDialog();
 
-    void setText(QString text) {textArea->setPlainText(text);}
-    QString getText() const {return textArea->toPlainText();}
-    bool isModified() const {return textArea->document()->isModified();}
-    void setWordWrapMode(QTextOption::WrapMode mode) {textArea->setWordWrapMode(mode);}
-    void setSizeCoefficient(double f) {sizeCoefficient=f; updateSize();}
+    void setText(QString text) { textArea->setPlainText(text); }
+    QString getText() const { return textArea->toPlainText(); }
+    bool isModified() const { return textArea->document()->isModified(); }
+    void setWordWrapMode(QTextOption::WrapMode mode) { textArea->setWordWrapMode(mode); }
+    void setSizeCoefficient(double f) {
+        sizeCoefficient = f;
+        updateSize();
+    }
 
-public slots:
+  public slots:
 
     void setupShortcuts(void);
 
-private:
-
+  private:
     double sizeCoefficient;
     QTextEdit *textArea;
     QDialogButtonBox *buttonBox;
@@ -37,5 +37,3 @@ private:
 
     void updateSize();
 };
-
-

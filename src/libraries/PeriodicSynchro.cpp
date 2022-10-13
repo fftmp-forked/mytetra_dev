@@ -1,25 +1,23 @@
 #include <QDateTime>
 
-#include "PeriodicSynchro.h"
 #include "../models/appConfig/AppConfig.h"
 #include "../views/mainWindow/MainWindow.h"
+#include "PeriodicSynchro.h"
 #include "helpers/ObjectHelper.h"
 
-
 bool PeriodicSynchro::isStartEnabled() const {
-  return AppConfig::get().getEnablePeriodicSynchro();
+    return AppConfig::get().getEnablePeriodicSynchro();
 }
 
-
 void PeriodicSynchro::timerEvent(QTimerEvent *event) {
-  Q_UNUSED(event)
+    Q_UNUSED(event)
 
-  qDebug() << "In timer PeriodicSynchro working method";
+    qDebug() << "In timer PeriodicSynchro working method";
 
-  // Если команда синхронизации пуста, нечего выполнять
-  if(AppConfig::get().get_synchrocommand().trimmed().length() == 0)
-    return;
+    // Если команда синхронизации пуста, нечего выполнять
+    if (AppConfig::get().get_synchrocommand().trimmed().length() == 0)
+        return;
 
-  // Запуск синхронизации в скрытом режиме
-  find_object<MainWindow>("mainwindow")->synchronization(false);
+    // Запуск синхронизации в скрытом режиме
+    find_object<MainWindow>("mainwindow")->synchronization(false);
 }

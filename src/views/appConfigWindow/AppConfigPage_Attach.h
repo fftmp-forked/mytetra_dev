@@ -1,48 +1,42 @@
 #pragma once
 
-#include <QWidget>
 #include <QCheckBox>
 #include <QGroupBox>
 #include <QLabel>
 #include <QToolButton>
+#include <QWidget>
 
 #include "ConfigPage.h"
 
+class AppConfigPage_Attach : public ConfigPage {
+    Q_OBJECT
 
-class AppConfigPage_Attach : public ConfigPage
-{
- Q_OBJECT
+  public:
+    AppConfigPage_Attach(QWidget *parent = nullptr);
+    virtual ~AppConfigPage_Attach();
 
-public:
-  AppConfigPage_Attach(QWidget *parent = nullptr);
-  virtual ~AppConfigPage_Attach();
+    void setupUi(void);
+    void setupSignals(void);
+    void assembly(void);
 
-  void setupUi(void);
-  void setupSignals(void);
-  void assembly(void);
+    int applyChanges(void);
 
-  int applyChanges(void);
+  private slots:
 
-private slots:
+    void onEnableRecordWithAttachHighlight(bool);
+    void onClickedHighlightColor();
 
-  void onEnableRecordWithAttachHighlight(bool);
-  void onClickedHighlightColor();
+  protected:
+    void setColorForButtonHighlightColor(QColor iColor);
 
-protected:
+    // Галка разрешения/запрещения подсветки записи с прикрепленными файлами
+    QCheckBox *enableRecordWithAttachHighlight;
 
-  void setColorForButtonHighlightColor(QColor iColor);
+    // Выбор цвета для записи с прикрепленными файлами
+    QLabel *labelHighlightColor;
+    QToolButton *buttonHighlightColor;
+    QColor *highlightColor;
 
-  // Галка разрешения/запрещения подсветки записи с прикрепленными файлами
-  QCheckBox *enableRecordWithAttachHighlight;
-
-  // Выбор цвета для записи с прикрепленными файлами
-  QLabel *labelHighlightColor;
-  QToolButton *buttonHighlightColor;
-  QColor *highlightColor;
-
-  // Объединяющая рамка
-  QGroupBox *decorBox;
+    // Объединяющая рамка
+    QGroupBox *decorBox;
 };
-
-
-

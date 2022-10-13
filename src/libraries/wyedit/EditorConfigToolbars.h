@@ -1,54 +1,47 @@
 #pragma once
 
-#include <QWidget>
-#include <QLineEdit>
 #include <QFontComboBox>
-#include <QSpinBox>
-#include <QPushButton>
-#include <QLabel>
 #include <QGroupBox>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QSpinBox>
 #include <QVBoxLayout>
+#include <QWidget>
 
 #include "../../views/appConfigWindow/ConfigPage.h"
 
 class EditorConfig;
 class EditorToolbarSettingsScreen;
 
-class EditorConfigToolbars : public ConfigPage
-{
- Q_OBJECT
+class EditorConfigToolbars : public ConfigPage {
+    Q_OBJECT
 
-public:
-  EditorConfigToolbars(QWidget *parent = nullptr);
-  virtual ~EditorConfigToolbars(void) {}
-  
-  int applyChanges(void) {return 0;}
-    
-private slots:
+  public:
+    EditorConfigToolbars(QWidget *parent = nullptr);
+    virtual ~EditorConfigToolbars(void) {}
 
-  // Запуск диалога распределения кнопок (команд) по панелям инструментов редактора
-  void onClickedEditToolButtonsConfigFile(void);
+    int applyChanges(void) { return 0; }
 
-protected:
+  private slots:
 
-  QPushButton *editToolButtonsConfigFile;
+    // Запуск диалога распределения кнопок (команд) по панелям инструментов редактора
+    void onClickedEditToolButtonsConfigFile(void);
 
-  void setupUi(void);
-  void setupSignals(void);
-  void assembly(void);
+  protected:
+    QPushButton *editToolButtonsConfigFile;
 
-private:
+    void setupUi(void);
+    void setupSignals(void);
+    void assembly(void);
 
-  EditorConfig *conf;
+  private:
+    EditorConfig *conf;
 
-  QLabel *indentStepLabel;
-  QLabel *indentStepFlexion;
-  QSpinBox *indentStep;
+    QLabel *indentStepLabel;
+    QLabel *indentStepFlexion;
+    QSpinBox *indentStep;
 
-  // Диалог настройки панелей инструментов
-  EditorToolbarSettingsScreen *toolbuttonsScreen=nullptr;
-  
+    // Диалог настройки панелей инструментов
+    EditorToolbarSettingsScreen *toolbuttonsScreen = nullptr;
 };
-
-
-

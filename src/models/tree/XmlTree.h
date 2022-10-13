@@ -1,22 +1,18 @@
 #pragma once
 
 #include <QObject>
-#include <QtXml>
 #include <QTreeWidgetItem>
+#include <QtXml>
 
+class XmlTree : public QObject {
+    Q_OBJECT
 
-class XmlTree : public QObject
-{
- Q_OBJECT
+  public:
+    XmlTree(void) { domModel = new QDomDocument(); }
+    ~XmlTree(void) { delete domModel; }
+    bool load(QString file);
+    QDomDocument *getDomModel(void) const { return domModel; }
 
- public:
-  XmlTree(void) {domModel=new QDomDocument();}
-  ~XmlTree(void) {delete domModel;}
-  bool load(QString file);
-  QDomDocument* getDomModel(void) const {return domModel;}
-  
- protected:
-  QDomDocument *domModel; // DOM-представление документа
+  protected:
+    QDomDocument *domModel; // DOM-представление документа
 };
-
-

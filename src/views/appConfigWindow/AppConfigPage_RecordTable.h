@@ -1,38 +1,34 @@
 #pragma once
 
-#include <QWidget>
 #include <QCheckBox>
-#include <QMap>
 #include <QGroupBox>
+#include <QMap>
+#include <QWidget>
 
 #include "ConfigPage.h"
 
-class AppConfigPage_RecordTable : public ConfigPage
-{
- Q_OBJECT
+class AppConfigPage_RecordTable : public ConfigPage {
+    Q_OBJECT
 
-public:
-  AppConfigPage_RecordTable(QWidget *parent = nullptr);
-  int applyChanges(void);
+  public:
+    AppConfigPage_RecordTable(QWidget *parent = nullptr);
+    int applyChanges(void);
 
-signals:
-  void recordTableConfigChange(void); // Сигнал, испускающийся когда изменились настройки таблицы конечных записей
+  signals:
+    void recordTableConfigChange(void); // Сигнал, испускающийся когда изменились настройки таблицы конечных записей
 
-private slots:
- void onFieldToggle(bool);
+  private slots:
+    void onFieldToggle(bool);
 
-protected:
+  protected:
+    void setupSignals(void);
 
-  void setupSignals(void);
+    QMap<QString, QCheckBox *> fields;
 
-  QMap<QString, QCheckBox *> fields;
+    QCheckBox *showHorizontalHeader;
+    QCheckBox *showVerticalHeader;
 
-  QCheckBox *showHorizontalHeader;
-  QCheckBox *showVerticalHeader;
-
-  // Объединяющая рамка
-  QGroupBox *showFieldsBox;
-  QGroupBox *showHeadersBox;
+    // Объединяющая рамка
+    QGroupBox *showFieldsBox;
+    QGroupBox *showHeadersBox;
 };
-
-

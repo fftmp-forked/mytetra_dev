@@ -2,16 +2,13 @@
 
 #include <QStandardItemModel>
 
-
 /// @brief Модель таблицы с настройками горячих клавиш
-class ShortcutSettingsModel : public QStandardItemModel
-{
+class ShortcutSettingsModel : public QStandardItemModel {
     Q_OBJECT
 
-public:
-
+  public:
     ShortcutSettingsModel(QObject *parent = nullptr);
-    ~ShortcutSettingsModel() {this->clear();}
+    ~ShortcutSettingsModel() { this->clear(); }
 
     QModelIndex findShortcut(const QString &shortcutFullName) const;
     void resetAllShortcutsToDefault();
@@ -21,11 +18,13 @@ public:
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
-    int columnCount(const QModelIndex &itemIndex = QModelIndex()) const { Q_UNUSED(itemIndex); return 4; }
+    int columnCount(const QModelIndex &itemIndex = QModelIndex()) const {
+        Q_UNUSED(itemIndex);
+        return 4;
+    }
 
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
-protected:
+  protected:
     bool smartUpdate();
 };
-

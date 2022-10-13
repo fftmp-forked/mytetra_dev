@@ -1,26 +1,23 @@
 #pragma once
 
-#include <QWidget>
 #include <QAction>
+#include <QWidget>
 
-class EditorFontToolFocus : public QWidget
-{
+class EditorFontToolFocus : public QWidget {
     Q_OBJECT
 
-public:
+  public:
     explicit EditorFontToolFocus(QWidget *parent = nullptr);
     virtual ~EditorFontToolFocus();
 
     // Получение действия, при котором виджет должен активироваться на панели инструментов
     // (должен получать фокус)
-    QAction* getSelectAction();
+    QAction *getSelectAction();
 
-protected slots:
+  protected slots:
 
     void onChangeSelectAction();
 
-protected:
-
+  protected:
     QAction selectAction; // Действие для активации (выбора) данного виджета
 };
-

@@ -7,18 +7,17 @@ class ConfigDialog;
 class QListWidgetItem;
 
 /// @brief Объект, подготавливающий и отображающий диалог настройки MyTetra
-class AppConfigDialog
-{
+class AppConfigDialog {
 
-public:
+  public:
     explicit AppConfigDialog(const QString &firstPageName, QWidget *parent);
     virtual ~AppConfigDialog();
 
     void exec();
 
     void setMenuListVisible(bool visible);
-    
-private:
+
+  private:
     ConfigDialog *configDialog;
 
     QListWidgetItem *pageMain;
@@ -32,4 +31,3 @@ private:
 
     void changePage(QString name);
 };
-

@@ -2,49 +2,43 @@
 
 #include "TimerMonitoring.h"
 
-
 TimerMonitoring::TimerMonitoring(void) {
-  // По сути, это синглтон. Синглтон назначает себе имя сам
-  setObjectName("timerMonitoring");
+    // По сути, это синглтон. Синглтон назначает себе имя сам
+    setObjectName("timerMonitoring");
 
-  isFirstStart = true;
+    isFirstStart = true;
 }
-
 
 /// @details Инициализация класса должна происходить после инициализации KnowTreeView
 void TimerMonitoring::init() {
-  setDelay(0);
-  timerId = 0;
+    setDelay(0);
+    timerId = 0;
 }
-
 
 void TimerMonitoring::setDelay(int sec) {
-  delay = sec;
+    delay = sec;
 
-  // Если таймер работает, он перезапускается с новой задержкой
-  if(timerId != 0) {
-    stop();
-    start();
-  }
+    // Если таймер работает, он перезапускается с новой задержкой
+    if (timerId != 0) {
+        stop();
+        start();
+    }
 }
-
 
 void TimerMonitoring::start() {
-  if( !isStartEnabled() )
-      return;
-  if(isFirstStart) {
-      timerEvent(NULL);
-      isFirstStart = false;
-  }
+    if (!isStartEnabled())
+        return;
+    if (isFirstStart) {
+        timerEvent(NULL);
+        isFirstStart = false;
+    }
 
-  // Установка автоматического повтора действий
-  timerId = startTimer(delay * 1000); // Периодичность таймера должна задаваться в миллисекундах
-  qDebug() << "Start timer with delay: " << delay << " ID: " << timerId;
+    // Установка автоматического повтора действий
+    timerId = startTimer(delay * 1000); // Периодичность таймера должна задаваться в миллисекундах
+    qDebug() << "Start timer with delay: " << delay << " ID: " << timerId;
 }
-
 
 void TimerMonitoring::stop() {
-  killTimer(timerId);
-  timerId = 0;
+    killTimer(timerId);
+    timerId = 0;
 }
-

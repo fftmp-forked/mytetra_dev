@@ -1,24 +1,21 @@
 #pragma once
 
-#include <QWidget>
-#include <QGroupBox>
 #include <QCheckBox>
+#include <QGroupBox>
+#include <QWidget>
 
 #include "ConfigPage.h"
 
-
-class AppConfigPage_Appearance : public ConfigPage
-{
+class AppConfigPage_Appearance : public ConfigPage {
     Q_OBJECT
 
-public:
+  public:
     AppConfigPage_Appearance(QWidget *parent = nullptr);
     virtual ~AppConfigPage_Appearance();
 
     int applyChanges(void);
 
   protected:
-
     void setupUi(void);
     void setupSignals(void);
     void assembly(void);
@@ -26,7 +23,6 @@ public:
     // Объединяющая рамка
     QGroupBox *behaviorBox;
 
-    QCheckBox *runInMinimizedWindow; // Разрешен ли запуск в свернутом окне
+    QCheckBox *runInMinimizedWindow;    // Разрешен ли запуск в свернутом окне
     QCheckBox *dockableWindowsBehavior; // Поведение открепляемых окон
 };
-

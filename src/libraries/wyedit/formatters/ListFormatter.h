@@ -4,23 +4,18 @@
 
 #include "Formatter.h"
 
-
 /// @brief Класс форматирования текста как списка
-class ListFormatter : public Formatter
-{
-  Q_OBJECT
+class ListFormatter : public Formatter {
+    Q_OBJECT
 
-public:
-  ListFormatter();
+  public:
+    ListFormatter();
 
-public slots:
+  public slots:
 
-  void onNumericlistClicked(void);
-  void onDotlistClicked(void);
+    void onNumericlistClicked(void);
+    void onDotlistClicked(void);
 
-protected:
-
- void formatToList(QTextListFormat::Style setFormat);
-
+  protected:
+    void formatToList(QTextListFormat::Style setFormat);
 };
-

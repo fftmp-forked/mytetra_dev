@@ -1,68 +1,60 @@
 #pragma once
 
-#include <QWidget>
 #include <QCheckBox>
-#include <QLineEdit>
 #include <QGroupBox>
-#include <QVBoxLayout>
 #include <QLabel>
+#include <QLineEdit>
 #include <QSpinBox>
+#include <QVBoxLayout>
+#include <QWidget>
 
 #include "ConfigPage.h"
 
+class AppConfigPage_Synchro : public ConfigPage {
+    Q_OBJECT
 
-class AppConfigPage_Synchro : public ConfigPage
-{
- Q_OBJECT
+  public:
+    AppConfigPage_Synchro(QWidget *parent = nullptr);
 
-public:
-  AppConfigPage_Synchro(QWidget *parent = nullptr);
+    int applyChanges(void);
 
-  int applyChanges(void);
+  private slots:
 
-private slots:
+    void onEnablePeriodicCheckBase(bool);
+    void onEnablePeriodicSynchro(bool);
 
-  void onEnablePeriodicCheckBase(bool);
-  void onEnablePeriodicSynchro(bool);
+  protected:
+    void setupUi(void);
+    void setupSignals(void);
+    void assembly(void);
 
-protected:
+    // Виджеты настройки синхронизации
+    QLineEdit *synchroCommand;
+    QLabel *commandText;
+    QLabel *commandAboutText;
 
-  void setupUi(void);
-  void setupSignals(void);
-  void assembly(void);
+    QCheckBox *synchroOnStartup;
+    QCheckBox *synchroOnExit;
+    QCheckBox *synchroOnPeriodic;
+    QVBoxLayout *synchroOnLayout;
+    QGroupBox *synchroOnBox;
 
+    QLabel *synchroPeriodText;
+    QSpinBox *synchroPeriod;
+    QLabel *synchroPeriodPostfix;
+    QHBoxLayout *synchroPeriodLayout;
 
-  // Виджеты настройки синхронизации
-  QLineEdit   *synchroCommand;
-  QLabel      *commandText;
-  QLabel      *commandAboutText;
+    // Виджеты настройки периодической проверки
+    QCheckBox *enablePeriodicCheckBase;
 
-  QCheckBox   *synchroOnStartup;
-  QCheckBox   *synchroOnExit;
-  QCheckBox   *synchroOnPeriodic;
-  QVBoxLayout *synchroOnLayout;
-  QGroupBox   *synchroOnBox;
+    QLabel *checkBasePeriodText;
+    QSpinBox *checkBasePeriod;
+    QLabel *checkBasePeriodPostfix;
+    QHBoxLayout *checkBasePeriodLayout;
 
-  QLabel      *synchroPeriodText;
-  QSpinBox    *synchroPeriod;
-  QLabel      *synchroPeriodPostfix;
-  QHBoxLayout *synchroPeriodLayout;
+    QCheckBox *enablePeriodicCheckMessage;
+    QVBoxLayout *periodicCheckLayout;
+    QGroupBox *periodicCheckBox;
 
-
-  // Виджеты настройки периодической проверки
-  QCheckBox   *enablePeriodicCheckBase;
-
-  QLabel      *checkBasePeriodText;
-  QSpinBox    *checkBasePeriod;
-  QLabel      *checkBasePeriodPostfix;
-  QHBoxLayout *checkBasePeriodLayout;
-
-  QCheckBox   *enablePeriodicCheckMessage;
-  QVBoxLayout *periodicCheckLayout;
-  QGroupBox   *periodicCheckBox;
-
-  QVBoxLayout *centralLayout;
+    QVBoxLayout *centralLayout;
 };
-
-
-

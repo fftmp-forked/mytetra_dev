@@ -5,18 +5,13 @@
 
 #include "EditorToolbarSettingsAbstractModel.h"
 
-
 /// @brief Модель списка всех доступных инструментов редактора
-class EditorToolbarSettingsAvailableToolsModel : public EditorToolbarSettingsAbstractModel
-{
+class EditorToolbarSettingsAvailableToolsModel : public EditorToolbarSettingsAbstractModel {
     Q_OBJECT
 
-public:
-
+  public:
     EditorToolbarSettingsAvailableToolsModel(QObject *parent = nullptr);
 
     // Первичное наполнение модели
     void init();
-
 };
-

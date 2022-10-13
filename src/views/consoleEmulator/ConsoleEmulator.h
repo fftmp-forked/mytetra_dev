@@ -1,16 +1,15 @@
 #pragma once
 
+#include <QCloseEvent>
 #include <QDialog>
-#include <QWidget>
 #include <QLabel>
 #include <QPushButton>
-#include <QToolButton>
-#include <QTextEdit>
-#include <QCloseEvent>
 #include <QShortcut>
+#include <QTextEdit>
+#include <QToolButton>
+#include <QWidget>
 
 #include "views/waitClock/WaitClock.h"
-
 
 // Виджет, показывающий окно с консольным выводом
 // Выглядит так:
@@ -25,60 +24,57 @@
 // |                   [Close]                      |
 // +------------------------------------------------+
 
-class ConsoleEmulator : public QDialog
-{
- Q_OBJECT
+class ConsoleEmulator : public QDialog {
+    Q_OBJECT
 
-public:
- ConsoleEmulator(QWidget *parent=nullptr);
- ~ConsoleEmulator() {}
+  public:
+    ConsoleEmulator(QWidget *parent = nullptr);
+    ~ConsoleEmulator() {}
 
- void setMessageText(QString text);
+    void setMessageText(QString text);
 
- void setConsoleOutput(QString text);
- void clearConsoleOutput(void);
- void addConsoleOutput(QString text);
+    void setConsoleOutput(QString text);
+    void clearConsoleOutput(void);
+    void addConsoleOutput(QString text);
 
- // Преобразование внешнего вида консольного эмулятора к отображению ошибки
- void switchToErrorView(void);
+    // Преобразование внешнего вида консольного эмулятора к отображению ошибки
+    void switchToErrorView(void);
 
-public slots:
+  public slots:
 
- // Слот срабатывающий при нажатии Cancel или при принудительном закрытии окна
- void onCancelClick(void);
+    // Слот срабатывающий при нажатии Cancel или при принудительном закрытии окна
+    void onCancelClick(void);
 
- // Слот срабатывающий при клике на кнопку скрыть/показать консольный вывод
- void onDetailsClick(void);
+    // Слот срабатывающий при клике на кнопку скрыть/показать консольный вывод
+    void onDetailsClick(void);
 
-signals:
+  signals:
 
- // Сигнал, вырабатывающийся в слоте onCancelConsole()
- void cancelConsole(void);
+    // Сигнал, вырабатывающийся в слоте onCancelConsole()
+    void cancelConsole(void);
 
-private:
+  private:
+    void setupUI(void);
+    void setupSignals(void);
+    void assembly(void);
 
- void setupUI(void);
- void setupSignals(void);
- void assembly(void);
+    // Переопределенный метод, срабатывает при принудительном закрытии окна
+    void closeEvent(QCloseEvent *event);
 
- // Переопределенный метод, срабатывает при принудительном закрытии окна
- void closeEvent(QCloseEvent *event);
+    bool event(QEvent *event);
 
- bool event(QEvent *event);
+    WaitClock *waitClock;
+    QLabel *messageLabel;
+    QPushButton *buttonCancel;
+    QToolButton *buttonDetails;
 
- WaitClock *waitClock;
- QLabel *messageLabel;
- QPushButton *buttonCancel;
- QToolButton *buttonDetails;
+    // Верхний блок вида "Картинка |Тут какая-то надпись| [v] | [Cancel]"
+    QHBoxLayout *upToolbar;
 
- // Верхний блок вида "Картинка |Тут какая-то надпись| [v] | [Cancel]"
- QHBoxLayout *upToolbar;
+    QTextEdit *consoleOutput;
 
- QTextEdit *consoleOutput;
+    QShortcut *escShortcut;
 
- QShortcut *escShortcut;
-
- // Должен ли диалог показывать ошибку
- bool isErrorMode;
+    // Должен ли диалог показывать ошибку
+    bool isErrorMode;
 };
-
