@@ -896,8 +896,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 
         exitCounter++;
     }
-
-    event->accept();
+    qApp->exit();
 }
 
 bool MainWindow::eventFilter(QObject *o, QEvent *e) {
