@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QTextDocumentFragment>
 
+#include "../../main.h" // for __builtin_unreachable() on windows
+
 // Этот класс нельзя унаследовать от QObject, так как в этом случае
 // при вставке ячейки в вектор потребуется конструктор копирования
 

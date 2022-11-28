@@ -9,6 +9,7 @@
 #include "EditorAbsTable.h"
 #include "EditorAbsTableCell.h"
 
+#include "../../main.h" // for __builtin_unreachable() on windows
 #include "../helpers/DebugHelper.h"
 
 // Конструктор пустой таблицы
