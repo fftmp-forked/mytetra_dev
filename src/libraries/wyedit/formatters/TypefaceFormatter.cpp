@@ -616,9 +616,8 @@ QString TypefaceFormatter::htmlSimplyfier(QString htmlCode) {
 /// @brief Замена в HTML-коде пробелов на спец-последовательности, иначе все повторяющиеся пробелы будут удален Qt-движком
 QString TypefaceFormatter::replaceSpaces(QString htmlCode) {
     QDomDocument doc;
-    bool isDocParse = doc.setContent("<root>" + htmlCode + "</root>");
 
-    if (!isDocParse) {
+    if (!doc.setContent("<root>" + htmlCode + "</root>")) {
         // Вывод сообщения: Слишком сложное форматирование текста. Не могу разобрать выделенный текст. Возможно некоторое нарушение верстки
         showMessageBox(tr("Unreliable parsing of complexly formatted text. Expect formatting inconsistencies."));
         return htmlCode;
