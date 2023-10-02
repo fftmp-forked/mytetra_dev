@@ -15,7 +15,7 @@ class AppConfig : public Singleton<AppConfig> {
 
     QString getConfigFileName() const { return conf->fileName(); }
 
-    QString get_tetradir(void) const { return get_parameter("tetradir"); }
+    QString get_tetradir(void) const;
     bool set_tetradir(QString dirName);
 
     // Нужно ли показывать подтверждение при выполнении действия "cut на ветке
