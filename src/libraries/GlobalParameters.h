@@ -29,6 +29,7 @@ class GlobalParameters : public Singleton<GlobalParameters> {
         ADD_BEFORE,
         ADD_AFTER
     };
+    static void createStandartProgramFiles(void);
 
   private:
     GlobalParameters() {}
@@ -36,9 +37,7 @@ class GlobalParameters : public Singleton<GlobalParameters> {
     void initWorkDirectory(void);
     bool findWorkDirectory(void);
     bool isMytetraIniConfig(QString fileName);
-    void createStandartProgramFiles(void);
-    void createPortableProgramFiles(void);
-    void createFirstProgramFiles(QString dirName);
+    static void createFirstProgramFiles(QString dirName);
 
     FindScreen *pointFindScreen = nullptr;
     QStatusBar *pointStatusBar = nullptr;

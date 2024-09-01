@@ -5,14 +5,18 @@
 #include <functional>
 
 #include "AppConfig.h"
+#include "libraries/GlobalParameters.h"
 
 #include "libraries/helpers/DebugHelper.h"
 
 
-void AppConfig::init(QString confName) {
+void AppConfig::init() {
+    auto confName = GlobalParameters::get().getWorkDirectory() + "/conf.ini";
     QFile confFile(confName);
-    if (!confFile.exists())
-        criticalError("File " + confName + " not found.");
+    if (!confFile.exists()) {
+        GlobalParameters::createStandartProgramFiles();
+        confName = GlobalParameters::get().getWorkDirectory() + "/conf.ini";
+    }
 
     // Создается указатель на объект хранилища конфигурации
     conf = new QSettings(confName, QSettings::IniFormat);

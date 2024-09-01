@@ -60,15 +60,6 @@ void GlobalParameters::createStandartProgramFiles(void) {
     }
 }
 
-void GlobalParameters::createPortableProgramFiles(void) {
-    qDebug() << "Create portable program files";
-
-    // Путь к директории, где лежит бинарник
-    QString createFilePath = QFileInfo(mainProgramFile).absolutePath();
-
-    createFirstProgramFiles(createFilePath);
-}
-
 /// @brief Создание первоначального набора файлов в указанной директории
 void GlobalParameters::createFirstProgramFiles(QString dirName) {
     qDebug() << "Create first program files in directory " << dirName;

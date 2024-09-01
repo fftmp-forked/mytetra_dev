@@ -144,7 +144,7 @@ int main(int argc, char **argv) {
     GlobalParameters::get().init(mainProgramFile);
 
     // Инициализация основных конфигурирующих программу переменных
-    AppConfig::get().init(GlobalParameters::get().getWorkDirectory() + "/conf.ini");
+    AppConfig::get().init();
     auto &cfg = AppConfig::get();
 
     setupDebug(cfg.get_printdebugmessages());

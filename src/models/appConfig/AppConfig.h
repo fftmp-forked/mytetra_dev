@@ -9,7 +9,7 @@ class AppConfig : public Singleton<AppConfig> {
 
     ~AppConfig() { sync(); }
 
-    void init(QString confName);
+    void init(void);
 
     void sync(void) { conf->sync(); }
 
