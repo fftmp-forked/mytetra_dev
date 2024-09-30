@@ -215,7 +215,7 @@ void EditorConfigFont::on_code_select_color_button_click() {
         codeSelectColorButton->setIcon(pix);
 
         // Запоминается новый цвет
-        codeColor->setNamedColor(selectedColor.name());
+        codeColor->fromString(selectedColor.name());
     }
 }
 

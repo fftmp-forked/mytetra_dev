@@ -179,25 +179,3 @@ void EditorShowText::onGotoNote() {
     find_object<MainWindow>("mainwindow")->setTreePosition(path);
     find_object<MainWindow>("mainwindow")->setRecordtablePositionById(mNoteId);
 }
-
-/*
-// Говорят, что hideEvent/showEvent не относится к свертке/развертке, т.е. "свернутые" окна по-прежнему считаются видимыми.
-// Поэтому надо ловить QWindowStateChangeEvent. Но это не подтвердилось в KDE.
-// В нем нормально отрабатывают hideEvent/showEvent при сворачивании-разворачивании основного окна
-// События hideEvent/showEvent не генерируются в Windows 7 (в других не проверено), но в нем решаемым этим кодом проблеммы нет
-void EditorShowText::changeEvent(QEvent *event)
-{
-  qDebug() << "EditorShowText changeEvent: " << event->type();
-
-  if(event->type() == QEvent::WindowStateChange) {
-    QWindowStateChangeEvent* WindowStateChangeEvent = (QWindowStateChangeEvent*)event;
-    if(!(WindowStateChangeEvent->oldState() & Qt::WindowMaximized) && isMaximized())
-    {
-      geomX=x();
-      geomY=y();
-      geomW=width();
-      geomH=height();
-    }
-  }
-}
-*/

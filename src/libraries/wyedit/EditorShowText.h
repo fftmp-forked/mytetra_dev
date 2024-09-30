@@ -4,10 +4,8 @@
 #include <QDialog>
 #include <QEvent>
 #include <QTextEdit>
+#include "EditorShowTextContextMenu.h"
 
-/// @brief
-/// Класс открепляемого окна для просмотра текста записи без возможности редактирования
-class EditorShowTextContextMenu;
 
 class EditorShowText : public QDialog {
     Q_OBJECT

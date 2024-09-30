@@ -5,7 +5,6 @@
 #include "../../views/mainWindow/MainWindow.h"
 #include "../../views/tree/KnowTreeView.h"
 #include "../helpers/ObjectHelper.h"
-#include "EditorShowText.h"
 
 EditorShowTextDispatcher::EditorShowTextDispatcher(QObject *parent) : QObject(parent) {
     mThread = new QThread();
