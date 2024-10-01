@@ -99,7 +99,6 @@ void MainWindow::setupSignals(void) {
 
     connect(actionHelpMenuAboutMyTetra, &QAction::triggered, this, &MainWindow::onClickHelpAboutMyTetra);
     connect(actionHelpMenuAboutQt, &QAction::triggered, this, &MainWindow::onClickHelpAboutQt);
-    connect(actionHelpMenuTechnicalInfo, &QAction::triggered, this, &MainWindow::onClickHelpTechnicalInfo);
 
     connect(actionFocusTree, &QAction::triggered, this, &MainWindow::onClickFocusTree);
     connect(actionFocusNoteTable, &QAction::triggered, this, &MainWindow::onClickFocusNoteTable);
@@ -425,9 +424,6 @@ void MainWindow::initHelpMenu(void) {
 
     actionHelpMenuAboutQt = new QAction(tr("About Qt"), this);
     menu->addAction(actionHelpMenuAboutQt);
-
-    actionHelpMenuTechnicalInfo = new QAction(tr("Technical info"), this);
-    menu->addAction(actionHelpMenuTechnicalInfo);
 }
 
 // Создание скрытых действий для работы прочих шорткатов уровня приложения
@@ -597,59 +593,20 @@ void MainWindow::onExpandEditArea(bool flag) {
 }
 
 void MainWindow::onClickHelpAboutMyTetra(void) {
-    QString version = APPLICATION_VERSION;
+    QString description = "<b>MyTetra</b> - smart manager for information collecting<br/><br/>";
+    auto version = "Version: " APPLICATION_VERSION "<br/>";
+    auto config_dir = "Config directory: " + GlobalParameters::get().getWorkDirectory() + "<br/>";
+    auto db_dir =  "Database directory: " + AppConfig::get().get_tetradir() + "<br/><br/>";
+    auto author = "Author: Sergey M. Stepanov <i>xintrea@gmail.com</i><br/>";
+    auto license = "License: GPLv3<br/>";
 
-    QString infoProgramName;
-    QString infoVersion;
-    QString infoAuthor;
-    QString infoEmail;
-    QString infoLicense;
+    auto info = description + version + config_dir + db_dir + author + license;
 
-    infoProgramName = "<b>MyTetra</b> - smart manager<br/>for information collecting<br/><br/>";
-    infoVersion = version + "<br/><br/>";
-    infoAuthor = "Author: Sergey M. Stepanov<br/>";
-    infoEmail = "Author Email:<i>xintrea@gmail.com</i><br/><br/>";
-    infoLicense = "GNU General Public License v.3.0<br/><br/>";
-
-    QString info = infoProgramName +
-                   infoVersion +
-                   infoAuthor +
-                   infoEmail +
-                   infoLicense;
-
-    QMessageBox(this).about(this, "MyTetra v." + version, info);
+    QMessageBox(this).about(this, "about" , info);
 }
 
 void MainWindow::onClickHelpAboutQt(void) {
     QMessageBox(this).aboutQt(this);
-}
-
-void MainWindow::onClickHelpTechnicalInfo(void) {
-    QString infoProgramFile;
-    QString infoWorkDirectory;
-    QString infoDevicePixelRatio;
-    QString infoPhysicalDpi;
-    QString infoPhysicalDpiX;
-    QString infoPhysicalDpiY;
-
-    infoProgramFile = "Program file: " + GlobalParameters::get().getMainProgramFile() + "<br/>";
-    infoWorkDirectory = "Work directory: " + GlobalParameters::get().getWorkDirectory() + "<br/>";
-
-    infoDevicePixelRatio = "Device pixel ratio: " + (QString::number(qApp->devicePixelRatio(), 'f', 2)) + "<br/>";
-    infoPhysicalDpi = "Physical DPI: " + (QString::number(QApplication::screens().at(0)->physicalDotsPerInch(), 'f', 2)) + "<br/>";
-    QString info = infoProgramFile +
-                   infoWorkDirectory +
-                   infoDevicePixelRatio +
-                   infoPhysicalDpi +
-                   infoPhysicalDpiX +
-                   infoPhysicalDpiY;
-
-    QMessageBox msgBox(this);
-    msgBox.setIcon(QMessageBox::Information);
-    msgBox.setWindowTitle(tr("Technical info"));
-    msgBox.setText(tr("<b>Technical info</b>"));
-    msgBox.setInformativeText(info);
-    msgBox.exec();
 }
 
 void MainWindow::onClickFocusTree(void) {

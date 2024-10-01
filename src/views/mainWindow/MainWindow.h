@@ -94,7 +94,6 @@ class MainWindow : public QMainWindow {
 
     void onClickHelpAboutMyTetra(void);
     void onClickHelpAboutQt(void);
-    void onClickHelpTechnicalInfo(void);
 
     void onClickFocusTree(void);
     void onClickFocusNoteTable(void);
@@ -144,7 +143,6 @@ class MainWindow : public QMainWindow {
 
     QAction *actionHelpMenuAboutMyTetra;
     QAction *actionHelpMenuAboutQt;
-    QAction *actionHelpMenuTechnicalInfo;
 
     QAction *actionTrayRestore;
     QAction *actionTrayMaximize;

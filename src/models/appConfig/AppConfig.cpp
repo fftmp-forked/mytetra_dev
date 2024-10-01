@@ -2,7 +2,6 @@
 #include <QDir>
 #include <QFile>
 #include <QRect>
-#include <functional>
 
 #include "AppConfig.h"
 #include "libraries/GlobalParameters.h"

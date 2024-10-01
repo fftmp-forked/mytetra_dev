@@ -10,7 +10,6 @@
 
 #include "GlobalParameters.h"
 
-#include "../views/findInBaseScreen/FindScreen.h"
 #include "FixedParameters.h"
 #include "helpers/CssHelper.h"
 #include "helpers/DebugHelper.h"
