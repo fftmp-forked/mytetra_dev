@@ -38,8 +38,7 @@ void DatabasesManagementModel::scanDirectoriesDirect() {
     QList<DatabasesDirsInfo> dbDirs;
     DatabasesDirsInfo dbDirsInfo;
     QString workingPath;
-    QStringList cand = {QFileInfo(GlobalParameters::get().getMainProgramFile()).absolutePath(),
-                        QDir::homePath() + "/.config/" + FixedParameters::appTextId};
+    QStringList cand = {QDir::homePath() + "/.config/" + FixedParameters::appTextId};
     for (const auto &p : cand) {
         dbDirsInfo.dbPath = p + "/data";
         dbDirsInfo.descript = tr("Knowledge base in %1").arg(workingPath);

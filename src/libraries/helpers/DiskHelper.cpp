@@ -1,9 +1,11 @@
 #include <QDir>
+#include <QFileInfo>
 
 #include "../FixedParameters.h"
 #include "DebugHelper.h"
 #include "DiskHelper.h"
 #include "UniqueIdHelper.h"
+
 
 /// @brief Создание временной директории
 QString DiskHelper::createTempDirectory(void) {
@@ -23,21 +25,19 @@ QString DiskHelper::createTempDirectory(void) {
     return createTempDirName;
 }
 
-// Копирование содержимого директории
-// Копируются только файлы
-bool DiskHelper::copyDirectory(const QString &fromName, const QString &toName) {
-    QDir fromDir(fromName);
-    QDir toDir(toName);
+/// @brief copy files from @param <from> dir to @param <to> dir. Skip directories, no deep copy.
+bool DiskHelper::copyDirectory(const QString &from, const QString &to) {
+    QDir fromDir(from);
+    QDir toDir(to);
 
-    if (fromDir.exists() && toDir.exists()) {
-        for(const auto & info : fromDir.entryInfoList(QDir::Files)) {
-            QFile::copy(info.absoluteFilePath(), toName + "/" + info.fileName());
-        }
+    if (!fromDir.exists() || !toDir.exists())
+        return false;
 
-        return true;
+    const auto dir_elems = fromDir.entryInfoList(QDir::Files);
+    for(auto & info : dir_elems) {
+        QFile::copy(info.absoluteFilePath(), to + "/" + info.fileName());
     }
-
-    return false;
+    return true;
 }
 
 /// @brief Получение списка файлов с их содержимым в указанной директории
@@ -49,7 +49,8 @@ QMap<QString, QByteArray> DiskHelper::getFilesFromDirectory(QString dirName, QSt
         QStringList filter;
         filter << fileMask;
 
-        for(const auto & info : directory.entryInfoList(filter, QDir::Files)) {
+        const auto dir_elems = directory.entryInfoList(filter, QDir::Files);
+        for(auto & info : dir_elems) {
             QFile f(info.absoluteFilePath());
             if (!f.open(QIODevice::ReadOnly))
                 criticalError("DiskHelper::getFilesFromDirectory() : File '" + info.absoluteFilePath() + "' open error");
@@ -93,4 +94,39 @@ bool DiskHelper::saveFilesToDirectory(QString dirName, QMap<QString, QByteArray>
         file.write(fileList.value(filename));
     }
     return true;
+}
+
+/// @brief copy src file to dst file and set dst permissions to @param perm
+static bool install_file(const QString & src_file, const QString & dst_file, QFileDevice::Permissions perm) {
+    qDebug() << "copy " << src_file << " to " << dst_file;
+    if (!QFile::copy(src_file, dst_file))
+        return false;
+    return QFile::setPermissions(dst_file, perm);
+}
+
+
+/// @brief copy content of @param src to @param dst recursively
+/// @param src - file, directory or Qt resource.
+/// @param dst - file or directory.
+/// @param perm - permissions for files. Directory will take permissions from umask.
+bool DiskHelper::install(const QString & src, const QString & dst, QFileDevice::Permissions perm) {
+    QFileInfo src_info(src);
+    if (src_info.isFile()) {
+        QFileInfo dst_info(dst);
+        return install_file(src, dst_info.isDir() ? dst + '/' + src_info.fileName() : dst, perm);
+    } else {
+        QDir src_dir(src);
+        const auto dir_elems = src_dir.entryInfoList();
+        for (auto & it : dir_elems) {
+            bool rv;
+            if(it.isDir()) {
+                QDir().mkpath(dst + '/' + it.fileName());
+                rv = install(it.filePath(), dst + '/' + it.fileName(), perm);
+            } else
+                rv = install_file(it.filePath(), dst + '/' + it.fileName(), perm);
+            if(!rv)
+                return false;
+        }
+        return true;
+    }
 }

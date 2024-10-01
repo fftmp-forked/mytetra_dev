@@ -27,7 +27,7 @@ KnownBasesConfig::~KnownBasesConfig() {
 
 void KnownBasesConfig::init(void) {
     // Создается имя файла конфигурации
-    auto configFileName = GlobalParameters::get().getWorkDirectory() + "/knownbases.ini";
+    auto configFileName = GlobalParameters::get().get_cfg_dir() + "/knownbases.ini";
 
     // Проверяется, есть ли файл конфигурации
     QFile confFile(configFileName);

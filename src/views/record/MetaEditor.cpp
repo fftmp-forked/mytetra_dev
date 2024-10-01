@@ -17,7 +17,7 @@
 
 MetaEditor::MetaEditor(QWidget *parent) : Editor(parent) {
     Editor::initEnableAssembly(false);
-    Editor::initConfigFileName(GlobalParameters::get().getWorkDirectory() + "/editorconf.ini");
+    Editor::initConfigFileName(GlobalParameters::get().get_cfg_dir() + "/editorconf.ini");
 
     Editor::init();
 

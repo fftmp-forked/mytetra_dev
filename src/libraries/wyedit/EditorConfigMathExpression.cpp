@@ -51,7 +51,7 @@ void EditorConfigMathExpression::onClickedEditWyEditConfigFile(void) {
     // Сбрасываются в файл конфига все возможные изменения, которые, возможно еще не были записаны
     conf->sync();
 
-    ConfigEditorHelper::editConfigFile(GlobalParameters::get().getWorkDirectory() + "/editorconf.ini", 0.8f);
+    ConfigEditorHelper::editConfigFile(GlobalParameters::get().get_cfg_dir() + "/editorconf.ini", 0.8f);
 }
 
 int EditorConfigMathExpression::applyChanges(void) {

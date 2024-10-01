@@ -29,7 +29,7 @@ void AddNewRecord::setupUI(void) {
 
     // Редактор текста записи
     recordTextEditor.initEnableAssembly(true);
-    recordTextEditor.initConfigFileName(GlobalParameters::get().getWorkDirectory() + "/editorconf.ini");
+    recordTextEditor.initConfigFileName(GlobalParameters::get().get_cfg_dir() + "/editorconf.ini");
     recordTextEditor.initDisableToolList(QStringList() << "save"
                                                        << "showText"
                                                        << "toAttach"

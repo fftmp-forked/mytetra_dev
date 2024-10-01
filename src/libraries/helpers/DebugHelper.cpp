@@ -13,7 +13,7 @@ void criticalError(QString message) {
     qDebug() << "---------------";
     qDebug() << " ";
 
-    QMessageBox::critical(qobject_cast<QWidget *>(pMainWindow), "Critical error", message + "\n\nProgram was closed.");
+    QMessageBox::critical(qobject_cast<QWidget *>(pMainWindow), "Critical error", message + "\n\nProgram will be closed.");
 
     exit(1);
 }

@@ -182,9 +182,9 @@ int AppConfigPage_Main::applyChanges(void) {
     qDebug() << "Apply changes main";
 
     int difficultChanges = 0;
-
+    auto & cfg = AppConfig::get();
     // Если был изменен путь к базе, он запоминается в конфигфайл
-    if (AppConfig::get().get_tetradir() != tetradirInput->text()) {
+    if (cfg.get_tetradir() != tetradirInput->text()) {
         QDir dir(tetradirInput->text());
 
         // Проверяется, допустимо ли имя директории
@@ -194,22 +194,22 @@ int AppConfigPage_Main::applyChanges(void) {
                                  QMessageBox::Ok);
         else {
             // Новое имя запоминается в конфиг
-            AppConfig::get().set_tetradir(tetradirInput->text());
+            cfg.set_tetradir(tetradirInput->text());
             difficultChanges = 1;
         }
     }
 
     // Если было изменено использование пользовательского формата даты и времени
-    if (AppConfig::get().getEnableCustomDateTimeFormat() != enableCustomDateTimeFormat->isChecked())
-        AppConfig::get().setEnableCustomDateTimeFormat(enableCustomDateTimeFormat->isChecked());
+    if (cfg.getEnableCustomDateTimeFormat() != enableCustomDateTimeFormat->isChecked())
+        cfg.setEnableCustomDateTimeFormat(enableCustomDateTimeFormat->isChecked());
 
     // Если было изменен пользовательский формат даты и времени
-    if (AppConfig::get().getCustomDateTimeFormat() != customDateTimeFormat->text())
-        AppConfig::get().setCustomDateTimeFormat(customDateTimeFormat->text());
+    if (cfg.getCustomDateTimeFormat() != customDateTimeFormat->text())
+        cfg.setCustomDateTimeFormat(customDateTimeFormat->text());
 
     // Если был изменен язык
-    if (AppConfig::get().get_interfacelanguage() != interfaceLanguage->currentText()) {
-        AppConfig::get().set_interfacelanguage(interfaceLanguage->currentText());
+    if (cfg.get_interfacelanguage() != interfaceLanguage->currentText()) {
+        cfg.set_interfacelanguage(interfaceLanguage->currentText());
         difficultChanges = 1;
     }
 

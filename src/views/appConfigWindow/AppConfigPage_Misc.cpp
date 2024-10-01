@@ -63,7 +63,7 @@ void AppConfigPage_Misc::onClickedEditMyTetraConfigFile(void) {
     // Сбрасываются в файл конфига все возможные изменения, которые, возможно еще не были записаны
     AppConfig::get().sync();
 
-    ConfigEditorHelper::editConfigFile(GlobalParameters::get().getWorkDirectory() + "/conf.ini", 0.8);
+    ConfigEditorHelper::editConfigFile(GlobalParameters::get().get_cfg_dir() + "/conf.ini", 0.8);
 }
 
 // Метод должен возвращать уровень сложности сделанных изменений

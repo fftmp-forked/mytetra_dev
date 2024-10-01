@@ -1,6 +1,8 @@
+#include <QCommandLineParser>
 #include <QLibraryInfo>
 #include <QMessageBox>
 #include <QSplashScreen>
+#include <QStandardPaths>
 #include <QTextOption>
 #include <QToolButton>
 #include <QTranslator>
@@ -34,124 +36,77 @@ PeriodicSynchro periodicSynchro;
 QObject *pMainWindow;
 WalkHistory *walkHistory;
 
-void printHelp() {
-    printf("\n");
-    printf("MyTetra %s\n", APPLICATION_VERSION);
-    printf("For use control mode, run by standard way MyTetra for show GUI interface, and next use command:\n");
-    printf("./mytetra --control --show - Show and activate MyTetra window\n");
-    printf("./mytetra --control --hide - Hide MyTetra window\n");
-    printf("./mytetra --control --quit - Quit from MyTetra\n");
-    printf("./mytetra --control --reload - Reload database\n");
-    printf("./mytetra --control --openNote <noteId> - Jump to note with <noteId>\n");
-    printf("./mytetra --control --addNoteDialog - Show dialod for create new note in current tree item\n");
-    printf("./mytetra --control --openTreeItem <treeItemId> - Jump to tree item with <treeItemId>\n");
-    printf("\n");
+
+static void process_control_options(QtSingleApplication & app, const QString & cmd) {
+    QStringList simple_commands = {"show", "hide", "quit", "reload", "addNoteDialog"};
+    if (simple_commands.contains(cmd)) {
+        app.sendMessage(cmd);
+        return;
+    }
+
+    const QStringList commands_with_arg = {"openNote ", "openBranch ", "openTreeItem "};
+    for (auto & str : commands_with_arg) {
+        if(cmd.startsWith(str)) {
+            app.sendMessage(cmd);
+            return;
+        }
+    }
+    qInfo() << "Unknown control option " << cmd;
 }
 
-static void parseConsoleOption(QtSingleApplication &app) {
-    // Если запрашивается помощь по опциям
-    if (app.arguments().contains("-h") || app.arguments().contains("--help")) {
-        printHelp();
-        exit(0);
+
+int main(int argc, char **argv) {
+    Q_INIT_RESOURCE(mytetra);
+
+    QtSingleApplication app(argc, argv);
+    app.setApplicationVersion(APPLICATION_VERSION);
+
+    // parse CLI options
+    QCommandLineParser parser;
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    parser.addOptions({
+        {"control", "Send command to already running instance of MyTetra. show/hide/quit/reload/openNote/addNoteDialog/openBranch/openTreeItem", "cmd"},
+        {{"c", "cfg_dir"}, "specify directory with conf.ini instead of default location", "dir", QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)}
+    });
+
+    parser.process(app);
+
+    auto control_cmd = parser.value("control");
+    auto cfg_dir = parser.value("cfg_dir");
+
+    if (app.isRunning()) {
+        if(control_cmd.isEmpty()) {
+            QMessageBox msgBox(QMessageBox::Warning, "Info", "Another MyTetra instance is running.");
+            msgBox.exec();
+            exit(1);
+        } else {
+            process_control_options(app, control_cmd);
+            exit(0);
+        }
+    } else {
+        if (!control_cmd.isEmpty()) {
+            qInfo() << "MyTetra instance for control is not running. Run MyTetra before running your command.";
+            exit(2);
+        }
     }
 
-    // Если MyTetra запущена с какой-то опцией, но нет опции --control
-    if (app.arguments().count() > 1 && !app.arguments().contains("--control")) {
-        QString message = "Bad options. May be you lost \"--control\"?\n";
-        printf("%s", message.toLocal8Bit().data());
-        exit(1);
-    }
-
-    // Если MyTetra запущена в режиме управления, а другого экземпляра (которым надо управлять) нет
-    if (app.arguments().contains("--control") && !app.isRunning()) {
-        QString message = "MyTetra exemplar for control is not running.\nPlease, run MyTetra before running your command.\n";
-        printf("%s", message.toLocal8Bit().data());
-        exit(2);
-    }
-
-    // Если MyTetra запущена в обычном режиме, но уже запущен другой экземпляр
-    if (!app.arguments().contains("--control") && app.isRunning()) {
-        QString message = "Another MyTetra exemplar is running.\n";
-
-        printf("%s", message.toLocal8Bit().data());
-
-        QMessageBox msgBox;
-        msgBox.setIcon(QMessageBox::Warning); // Сообщение со значком предупреждения
-        msgBox.setText(message);
+    if (!GlobalParameters::get().init(cfg_dir)) {
+        QMessageBox msgBox(QMessageBox::Critical, "Error", "Can't use config from " + cfg_dir);
         msgBox.exec();
-
         exit(3);
     }
 
-    // Если MyTetra запущена в режиме управления, и есть другой экземпляр, которым нужно управлять
-    if (app.arguments().contains("--control") && app.isRunning()) {
-        if (app.arguments().contains("--show")) {
-            app.sendMessage("show");
-            exit(0);
-        } else if (app.arguments().contains("--hide")) {
-            app.sendMessage("hide");
-            exit(0);
-        } else if (app.arguments().contains("--quit")) {
-            app.sendMessage("quit");
-            exit(0);
-        } else if (app.arguments().contains("--reload")) {
-            app.sendMessage("reload");
-            exit(0);
-        } else if (app.arguments().contains("--openNote")) {
-            int openNoteIndex = app.arguments().indexOf("--openNote");
-            app.sendMessage("openNote " + app.arguments().at(openNoteIndex + 1));
-            exit(0);
-        } else if (app.arguments().contains("--addNoteDialog")) {
-            app.sendMessage("addNoteDialog");
-            exit(0);
-        } else if (app.arguments().contains("--openBranch")) // Устаревшая опция
-        {
-            int openBranchIndex = app.arguments().indexOf("--openBranch");
-            app.sendMessage("openTreeItem " + app.arguments().at(openBranchIndex + 1)); // Аналог сигнала openTreeItem
-            exit(0);
-        } else if (app.arguments().contains("--openTreeItem")) {
-            int openTreeItemIndex = app.arguments().indexOf("--openTreeItem");
-            app.sendMessage("openTreeItem " + app.arguments().at(openTreeItemIndex + 1));
-            exit(0);
-        } else {
-            QString message = "Unknown control option.\n";
-            printf("%s", message.toLocal8Bit().data());
-            exit(4);
-        }
-    }
-}
-
-int main(int argc, char **argv) {
-    printf("\nStart MyTetra %s\n", APPLICATION_VERSION);
-
-    Q_INIT_RESOURCE(mytetra);
-
-    // Начальные инициализации основных объектов
-
-    // Запоминается имя файла запущенного бинарника
-    // Файл запущенной программы (нулевой аргумент функции main)
-    // Метод fromLocal8Bit корректно работает для 8-ми битных кодировок локали (Win) и для UTF-8 (Lin)
-    // даже если в имени файла встречаются национальные символы, а кодек еще не установлен
-    QString mainProgramFile = QString::fromLocal8Bit(argv[0]); // Данные запоминаются в сыром виде и никак не интерпретируются до использования
-
-    // Создание объекта приложения
-    QtSingleApplication app(argc, argv);
-
-    // Обработка консольных опций
-    parseConsoleOption(app);
-
-    // Инициализация глобальных параметров, внутри происходит установка рабочей директории, настройка кодеков для локали и консоли
-    GlobalParameters::get().init(mainProgramFile);
-
     // Инициализация основных конфигурирующих программу переменных
-    AppConfig::get().init();
     auto &cfg = AppConfig::get();
+    cfg.init();
 
     setupDebug(cfg.get_printdebugmessages());
     // Проверяется наличие коллекции прикрепляемых к веткам иконок (и иконки создаются если они отсутствуют)
     IconSelectDialog::iconsCollectionCheck();
 
-    CssHelper::setCssStyle(GlobalParameters::get().getWorkDirectory());
+    CssHelper::setCssStyle(cfg_dir);
 
     // Подключение перевода интерфейса
     QString langFileName = ":/resource/translations/mytetra_" + cfg.get_interfacelanguage() + ".qm";
@@ -171,7 +126,7 @@ int main(int argc, char **argv) {
 
     // Инициализация менеджера горячих клавиш должна происходить после инициализации переводов,
     // чтобы были переведены все действия по горячим клавишам
-    ShortcutManager::get().init(GlobalParameters::get().getWorkDirectory() + "/shortcut.ini");
+    ShortcutManager::get().init(cfg_dir + "/shortcut.ini");
 
     // История перехода очищается, так как в нее может попасть первая запись в востаналиваемой ветке и сама восстанавливаемая запись
     WalkHistory wk;

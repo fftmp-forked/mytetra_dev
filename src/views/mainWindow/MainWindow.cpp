@@ -595,7 +595,7 @@ void MainWindow::onExpandEditArea(bool flag) {
 void MainWindow::onClickHelpAboutMyTetra(void) {
     QString description = "<b>MyTetra</b> - smart manager for information collecting<br/><br/>";
     auto version = "Version: " APPLICATION_VERSION "<br/>";
-    auto config_dir = "Config directory: " + GlobalParameters::get().getWorkDirectory() + "<br/>";
+    auto config_dir = "Config directory: " + GlobalParameters::get().get_cfg_dir() + "<br/>";
     auto db_dir =  "Database directory: " + AppConfig::get().get_tetradir() + "<br/><br/>";
     auto author = "Author: Sergey M. Stepanov <i>xintrea@gmail.com</i><br/>";
     auto license = "License: GPLv3<br/>";

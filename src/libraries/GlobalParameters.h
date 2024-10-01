@@ -10,12 +10,9 @@ class FindScreen;
 class GlobalParameters : public Singleton<GlobalParameters> {
     friend class Singleton<GlobalParameters>;
   public:
-    void init(QString filename);
+    bool init(QString config_dir);
 
-    QString getMainProgramFile(void) const { return mainProgramFile; }
-
-    // Получение рабочей директории. Рабочая директория - это та, где лежит файл conf.ini
-    QString getWorkDirectory(void) const { return workDirectory; }
+    QString get_cfg_dir(void) const { return cfg_dir; }
 
     void setFindScreen(FindScreen *point) { pointFindScreen = point; }
     FindScreen *getFindScreen() const { return pointFindScreen; }
@@ -29,19 +26,12 @@ class GlobalParameters : public Singleton<GlobalParameters> {
         ADD_BEFORE,
         ADD_AFTER
     };
-    static void createStandartProgramFiles(void);
 
   private:
     GlobalParameters() {}
 
-    void initWorkDirectory(void);
-    bool findWorkDirectory(void);
-    bool isMytetraIniConfig(QString fileName);
-    static void createFirstProgramFiles(QString dirName);
-
     FindScreen *pointFindScreen = nullptr;
     QStatusBar *pointStatusBar = nullptr;
 
-    QString mainProgramFile;
-    QString workDirectory;
+    QString cfg_dir; // dir with used conf.ini
 };

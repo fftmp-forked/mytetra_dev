@@ -10,15 +10,8 @@
 
 
 void AppConfig::init() {
-    auto confName = GlobalParameters::get().getWorkDirectory() + "/conf.ini";
-    QFile confFile(confName);
-    if (!confFile.exists()) {
-        GlobalParameters::createStandartProgramFiles();
-        confName = GlobalParameters::get().getWorkDirectory() + "/conf.ini";
-    }
-
     // Создается указатель на объект хранилища конфигурации
-    conf = new QSettings(confName, QSettings::IniFormat);
+    conf = new QSettings(GlobalParameters::get().get_cfg_dir() + "/conf.ini", QSettings::IniFormat);
 
     update_version_process();
 
@@ -37,6 +30,8 @@ QString AppConfig::get_tetradir(void) const {
     auto d = get_parameter("tetradir");
     if (d[0] == '~')
         d.replace (0, 1, QDir::homePath());
+    else if (d[0] == '.')
+        d.replace (0, 1, GlobalParameters::get().get_cfg_dir());
     return d;
 }
 
@@ -63,9 +58,9 @@ void AppConfig::set_addnewrecord_expand_info(QString state) {
 QList<int> AppConfig::get_splitter_size_list(QString name) const {
     QList<int> list;
 
-    auto line_list = (conf->value(name + "_size_list", "100,100")).toString().split(",");
+    const auto line_list = (conf->value(name + "_size_list", "100,100")).toString().split(",");
 
-    for (const auto &l : line_list)
+    for (auto &l : line_list)
         list.append(l.toInt());
 
     return list;

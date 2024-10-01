@@ -77,8 +77,6 @@
         <file>pic/transparent_dot.svg</file>
         <file>pic/transparent_dot.png</file>
         <file>pic/sort.svg</file>
-        <file>standartdata/mytetra.xml</file>
-        <file>standartdata/base/1300000000aaaaaaaaa2/text.html</file>
         <file>pic/edit_show_text.svg</file>
         <file>pic/attach.svg</file>
         <file>pic/attach_add.svg</file>
@@ -119,5 +117,7 @@
         <file>standardconfig/conf.ini</file>
         <file>standardconfig/editorconf.ini</file>
         <file>standardconfig/stylesheet.css</file>
+        <file>standardconfig/data/mytetra.xml</file>
+        <file>standardconfig/data/base/1300000000aaaaaaaaa2/text.html</file>
     </qresource>
 </RCC>
