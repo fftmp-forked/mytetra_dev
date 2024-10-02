@@ -30,7 +30,8 @@ void ClipboardBranch::print(void) const {
         QString branch_id = current_branch.value("id");
 
         // Находятся все записи, принадлежащие текущей ветке
-        for (const auto & current_record : branchData.record.values(branch_id)) {
+        const auto branch_records = branchData.record.values(branch_id);
+        for (auto & current_record : branch_records) {
 
             QMap<QString, QString> current_record_fields = current_record.getNaturalFieldList();
             for (auto f = current_record_fields.keyBegin(); f != current_record_fields.keyEnd(); ++f)
@@ -67,9 +68,9 @@ QList<CLIPB_TREE_ONE_LINE> ClipboardBranch::getIdTree(void) const {
 }
 
 void ClipboardBranch::printIdTree(void) const {
-    QList<CLIPB_TREE_ONE_LINE> tree = getIdTree();
+    const auto tree = getIdTree();
 
-    for (const auto & one_line : tree)
+    for (auto & one_line : tree)
         qDebug() << one_line.branch_id << one_line.subbranches_id;
 }
 
@@ -86,7 +87,7 @@ void ClipboardBranch::addRecord(QString branch_id, Record record) {
 // Получение полей для указанной ветки
 QMap<QString, QString> ClipboardBranch::getBranchFieldsById(QString id) {
     // Перебираются ветки чтобы найти ветку с нужным идентификатором
-    for (const auto & current_branch : branchData.branch) {
+    for (auto & current_branch : std::as_const(branchData.branch)) {
         if (current_branch.contains("id") && current_branch["id"] == id)
             return current_branch;
     }
@@ -98,11 +99,7 @@ QMap<QString, QString> ClipboardBranch::getBranchFieldsById(QString id) {
 
 // Получение списка записей для указанной ветки
 QList<Record> ClipboardBranch::getBranchRecords(QString id) {
-    QList<Record> records;
-    for (const auto & current_record : branchData.record.values(id))
-        records.insert(0, current_record);
-
-    return records;
+    return branchData.record.values(id);
 }
 
 QVariant ClipboardBranch::retrieveData(const QString &format, QMetaType preferredType) const {

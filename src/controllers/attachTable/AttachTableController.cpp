@@ -247,7 +247,7 @@ QStringList AttachTableController::selectFilesForAdding(Attach::Type attachType)
 
 // Выбрано действие "Сохранить как..."
 void AttachTableController::onSaveAsAttach(void) {
-    QList<QString> selectedId = getSelectedId();
+    const auto selectedId = getSelectedId();
 
     // Если ни один аттач не выбран
     if (selectedId.size() == 0) {
@@ -326,7 +326,7 @@ void AttachTableController::onSaveAsAttach(void) {
         AttachTableData *attachTableData = getAttachTableData();
 
         // Перебор выбранных для сохранения аттачей
-        for (const auto & id : selectedId) {
+        for (auto & id : selectedId) {
             QString fileName = attachTableData->getFileNameById(id);
             QString fromFullFileName = attachTableData->getAbsoluteInnerFileNameById(id);
             QString toFullFileName = toDir + "/" + fileName;
@@ -393,10 +393,10 @@ void AttachTableController::onEditFileName(void) {
 }
 
 void AttachTableController::onDeleteAttach(void) {
-    QList<QString> selectedId = getSelectedId();
+    const auto selectedId = getSelectedId();
 
     // Если ни один аттач не выбран
-    if (selectedId.size() == 0) {
+    if (selectedId.isEmpty()) {
         showMessageBox(tr("Please select any attach(es) for delete."));
         return;
     }
@@ -406,15 +406,14 @@ void AttachTableController::onDeleteAttach(void) {
     msgBox.setText(tr("Do you want to delete attached file(s)?"));
     msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     msgBox.setDefaultButton(QMessageBox::Cancel);
-    int ret = msgBox.exec();
 
-    if (ret != QMessageBox::Ok)
+    if (msgBox.exec() != QMessageBox::Ok)
         return;
 
     // Удаление выбранных аттачей
     AttachTableData *attachTableData = getAttachTableData();
 
-    for (const auto & id : selectedId)
+    for (auto & id : selectedId)
         attachTableData->deleteAttach(id);
 
     // Сохранение дерева веток
@@ -429,9 +428,9 @@ void AttachTableController::onDeleteAttach(void) {
 void AttachTableController::onOpenAttach(void) {
     AttachTableData *attachTableData = getAttachTableData();
 
-    QList<QString> selectedId = getSelectedId();
+    const auto selectedId = getSelectedId();
 
-    for (const auto & id : selectedId) {
+    for (auto & id : selectedId) {
         QString fullFileName = attachTableData->getAbsoluteInnerFileNameById(id);
 
         qDebug() << "Open file: " + fullFileName;
@@ -443,7 +442,7 @@ void AttachTableController::onOpenAttach(void) {
 }
 
 void AttachTableController::onShowAttachInfo(void) {
-    QList<QString> selectedId = getSelectedId();
+    const auto selectedId = getSelectedId();
 
     // Если ни один аттач не выбран
     if (selectedId.size() == 0)

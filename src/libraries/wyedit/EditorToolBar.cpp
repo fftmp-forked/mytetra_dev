@@ -388,9 +388,9 @@ QIcon EditorToolBar::getIcon(const QString &name) {
 }
 
 void EditorToolBar::hideAllToolsElements(void) {
-    QStringList commandNameList = this->getCommandNameList();
+    const auto commandNameList = this->getCommandNameList();
 
-    for (const auto &commandName : commandNameList) {
+    for (auto & commandName : commandNameList) {
         QWidget *widget = this->findChild<QWidget *>(QString("editor_tb_") + commandName);
         if (widget) {
             widget->setVisible(false);
@@ -418,9 +418,9 @@ void EditorToolBar::setEnableModifyTextButton(bool state) {
                    << "toAttach";
 
     // Перечень имен всех элементов управления на панели
-    QStringList commandNameList = this->getCommandNameList();
+    const auto commandNameList = this->getCommandNameList();
 
-    for (const auto &commandName : commandNameList) {
+    for (auto & commandName : commandNameList) {
         // Если элемент влияет на форматирование
         if (!noModifyButton.contains(commandName)) {
             QWidget *widget = this->findChild<QWidget *>(QString("editor_tb_") + commandName);

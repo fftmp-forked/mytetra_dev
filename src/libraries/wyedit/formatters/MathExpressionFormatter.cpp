@@ -24,8 +24,8 @@ MathExpressionFormatter::MathExpressionFormatter() {
     // deb-based distros have mimetex.
     // rpm-based distros have mimetex, but not in PATH and somewhy mimetex package depend on HTTP server 'caddy'.
     // ArchLinux have mimetex.cgi binary in PATH
-    auto paths = QProcessEnvironment::systemEnvironment().value("PATH").split(':');
-    for (const auto &d : paths) {
+    const auto paths = QProcessEnvironment::systemEnvironment().value("PATH").split(':');
+    for (auto & d : paths) {
         if (QFileInfo::exists(d + "/mimetex")) {
             m_mimetex_bin = d + "/mimetex";
             return;

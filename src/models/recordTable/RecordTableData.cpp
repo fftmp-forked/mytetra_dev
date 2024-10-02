@@ -165,7 +165,7 @@ Record *RecordTableData::getRecordById(const QString &id) {
 QSet<QString> RecordTableData::getRecordsIdList() {
     QSet<QString> ids;
 
-    for (const auto &record : std::as_const(tableData)) {
+    for (auto & record : std::as_const(tableData)) {
         ids << record.getField("id");
     }
 

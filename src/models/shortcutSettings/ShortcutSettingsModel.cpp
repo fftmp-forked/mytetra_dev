@@ -12,13 +12,13 @@ ShortcutSettingsModel::ShortcutSettingsModel(QObject *parent) : QStandardItemMod
         auto sectionIndex = this->index(i, 0); // Индекс элемента раздела
 
         // Создание строк с шорткатами
-        auto actions = ShortcutManager::get().getActionsNameList(s);
+        const auto actions = ShortcutManager::get().getActionsNameList(s);
         this->insertRows(0, actions.size(), sectionIndex);
         this->insertColumns(0, ShortcutSettingsModel::columnCount(), sectionIndex);
 
         // Заполнение строк с шорткатами
         int j = 0;
-        for (const auto &actionName : actions) {
+        for (auto & actionName : actions) {
             auto index = this->index(j, 0, sectionIndex);
             this->setData(index, actionName);
 

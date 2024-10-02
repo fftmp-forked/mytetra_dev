@@ -668,11 +668,11 @@ bool Editor::saveTextareaImages(int mode = SAVE_IMAGES_SIMPLE) {
     if (mode == SAVE_IMAGES_REMOVE_UNUSED) {
         // Выясняется список файлов в директории
         QDir directory(workDirectory);
-        QStringList imageInDirectory = directory.entryList(QDir::Files);
+        const auto imageInDirectory = directory.entryList(QDir::Files);
 
         // Перебираются файлы в директории
         static const QRegularExpression re("\\.png$");
-        for(const auto & fileName : imageInDirectory)
+        for(auto & fileName : imageInDirectory)
             if (fileName.contains(re) && !imagesNames.contains(fileName) && !miscFields["attachFileNameList"].contains(fileName))
                 // удаляются *.png файлы, не встречающиеся ни в тексте записи, ни в прикрепленных файлах
                 directory.remove(fileName);

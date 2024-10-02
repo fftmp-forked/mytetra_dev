@@ -407,7 +407,7 @@ void FindScreen::findRecurse(TreeItem *curritem) {
         }
 
         bool found = false;
-        for (const auto & f : scanFields) {
+        for (auto & f : std::as_const(scanFields)) {
             if(f == "nameItem") {
                 continue; // search by branch name. Alreary processed upper; have no sense, when iterating over records.
             } else if (f == "text") {

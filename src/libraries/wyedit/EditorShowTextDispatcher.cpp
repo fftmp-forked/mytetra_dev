@@ -231,10 +231,10 @@ void EditorShowTextDispatcher::restoreOpenWindows() {
     QString state = AppConfig::get().getDockableWindowsState();
 
     // Строка со всеми окнами разделяется на подстроки с описанием одного окна
-    QStringList windowsState = state.split(";");
+    const QStringList windowsState = state.split(";");
 
     // Перебираются описания окон в виде ID и координат
-    for (const auto &window : windowsState) {
+    for (auto & window : windowsState) {
         if (window.trimmed().size() > 0) // Если описание существует, а не пустая строка
         {
             QStringList chunks = window.split(",");

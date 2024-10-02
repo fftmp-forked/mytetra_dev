@@ -130,21 +130,18 @@ void CommandRun::run(bool visible) {
     m_process->setProcessChannelMode(QProcess::MergedChannels);
 
     // Обработка кнопки Cancel в виджете эмулятора консоли
-    connect(m_console, &ConsoleEmulator::cancelConsole,
-            this, &CommandRun::onManualCloseProcess);
+    connect(m_console, &ConsoleEmulator::cancelConsole, this, &CommandRun::onManualCloseProcess);
 
     // Обработка ошибки, если таковая возникнет при работе процесса
-    connect(m_process, &QProcess::errorOccurred,
-            this, &CommandRun::onProcessError);
+    connect(m_process, &QProcess::errorOccurred, this, &CommandRun::onProcessError);
 
     // Отслеживание стандартного консольного вывода
-    connect(m_process, &QProcess::readyReadStandardOutput,
-            this, &CommandRun::onReadyReadStandardOutput);
+    connect(m_process, &QProcess::readyReadStandardOutput, this, &CommandRun::onReadyReadStandardOutput);
 
     // Отслеживание завершения запущенного процесса
     // (Сигнал finished перегружен, поэтому новый синтаксис надо писать в виде замыкания)
     connect(m_process, &QProcess::finished,
-            this, [=](int exitCode, QProcess::ExitStatus exitStatus) { this->onProcessFinish(exitCode, exitStatus); });
+            this, [this](int exitCode, QProcess::ExitStatus exitStatus) { this->onProcessFinish(exitCode, exitStatus); });
 
     // Запускается команда на исполнение внутри процесса
     m_process->start(m_command, m_args);

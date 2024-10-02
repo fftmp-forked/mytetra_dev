@@ -56,8 +56,6 @@ class Attach {
     void init(AttachTableData *iParentTable);
     void setParentTable(AttachTableData *iParentTable); // Защищенный метод, который может вызвать только этот класс и AttachTableData
 
-    static QStringList fieldAvailableList(void);
-
     bool liteFlag;
 
     AttachTableData *parentTable; // Указатель на таблицу приаттаченных файлов, которой принадлежит данный аттач

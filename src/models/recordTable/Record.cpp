@@ -432,7 +432,7 @@ void Record::replaceInternalReferenceByTranslateTable(QString recordFileName, QM
 
     // Перебираются найденные внутри mytetra-ссылок идентификаторы
     bool isIdReplace = false;
-    for(const auto & currentId : internalIdList)
+    for(auto & currentId : std::as_const(internalIdList))
         if (idRecordTranslate.contains(currentId)) { // Если идентификатор надо заменить
             lines.replace("href=\"" + FixedParameters::appTextId + "://note/" + currentId + "\"",
                           "href=\"" + FixedParameters::appTextId + "://note/" + idRecordTranslate[currentId] + "\"");

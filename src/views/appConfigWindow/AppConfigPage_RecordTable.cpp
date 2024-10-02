@@ -116,7 +116,7 @@ int AppConfigPage_RecordTable::applyChanges(void) {
     // Это надо сделать в первую очередь, потому что в дальнейшем после перечитывания модели и
     // установки заголовков таблицы конечных записей слетают ширины полей (устанавливаюся в 100 px самим Qt)
     QStringList showFields = AppConfig::get().getRecordTableShowFields();
-    QStringList fieldsWidth = AppConfig::get().getRecordTableFieldsWidth();
+    const auto fieldsWidth = AppConfig::get().getRecordTableFieldsWidth();
     qDebug() << "showFields" << showFields;
     qDebug() << "fieldsWidth" << fieldsWidth;
 
@@ -155,7 +155,7 @@ int AppConfigPage_RecordTable::applyChanges(void) {
     newShowFields = showFields + addFieldsList;
 
     // Удаление полей в результирующем списке
-    for(const auto & removeFieldName : removeFieldsList)
+    for(auto & removeFieldName : std::as_const(removeFieldsList))
         newShowFields.removeAll(removeFieldName);
 
     qDebug() << "newShowFields" << newShowFields;
@@ -169,7 +169,7 @@ int AppConfigPage_RecordTable::applyChanges(void) {
 
         // Ширина всех полей
         float fullWidth = 0.0;
-        for(const auto & currentWidth : fieldsWidth)
+        for(auto & currentWidth : fieldsWidth)
             fullWidth += currentWidth.toFloat();
 
         qDebug() << "fullWidth" << fullWidth;
@@ -179,7 +179,7 @@ int AppConfigPage_RecordTable::applyChanges(void) {
         float insertFieldWidth = 100.0;
         float insertFullWidth = insertFieldWidth * (newShowFields.size() - showFields.size());
         float coefficient = (fullWidth - insertFullWidth) / fullWidth;
-        for(const auto & currentWidth : fieldsWidth)
+        for(auto & currentWidth : fieldsWidth)
             newFieldsWidth << QString::number((int)(currentWidth.toFloat() * coefficient));
 
         qDebug() << "insertFullWidth" << insertFullWidth;

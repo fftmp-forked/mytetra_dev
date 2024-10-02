@@ -87,7 +87,7 @@ void TreeScreen::setupActions(void) {
     // Удаление ветки
     ac = new QAction(this);
     ac->setIcon(QIcon(":/resource/pic/note_delete.svg"));
-    connect(ac, &QAction::triggered, this, [=]() { delBranch(); });
+    connect(ac, &QAction::triggered, this, [this]() { delBranch(); });
     actionList["delBranch"] = ac;
 
     // Удаление ветки с сохранением копии в буфер обмена
@@ -645,7 +645,7 @@ bool TreeScreen::copyBranch(void) {
     QStringList path = item->getPath();
 
     // Получение путей ко всем подветкам
-    QList<QStringList> subbranchespath = item->getAllChildrenPath();
+    const auto subbranchespath = item->getAllChildrenPath();
 
     // -------------------
     // Копирование в буфер
@@ -666,7 +666,7 @@ bool TreeScreen::copyBranch(void) {
     addBranchToClipboard(branch_clipboard_data, path, true);
 
     // Добавление прочих веток
-    for (const auto & curr_path : subbranchespath)
+    for (auto & curr_path : subbranchespath)
         addBranchToClipboard(branch_clipboard_data, curr_path, false);
 
     // branch_clipboard_data->print();
@@ -876,8 +876,8 @@ void TreeScreen::updateBranchOnScreen(const QModelIndex &index) {
     TreeItem *item = knowTreeModel->getItem(index);
 
     // Перебираются подветки
-    QList<QStringList> updatePathts = item->getAllChildrenPath();
-    for (const auto & currentPath : updatePathts) {
+    const auto updatePathts = item->getAllChildrenPath();
+    for (auto & currentPath : updatePathts) {
         TreeItem *currentItem = knowTreeModel->getItem(currentPath);
 
         QModelIndex currentIndex = knowTreeModel->getIndexByItem(currentItem);

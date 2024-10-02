@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <QDebug>
 #include <QFile>
 #include <QFileInfo>
@@ -9,6 +10,7 @@
 #include "libraries/helpers/DiskHelper.h"
 #include "libraries/helpers/MessageHelper.h"
 #include "models/recordTable/Record.h"
+
 
 // Конструктор прикрепляемого файла
 Attach::Attach(AttachTableData *iParentTable) {
@@ -37,23 +39,20 @@ void Attach::setParentTable(AttachTableData *iParentTable) {
 }
 
 /// @brief Допустимые имена полей
-QStringList Attach::fieldAvailableList(void) {
-    return QStringList() << "id"
-                         << "fileName"
-                         << "link"
-                         << "type";
+static std::array<const char *, 4> fieldAvailableList(void) {
+    return {"id", "fileName", "link", "type"};
 }
 
 // На вход метода подается тег <file>
 void Attach::setupDataFromDom(QDomElement iDomElement) {
-    for(const auto & fieldName : fieldAvailableList())        // Перебираются имена полей (XML-тегов)
+    for(auto fieldName : fieldAvailableList())        // Перебираются имена полей (XML-тегов)
         fields[fieldName] = iDomElement.attribute(fieldName); // Напрямую устанавливаются значения из XML файла
 }
 
 QDomElement Attach::exportDataToDom(QDomDocument *doc) const {
     QDomElement elem = doc->createElement("file");
 
-    for(const auto & fieldName : fieldAvailableList()) // Перебираются имена полей (XML-тегов)
+    for(auto fieldName : fieldAvailableList()) // Перебираются имена полей (XML-тегов)
         if (fields[fieldName].size() > 0)
             elem.setAttribute(fieldName, fields[fieldName]);
 
@@ -63,7 +62,7 @@ QDomElement Attach::exportDataToDom(QDomDocument *doc) const {
 void Attach::exportDataToStreamWriter(QXmlStreamWriter *xmlWriter) const {
     xmlWriter->writeStartElement("file");
 
-    for(const auto & fieldName : fieldAvailableList()) // Перебираются имена полей (XML-тегов)
+    for(auto fieldName : fieldAvailableList()) // Перебираются имена полей (XML-тегов)
         if (fields[fieldName].size() > 0)
             xmlWriter->writeAttribute(fieldName, fields[fieldName]);
 
@@ -96,7 +95,7 @@ void Attach::switchToFat() {
 // Получение значения поля
 QString Attach::getField(QString name) const {
     // Если имя поля недопустимо
-    if (fieldAvailableList().contains(name) == false)
+    if (!std::ranges::contains(fieldAvailableList(), name))
         criticalError("Attach::getField() : get unavailable field " + name);
 
     // ------------------------------------------
@@ -114,7 +113,7 @@ QString Attach::getField(QString name) const {
 // Установка значения поля
 void Attach::setField(QString name, QString value) {
     // Если имя поля недопустимо
-    if (fieldAvailableList().contains(name) == false)
+    if (!std::ranges::contains(fieldAvailableList(), name))
         criticalError("Attach::setField() : set unavailable field " + name);
 
     // ------------------------------------------
@@ -122,14 +121,11 @@ void Attach::setField(QString name, QString value) {
     // ------------------------------------------
 
     // Поле с именем файла
-    if (name == "fileName")
-        if (getField("type") == "link")                                  // Если устанавливается имя файла для линка
-            if (getField("fileName").length() > 0 && value.length() > 0) // Если имя уже было задано (при создании аттача), и новое имя не пустое
-            {
-                // Имя файла для линка менять нельзя
-                showMessageBox(QObject::tr("Unable to rename a file which attached as a link."));
-                return;
-            }
+    if (name == "fileName" && getField("type") == "link" && getField("fileName").length() > 0 && value.length() > 0) {
+        // Имя файла для линка менять нельзя
+        showMessageBox(QObject::tr("Unable to rename a file which attached as a link."));
+        return;
+    }
 
     // Поле со ссылкой на файл (содержит путь к файлу, на который указывает линк)
     if (name == "link") {

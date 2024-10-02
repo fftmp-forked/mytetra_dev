@@ -997,8 +997,8 @@ QString KnowTreeModel::pasteSubbranchRecurse(TreeItem *item,
     // -----------------------------------------------
     // Для стартовой ветки добавляются конечные записи
     // -----------------------------------------------
-
-    for(const auto & record : subbranch->getBranchRecords(startBranchId)) {
+    const auto branch_records = subbranch->getBranchRecords(startBranchId);
+    for(auto & record : branch_records) {
         qDebug() << "Add table record " + record.getField("name");
         newitem->recordtableGetTableData()->insertNewRecord(GlobalParameters::AddNewRecordBehavior::ADD_TO_END, 0, record);
     }
@@ -1008,15 +1008,15 @@ QString KnowTreeModel::pasteSubbranchRecurse(TreeItem *item,
     // --------------------
 
     // Выясняется линейная структура добавляемого дерева
-    QList<CLIPB_TREE_ONE_LINE> tree = subbranch->getIdTree();
+    const auto tree = subbranch->getIdTree();
 
     // Выясняется список подветок для стартовой ветки
     QStringList subbranch_list;
-     for(const auto & one_line : tree)
+    for(auto & one_line : tree)
         if (one_line.branch_id == startBranchId)
             subbranch_list = one_line.subbranches_id;
 
-     for(const auto & current_subbranch : subbranch_list)
+    for(auto & current_subbranch : std::as_const(subbranch_list))
         pasteSubbranchRecurse(newitem, current_subbranch, subbranch);
 
     return id;
