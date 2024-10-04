@@ -1,8 +1,7 @@
 #pragma once
 
-#include <QObject>
+#include <QDomDocument>
 #include <QTreeWidgetItem>
-#include <QtXml>
 
 class XmlTree : public QObject {
     Q_OBJECT

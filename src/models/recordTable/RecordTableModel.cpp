@@ -1,6 +1,8 @@
 #include <QBrush>
 #include <QColor>
+#include <QDateTime>
 #include <QIcon>
+#include <QLocale>
 
 #include "Record.h"
 #include "RecordTableData.h"

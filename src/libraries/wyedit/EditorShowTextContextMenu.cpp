@@ -1,6 +1,5 @@
 #include <QAction>
 #include <QDebug>
-#include <QtGui>
 
 #include "Editor.h"
 #include "EditorShowText.h"

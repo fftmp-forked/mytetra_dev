@@ -1,6 +1,7 @@
 #include <QAction>
+#include <QClipboard>
 #include <QDebug>
-#include <QtGui>
+#include <QGuiApplication>
 
 #include "../ShortcutManager/ShortcutManager.h"
 #include "Editor.h"

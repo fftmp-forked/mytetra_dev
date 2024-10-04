@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QClipboard>
+#include <QDir>
 #include <QHeaderView>
 #include <QMessageBox>
 

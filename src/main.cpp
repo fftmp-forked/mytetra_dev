@@ -67,7 +67,15 @@ int main(int argc, char **argv) {
     parser.addVersionOption();
 
     parser.addOptions({
-        {"control", "Send command to already running instance of MyTetra. show/hide/quit/reload/openNote/addNoteDialog/openBranch/openTreeItem", "cmd"},
+        {"control", "Send command to already running instance of MyTetra.\n"
+                    "show\n"
+                    "hide\n"
+                    "quit\n"
+                    "reload\n"
+                    "openNote\n"
+                    "addNoteDialog\n"
+                    "openBranch\n"
+                    "openTreeItem", "cmd"},
         {{"c", "cfg_dir"}, "specify directory with conf.ini instead of default location", "dir", QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)}
     });
 

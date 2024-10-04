@@ -4,7 +4,6 @@
 #include <QModelIndex>
 #include <QObject>
 #include <QVariant>
-#include <QtXml>
 
 #define TABLE_DATA_ROLE Qt::UserRole + 10
 #define ONE_RECORD_ROLE Qt::UserRole + 11

@@ -7,7 +7,6 @@
 #include <QObject>
 #include <QString>
 #include <QVariant>
-#include <QtXml>
 
 class TreeItem;
 class Record;

@@ -2,6 +2,7 @@
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
+#include <QDir>
 #include <QInputDialog>
 #include <QMap>
 #include <QMenu>

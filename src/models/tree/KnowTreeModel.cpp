@@ -1,5 +1,7 @@
 #include <QAbstractItemModel>
+#include <QDir>
 #include <QDomNamedNodeMap>
+#include <QFileInfo>
 #include <QMap>
 
 #include "KnowTreeModel.h"
