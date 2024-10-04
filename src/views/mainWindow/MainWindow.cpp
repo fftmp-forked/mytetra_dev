@@ -165,72 +165,46 @@ void MainWindow::commitData(QSessionManager &manager) {
 }
 
 // Слот, обрабатывающий внешние сообщения
-// Используется для обработки ссобщений, приходящих от других экземпляров MyTetra
+// Используется для обработки сообщений, приходящих от других экземпляров MyTetra
 void MainWindow::messageHandler(QString message) {
     qDebug() << "MainWindow recieved message: " + message;
 
-    if (message == "show") {
-        showWindow();
-    }
-
-    if (message == "hide") {
-        hide();
-    }
-
-    if (message == "quit") {
-        applicationExit();
-    }
-
-    else if (message == "reload") {
-        reload();
-    }
-
-    else if (message.split(" ").at(0) == "openNote") {
-        QString recordId = message.split(" ").at(1);
-
-        // Если аргумент опции --openNote не обнаружен
-        if (recordId.length() == 0)
-            return;
-
-        // Нахождение ветки, в которой лежит запись с указанным идентификатором
-        QStringList pathToRecord = treeScreen->knowTreeModel->getRecordPath(recordId);
-
-        // Установка курсора в дереве и в таблице конечных записей
-        setTreePosition(pathToRecord);
-        setRecordtablePositionById(recordId);
-    }
-
+         if (message == "show") showWindow();
+    else if (message == "hide") hide();
+    else if (message == "quit") applicationExit();
+    else if (message == "reload") reload();
     else if (message == "addNoteDialog") {
         // Определение, было ли окно MyTetra скрыто при обработке сообщения
         bool isHidden = this->isHidden();
 
-        // Окно показыается, чтобы небыло некорректного выхода QtSingleApplication при свернутом окне после добавления записи
-        if (isHidden) {
+        // Окно показыается, чтобы не было некорректного выхода QtSingleApplication при свернутом окне после добавления записи
+        if (isHidden)
             this->showWindow();
-        }
 
         // Нажимается кнопка добавления записи
-        if (recordTableScreen->actionAddNewToEnd->isEnabled()) {
+        if (recordTableScreen->actionAddNewToEnd->isEnabled())
             recordTableScreen->actionAddNewToEnd->trigger();
-        } else {
+        else
             qDebug() << "Can not initial add new note dialog. Add new note action is disable now. Try again.";
-        }
 
         // Окно скрывается
-        if (isHidden) {
+        if (isHidden)
             this->hide();
-        }
     }
 
-    else if (message.split(" ").at(0) == "openTreeItem") {
-        QString branchId = message.split(" ").at(1);
+    const auto id = message.split("=").value(1);
+    if (id.isEmpty())
+        return;
 
-        // Если аргумент опции --openTreeItem (устаревшее --openBranch) не обнаружен
-        if (branchId.length() == 0)
-            return;
+    if (message.startsWith("openNote")) {
+        // Нахождение ветки, в которой лежит запись с указанным идентификатором
+        QStringList pathToRecord = treeScreen->knowTreeModel->getRecordPath(id);
 
-        // Установка курсора в дереве
-        treeScreen->setCursorToId(branchId);
+        // Установка курсора в дереве и в таблице конечных записей
+        setTreePosition(pathToRecord);
+        setRecordtablePositionById(id);
+    } else if (message.startsWith("openTreeItem")) {
+        treeScreen->setCursorToId(id); // Установка курсора в дереве
     }
 }
 
@@ -253,7 +227,7 @@ void MainWindow::saveWindowGeometry(void) {
     AppConfig::get().set_hspl_size_list(hSplitter->sizes());
 
     // Запоминается размер сплиттера только при видимом виджете поиска,
-    // т.к. если виджета поиска невидно, будет запомнен нулевой размер
+    // т.к. если виджета поиска не видно, будет запомнен нулевой размер
 
     // if(findScreenDisp->isVisible()) - так делать нельзя, т.к.
     // данный метод вызывается из декструктора главного окна, и к этому моменту

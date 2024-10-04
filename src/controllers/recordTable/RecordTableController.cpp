@@ -687,7 +687,7 @@ void RecordTableController::deleteRecords(void) {
 
     // Если таблица конечных записей пуста
     if (recordProxyModel->rowCount() == 0) {
-        // Нужно очистить поле редактирования чтобы невидно было текста
+        // Нужно очистить поле редактирования, чтобы не видно было текста
         // последней удаленной записи
         find_object<MetaEditor>("editorScreen")->clearAll();
     }

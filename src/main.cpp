@@ -44,7 +44,7 @@ static void process_control_options(QtSingleApplication & app, const QString & c
         return;
     }
 
-    const QStringList commands_with_arg = {"openNote ", "openBranch ", "openTreeItem "};
+    const QStringList commands_with_arg = {"openNote", "openTreeItem"};
     for (auto & str : commands_with_arg) {
         if(cmd.startsWith(str)) {
             app.sendMessage(cmd);
@@ -67,15 +67,14 @@ int main(int argc, char **argv) {
     parser.addVersionOption();
 
     parser.addOptions({
-        {"control", "Send command to already running instance of MyTetra.\n"
-                    "show\n"
-                    "hide\n"
-                    "quit\n"
-                    "reload\n"
-                    "openNote\n"
-                    "addNoteDialog\n"
-                    "openBranch\n"
-                    "openTreeItem", "cmd"},
+        {"control", "Send command to already running instance of MyTetra. Available commands:\n"
+                    "show - Show and activate MyTetra window\n"
+                    "hide - Hide MyTetra window\n"
+                    "quit - Quit from MyTetra\n"
+                    "reload - Reload database\n"
+                    "addNoteDialog - Show dialod for create new note in current tree item\n"
+                    "openNote=<noteId> - Jump to note with <noteId>\n"
+                    "openTreeItem=<treeItemId> - Jump to tree item with <treeItemId>", "cmd"},
         {{"c", "cfg_dir"}, "specify directory with conf.ini instead of default location", "dir", QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)}
     });
 
