@@ -25,7 +25,6 @@ class MainWindow : public QMainWindow, public Singleton<MainWindow> {
     Q_OBJECT
     friend class Singleton<MainWindow>;
   public:
-    MainWindow() : QMainWindow() {}
     virtual ~MainWindow();
     void init();
 

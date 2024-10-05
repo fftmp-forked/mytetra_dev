@@ -17,15 +17,15 @@ class KnowTreeModel : public TreeModel {
 
   public:
     KnowTreeModel(QObject *parent = nullptr);
-    ~KnowTreeModel();
+    ~KnowTreeModel() { delete rootItem; }; /// @todo delete elems recursively
 
     void initFromXML(QString fileName);
-    void reload(void);
+    void reload();
 
     QDomElement exportFullModelDataToDom(TreeItem *root);
     void exportFullModelDataToStreamWriter(QXmlStreamWriter *xmlWriter, TreeItem *root);
 
-    void save(void);
+    void save();
 
     // Добавление новой подветки к указанной ветке
     void addNewChildBranch(const QModelIndex &index, QMap<QString, QString> branchFields);
@@ -49,7 +49,7 @@ class KnowTreeModel : public TreeModel {
     TreeItem *getItemById(const QString &id);
 
     // Возвращает общее количество записей, хранимых в дереве
-    int getAllRecordCount(void);
+    int getAllRecordCount();
 
     // Возвращает количество записей в ветке и всех подветках
     int getRecordCountForItem(TreeItem *item);
@@ -96,10 +96,11 @@ class KnowTreeModel : public TreeModel {
 
     QDateTime lastAccess;
 
-    void init(QDomDocument *domModel);
+    QDomDocument * read_xml_file(QString file);
+    void init(const QDomDocument *domModel);
 
     // Функция заполнения дерева из DOM-документа
-    void setupModelData(QDomDocument *dommodel, TreeItem *parent);
+    void setupModelData(const QDomDocument *dommodel, TreeItem *parent);
 
     // Преобразование DOM в Item модель. Функция рекурсивного обхода элементов DOM-документа
     void parseNodeElement(QDomElement n, TreeItem *parent);
@@ -148,8 +149,6 @@ class KnowTreeModel : public TreeModel {
     bool isRecordDirExistsRecurse(TreeItem *item, QString findDir, int mode) const;
 
     bool checkFormat(QDomElement elementFormat);
-
-    bool updateSubVersionFrom1To2(void);
 
     // Методы, используемые при импорте
     QMap<QString, QString> getAttributeTranslateTable(QDomDocument &doc, QString elementName, QString attributeName);

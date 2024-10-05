@@ -11,7 +11,7 @@
 #include <QVariant>
 #include <QXmlStreamWriter>
 
-#include "models/recordTable/Record.h"
+#include "../../models/recordTable/Record.h"
 
 class TreeItem;
 

@@ -6,7 +6,7 @@
 #include <QPersistentModelIndex>
 #include <QVariant>
 
-class TreeItem;
+#include "TreeItem.h"
 
 /// @brief вспомогательный класс! От него наследуется KnowTreeModel
 class TreeModel : public QAbstractItemModel {

@@ -9,7 +9,7 @@
 #include <QVector>
 #include <QXmlStreamWriter>
 
-#include "models/recordTable/RecordTableData.h"
+#include "../../models/recordTable/RecordTableData.h"
 
 class TreeItem {
   public:

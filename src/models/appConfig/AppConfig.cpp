@@ -26,7 +26,7 @@ QString AppConfig::get_parameter(QString name) const {
         criticalError("In config not found parameter " + name);
 }
 
-QString AppConfig::get_tetradir(void) const {
+QString AppConfig::get_tetradir() const {
     auto d = get_parameter("tetradir");
     if (d[0] == '~')
         d.replace (0, 1, QDir::homePath());

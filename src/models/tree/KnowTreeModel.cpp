@@ -1,5 +1,6 @@
 #include <QAbstractItemModel>
 #include <QDir>
+#include <QDomDocument>
 #include <QDomNamedNodeMap>
 #include <QFileInfo>
 #include <QMap>
@@ -7,7 +8,6 @@
 #include "KnowTreeModel.h"
 #include "TreeItem.h"
 #include "TreeModel.h"
-#include "XmlTree.h"
 
 #include "libraries/ClipboardBranch.h"
 #include "libraries/FixedParameters.h"
@@ -24,6 +24,31 @@
 #define CURRENT_FORMAT_VERSION 1
 #define CURRENT_FORMAT_SUBVERSION 2
 
+QDomDocument * KnowTreeModel::read_xml_file(QString file) {
+    QFile xmlFile(file);
+
+    if (!xmlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::information(nullptr, tr("Error"), tr("Cannot read file %1:\n%2.").arg(file, xmlFile.errorString()));
+        return nullptr;
+    }
+
+    auto d = new QDomDocument();
+
+    QString errorStr;
+    int errorLine;
+    int errorColumn;
+    if (!d->setContent(&xmlFile, true, &errorStr, &errorLine, &errorColumn)) {
+        QMessageBox::information(nullptr, tr("Error converting to DOM"),
+                                 tr("Parse error at line %1, column %2:\n%3")
+                                     .arg(errorLine)
+                                     .arg(errorColumn)
+                                     .arg(errorStr));
+        delete d;
+        return nullptr;
+    }
+    return d;
+}
+
 /// @brief Конструктор модели дерева, состоящего из Item элементов
 KnowTreeModel::KnowTreeModel(QObject *parent) : TreeModel(parent) {
     xmlFileName = "";
@@ -34,25 +59,20 @@ KnowTreeModel::KnowTreeModel(QObject *parent) : TreeModel(parent) {
             Qt::QueuedConnection);
 }
 
-/// @todo По-хорошему деструктор перед удалением корневого элемента должен пробежать по дереву элементов и удалить их
-KnowTreeModel::~KnowTreeModel() {
-    delete rootItem;
-}
-
 void KnowTreeModel::initFromXML(QString fileName) {
     xmlFileName = fileName;
 
-    // Загрузка файла и преобразование его в DOM модель
-    XmlTree xmlt;
-    if (!xmlt.load(xmlFileName))
+    auto doc = read_xml_file(xmlFileName);
+    if (!doc)
         return;
 
-    init(xmlt.getDomModel());
+    init(doc);
+    delete doc;
 
     lastAccess = QDateTime::currentDateTime();
 }
 
-void KnowTreeModel::init(QDomDocument *domModel) {
+void KnowTreeModel::init(const QDomDocument *domModel) {
     // Проверка формата XML-файла
     if (!checkFormat(domModel->documentElement().firstChildElement("format"))) {
         criticalError(tr("Unsupported version of the database format.\nYou need to update MyTetra."));
@@ -91,33 +111,16 @@ bool KnowTreeModel::checkFormat(QDomElement elementFormat) {
     if (baseVersion > CURRENT_FORMAT_VERSION || baseSubVersion > CURRENT_FORMAT_SUBVERSION)
         return false;
 
-    // В настоящий момент поддерживается формат 1.2
-    // В настоящий момент предполагается, что номер версии всегда 1, поэтому вся работа идет по номеру подверсии
-    if (baseSubVersion <= 1)
-        if (updateSubVersionFrom1To2() == false) // Смена формата с 1.1 на 1.2
-            return false;
-
-    // На будущее, для перехода с подверсии 2 на подверсию 3, эти строки надо добавлять к существующим (а не заменять)
-    // if(baseSubVersion<=2)
-    //  if(updateSubVersionFrom2To3()==false)
-    //   return false;
-
     return true;
 }
 
-bool KnowTreeModel::updateSubVersionFrom1To2(void) {
-    // Формат 1.2 только расширяет формат 1.1 (т. е. только добавляет данные, но не исключает никакие устаревшие)
-    // Поэтому ни в каких преобразующих действиях нет необходимости
-    return true;
-}
-
-void KnowTreeModel::reload(void) {
+void KnowTreeModel::reload() {
     initFromXML(xmlFileName);
 }
 
 // Разбор DOM модели и преобразование ее в Item модель
-void KnowTreeModel::setupModelData(QDomDocument *dommodel, TreeItem *parent) {
-    QDomElement contentRootNode = dommodel->documentElement().firstChildElement("content").firstChildElement("node");
+void KnowTreeModel::setupModelData(const QDomDocument *dommodel, TreeItem *parent) {
+    auto contentRootNode = dommodel->documentElement().firstChildElement("content").firstChildElement("node");
 
     if (contentRootNode.isNull()) {
         qDebug() << "Unable load xml tree, first content node not found.";
@@ -145,12 +148,12 @@ void KnowTreeModel::parseNodeElement(QDomElement domElement, TreeItem *iParent) 
             parent->insertChildren(parent->childCount(), 1, 1);
 
             // Определяются атрибуты узла дерева разделов
-            QDomNamedNodeMap attributeMap = domElement.attributes();
+            auto attributeMap = domElement.attributes();
 
             // Перебираются атрибуты узла дерева разделов
             QMap<QString, QString> nameAndValue;
             for (int i = 0; i < attributeMap.count(); ++i) {
-                QDomNode attribute = attributeMap.item(i);
+                auto attribute = attributeMap.item(i);
 
                 nameAndValue[attribute.nodeName()] = attribute.nodeValue();
             }
@@ -244,10 +247,10 @@ bool KnowTreeModel::exportBranchToDirectory(TreeItem *startItem, QString exportD
     return true;
 }
 
-// Импорт ветки из указанной дирекотрии
+// Импорт ветки из указанной директории
 // Метод возвращает ID новой созданной при импорте ветки или пустую строку, если импорт не произошел
 QString KnowTreeModel::importBranchFromDirectory(TreeItem *startItem, QString importDir) {
-    QString importXmlFileName = importDir + "/mytetra.xml";
+    auto importXmlFileName = importDir + "/mytetra.xml";
 
     // Проверяется наличие mytetra.xml и возможность его чтения
     QFileInfo importXmlFileInfo(importXmlFileName);
@@ -256,39 +259,40 @@ QString KnowTreeModel::importBranchFromDirectory(TreeItem *startItem, QString im
         return "";
     }
 
-    // Загрузка XML файла и преобразование его в DOM модель
-    XmlTree xmlt;
-    if (!xmlt.load(importXmlFileName))
+    auto doc = read_xml_file(importXmlFileName);
+    if (!doc)
         return "";
 
     // Создаются таблицы перекодировки идентификаторов веток, записей, имен директорий
     // Если в импортируемых данных есть ID ветки или записи, который уже есть в основной базе,
     // он должен быть заменен при экспорте на новый уникальный ID
-    QMap<QString, QString> idNodeTranslate = getAttributeTranslateTable(*(xmlt.getDomModel()), "node", "id");
-    QMap<QString, QString> idRecordTranslate = getAttributeTranslateTable(*(xmlt.getDomModel()), "record", "id");
-    QMap<QString, QString> dirRecordTranslate = getAttributeTranslateTable(*(xmlt.getDomModel()), "record", "dir");
+    auto idNodeTranslate = getAttributeTranslateTable(*doc, "node", "id");
+    auto idRecordTranslate = getAttributeTranslateTable(*doc, "record", "id");
+    auto dirRecordTranslate = getAttributeTranslateTable(*doc, "record", "dir");
 
     qDebug() << "Map of dirRecordTranslate: " << dirRecordTranslate;
 
     // Копирование каталогов с записями. При необходимости каталоги получают новые имена согласно переданной таблице трансляции
-    if (!copyImportRecordDirectories(*(xmlt.getDomModel()), importDir, idRecordTranslate, dirRecordTranslate))
+    if (!copyImportRecordDirectories(*doc, importDir, idRecordTranslate, dirRecordTranslate))
         return "";
 
     // Преобразование DOM-документа путем замены всех необходимых идентификаторов и названий каталогов
-    translateImportDomData(*(xmlt.getDomModel()), "node", "id", idNodeTranslate);
-    translateImportDomData(*(xmlt.getDomModel()), "record", "id", idRecordTranslate);
-    translateImportDomData(*(xmlt.getDomModel()), "record", "dir", dirRecordTranslate);
+    translateImportDomData(*doc, "node", "id", idNodeTranslate);
+    translateImportDomData(*doc, "record", "id", idRecordTranslate);
+    translateImportDomData(*doc, "record", "dir", dirRecordTranslate);
 
     // Динамическое создание ветки основной базы дерева на основе DOM-данных
     beginResetModel();
-    setupModelData(xmlt.getDomModel(), startItem);
+    setupModelData(doc, startItem);
     endResetModel();
 
     // Выясняется идентификатор только что импортированной ветки
     QString importItemId = "";
-    QDomNodeList nodeList = xmlt.getDomModel()->elementsByTagName("node");
+    auto nodeList = doc->elementsByTagName("node");
     if (nodeList.count() > 0)
         importItemId = nodeList.at(0).toElement().attribute("id");
+
+    delete doc;
 
     // После завершения экспорта дерево знаний записывается
     save();
@@ -302,10 +306,10 @@ bool KnowTreeModel::copyImportRecordDirectories(QDomDocument &doc,
                                                 QString importDir,
                                                 QMap<QString, QString> idRecordTranslate,
                                                 QMap<QString, QString> dirRecordTranslate) {
-    QDomNodeList nodeList = doc.elementsByTagName("record");
+    auto nodeList = doc.elementsByTagName("record");
     for (int i = 0; i < nodeList.count(); ++i) {
-        QString shortFromDir = nodeList.at(i).toElement().attribute("dir");
-        QString shortToDir = shortFromDir;
+        auto shortFromDir = nodeList.at(i).toElement().attribute("dir");
+        auto shortToDir = shortFromDir;
 
         // Если запись содержит нормальный атрибут dir
         if (shortFromDir.length() > 0) {
@@ -342,9 +346,9 @@ void KnowTreeModel::translateImportDomData(QDomDocument &doc,
                                            QMap<QString, QString> translateTable) {
     QDomNodeList nodeList = doc.elementsByTagName(elementName);
     for (int i = 0; i < nodeList.count(); ++i) {
-        QDomElement element = nodeList.at(i).toElement();
+        auto element = nodeList.at(i).toElement();
 
-        QString attributeValue = element.attribute(elementAttribute);
+        auto attributeValue = element.attribute(elementAttribute);
         if (attributeValue.length() > 0)
             if (translateTable.contains(attributeValue))
                 element.setAttribute(elementAttribute, translateTable[attributeValue]);
@@ -355,32 +359,31 @@ void KnowTreeModel::translateImportDomData(QDomDocument &doc,
 QMap<QString, QString> KnowTreeModel::getAttributeTranslateTable(QDomDocument &doc, QString elementName, QString attributeName) {
     QMap<QString, QString> translateTable;
 
-    QDomNodeList nodeList = doc.elementsByTagName(elementName);
+    auto nodeList = doc.elementsByTagName(elementName);
     for (int i = 0; i < nodeList.count(); ++i) {
-        QString attribute = nodeList.at(i).toElement().attribute(attributeName);
-        if (attribute.length() > 0) {
-            bool isAppend = false;
+        auto attribute = nodeList.at(i).toElement().attribute(attributeName);
+        if (attribute.isEmpty())
+            continue;
 
-            // Если проверяется ID ветки
-            if (elementName == "node" && attributeName == "id")
-                if (isItemIdExists(attribute)) // Если в основной базе есть ветка с таким же ID
-                    isAppend = true;
+        bool isAppend = false;
 
-            // Если проверяется ID записи
-            if (elementName == "record" && attributeName == "id")
-                if (isRecordIdExists(attribute)) // Если в основной базе есть запись с таким же ID
-                    isAppend = true;
+        // Если проверяется ID ветки
+        if (elementName == "node" && attributeName == "id")
+            if (isItemIdExists(attribute)) // Если в основной базе есть ветка с таким же ID
+                isAppend = true;
 
-            // Если проверяется директория записи
-            if (elementName == "record" && attributeName == "dir")
-                if (isRecordDirExists(attribute)) // Если в основной базе есть запись с такой же директорией
-                    isAppend = true;
+        // Если проверяется ID записи
+        if (elementName == "record" && attributeName == "id")
+            if (isRecordIdExists(attribute)) // Если в основной базе есть запись с таким же ID
+                isAppend = true;
 
-            if (isAppend) {
-                translateTable[attribute] = getUniqueId();
-                continue;
-            }
-        }
+        // Если проверяется директория записи
+        if (elementName == "record" && attributeName == "dir")
+            if (isRecordDirExists(attribute)) // Если в основной базе есть запись с такой же директорией
+                isAppend = true;
+
+        if (isAppend)
+            translateTable[attribute] = getUniqueId();
     }
 
     return translateTable;
@@ -407,10 +410,10 @@ void KnowTreeModel::parseTreeToDom(QDomDocument *doc, QDomElement *xmlData, Tree
     // Обработка каждой подчиненной ветки
     for (int i = 0; i < currItem->childCount(); i++) {
         // Временный элемент, куда будет внесена текущая перебираемая ветка
-        QDomElement tempElement = doc->createElement("node");
+        auto tempElement = doc->createElement("node");
 
         // Получение всех полей для данной ветки
-        QMap<QString, QString> fields = currItem->child(i)->getAllFieldsDirect();
+        auto fields = currItem->child(i)->getAllFieldsDirect();
 
         // Перебираются поля элемента ветки
         QMapIterator<QString, QString> fields_iterator(fields);
@@ -425,7 +428,7 @@ void KnowTreeModel::parseTreeToDom(QDomDocument *doc, QDomElement *xmlData, Tree
         xmlData->appendChild(tempElement);
 
         // Рекурсивная обработка
-        QDomElement workElement = xmlData->lastChildElement();
+        auto workElement = xmlData->lastChildElement();
         parseTreeToDom(doc, &workElement, currItem->child(i));
     }
 }
@@ -442,7 +445,7 @@ void KnowTreeModel::parseTreeToStreamWriter(QXmlStreamWriter *xmlWriter, TreeIte
         xmlWriter->writeStartElement("node");
 
         // Получение всех полей для данной ветки
-        QMap<QString, QString> fields = currItem->child(i)->getAllFieldsDirect();
+        auto fields = currItem->child(i)->getAllFieldsDirect();
 
         // Перебираются поля элемента ветки
         QMapIterator<QString, QString> fields_iterator(fields);
@@ -529,7 +532,7 @@ QDomElement KnowTreeModel::createStandartRootElement(QDomDocument &doc) {
 // Добавление новой подветки к указанной ветке
 void KnowTreeModel::addNewChildBranch(const QModelIndex &index, QMap<QString, QString> branchFields) {
     // Получение ссылки на Item элемент по QModelIndex
-    TreeItem *parent = getItem(index);
+    auto parent = getItem(index);
 
     beginInsertRows(index, parent->childCount(), parent->childCount());
     addNewBranch(parent, branchFields);
@@ -539,8 +542,8 @@ void KnowTreeModel::addNewChildBranch(const QModelIndex &index, QMap<QString, QS
 // Добавление новой ветки после указанной ветки
 void KnowTreeModel::addNewSiblingBranch(const QModelIndex &index, QMap<QString, QString> branchFields) {
     // Получение ссылки на родительский Item элемент по QModelIndex
-    TreeItem *current = getItem(index);
-    TreeItem *parent = current->parent();
+    auto current = getItem(index);
+    auto parent = current->parent();
 
     beginInsertRows(index.parent(), parent->childCount(), parent->childCount());
     addNewBranch(parent, branchFields);
@@ -581,7 +584,7 @@ QString KnowTreeModel::pasteNewChildBranch(const QModelIndex &index, ClipboardBr
     QString pasted_branch_id;
 
     // Получение ссылки на Item элемент по QModelIndex
-    TreeItem *parent = getItem(index);
+    auto parent = getItem(index);
 
     beginInsertRows(index, parent->childCount(), parent->childCount());
     pasted_branch_id = pasteSubbranch(parent, (ClipboardBranch *)subbranch);
@@ -594,11 +597,11 @@ QString KnowTreeModel::pasteNewSiblingBranch(const QModelIndex &index, Clipboard
     QString pasted_branch_id;
 
     // Получение ссылки на родительский Item элемент по QModelIndex
-    TreeItem *current = getItem(index);
-    TreeItem *parent = current->parent();
+    auto current = getItem(index);
+    auto parent = current->parent();
 
     beginInsertRows(index.parent(), parent->childCount(), parent->childCount());
-    pasted_branch_id = pasteSubbranch(parent, (ClipboardBranch *)subbranch);
+    pasted_branch_id = pasteSubbranch(parent, subbranch);
     endInsertRows();
 
     return pasted_branch_id;
@@ -617,7 +620,7 @@ QModelIndex KnowTreeModel::moveDownBranch(const QModelIndex &index) {
 // Перемещение ветки вверх или вниз
 QModelIndex KnowTreeModel::moveUpDownBranch(const QModelIndex &index, int direction) {
     // Получение QModelIndex расположенного над или под элементом index
-    QModelIndex swap_index = index.sibling(index.row() - direction, 0);
+    auto swap_index = index.sibling(index.row() - direction, 0);
 
     // Проверяется допустимость индекса элемента, куда будет сделано перемещение
     if (!swap_index.isValid())
@@ -627,10 +630,10 @@ QModelIndex KnowTreeModel::moveUpDownBranch(const QModelIndex &index, int direct
     // после перемещения ветки
     int swpidx_row = swap_index.row();
     int swpidx_column = swap_index.column();
-    QModelIndex swpidx_parent = swap_index.parent();
+    auto swpidx_parent = swap_index.parent();
 
     // Получение ссылки на Item элемент по QModelIndex
-    TreeItem *current = getItem(index);
+    auto current = getItem(index);
 
     // Перемещается ветка
     emit layoutAboutToBeChanged();
@@ -705,7 +708,7 @@ QModelIndex KnowTreeModel::getIndexByItem(TreeItem *item) {
 }
 
 // Возвращает общее количество записей, хранимых в дереве
-int KnowTreeModel::getAllRecordCount(void) {
+int KnowTreeModel::getAllRecordCount() {
     // Обнуление счетчика
     getAllRecordCountRecurse(rootItem, 0);
 
@@ -728,7 +731,7 @@ int KnowTreeModel::getAllRecordCountRecurse(TreeItem *item, int mode) {
         return 0;
     }
 
-    n = n + item->recordtableGetRowCount();
+    n += item->recordtableGetRowCount();
 
     for (int i = 0; i < item->childCount(); i++)
         getAllRecordCountRecurse(item->child(i), 1);
