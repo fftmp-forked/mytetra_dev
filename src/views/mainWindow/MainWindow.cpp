@@ -46,8 +46,13 @@ void MainWindow::init() {
 
     // Закрывать ли по-настоящему окно при обнаружении сигнала closeEvent
     enableRealClose = false;
+}
 
-    srand(time(NULL));
+MainWindow::~MainWindow() {
+    saveAllState();
+    delete trayIcon;
+    delete trayIconMenu;
+    delete synchroCommandRun;
 }
 
 void MainWindow::setupUI(void) {

@@ -22,7 +22,7 @@ class MainWindow : public QMainWindow {
 
   public:
     MainWindow() : QMainWindow() {}
-    virtual ~MainWindow() { saveAllState(); delete trayIcon; delete trayIconMenu; }
+    virtual ~MainWindow();
     void init();
 
     TreeScreen *treeScreen = nullptr;
