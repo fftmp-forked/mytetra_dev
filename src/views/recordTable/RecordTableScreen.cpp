@@ -31,88 +31,40 @@ RecordTableScreen::RecordTableScreen(QWidget *parent) : QWidget(parent) {
 
 // Настройка возможных действий
 void RecordTableScreen::setupActions(void) {
-    // Добавление записи
-    actionAddNewToEnd = new QAction(this);
-    actionAddNewToEnd->setIcon(QIcon(":/resource/pic/note_add.svg"));
-
-    // Добавление записи до
+    actionAddNewToEnd = new QAction(QIcon(":/resource/pic/note_add.svg"), "", this);
     actionAddNewBefore = new QAction(this);
-
-    // Добавление записи после
     actionAddNewAfter = new QAction(this);
+    actionEditField = new QAction(QIcon(":/resource/pic/note_edit.svg"), "", this);
+    actionBlock = new QAction(QIcon(":/resource/pic/note_block.svg"), "", this);
+    actionDelete = new QAction(QIcon(":/resource/pic/note_delete.svg"), "", this);
+    actionCut = new QAction(QIcon(":/resource/pic/cb_cut.svg"), "", this);
+    actionCopy = new QAction(QIcon(":/resource/pic/cb_copy.svg"), "", this);
+    actionPaste = new QAction(QIcon(":/resource/pic/cb_paste.svg"), "", this);
 
-    // Редактирование свойств записи
-    actionEditField = new QAction(this);
-    actionEditField->setIcon(QIcon(":/resource/pic/note_edit.svg"));
-
-    // Блокировка записи
-    actionBlock = new QAction(this);
-    actionBlock->setIcon(QIcon(":/resource/pic/note_block.svg"));
-
-    // Удаление записи
-    actionDelete = new QAction(this);
-    actionDelete->setIcon(QIcon(":/resource/pic/note_delete.svg"));
-
-    // Удаление записи с копированием в буфер обмена
-    actionCut = new QAction(this);
-    actionCut->setIcon(QIcon(":/resource/pic/cb_cut.svg"));
-
-    // Копирование записи (записей) в буфер обмена
-    actionCopy = new QAction(this);
-    actionCopy->setIcon(QIcon(":/resource/pic/cb_copy.svg"));
-
-    // Вставка записи из буфера обмена
-    actionPaste = new QAction(this);
-    actionPaste->setIcon(QIcon(":/resource/pic/cb_paste.svg"));
-
-    // Настройка внешнего вида таблицы конечных записей (горячая кнопка не требуется)
-    actionSettings = new QAction(tr("View settings"), this);
+    actionSettings = new QAction(QIcon(":/resource/pic/edit_settings.svg"), tr("View settings"), this);
     actionSettings->setStatusTip(tr("Setup table view settins"));
-    actionSettings->setIcon(QIcon(":/resource/pic/edit_settings.svg"));
 
-    // Перемещение записи вверх
-    actionMoveUp = new QAction(this);
-    actionMoveUp->setIcon(QIcon(":/resource/pic/move_up.svg"));
+    actionMoveUp = new QAction(QIcon(":/resource/pic/move_up.svg"), "", this);
+    actionMoveDn = new QAction(QIcon(":/resource/pic/move_dn.svg"), "", this);
+    actionSynchro = new QAction(QIcon(":/resource/pic/synchronization.svg"), "", this);
 
-    // Перемещение записи вниз
-    actionMoveDn = new QAction(this);
-    actionMoveDn->setIcon(QIcon(":/resource/pic/move_dn.svg"));
+    actionFindInBase = new QAction(QIcon(":/resource/pic/find_in_base.svg"), ShortcutManager::get().getDescriptionWithShortcut(ShortcutManager::SECTION_MISC, "findInBase"), this);
 
-    // Синхронизация
-    actionSynchro = new QAction(this);
-    actionSynchro->setIcon(QIcon(":/resource/pic/synchronization.svg"));
+    actionWalkHistoryPrevious = new QAction(QIcon(":/resource/pic/walk_history_previous.svg"), tr("Previous viewing note"), this);
 
-    // Поиск по базе (клик связывается с действием в MainWindow)
-    actionFindInBase = new QAction(ShortcutManager::get().getDescriptionWithShortcut(ShortcutManager::SECTION_MISC, "findInBase"), this);
-    actionFindInBase->setIcon(QIcon(":/resource/pic/find_in_base.svg"));
+    actionWalkHistoryNext = new QAction(QIcon(":/resource/pic/walk_history_next.svg"), tr("Next viewing note"), this);
 
-    // Перемещение по истории посещаемых записей назад
-    actionWalkHistoryPrevious = new QAction(tr("Previous viewing note"), this);
-    actionWalkHistoryPrevious->setIcon(QIcon(":/resource/pic/walk_history_previous.svg"));
-
-    // Перемещение по истории посещаемых записей вперед
-    actionWalkHistoryNext = new QAction(tr("Next viewing note"), this);
-    actionWalkHistoryNext->setIcon(QIcon(":/resource/pic/walk_history_next.svg"));
-
-    // Действия по сортировке (горячая кнопка не требуется)
-    actionSort = new QAction(tr("Toggle sorting"), this);
+    actionSort = new QAction(QIcon(":/resource/pic/sort.svg"), tr("Toggle sorting"), this);
     actionSort->setStatusTip(tr("Enable/disable sorting by column"));
-    actionSort->setIcon(QIcon(":/resource/pic/sort.svg"));
 
-    // Кнопка вызова печати таблицы конечных записей
-    actionPrint = new QAction(tr("Print table"), this);
+    actionPrint = new QAction(QIcon(":/resource/pic/print_table.svg"), tr("Print table"), this);
     actionPrint->setStatusTip(tr("Print current notes table"));
-    actionPrint->setIcon(QIcon(":/resource/pic/print_table.svg"));
 
-    // Кнопка копирования ссылки на запись
-    actionCopyRecordReference = new QAction(tr("Copy note reference"), this);
+    actionCopyRecordReference = new QAction(QIcon(":/resource/pic/note_reference.svg"), tr("Copy note reference"), this);
     actionCopyRecordReference->setStatusTip(tr("Copy note reference to clipboard"));
-    actionCopyRecordReference->setIcon(QIcon(":/resource/pic/note_reference.svg"));
 
-    // Кнопка переключения режима одинарного выбора и мультивыбора (горячая кнопка не требуется)
-    actionSwitchSelectionMode = new QAction(tr("Switch select/multiselect"), this);
+    actionSwitchSelectionMode = new QAction(QIcon(":/resource/pic/switch_note_selection_mode.svg"), tr("Switch select/multiselect"), this);
     actionSwitchSelectionMode->setStatusTip(tr("Switch note selection mode (Notice: if multiselect is on, drag-and-drop is disabled)"));
-    actionSwitchSelectionMode->setIcon(QIcon(":/resource/pic/switch_note_selection_mode.svg"));
 
     // Сразу после создания все действия запрещены
     disableAllActions();

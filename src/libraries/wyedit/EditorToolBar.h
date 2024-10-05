@@ -15,11 +15,7 @@ class EditorToolBar : public QWidget {
     Q_OBJECT
 
   public:
-    explicit EditorToolBar(QWidget *parent = nullptr) {
-        Q_UNUSED(parent);
-        isInit = false;
-    }
-    virtual ~EditorToolBar(){};
+    explicit EditorToolBar(QWidget *parent = nullptr) : QWidget(parent) {}
 
     // Область, содержащая линейки с кнопками форматирования
     QVBoxLayout textformatButtonsLayout;
@@ -95,7 +91,7 @@ class EditorToolBar : public QWidget {
 
     void init();
 
-    void initDisableToolList(QStringList toolNames); // Список кнопок, которые нельзя использовать - они будут невидны (не добавлены)
+    void initDisableToolList(QStringList toolNames); // Список кнопок, которые нельзя использовать - они не будут видны (не добавлены)
     void setEnableModifyTextButton(bool state);      // Установка или снятие доступности кнопок, модифицирующих текст
 
     void initToolsLine1(QStringList toolsLine);
@@ -114,7 +110,7 @@ class EditorToolBar : public QWidget {
     void setupShortcuts(void);
 
   protected:
-    bool isInit;
+    bool isInit = false;
 
     // Список инструментов на тулбарах 1 и 2
     QStringList toolsListInLine1;
@@ -136,8 +132,6 @@ class EditorToolBar : public QWidget {
 
     void clearToolsLines(void);
     void updateToolsLines(void);
-
-    QAction *generateAction(QIcon icon = QIcon());
 
     // Размер иконок на панели инструментов редактора
     QSize getIconSize() const { return toolsLine1.iconSize(); }

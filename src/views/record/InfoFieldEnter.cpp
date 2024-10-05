@@ -49,10 +49,8 @@ void InfoFieldEnter::setup_ui(void) {
     expandInfo->resize(x, x);
     if (AppConfig::get().get_addnewrecord_expand_info() == "0") {
         expandInfo->setIcon(QIcon(":/resource/pic/triangl_dn.svg"));
-        // expandInfo->setIcon(this->style()->standardIcon(QStyle::SP_ArrowDown));
     } else {
         expandInfo->setIcon(QIcon(":/resource/pic/triangl_up.svg"));
-        // expandInfo->setIcon(this->style()->standardIcon(QStyle::SP_ArrowUp));
     }
 }
 

@@ -13,7 +13,6 @@ class AttachTableView : public QTableView {
 
   public:
     AttachTableView(QWidget *parent = nullptr);
-    virtual ~AttachTableView();
 
     void init(void);
 

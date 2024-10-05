@@ -1,5 +1,7 @@
 #include <QDebug>
 #include <QDialogButtonBox>
+#include <QToolBar>
+#include <QVBoxLayout>
 
 #include "DatabasesManagementScreen.h"
 #include "DatabasesManagementTable.h"
@@ -13,45 +15,26 @@ DatabasesManagementScreen::DatabasesManagementScreen(QWidget *parent) : QDialog(
     this->setWindowTitle(tr("Databases management"));
 
     // Инициализируется контроллер отображения записей лога
-    databasesManagementController = new DatabasesManagementController(this);
+    auto databasesManagementController = new DatabasesManagementController(this);
     databasesManagementController->setObjectName("DatabasesManagementController");
 
-    setupActions();
-    setupUI();
-    setupSignals();
-    assembly();
+    auto actionSelect = new QAction(QIcon(":/resource/pic/dbmanagement_select.svg"), tr("Select database"), this);
+    connect(actionSelect, &QAction::triggered, databasesManagementController, &DatabasesManagementController::onSelectClicked);
 
-    databasesManagementTable->init();
-}
+    auto actionCreate = new QAction(QIcon(":/resource/pic/dbmanagement_create.svg"), tr("Create new database"), this);
+    connect(actionCreate, &QAction::triggered, databasesManagementController, &DatabasesManagementController::onCreateClicked);
 
-void DatabasesManagementScreen::setupActions(void) {
-    actionSelect = new QAction(tr("Select database"), this);
-    actionSelect->setIcon(QIcon(":/resource/pic/dbmanagement_select.svg"));
-    connect(actionSelect, &QAction::triggered,
-            databasesManagementController, &DatabasesManagementController::onSelectClicked);
+    auto actionAdd = new QAction(QIcon(":/resource/pic/dbmanagement_append.svg"), tr("Append exists database"), this);
+    connect(actionAdd, &QAction::triggered, databasesManagementController, &DatabasesManagementController::onAddClicked);
 
-    actionCreate = new QAction(tr("Create new database"), this);
-    actionCreate->setIcon(QIcon(":/resource/pic/dbmanagement_create.svg"));
-    connect(actionCreate, &QAction::triggered,
-            databasesManagementController, &DatabasesManagementController::onCreateClicked);
+    actionCopy = new QAction(QIcon(":/resource/pic/cb_copy.svg"), tr("Copy selected rows"), this);
+    connect(actionCopy, &QAction::triggered, databasesManagementController, &DatabasesManagementController::onCopyClicked);
 
-    actionAdd = new QAction(tr("Append exists database"), this);
-    actionAdd->setIcon(QIcon(":/resource/pic/dbmanagement_append.svg"));
-    connect(actionAdd, &QAction::triggered,
-            databasesManagementController, &DatabasesManagementController::onAddClicked);
-
-    actionCopy = new QAction(tr("Copy selected rows"), this);
-    actionCopy->setIcon(QIcon(":/resource/pic/cb_copy.svg"));
-    connect(actionCopy, &QAction::triggered,
-            databasesManagementController, &DatabasesManagementController::onCopyClicked);
-}
-
-void DatabasesManagementScreen::setupUI(void) {
     // Экранная таблица с отображением лога действий
-    databasesManagementTable = databasesManagementController->getView();
+    auto databasesManagementTable = databasesManagementController->getView();
 
     // Создание тулбара
-    toolBar = new QToolBar(this);
+    auto toolBar = new QToolBar(this);
     insertActionAsButton(toolBar, actionSelect);
     insertActionAsButton(toolBar, actionCreate);
     insertActionAsButton(toolBar, actionAdd);
@@ -59,19 +42,16 @@ void DatabasesManagementScreen::setupUI(void) {
     insertActionAsButton(toolBar, actionCopy);
 
     // Создание набора диалоговых кнопок
-    buttonBox = new QDialogButtonBox(QDialogButtonBox::Cancel, this);
-}
+    auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Cancel, this);
 
-void DatabasesManagementScreen::setupSignals(void) {
     connect(buttonBox, &QDialogButtonBox::rejected, this, &DatabasesManagementScreen::close);
-}
 
-void DatabasesManagementScreen::assembly(void) {
-    screenLayout = new QVBoxLayout(this);
-
+    auto screenLayout = new QVBoxLayout(this);
     screenLayout->addWidget(toolBar);
     screenLayout->addWidget(databasesManagementTable);
     screenLayout->addWidget(buttonBox);
 
     setLayout(screenLayout);
+
+    databasesManagementTable->init();
 }

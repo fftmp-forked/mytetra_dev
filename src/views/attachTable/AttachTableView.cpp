@@ -13,9 +13,6 @@ AttachTableView::AttachTableView(QWidget *parent) : QTableView(parent) {
     this->setSelectionBehavior(QAbstractItemView::SelectRows); // Выделяется вся строка
 }
 
-AttachTableView::~AttachTableView() {
-}
-
 void AttachTableView::init(void) {
     setupSignals();
 

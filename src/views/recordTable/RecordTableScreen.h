@@ -30,22 +30,21 @@ class RecordTableScreen : public QWidget {
     void setFocusToBaseWidget();
 
     // Действия, используемые как на тулбаре, так и в контекстном меню списка записей
-    QAction *actionAddNewToEnd;
-    QAction *actionAddNewBefore;
-    QAction *actionAddNewAfter;
-    QAction *actionEditField;
-    QAction *actionBlock;
-    QAction *actionDelete;
-    QAction *actionCut;
-    QAction *actionCopy;
-    QAction *actionPaste;
-    QAction *actionSettings;
-    QAction *actionBack;
-    QAction *actionFindInBase;
-    QAction *actionSort;
-    QAction *actionPrint;
-    QAction *actionCopyRecordReference;
-    QAction *actionSwitchSelectionMode;
+    QAction *actionAddNewToEnd;  // Добавление записи
+    QAction *actionAddNewBefore; // Добавление записи до
+    QAction *actionAddNewAfter;  // Добавление записи после
+    QAction *actionEditField;    // Редактирование свойств записи
+    QAction *actionBlock;        // Блокировка записи
+    QAction *actionDelete;       // Удаление записи
+    QAction *actionCut;          // Удаление записи с копированием в буфер обмена
+    QAction *actionCopy;         // Копирование записи (записей) в буфер обмена
+    QAction *actionPaste;        // Вставка записи из буфера обмена
+    QAction *actionSettings;     // Настройка внешнего вида таблицы конечных записей (горячая кнопка не требуется)
+    QAction *actionFindInBase;   // Поиск по базе (клик связывается с действием в MainWindow)
+    QAction *actionSort;         // Действия по сортировке (горячая кнопка не требуется)
+    QAction *actionPrint;        // Кнопка вызова печати таблицы конечных записей
+    QAction *actionCopyRecordReference; // Кнопка копирования ссылки на запись
+    QAction *actionSwitchSelectionMode; // Кнопка переключения режима одинарного выбора и мультивыбора (горячая кнопка не требуется)
 
     // Действие, которое может быть вызвано из MainWindows
     QAction *actionSynchro;
@@ -78,10 +77,11 @@ class RecordTableScreen : public QWidget {
     QHBoxLayout *recordTableToolsLayout;
     QVBoxLayout *recordTableScreenLayout;
 
-    QAction *actionMoveUp;
-    QAction *actionMoveDn;
-    QAction *actionWalkHistoryPrevious;
-    QAction *actionWalkHistoryNext;
+    QAction *actionMoveUp; // Перемещение записи вверх
+    QAction *actionMoveDn; // Перемещение записи вниз
+
+    QAction *actionWalkHistoryPrevious; // Перемещение по истории посещаемых записей назад
+    QAction *actionWalkHistoryNext;     // Перемещение по истории посещаемых записей вперед
 
     void setupUI(void);
     void setupSignals(void);

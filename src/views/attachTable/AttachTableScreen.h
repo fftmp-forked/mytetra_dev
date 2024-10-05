@@ -13,18 +13,18 @@ class AttachTableScreen : public QWidget {
     Q_OBJECT
   public:
     AttachTableScreen(QWidget *parent = nullptr);
-    virtual ~AttachTableScreen() {}
 
     void clear(void);
 
     QAction *actionAddAttach;        // Добавление локального файла
     QAction *actionAddAttachFromUrl; // Добавление файла по интернет-Url
     QAction *actionAddLink;          // Добавление линка на локальный файл
-    QAction *actionEditFileName;
-    QAction *actionDeleteAttach;
-    QAction *actionOpenAttach;
-    QAction *actionSaveAsAttach;
-    QAction *actionShowAttachInfo;
+    QAction *actionEditFileName;     // Редактирование информации о файле (имени файла)
+    QAction *actionDeleteAttach;     // Удаление файла
+    QAction *actionOpenAttach;       // Просмотр файла
+    QAction *actionSaveAsAttach;     // Сохранить как... файл
+    QAction *actionShowAttachInfo;   // Информация об аттаче
+    QAction *actionSwitchToEditor;  // Переключение на редактор
 
     void setReadOnly(bool state);
 
@@ -34,9 +34,9 @@ class AttachTableScreen : public QWidget {
 
   protected:
     void setupActions(void);
-    void setupUI(void);
+    void setupUI();
     void setupSignals(void);
-    void assembly(void);
+    void assembly();
 
     // Указатель на контроллер таблицы приаттаченных файлов
     AttachTableController *attachTableController;
@@ -46,7 +46,5 @@ class AttachTableScreen : public QWidget {
 
     // Экранные элементы
     QToolBar *toolsLine;
-    QVBoxLayout *screenLayout;
 
-    QAction *actionSwitchToEditor;
 };

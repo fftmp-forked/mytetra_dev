@@ -44,87 +44,73 @@ void TreeScreen::setupActions(void) {
     QAction *ac;
 
     // Разворачивание всех подветок
-    ac = new QAction(this);
-    ac->setIcon(QIcon(":/resource/pic/expand_all_subbranch.svg"));
+    ac = new QAction(QIcon(":/resource/pic/expand_all_subbranch.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::expandAllSubbranch);
     actionList["expandAllSubbranch"] = ac;
 
     // Сворачивание всех подветок
-    ac = new QAction(this);
-    ac->setIcon(QIcon(":/resource/pic/collapse_all_subbranch.svg"));
+    ac = new QAction(QIcon(":/resource/pic/collapse_all_subbranch.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::collapseAllSubbranch);
     actionList["collapseAllSubbranch"] = ac;
 
     // Перемещение ветки вверх
-    ac = new QAction(this);
-    ac->setIcon(QIcon(":/resource/pic/move_up.svg"));
+    ac = new QAction(QIcon(":/resource/pic/move_up.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::moveUpBranch);
     actionList["moveUpBranch"] = ac;
 
     // Перемещение ветки вниз
-    ac = new QAction(this);
-    ac->setIcon(QIcon(":/resource/pic/move_dn.svg"));
+    ac = new QAction(QIcon(":/resource/pic/move_dn.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::moveDownBranch);
     actionList["moveDownBranch"] = ac;
 
     // Вставка новой подветки
-    ac = new QAction(this);
-    ac->setIcon(QIcon(":/resource/pic/add_subbranch.svg"));
+    ac = new QAction(QIcon(":/resource/pic/add_subbranch.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::insSubbranch);
     actionList["insSubbranch"] = ac;
 
     // Вставка новой ветки
-    ac = new QAction(this);
-    ac->setIcon(QIcon(":/resource/pic/add_branch.svg"));
+    ac = new QAction(QIcon(":/resource/pic/add_branch.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::insBranch);
     actionList["insBranch"] = ac;
 
     // Редактирование ветки
-    ac = new QAction(this);
-    ac->setIcon(QIcon(":/resource/pic/note_edit.svg"));
+    ac = new QAction(QIcon(":/resource/pic/note_edit.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::editBranch);
     actionList["editBranch"] = ac;
 
     // Удаление ветки
-    ac = new QAction(this);
-    ac->setIcon(QIcon(":/resource/pic/note_delete.svg"));
+    ac = new QAction(QIcon(":/resource/pic/note_delete.svg"), "", this);
     connect(ac, &QAction::triggered, this, [this]() { delBranch(); });
     actionList["delBranch"] = ac;
 
     // Удаление ветки с сохранением копии в буфер обмена
-    ac = new QAction(this);
-    ac->setIcon(QIcon(":/resource/pic/branch_cut.svg"));
+    ac = new QAction(QIcon(":/resource/pic/branch_cut.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::cutBranch);
     actionList["cutBranch"] = ac;
 
     // Копирование ветки в буфер обмена
-    ac = new QAction(this);
-    ac->setIcon(QIcon(":/resource/pic/branch_copy.svg"));
+    ac = new QAction(QIcon(":/resource/pic/branch_copy.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::copyBranch);
     actionList["copyBranch"] = ac;
 
     // Вставка ветки из буфера обмена
-    ac = new QAction(this);
-    ac->setIcon(QIcon(":/resource/pic/branch_paste.svg"));
+    ac = new QAction(QIcon(":/resource/pic/branch_paste.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::pasteBranch);
     actionList["pasteBranch"] = ac;
 
     // Вставка ветки из буфера обмена в виде подветки
-    ac = new QAction(this);
-    ac->setIcon(QIcon(":/resource/pic/branch_paste.svg"));
+    ac = new QAction(QIcon(":/resource/pic/branch_paste.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::pasteSubbranch);
     actionList["pasteSubbranch"] = ac;
 
     // Добавление иконки к ветке
-    ac = new QAction(this);
-    ac->setIcon(QIcon(":/resource/pic/set_icon.svg"));
+    ac = new QAction(QIcon(":/resource/pic/set_icon.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::setIcon);
     actionList["setIcon"] = ac;
 
     // Открытие поиска по базе (связывание клика происходит в MainWindows)
-    ac = new QAction(tr("Find in base"), this);
+    ac = new QAction(QIcon(":/resource/pic/find_in_base.svg"), tr("Find in base"), this);
     ac->setStatusTip(tr("Find in base"));
-    ac->setIcon(QIcon(":/resource/pic/find_in_base.svg"));
     connect(ac, &QAction::triggered, this, &TreeScreen::treeScreenFindInBaseClicked);
     actionList["findInBase"] = ac;
 }

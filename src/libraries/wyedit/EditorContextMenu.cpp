@@ -16,11 +16,9 @@ EditorContextMenu::EditorContextMenu(QWidget *parent) : QMenu(parent) {
 }
 
 void EditorContextMenu::setupActions(void) {
-    actionUndo = new QAction(this);
-    actionUndo->setIcon(QIcon(":/resource/pic/edit_undo.svg"));
+    actionUndo = new QAction(QIcon(":/resource/pic/edit_undo.svg"), "", this);
     actionUndo->setEnabled(false); // undo недоступно при создании actionUndo еще не было ни одного действия с текстом
-    actionRedo = new QAction(this);
-    actionRedo->setIcon(QIcon(":/resource/pic/edit_redo.svg"));
+    actionRedo = new QAction(QIcon(":/resource/pic/edit_redo.svg"), "", this);
     actionRedo->setEnabled(false); // redo недоступно при создании actionRedo еще не было ни одного действия с текстом
 
     actionCut = new QAction(this);
