@@ -1,7 +1,6 @@
 #include <QVBoxLayout>
 
 #include "ReduceMessageBox.h"
-#include "libraries/helpers/ObjectHelper.h"
 #include "views/mainWindow/MainWindow.h"
 
 ReduceMessageBox::ReduceMessageBox(QWidget *parent) : QDialog(parent) {
@@ -11,10 +10,7 @@ ReduceMessageBox::ReduceMessageBox(QWidget *parent) : QDialog(parent) {
 }
 
 void ReduceMessageBox::setupUI(void) {
-    int w = find_object<MainWindow>("mainwindow")->width();
-    int h = find_object<MainWindow>("mainwindow")->height();
-
-    this->resize(w * 2 / 3, h / 3);
+    this->resize(MainWindow::get().width() * 2 / 3, MainWindow::get().height() / 3);
 }
 
 void ReduceMessageBox::setupSignals(void) {

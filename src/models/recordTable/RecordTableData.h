@@ -2,24 +2,28 @@
 
 #include <QAbstractListModel>
 #include <QByteArray>
+#include <QDomElement>
+#include <QList>
 #include <QMap>
 #include <QModelIndex>
 #include <QObject>
 #include <QString>
 #include <QVariant>
+#include <QXmlStreamWriter>
+
+#include "models/recordTable/Record.h"
 
 class TreeItem;
-class Record;
 
 /// @brief Это набор данных конечной таблицы, с которыми удобно работать
 class RecordTableData {
 
   public:
-    RecordTableData(void);
-    virtual ~RecordTableData();
+    RecordTableData() {};
+    virtual ~RecordTableData() { empty(); };
 
     // Получение текста указанной записи
-    QString getText(int pos);
+    QString getText(int pos) const;
 
     // Установка текста и картинок указанной записи
     void setTextAndPictures(int pos,
@@ -33,7 +37,7 @@ class RecordTableData {
     void setField(QString name, QString value, int pos);
 
     // Получение образа записи
-    Record getRecordLite(int pos);
+    Record getRecordLite(int pos) const;
     Record getRecordFat(int pos);
 
     // Получение указателя на запись по известному номеру записи в таблице
@@ -49,24 +53,21 @@ class RecordTableData {
     void init(TreeItem *item, QDomElement domModel);
 
     // Удаление всех элементов таблицы конечных записей
-    void deleteAllRecords(void);
+    void deleteAllRecords();
 
     // Количество записей в таблице данных
-    unsigned int size(void) const;
+    unsigned int size() const { return tableData.size(); };
 
     // Функция создания DOM-документа из данных таблицы конечных записей
     QDomElement exportDataToDom(QDomDocument *doc) const;
     void exportDataToStreamWriter(QXmlStreamWriter *xmlWriter) const;
 
     // Получение ссылки на объект ветки, которой принадлежит таблица
-    TreeItem *getItem(void);
+    TreeItem *getItem() const { return treeItem; };
 
-    int insertNewRecord(int mode,
-                        int pos,
-                        Record record);
+    int insertNewRecord(int mode, int pos, Record record);
 
-    void editRecordFields(int pos,
-                          QMap<QString, QString> editFields);
+    void editRecordFields(int pos, QMap<QString, QString> editFields);
 
     void deleteRecord(int i);
     void deleteRecordById(QString id);
@@ -76,19 +77,17 @@ class RecordTableData {
 
     int getPosById(QString id);
 
-    void empty(void);
+    void empty();
 
     void moveUp(int pos);
     void moveDn(int pos);
 
-    static void editorLoadCallback(QObject *editor,
-                                   QString &loadText);
+    static void editorLoadCallback(QObject *editor, QString &loadText);
 
-    static void editorSaveCallback(QObject *editor,
-                                   QString saveText);
+    static void editorSaveCallback(QObject *editor, QString saveText);
 
-    int getWorkPos(void);
-    void setWorkPos(int pos);
+    int getWorkPos() const { return workPos; };
+    void setWorkPos(int pos) { workPos = pos; };
 
     void checkAndCreateTextFile(int pos, QString fullFileName);
 
@@ -100,8 +99,8 @@ class RecordTableData {
     QList<Record> tableData;
 
     // Ссылка на ветку, которой принадлежит данная таблица
-    TreeItem *treeItem;
+    TreeItem *treeItem = nullptr;
 
     // Номер записи, с которой работал пользователь
-    int workPos;
+    int workPos = -1;
 };

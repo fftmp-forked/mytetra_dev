@@ -2,7 +2,7 @@
 #include <QMessageBox>
 
 #include "DebugHelper.h"
-#include "main.h"
+#include "views/mainWindow/MainWindow.h"
 
 void criticalError(QString message) {
     qDebug() << " ";
@@ -13,7 +13,7 @@ void criticalError(QString message) {
     qDebug() << "---------------";
     qDebug() << " ";
 
-    QMessageBox::critical(qobject_cast<QWidget *>(pMainWindow), "Critical error", message + "\n\nProgram will be closed.");
+    QMessageBox::critical(&MainWindow::get(), "Critical error", message + "\n\nProgram will be closed.");
 
     exit(1);
 }

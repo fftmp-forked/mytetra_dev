@@ -20,15 +20,14 @@ EditorToolbarSettingsScreen::EditorToolbarSettingsScreen(QWidget *parent) : QDia
     // Выбор линии 1 при запуске редактора кнопок
     selectToolbarsListWidget->setCurrentRow(0);
 
-    // Изначальные (в момент заргузки диалога) списки кнопок
+    // Изначальные (в момент загрузки диалога) списки кнопок
     // Используются для проверки на наличие изменений в расположении кнопок
     loadedAvailableCommandsList = availableCommandsToolbarController->getModel()->getCommandsList();
     loadedToolBar1CommandsList = usedCommandsToolbar1Controller->getModel()->getCommandsList();
     loadedToolBar2CommandsList = usedCommandsToolbar2Controller->getModel()->getCommandsList();
 
     // Задание размеров диалога
-    this->setMinimumHeight(
-        int(0.5 * static_cast<double>(find_object<MainWindow>("mainwindow")->height())));
+    this->setMinimumHeight(MainWindow::get().height() / 2);
     this->resize(this->size());
 }
 

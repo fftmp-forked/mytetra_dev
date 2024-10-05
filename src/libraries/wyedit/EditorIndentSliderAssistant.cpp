@@ -1,14 +1,13 @@
 #include "EditorIndentSliderAssistant.h"
 #include "../helpers/DebugHelper.h"
 #include "EditorTextArea.h"
-#include "indentslider/IndentSlider.h"
 
-EditorIndentSliderAssistant::EditorIndentSliderAssistant(QObject *parent, EditorTextArea *iTextArea) : QObject(parent) {
+EditorIndentSliderAssistant::EditorIndentSliderAssistant(QWidget *parent, EditorTextArea *iTextArea) : QObject(parent) {
     if (!parent || !iTextArea)
         criticalError("Call " + QString(__FUNCTION__) + " with NULL parent or TextArea.");
 
     // Создается линейка отступов
-    indentSlider = new IndentSlider(qobject_cast<QWidget *>(parent)->width(), 16, qobject_cast<QWidget *>(parent));
+    indentSlider = new IndentSlider(parent->width(), 16, parent);
     indentSlider->setObjectName("editor_tb_indentslider");
 
     // Запоминается указатель на область редактирования
@@ -16,10 +15,6 @@ EditorIndentSliderAssistant::EditorIndentSliderAssistant(QObject *parent, Editor
 
     clear();
     setupSignals();
-}
-
-EditorIndentSliderAssistant::~EditorIndentSliderAssistant() {
-    delete indentSlider;
 }
 
 void EditorIndentSliderAssistant::setupSignals() {
@@ -32,16 +27,6 @@ void EditorIndentSliderAssistant::setupSignals() {
     connect(this, &EditorIndentSliderAssistant::send_set_textindent_pos, indentSlider, &IndentSlider::set_textindent_pos);
     connect(this, &EditorIndentSliderAssistant::send_set_leftindent_pos, indentSlider, &IndentSlider::set_leftindent_pos);
     connect(this, &EditorIndentSliderAssistant::send_set_rightindent_pos, indentSlider, &IndentSlider::set_rightindent_pos);
-}
-
-void EditorIndentSliderAssistant::clear() {
-    currentTextIndent = 0;
-    currentLeftIndent = 0;
-    currentRightIndent = 0;
-}
-
-IndentSlider *EditorIndentSliderAssistant::getIndentSlider() {
-    return indentSlider;
 }
 
 // Синхронизация размеров линейки отступов относительно области редактирования
@@ -61,19 +46,19 @@ void EditorIndentSliderAssistant::onUpdateGeometry() {
 void EditorIndentSliderAssistant::updateToActualFormat(void) {
     int i;
 
-    i = (int)textArea->textCursor().blockFormat().textIndent();
+    i = textArea->textCursor().blockFormat().textIndent();
     if (currentTextIndent != i) {
         emit send_set_textindent_pos(i);
         currentTextIndent = i;
     }
 
-    i = (int)textArea->textCursor().blockFormat().leftMargin();
+    i = textArea->textCursor().blockFormat().leftMargin();
     if (currentLeftIndent != i) {
         emit send_set_leftindent_pos(i);
         currentLeftIndent = i;
     }
 
-    i = (int)textArea->textCursor().blockFormat().rightMargin();
+    i = textArea->textCursor().blockFormat().rightMargin();
     if (currentRightIndent != i) {
         emit send_set_rightindent_pos(i);
         currentRightIndent = i;
@@ -135,8 +120,4 @@ void EditorIndentSliderAssistant::onChangeRightindentPos(int i) {
 void EditorIndentSliderAssistant::onMouseRelease(void) {
     textArea->showIndentEdge(false); // Скрывается вертикальная линия
     textArea->setIndentEdgePos(0);   // Координата вертикальной линии обнуляется
-}
-
-void EditorIndentSliderAssistant::setVisible(bool flag) {
-    indentSlider->setVisible(flag);
 }

@@ -21,10 +21,8 @@ EditorMathExpressionDialog::EditorMathExpressionDialog(MathExpressionFormatter *
     assembly();
 
     // Задание размеров диалога
-    setMinimumHeight(
-        int(0.25 * static_cast<double>(find_object<MainWindow>("mainwindow")->height())));
-    setMinimumWidth(
-        int(0.25 * static_cast<double>(find_object<MainWindow>("mainwindow")->width())));
+    setMinimumHeight(MainWindow::get().height() / 4);
+    setMinimumWidth(MainWindow::get().width() / 4);
 
     /// @todo: переделать на восстановление запомненных размеров и положения диалога
     resize(QGuiApplication::primaryScreen()->availableSize() / 2);

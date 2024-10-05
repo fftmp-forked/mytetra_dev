@@ -10,7 +10,6 @@ class EditorTextArea : public QTextEdit {
 
   public:
     EditorTextArea(QWidget *parent = nullptr);
-    ~EditorTextArea(){};
 
     // Константы, используемые для определения формата данных в буфере обмена
     enum MimeDataFormat { MimeDataText = 1,

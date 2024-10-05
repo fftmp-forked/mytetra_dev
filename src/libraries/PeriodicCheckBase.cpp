@@ -37,7 +37,7 @@ void PeriodicCheckBase::timerEvent(QTimerEvent *event) {
     auto modifyDateTime = QFileInfo(AppConfig::get().get_tetradir() + "/mytetra.xml").lastModified();
 
     if (modifyDateTime > lastAccess) {
-        (find_object<MainWindow>("mainwindow"))->reload();
+        MainWindow::get().reload();
 
         emit doUpdateDetachedWindows();
 

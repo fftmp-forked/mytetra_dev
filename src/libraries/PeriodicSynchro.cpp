@@ -3,7 +3,6 @@
 #include "../models/appConfig/AppConfig.h"
 #include "../views/mainWindow/MainWindow.h"
 #include "PeriodicSynchro.h"
-#include "helpers/ObjectHelper.h"
 
 bool PeriodicSynchro::isStartEnabled() const {
     return AppConfig::get().getEnablePeriodicSynchro();
@@ -19,5 +18,5 @@ void PeriodicSynchro::timerEvent(QTimerEvent *event) {
         return;
 
     // Запуск синхронизации в скрытом режиме
-    find_object<MainWindow>("mainwindow")->synchronization(false);
+    MainWindow::get().synchronization(false);
 }

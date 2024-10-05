@@ -40,7 +40,7 @@ TreeScreen::TreeScreen(QWidget *parent) : QWidget(parent) {
     assembly();
 }
 
-void TreeScreen::setupActions(void) {
+void TreeScreen::setupActions() {
     QAction *ac;
 
     // Разворачивание всех подветок
@@ -115,7 +115,7 @@ void TreeScreen::setupActions(void) {
     actionList["findInBase"] = ac;
 }
 
-void TreeScreen::setupShortcuts(void) {
+void TreeScreen::setupShortcuts() {
     qDebug() << "Setup shortcut for" << staticMetaObject.className();
     QList<QPair<QString, QAction *>> treeActions{
         {"expandAllSubbranch", actionList["expandAllSubbranch"]},
@@ -135,7 +135,7 @@ void TreeScreen::setupShortcuts(void) {
     ShortcutManager::get().initActions(ShortcutManager::SECTION_TREE, treeActions);
 }
 
-void TreeScreen::setupUI(void) {
+void TreeScreen::setupUI() {
     // Наполнение панели инструментов
     toolsLine = new QToolBar(this);
 
@@ -184,7 +184,7 @@ void TreeScreen::setupUI(void) {
     knowTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
-void TreeScreen::setupModels(void) {
+void TreeScreen::setupModels() {
     // Создание и первичная настройка модели
     knowTreeModel = new KnowTreeModel(this);
 
@@ -237,7 +237,7 @@ void TreeScreen::onCustomContextMenuRequested(const QPoint &pos) {
     menu.exec(knowTreeView->viewport()->mapToGlobal(pos));
 }
 
-void TreeScreen::setupSignals(void) {
+void TreeScreen::setupSignals() {
     // Соединение сигнал-слот чтобы показать контекстное меню по правому клику на ветке
     connect(knowTreeView, &KnowTreeView::customContextMenuRequested,
             this, &TreeScreen::onCustomContextMenuRequested);
@@ -263,7 +263,7 @@ void TreeScreen::assembly() {
     layout()->setContentsMargins(0, 2, 0, 0);
 }
 
-void TreeScreen::expandAllSubbranch(void) {
+void TreeScreen::expandAllSubbranch() {
     // Получение индексов выделенных строк
     QModelIndexList selectitems = knowTreeView->selectionModel()->selectedIndexes();
 
@@ -271,7 +271,7 @@ void TreeScreen::expandAllSubbranch(void) {
         expandOrCollapseRecurse(selectitems.at(i), true);
 }
 
-void TreeScreen::collapseAllSubbranch(void) {
+void TreeScreen::collapseAllSubbranch() {
     // Получение индексов выделенных строк
     QModelIndexList selectitems = knowTreeView->selectionModel()->selectedIndexes();
 
@@ -290,11 +290,11 @@ void TreeScreen::expandOrCollapseRecurse(QModelIndex modelIndex, bool mode) {
     }
 }
 
-void TreeScreen::moveUpBranch(void) {
+void TreeScreen::moveUpBranch() {
     moveUpDownBranch(1);
 }
 
-void TreeScreen::moveDownBranch(void) {
+void TreeScreen::moveDownBranch() {
     moveUpDownBranch(-1);
 }
 
@@ -323,7 +323,7 @@ void TreeScreen::moveUpDownBranch(int direction) {
     find_object<TreeScreen>("treeScreen")->saveKnowTree();
 }
 
-bool TreeScreen::moveCheckEnable(void) {
+bool TreeScreen::moveCheckEnable() {
     // Получение списка индексов QModelIndex выделенных элементов
     QModelIndexList selectitems = knowTreeView->selectionModel()->selectedIndexes();
 
@@ -339,13 +339,13 @@ bool TreeScreen::moveCheckEnable(void) {
         return true;
 }
 
-void TreeScreen::insBranch(void) {
+void TreeScreen::insBranch() {
     qDebug() << "In ins_branch()";
 
     insBranchSmart(true);
 }
 
-void TreeScreen::insSubbranch(void) {
+void TreeScreen::insSubbranch() {
     qDebug() << "In ins_subbranch()";
 
     insBranchSmart(false);
@@ -393,7 +393,7 @@ void TreeScreen::insBranchProcess(QModelIndex index, QString name, bool is_branc
     // Получение ссылки на узел, который соответствует выделенной строке
     TreeItem *item = knowTreeModel->getItem(index);
 
-    find_object<MainWindow>("mainwindow")->setDisabled(true);
+    MainWindow::get().setDisabled(true);
 
     // Получение уникального идентификатора
     QString id = getUniqueId();
@@ -437,10 +437,10 @@ void TreeScreen::insBranchProcess(QModelIndex index, QString name, bool is_branc
     // Сохранение дерева веток
     find_object<TreeScreen>("treeScreen")->saveKnowTree();
 
-    find_object<MainWindow>("mainwindow")->setEnabled(true);
+    MainWindow::get().setEnabled(true);
 }
 
-void TreeScreen::editBranch(void) {
+void TreeScreen::editBranch() {
     qDebug() << "In edit_branch()";
 
     // Получение списка индексов QModelIndex выделенных элементов
@@ -478,14 +478,14 @@ void TreeScreen::editBranch(void) {
     if (!(ok && !newname.isEmpty()))
         return;
 
-    find_object<MainWindow>("mainwindow")->setDisabled(true);
+    MainWindow::get().setDisabled(true);
 
     item->setField("name", newname);
 
     // Сохранение дерева веток
     find_object<TreeScreen>("treeScreen")->saveKnowTree();
 
-    find_object<MainWindow>("mainwindow")->setEnabled(true);
+    MainWindow::get().setEnabled(true);
 }
 
 /// @brief Удаление выбранных веток, вызывается при выборе соотвествущей кнопки или пункта меню
@@ -493,8 +493,8 @@ void TreeScreen::delBranch(QString mode) {
     qDebug() << "In del_branch()";
 
     // На время удаления блокируется главное окно
-    find_object<MainWindow>("mainwindow")->setDisabled(true);
-    find_object<MainWindow>("mainwindow")->blockSignals(true);
+    MainWindow::get().setDisabled(true);
+    MainWindow::get().blockSignals(true);
 
     // Получение списка индексов QModelIndex выделенных элементов
     QModelIndexList selectItems = knowTreeView->selectionModel()->selectedIndexes();
@@ -531,8 +531,8 @@ void TreeScreen::delBranch(QString mode) {
 
         if (ret == QMessageBox::Cancel) {
             // Разблокируется главное окно
-            find_object<MainWindow>("mainwindow")->setEnabled(true);
-            find_object<MainWindow>("mainwindow")->blockSignals(false);
+            MainWindow::get().setEnabled(true);
+            MainWindow::get().blockSignals(false);
             return;
         }
     }
@@ -577,7 +577,7 @@ void TreeScreen::delBranch(QString mode) {
         // Сохраняется текст в окне редактирования
         // Нужно, чтобы нормально удалилась текущая редактируемая запись,
         // если она находится в удаляемой ветке
-        find_object<MainWindow>("mainwindow")->saveTextarea();
+        MainWindow::get().saveTextarea();
 
         knowTreeModel->deleteItemsByModelIndexList(selectItems);
 
@@ -590,22 +590,22 @@ void TreeScreen::delBranch(QString mode) {
     }
 
     // Разблокируется главное окно
-    find_object<MainWindow>("mainwindow")->setEnabled(true);
-    find_object<MainWindow>("mainwindow")->blockSignals(false);
+    MainWindow::get().setEnabled(true);
+    MainWindow::get().blockSignals(false);
 
     treeEmptyControl();
 }
 
-void TreeScreen::cutBranch(void) {
+void TreeScreen::cutBranch() {
     if (copyBranch())
         delBranch("cut");
 }
 
-bool TreeScreen::copyBranch(void) {
+bool TreeScreen::copyBranch() {
     qDebug() << "In copy_branch()";
 
     // Сохраняется текст в окне редактирования
-    find_object<MainWindow>("mainwindow")->saveTextarea();
+    MainWindow::get().saveTextarea();
 
     // Получение списка индексов QModelIndex выделенных элементов
     QModelIndexList selectitems = knowTreeView->selectionModel()->selectedIndexes();
@@ -639,13 +639,13 @@ bool TreeScreen::copyBranch(void) {
     qDebug() << "Tree item copy to buffer";
 
     // Создается ссылка на буфер обмена
-    QClipboard *cbuf = QApplication::clipboard();
+    auto cbuf = QApplication::clipboard();
 
     // Данные в буфере обмена очищаются
     cbuf->clear();
 
     // Создается объект с данными для заполнения буфера обмена
-    ClipboardBranch *branch_clipboard_data = new ClipboardBranch();
+    auto branch_clipboard_data = new ClipboardBranch();
 
     // Добавление корневой ветки
     addBranchToClipboard(branch_clipboard_data, path, true);
@@ -683,21 +683,21 @@ void TreeScreen::addBranchToClipboard(ClipboardBranch *branch_clipboard_data, QS
     curr_item_record_table = curr_item->recordtableGetTableData();
     for (unsigned int i = 0; i < curr_item_record_table->size(); i++) {
         // Полный образ записи (с файлами и текстом)
-        Record record = curr_item_record_table->getRecordFat(i);
+        auto record = curr_item_record_table->getRecordFat(i);
 
         branch_clipboard_data->addRecord(branch_id, record);
     }
 }
 
 // Вставка ветки из буфера на том же уровне, что и выбранная
-void TreeScreen::pasteBranch(void) {
+void TreeScreen::pasteBranch() {
     qDebug() << "In paste_branch";
 
     pasteBranchSmart(true);
 }
 
 // Вставка ветки из буфера в виде подветки выбранной ветки
-void TreeScreen::pasteSubbranch(void) {
+void TreeScreen::pasteSubbranch() {
     qDebug() << "In paste_subbranch";
 
     pasteBranchSmart(false);
@@ -714,7 +714,7 @@ void TreeScreen::pasteBranchSmart(bool is_branch) {
         return;
 
     // Получение списка индексов QModelIndex выделенных элементов
-    QModelIndexList selectitems = knowTreeView->selectionModel()->selectedIndexes();
+    auto selectitems = knowTreeView->selectionModel()->selectedIndexes();
 
     // Если выбрано более одной ветки или вообще ветка не выбрана
     if (selectitems.size() != 1) {
@@ -728,7 +728,7 @@ void TreeScreen::pasteBranchSmart(bool is_branch) {
 
     // Блокируется главное окно, чтобы при продолжительном выполнении
     // не было возможности сделать другие действия
-    find_object<MainWindow>("mainwindow")->setDisabled(true);
+    MainWindow::get().setDisabled(true);
 
     // Создается ссылка на буфер обмена
     QClipboard *cbuf = QApplication::clipboard();
@@ -739,7 +739,7 @@ void TreeScreen::pasteBranchSmart(bool is_branch) {
     branch->printIdTree();
 
     // Получение индекса выделенной строки дерева
-    QModelIndex index = this->getCurrentItemIndex();
+    auto index = this->getCurrentItemIndex();
 
     // Добавление ветки
     QString pasted_branch_id;
@@ -749,19 +749,19 @@ void TreeScreen::pasteBranchSmart(bool is_branch) {
         pasted_branch_id = knowTreeModel->pasteNewChildBranch(index, (ClipboardBranch *)branch);
 
     // Установка курсора на новую созданную ветку
-    TreeItem *pasted_branch_item = knowTreeModel->getItemById(pasted_branch_id);
-    QStringList pasted_branch_path = pasted_branch_item->getPath();
-    find_object<MainWindow>("mainwindow")->setTreePosition(pasted_branch_path);
+    auto pasted_branch_item = knowTreeModel->getItemById(pasted_branch_id);
+    auto pasted_branch_path = pasted_branch_item->getPath();
+    MainWindow::get().setTreePosition(pasted_branch_path);
 
     // Сохранение дерева веток
     find_object<TreeScreen>("treeScreen")->saveKnowTree();
 
     // Разблокируется главное окно
-    find_object<MainWindow>("mainwindow")->setEnabled(true);
+    MainWindow::get().setEnabled(true);
 }
 
 // Установка иконки для ветки
-void TreeScreen::setIcon(void) {
+void TreeScreen::setIcon() {
     QString startDirectory = AppConfig::get().get_tetradir() + "/" + FixedParameters::iconsRelatedDirectory;
     qDebug() << "Set start directory for select icon: " << startDirectory;
 
@@ -782,7 +782,7 @@ void TreeScreen::setIcon(void) {
         QString iconDir = iconFileInfo.dir().dirName();
         QString relatedFileName = "/" + iconDir + "/" + iconFileName;
 
-        TreeItem *currentItem = knowTreeModel->getItem(getCurrentItemIndex());
+        auto currentItem = knowTreeModel->getItem(getCurrentItemIndex());
 
         currentItem->setField("icon", relatedFileName);
 
@@ -822,7 +822,7 @@ void TreeScreen::exportBranchToDirectory(QString exportDir) {
         return;
     }
 
-    TreeItem *startItem = knowTreeModel->getItem(getCurrentItemIndex());
+    auto startItem = knowTreeModel->getItem(getCurrentItemIndex());
 
     // Экспорт данных
     bool result = knowTreeModel->exportBranchToDirectory(startItem, exportDir);
@@ -858,14 +858,13 @@ void TreeScreen::updateBranchOnScreen(const QModelIndex &index) {
     knowTreeModel->emitSignalDataChanged(index);
 
     // По модельному индексу выясняется указатель на ветку
-    TreeItem *item = knowTreeModel->getItem(index);
+    auto item = knowTreeModel->getItem(index);
 
     // Перебираются подветки
     const auto updatePathts = item->getAllChildrenPath();
     for (auto & currentPath : updatePathts) {
-        TreeItem *currentItem = knowTreeModel->getItem(currentPath);
-
-        QModelIndex currentIndex = knowTreeModel->getIndexByItem(currentItem);
+        auto currentItem = knowTreeModel->getItem(currentPath);
+        auto currentIndex = knowTreeModel->getIndexByItem(currentItem);
 
         // Для подветки дается команда чтобы модель сообщила о своем изменении
         knowTreeModel->emitSignalDataChanged(currentIndex);
@@ -890,10 +889,10 @@ void TreeScreen::onKnowtreeClicked(const QModelIndex &index) {
     // QModelIndex index = nodetreeview->selectionModel()->currentIndex();
 
     // Сохраняется текст в окне редактирования в соответсвующий файл
-    find_object<MainWindow>("mainwindow")->saveTextarea();
+    MainWindow::get().saveTextarea();
 
     // Получаем указатель на текущую выбранную ветку дерева
-    TreeItem *item = knowTreeModel->getItem(index);
+    auto item = knowTreeModel->getItem(index);
 
     // Все инструменты по работе с записями выключаются
     find_object<RecordTableScreen>("recordTableScreen")->disableAllActions();
@@ -906,7 +905,7 @@ void TreeScreen::onKnowtreeClicked(const QModelIndex &index) {
     }
 
     // Получаем указатель на данные таблицы конечных записей
-    RecordTableData *rtdata = item->recordtableGetTableData();
+    auto rtdata = item->recordtableGetTableData();
 
     // Устанавливаем данные таблицы конечных записей
     find_object<RecordTableController>("recordTableController")->setTableData(rtdata);
@@ -917,16 +916,16 @@ void TreeScreen::onKnowtreeClicked(const QModelIndex &index) {
     isThisSlotWork = false;
 }
 
-void TreeScreen::updateSelectedBranch(void) {
+void TreeScreen::updateSelectedBranch() {
     // Получение списка выделенных Item-элементов
-    QModelIndexList selectitems = knowTreeView->selectionModel()->selectedIndexes();
+    auto selectitems = knowTreeView->selectionModel()->selectedIndexes();
 
     // Обновление на экране
     for (int i = 0; i < selectitems.size(); ++i)
         knowTreeView->update(selectitems.at(i));
 }
 
-QItemSelectionModel *TreeScreen::getSelectionModel(void) {
+QItemSelectionModel *TreeScreen::getSelectionModel() {
     return knowTreeView->selectionModel();
 }
 
@@ -943,17 +942,16 @@ void TreeScreen::setCursorToIndex(QModelIndex index) {
 }
 
 void TreeScreen::setCursorToId(QString nodeId) {
-    TreeItem *item = knowTreeModel->getItemById(nodeId);
-
-    QModelIndex index = knowTreeModel->getIndexByItem(item);
+    auto item = knowTreeModel->getItemById(nodeId);
+    auto index = knowTreeModel->getIndexByItem(item);
 
     setCursorToIndex(index);
 }
 
 // Получение номера первого выделенного элемента
-int TreeScreen::getFirstSelectedItemIndex(void) {
+int TreeScreen::getFirstSelectedItemIndex() {
     // Получение списка выделенных Item-элементов
-    QModelIndexList selectitems = knowTreeView->selectionModel()->selectedIndexes();
+    auto selectitems = knowTreeView->selectionModel()->selectedIndexes();
 
     if (selectitems.isEmpty())
         return -1; // Если ничего не выделено
@@ -962,13 +960,13 @@ int TreeScreen::getFirstSelectedItemIndex(void) {
 }
 
 // Получение индекса текущего элемента на котором стоит курсор
-QModelIndex TreeScreen::getCurrentItemIndex(void) {
+QModelIndex TreeScreen::getCurrentItemIndex() {
     return knowTreeView->selectionModel()->currentIndex();
 }
 
 // Метод, следящий, не обнулилось ли дерево
 // Если дерево стало пустым, данный метод добавит одну ветку
-void TreeScreen::treeEmptyControl(void) {
+void TreeScreen::treeEmptyControl() {
     qDebug() << "treescreen::tree_empty_control() : Tree item count " << knowTreeModel->rowCount();
 
     if (knowTreeModel->rowCount() == 0) {
@@ -979,7 +977,7 @@ void TreeScreen::treeEmptyControl(void) {
 }
 
 // Сохранение дерева веток на диск
-void TreeScreen::saveKnowTree(void) {
+void TreeScreen::saveKnowTree() {
     knowTreeModel->save();
 
     updateLastKnowTreeData(QFileInfo(), false);
@@ -987,7 +985,7 @@ void TreeScreen::saveKnowTree(void) {
 
 // Перечитывание дерева веток с диска
 // Метод возвращает true, если обнаружено что данные были изменены и перечитаны
-bool TreeScreen::reloadKnowTree(void) {
+bool TreeScreen::reloadKnowTree() {
     // Если по каким-то причинам нет данных о файле сохраненного дерева
     if (lastKnowTreeModifyDateTime.isValid() == false || lastKnowTreeSize == 0) {
         knowTreeModel->reload();

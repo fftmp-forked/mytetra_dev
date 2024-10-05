@@ -33,9 +33,6 @@
 PeriodicCheckBase periodicCheckBase;
 PeriodicSynchro periodicSynchro;
 
-QObject *pMainWindow;
-WalkHistory *walkHistory;
-
 
 static void process_control_options(QtSingleApplication & app, const QString & cmd) {
     QStringList simple_commands = {"show", "hide", "quit", "reload", "addNoteDialog"};
@@ -135,13 +132,8 @@ int main(int argc, char **argv) {
     // чтобы были переведены все действия по горячим клавишам
     ShortcutManager::get().init(cfg_dir + "/shortcut.ini");
 
-    // История перехода очищается, так как в нее может попасть первая запись в востаналиваемой ветке и сама восстанавливаемая запись
-    WalkHistory wk;
-    walkHistory = &wk;
-
     // Создание объекта главного окна
-    MainWindow win;
-    pMainWindow = &win;
+    auto & win = MainWindow::get();
     win.init();
 
     srand(time(NULL));

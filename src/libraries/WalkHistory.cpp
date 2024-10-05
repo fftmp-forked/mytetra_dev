@@ -2,19 +2,9 @@
 
 #include <QtDebug>
 
-void WalkHistory::clear(void) {
-    qDebug() << "WalkHistory::clear()";
 
-    historyId.clear();
-    data.clear();
-
-    historyPoint = -1;
-    leaveMarkPoint = -1;
-    dropFlag = false;
-}
-
-void WalkHistory::add(QString id, int cursorPosition, int scrollBarPosition, int mode) {
-    if (id.length() == 0)
+void WalkHistory::add(QString id, int cursorPosition, int scrollBarPosition, WalkHistoryMode mode) {
+    if (id.isEmpty() == 0)
         return;
 
     if (dropFlag)
@@ -30,23 +20,21 @@ void WalkHistory::add(QString id, int cursorPosition, int scrollBarPosition, int
         historyId.removeFirst();
 
         if (historyPoint > 0)
-            historyPoint = historyPoint - 1;
+            historyPoint -= 1;
 
         if (leaveMarkPoint > 0)
-            leaveMarkPoint = leaveMarkPoint - 1;
+            leaveMarkPoint -= 1;
     }
 
     // Если происходит просто запоминание нового ID без движения по истории
-    if (mode == WALK_HISTORY_GO_NONE) {
-        qDebug() << "WalkHistory::add() : mode WALK_HISTORY_GO_NONE";
+    if (mode == WalkHistoryMode::GO_NONE) {
+        qDebug() << "WalkHistory::add() : mode GO_NONE";
 
         // Повторяющийся идентификатор не запоминается
-        if (historyId.size() > 0)
-            if (historyId.last() == id) {
-                qDebug() << "WalkHistory::add() : Repeate ID, dont save";
-                print();
-                return;
-            }
+        if (historyId.size() > 0 && historyId.last() == id) {
+            qDebug() << "WalkHistory::add() : Repeate ID, dont save";
+            return;
+        }
 
         // Идентификатор добавляется в историю
         historyId << id;
@@ -55,7 +43,6 @@ void WalkHistory::add(QString id, int cursorPosition, int scrollBarPosition, int
         // Без этой команды работало правильно, но она вроде должна быть в этом месте
         leaveMarkPoint = -1;
 
-        print();
         return;
     } // Закончилось условие что происходит запоминание без движения по истории
 
@@ -70,7 +57,6 @@ void WalkHistory::add(QString id, int cursorPosition, int scrollBarPosition, int
         historyPoint = 0;
 
         qDebug() << "WalkHistory::add() : history is empty, only add ID";
-        print();
         return;
     }
 
@@ -91,8 +77,8 @@ void WalkHistory::add(QString id, int cursorPosition, int scrollBarPosition, int
     }
 
     // Если происходит запоминание с движением назад по истории
-    if (mode == WALK_HISTORY_GO_PREVIOUS) {
-        qDebug() << "WalkHistory::add() : mode WALK_HISTORY_GO_PREVIOUS";
+    if (mode == WalkHistoryMode:: GO_PREVIOUS) {
+        qDebug() << "WalkHistory::add() : mode GO_PREVIOUS";
 
         // Если указатель находится в конце истории
         if (historyPoint == (historyId.length() - 1)) {
@@ -110,14 +96,12 @@ void WalkHistory::add(QString id, int cursorPosition, int scrollBarPosition, int
     } // Закончилось условие что происходит запоминание с движением назад по истории
 
     // Если происходит запоминание с движением вперед по истории
-    if (mode == WALK_HISTORY_GO_NEXT) {
-        qDebug() << "WalkHistory::add() : mode WALK_HISTORY_GO_NEXT";
+    if (mode == WalkHistoryMode::GO_NEXT) {
+        qDebug() << "WalkHistory::add() : mode GO_NEXT";
 
         // Если указатель находится в конце истории
         if (historyPoint == (historyId.length() - 1)) {
             qDebug() << "WalkHistory::add() : pointer on end, no move to next";
-
-            print();
             return;
         } else {
             // Иначе указатель находится где-то в середине истории
@@ -135,11 +119,9 @@ void WalkHistory::add(QString id, int cursorPosition, int scrollBarPosition, int
         }
 
     } // Закончилось условие что происходит запоминание с движением вперед по истории
-
-    print();
 }
 
-QString WalkHistory::getId() {
+QString WalkHistory::getId() const {
     if (historyPoint >= 0 && historyPoint <= (historyId.length() - 1))
         return historyId[historyPoint];
     else
@@ -163,19 +145,4 @@ int WalkHistory::getScrollBarPosition(QString id) const {
 void WalkHistory::removeHistoryData(QString id) {
     if (data.contains(id))
         data.remove(id);
-}
-
-void WalkHistory::print(void) {
-    return;
-
-    qDebug() << "WalkHistory length: " << historyId.length();
-    qDebug() << "WalkHistory pointer: " << historyPoint;
-    qDebug() << "WalkHistory leave mark: " << leaveMarkPoint;
-
-    qDebug() << "WalkHistory table ---v";
-
-    for (int i = 0; i < historyId.size(); i++)
-        qDebug() << "WalkHistory " << i << ":" << historyId.at(i);
-
-    qDebug() << "WalkHistory table ---^";
 }

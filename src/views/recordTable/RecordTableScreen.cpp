@@ -163,7 +163,7 @@ void RecordTableScreen::setupSignals(void) {
     connect(actionMoveDn, &QAction::triggered, recordTableController, &RecordTableController::moveDn);
 
     // Поиск по базе (клик связывается с действием в MainWindow)
-    connect(actionFindInBase, &QAction::triggered, find_object<MainWindow>("mainwindow"), &MainWindow::toolsFindInBase);
+    connect(actionFindInBase, &QAction::triggered, &MainWindow::get(), &MainWindow::toolsFindInBase);
 
     // Синхронизация
     connect(actionSynchro, &QAction::triggered, this, &RecordTableScreen::onSynchroClick);
@@ -372,7 +372,7 @@ void RecordTableScreen::setSelectionToId(QString id) {
 
 // Действия при нажатии кнопки синхронизации
 void RecordTableScreen::onSynchroClick(void) {
-    find_object<MainWindow>("mainwindow")->synchronization();
+    MainWindow::get().synchronization();
 }
 
 void RecordTableScreen::onSynchroCommandFinishWork(void) {
@@ -381,11 +381,11 @@ void RecordTableScreen::onSynchroCommandFinishWork(void) {
 }
 
 void RecordTableScreen::onWalkHistoryPreviousClick(void) {
-    find_object<MainWindow>("mainwindow")->goWalkHistoryPrevious();
+    MainWindow::get().goWalkHistoryPrevious();
 }
 
 void RecordTableScreen::onWalkHistoryNextClick(void) {
-    find_object<MainWindow>("mainwindow")->goWalkHistoryNext();
+    MainWindow::get().goWalkHistoryNext();
 }
 
 // Копирование в буфер обмена ссылки на запись

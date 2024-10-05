@@ -4,6 +4,7 @@
 #include <QCloseEvent>
 #include <QMainWindow>
 #include <QMenu>
+#include <QMessageBox>
 #include <QSessionManager>
 #include <QSplitter>
 #include <QStatusBar>
@@ -11,15 +12,18 @@
 #include <QTextList>
 #include <QWidget>
 
-class TreeScreen;
-class MetaEditor;
-class RecordTableScreen;
+#include "../../libraries/Singleton.h"
+#include "../../models/appConfig/AppConfig.h"
+#include "../record/MetaEditor.h"
+#include "../recordTable/RecordTableScreen.h"
+#include "../tree/TreeScreen.h"
+
 class FindScreen;
 class CommandRun;
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow, public Singleton<MainWindow> {
     Q_OBJECT
-
+    friend class Singleton<MainWindow>;
   public:
     MainWindow() : QMainWindow() {}
     virtual ~MainWindow();
@@ -31,30 +35,28 @@ class MainWindow : public QMainWindow {
     FindScreen *findScreenDisp = nullptr;
     QStatusBar *statusBar = nullptr;
 
-    void restoreWindowGeometry(void);
-    void restoreTreePosition(void);
-    void restoreRecordTablePosition(void);
-    void restoreEditorCursorPosition(void);
-    void restoreEditorScrollBarPosition(void);
-    void restoreFindOnBaseVisible(void);
-    void restoreAllWindowState(void);
+    void restoreWindowGeometry();
+    void restoreTreePosition();
+    void restoreRecordTablePosition();
+    void restoreEditorCursorPosition() { editorScreen->setCursorPosition(AppConfig::get().getEditorCursorPosition()); };
+    void restoreEditorScrollBarPosition() { editorScreen->setScrollBarPosition(AppConfig::get().getEditorScrollBarPosition()); };
+    void restoreFindOnBaseVisible();
+    void restoreAllWindowState();
 
-    void restoreDockableWindowsState(void);
+    void restoreDockableWindowsState();
 
     void setTreePosition(QStringList path);
 
-    void setRecordtablePositionById(QString id);
+    void setRecordtablePositionById(QString id) { recordTableScreen->setSelectionToId(id); };
 
     void synchronization(bool visible = true);
 
-    void goWalkHistoryPrevious(void);
-    void goWalkHistoryNext(void);
+    void goWalkHistoryPrevious();
+    void goWalkHistoryNext();
 
-    void saveTextarea(void);
-
-    void saveAllState(void);
-
-    void reload(void);
+    void saveTextarea();
+    void saveAllState();
+    void reload();
 
   signals:
 
@@ -64,69 +66,62 @@ class MainWindow : public QMainWindow {
     void doUpdateDetachedWindows();
 
   public slots:
-    void applicationExit(void);
-    void applicationFastExit(void);
+    void applicationExit();
+    void applicationFastExit();
     void commitData(QSessionManager &manager);
     void messageHandler(QString message);
-
-    void toolsFindInBase(void);
-
-    void setupShortcuts(void);
+    void toolsFindInBase();
+    void setupShortcuts();
 
   private slots:
 
     void showWindow();
 
-    bool fileSave(void);
-    bool fileSaveAs(void);
+    /// @todo
+    //bool fileSave(void); // Сохранить текущую статью
+    //bool fileSaveAs(void); // Сохранить текущую статью как файл
 
-    void fileDatabasesManagement(void);
-    void fileExportBranch(void);
-    void fileImportBranch(void);
+    void fileDatabasesManagement();
+    void fileExportBranch();
+    void fileImportBranch();
+    void filePrint();
+    void filePrintPreview();
+    void filePrintPdf();
 
-    void filePrint(void);
-    void filePrintPreview(void);
-    void filePrintPdf(void);
-
-    void toolsPreferences(void);
+    void toolsPreferences();
 
     void onExpandEditArea(bool flag);
 
-    void onClickHelpAboutMyTetra(void);
-    void onClickHelpAboutQt(void);
+    void onClickHelpAboutMyTetra();
+    void onClickHelpAboutQt() { QMessageBox(this).aboutQt(this); };
+    void onClickFocusTree() { treeScreen->setFocusToBaseWidget(); };
+    void onClickFocusNoteTable() { recordTableScreen->setFocusToBaseWidget(); };
+    void onClickFocusEditor() { editorScreen->setFocusToBaseWidget(); };
 
-    void onClickFocusTree(void);
-    void onClickFocusNoteTable(void);
-    void onClickFocusEditor(void);
-
-    void onSynchroCommandFinishWork(void);
+    void onSynchroCommandFinishWork();
 
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
-    void onFocusChanged(QWidget *, QWidget *);
-
   private:
-    void setupUI(void);
-    void setupSignals(void);
-    void assembly(void);
+    void setupUI();
+    void setupSignals();
+    void assembly();
 
-    void initFileMenu(void);
-    void initToolsMenu(void);
-    void initHelpMenu(void);
-    void initHiddenActions(void);
-
-    void initRecordTableActions(void);
+    void initFileMenu();
+    void initToolsMenu();
+    void initHelpMenu();
+    void initHiddenActions();
 
     void createTrayIcon();
-    void setIcon(void);
+    void setIcon();
 
-    void saveWindowGeometry(void);
-    void saveTreePosition(void);
-    void saveRecordTablePosition(void);
-    void saveEditorCursorPosition(void);
-    void saveEditorScrollBarPosition(void);
+    void saveWindowGeometry();
+    void saveTreePosition();
+    void saveRecordTablePosition() { AppConfig::get().set_recordtable_selected_record_id(recordTableScreen->getFirstSelectionId()); };
+    void saveEditorCursorPosition() { AppConfig::get().setEditorCursorPosition(editorScreen->getCursorPosition()); };
+    void saveEditorScrollBarPosition() { AppConfig::get().setEditorScrollBarPosition(editorScreen->getScrollBarPosition()); };
 
-    void reloadSaveStage(void);
+    void reloadSaveStage();
     void reloadLoadStage(bool isLongTimeReload);
 
     QAction *actionFileMenuPrint;
@@ -155,7 +150,7 @@ class MainWindow : public QMainWindow {
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
 
-    void goWalkHistory(void);
+    void goWalkHistory();
 
     bool enableRealClose;
     int exitCounter = 0;

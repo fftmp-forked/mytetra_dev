@@ -19,15 +19,15 @@ class TreeScreen : public QWidget {
 
     KnowTreeModel *knowTreeModel;
 
-    void saveKnowTree(void);
-    bool reloadKnowTree(void);
+    void saveKnowTree();
+    bool reloadKnowTree();
 
-    void updateSelectedBranch(void);
+    void updateSelectedBranch();
 
-    int getFirstSelectedItemIndex(void);
-    QModelIndex getCurrentItemIndex(void);
+    int getFirstSelectedItemIndex();
+    QModelIndex getCurrentItemIndex();
 
-    QItemSelectionModel *getSelectionModel(void);
+    QItemSelectionModel *getSelectionModel();
 
     void exportBranchToDirectory(QString exportDir);
     void importBranchFromDirectory(QString importDir);
@@ -38,7 +38,7 @@ class TreeScreen : public QWidget {
 
     void updateBranchOnScreen(const QModelIndex &index);
 
-    void setFocusToBaseWidget(void);
+    void setFocusToBaseWidget();
 
   signals:
 
@@ -46,26 +46,26 @@ class TreeScreen : public QWidget {
 
   public slots:
 
-    void setupShortcuts(void);
+    void setupShortcuts();
 
   private slots:
 
-    void expandAllSubbranch(void);
-    void collapseAllSubbranch(void);
+    void expandAllSubbranch();
+    void collapseAllSubbranch();
     void expandOrCollapseRecurse(QModelIndex modelIndex, bool mode);
-    void insSubbranch(void);
-    void insBranch(void);
-    void editBranch(void);
-    void setIcon(void);
+    void insSubbranch();
+    void insBranch();
+    void editBranch();
+    void setIcon();
 
     void delBranch(QString mode = "delete");
 
-    void moveUpBranch(void);
-    void moveDownBranch(void);
-    void cutBranch(void);
-    bool copyBranch(void);
-    void pasteBranch(void);
-    void pasteSubbranch(void);
+    void moveUpBranch();
+    void moveDownBranch();
+    void cutBranch();
+    bool copyBranch();
+    void pasteBranch();
+    void pasteSubbranch();
 
     // Действия при клике на ветку дерева
     void onKnowtreeClicked(const QModelIndex &index);
@@ -83,14 +83,14 @@ class TreeScreen : public QWidget {
     QDateTime lastKnowTreeModifyDateTime;
     qint64 lastKnowTreeSize;
 
-    void setupUI(void);
-    void setupModels(void);
-    void setupSignals(void);
-    void setupActions(void);
+    void setupUI();
+    void setupModels();
+    void setupSignals();
+    void setupActions();
     void assembly();
 
     void moveUpDownBranch(int direction);
-    bool moveCheckEnable(void);
+    bool moveCheckEnable();
 
     void insBranchSmart(bool is_branch);
     void insBranchProcess(QModelIndex index, QString name, bool is_branch);
@@ -99,7 +99,7 @@ class TreeScreen : public QWidget {
 
     void pasteBranchSmart(bool is_branch);
 
-    void treeEmptyControl(void);
+    void treeEmptyControl();
 
     void updateLastKnowTreeData(QFileInfo fileInfo, bool fileInfoValid);
 };

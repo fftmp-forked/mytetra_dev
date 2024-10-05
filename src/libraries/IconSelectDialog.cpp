@@ -10,8 +10,8 @@
 #include "../models/appConfig/AppConfig.h"
 #include "../views/mainWindow/MainWindow.h"
 #include "IconSelectDialog.h"
+#include "helpers/DebugHelper.h"
 #include "helpers/MessageHelper.h"
-#include "helpers/ObjectHelper.h"
 
 IconSelectDialog::IconSelectDialog() {
     enableIconUpdate = false;
@@ -89,8 +89,8 @@ void IconSelectDialog::iconsCollectionCheck() {
 
 void IconSelectDialog::setupUI() {
     // Установка ширины и высоты окна
-    int dialogWidth = int(0.5 * (float)(find_object<MainWindow>("mainwindow")->width()));
-    int dialogHeight = int(0.5 * (float)(find_object<MainWindow>("mainwindow")->height()));
+    int dialogWidth = MainWindow::get().width() / 2;
+    int dialogHeight = MainWindow::get().height() / 2;
     setMinimumWidth(dialogWidth);
     setMinimumHeight(dialogHeight);
     resize(size());
@@ -147,7 +147,7 @@ void IconSelectDialog::assembly() {
     QHBoxLayout *buttonLayout = new QHBoxLayout(); // Указывать this не нужно, так как он назначится в момент вставки в основной слой
     buttonLayout->addWidget(&buttonRemoveIcon);
     buttonLayout->addStretch();
-    buttonLayout->addSpacing(int(0.05 * (float)(find_object<MainWindow>("mainwindow")->width())));
+    buttonLayout->addSpacing(MainWindow::get().width() / 2);
     buttonLayout->addWidget(&buttonOk);
     buttonLayout->addWidget(&buttonCancel);
 

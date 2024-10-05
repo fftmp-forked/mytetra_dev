@@ -166,6 +166,6 @@ void FindTableWidget::selectCell(const QModelIndex &index) {
     MetaEditor *edView = find_object<MetaEditor>("editorScreen");
     edView->switchToEditorLayout();
 
-    find_object<MainWindow>("mainwindow")->setTreePosition(path);
-    find_object<MainWindow>("mainwindow")->setRecordtablePositionById(recordId);
+    MainWindow::get().setTreePosition(path);
+    MainWindow::get().setRecordtablePositionById(recordId);
 }

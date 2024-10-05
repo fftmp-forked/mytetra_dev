@@ -5,12 +5,12 @@
 #include "ConfigEditorHelper.h"
 #include "DebugHelper.h"
 #include "MultiLineInputDialog.h"
-#include "main.h"
+#include "../../views/mainWindow/MainWindow.h"
 
 /// @brief Редактирование произвольного конфиг-файла (конфиг программы, конфиг редактора)
 void ConfigEditorHelper::editConfigFile(QString fileName, double sizeCoefficient) {
     // Окно диалога для редактирования файла конфига
-    MultiLineInputDialog dialog(qobject_cast<QWidget *>(pMainWindow));
+    MultiLineInputDialog dialog(&MainWindow::get());
     dialog.setWordWrapMode(QTextOption::NoWrap);
     dialog.setWindowTitle(QObject::tr("Edit config file (Be careful!)"));
     dialog.setSizeCoefficient(sizeCoefficient);
@@ -47,7 +47,7 @@ void ConfigEditorHelper::editConfigFile(QString fileName, double sizeCoefficient
     file.close();
 
     // Для принятия изменений требуется перезапустить программу
-    QMessageBox::warning(qobject_cast<QWidget *>(pMainWindow),
+    QMessageBox::warning(&MainWindow::get(),
                          QObject::tr("Warning"),
                          QObject::tr("Program will be restarted to apply changes."),
                          QMessageBox::Ok);

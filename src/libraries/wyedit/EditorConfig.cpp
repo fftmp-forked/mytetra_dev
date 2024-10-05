@@ -6,8 +6,6 @@
 #include "EditorConfig.h"
 
 EditorConfig::EditorConfig(QString config_file_name, QWidget *parent) : QWidget(parent) {
-    Q_UNUSED(parent)
-
     // Информация о файле настроек редактора
     QFileInfo fileinfo(config_file_name);
 

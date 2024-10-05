@@ -6,7 +6,6 @@
 
 #include "DatabasesManagementScreen.h"
 #include "DatabasesManagementTable.h"
-#include "libraries/helpers/ObjectHelper.h"
 #include "models/appConfig/AppConfig.h"
 #include "views/mainWindow/MainWindow.h"
 
@@ -17,8 +16,8 @@ void DatabasesManagementTable::init() {
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff); // Отключается горизонтальная прокрутка
 
     // Установка ширины и высоты виджета
-    int dialogWidth = int(0.8 * (float)(find_object<MainWindow>("mainwindow")->width()));
-    int dialogHeight = int(0.8 * (float)(find_object<MainWindow>("mainwindow")->height()));
+    int dialogWidth = MainWindow::get().width() * 4 / 5;
+    int dialogHeight = MainWindow::get().height() * 4 / 5;
     setMinimumWidth(dialogWidth);
     setMinimumHeight(dialogHeight);
     resize(size());

@@ -486,7 +486,7 @@ void RecordTableView::startDrag(Qt::DropActions supportedActions) {
     qDebug() << "Start record drag\n";
 
     // Перед переносом нужно запомнить текст последней редактируемой записи, чтобы не перенесся неотредактированный вариант
-    find_object<MainWindow>("mainwindow")->saveTextarea();
+    MainWindow::get().saveTextarea();
 
     // Копирование выделенных строк в объект переноса
     QDrag *drag = new QDrag(this);

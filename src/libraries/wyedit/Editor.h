@@ -4,6 +4,7 @@
 #include <QComboBox>
 #include <QFontComboBox>
 #include <QLabel>
+#include <QScrollBar>
 #include <QSlider>
 #include <QSpinBox>
 #include <QTextEdit>
@@ -11,7 +12,10 @@
 #include <QToolButton>
 #include <QWidget>
 
+#include "EditorConfig.h"
 #include "EditorFindDialog.h"
+#include "EditorTextArea.h"
+#include "EditorToolBarAssistant.h"
 #include "formatters/Formatter.h"
 #include "formatters/ImageFormatter.h"
 #include "formatters/ListFormatter.h"
@@ -39,12 +43,9 @@ const int mathExpVersion = 1;          // Текущая максимальна�
 const int mathExpVersionNumberLen = 4; // Сколько символов занимает номер версии (только цифры)
 const int mathExpHeaderLen = 29;       // Сколько символов занимает весь заголовок (префикс, номер версии, три двоеточия)
 
-class EditorConfig;
 class EditorTextEdit;
 class EditorContextMenu;
-class EditorTextArea;
 class EditorIndentSliderAssistant;
-class EditorToolBarAssistant;
 class Formatter;
 class MetaEditor;
 class EditorCursorPositionDetector;
@@ -67,7 +68,7 @@ class Editor : public QWidget {
 
   public:
     Editor(QWidget *parent = nullptr);
-    ~Editor(void);
+    ~Editor();
 
     // Объект, хранящий настройки редактора
     EditorConfig *editorConfig = nullptr;
@@ -77,9 +78,6 @@ class Editor : public QWidget {
 
     // Ассистент виджета горизонтальной линейки отступов
     EditorIndentSliderAssistant *indentSliderAssistant = nullptr;
-
-    // Вертикальная группировалка линеек кнопок и области редактирования
-    QVBoxLayout *buttonsAndEditLayout = nullptr;
 
     // Контекстное меню редактора
     EditorContextMenu *editorContextMenu = nullptr;
@@ -93,21 +91,21 @@ class Editor : public QWidget {
 
     // Методы работы с textarea
     void setTextarea(QString text);
-    void setTextareaEditable(bool editable);
-    QString getTextarea(void);
-    QTextDocument *getTextareaDocument(void);
-    void setTextareaModified(bool modify);
-    bool getTextareaModified(void);
+    void setTextareaEditable(bool editable) { textArea->setReadOnly(!editable); };
+    QString getTextarea() const { return textArea->document()->toHtml(); }; // Получение текста области редактирования в формате HTML
+    QTextDocument *getTextareaDocument() const { return textArea->document(); };
+    void setTextareaModified(bool modify) { textArea->document()->setModified(modify); };
+    bool getTextareaModified() const { return textArea->document()->isModified(); };
 
     // Абсолютный или относительный путь (т.е. директория),
     // куда будет сохраняться текст. Без завершающего слеша
     bool setWorkDirectory(QString dirName);
-    QString getWorkDirectory(void);
+    QString getWorkDirectory(void) const { return workDirectory; }
 
     // Имя файла, куда должен сохраняться текст
     // Без пути, только имя
-    void setFileName(QString fileName);
-    QString getFileName(void);
+    void setFileName(QString fileName) { workFileName = fileName; };
+    QString getFileName(void) const { return workFileName; };
 
     void saveTextarea();
     bool saveTextareaText();
@@ -115,11 +113,11 @@ class Editor : public QWidget {
     bool loadTextarea();
 
     // Методы установки нестандартных процедур чтения и сохранения текста
-    void setSaveCallback(void (*func)(QObject *editor, QString saveString));
-    void setLoadCallback(void (*func)(QObject *editor, QString &loadString));
+    void setSaveCallback(void (*func)(QObject *editor, QString saveString)) { saveCallbackFunc = func; };
+    void setLoadCallback(void (*func)(QObject *editor, QString &loadString)) { loadCallbackFunc = func; };
 
     // Метод установки функции нажатия на кнопку Attach
-    void setAttachCallback(void (*func)(void));
+    void setAttachCallback(void (*func)(void)) { attachCallbackFunc = func; };
 
     // Методы установки и чтения произвольных нестандартных данных
     // которые может хранить объект редактора
@@ -128,18 +126,18 @@ class Editor : public QWidget {
     void clearAllMiscField(void);
 
     void setDirFileEmptyReaction(int mode);
-    int getDirFileEmptyReaction(void);
+    int getDirFileEmptyReaction() const { return dirFileEmptyReaction; };
 
-    int getCursorPosition(void);
+    int getCursorPosition() const { return textArea->textCursor().position(); };
     void setCursorPosition(int n);
 
-    int getScrollBarPosition(void);
-    void setScrollBarPosition(int n);
+    int getScrollBarPosition() const { return textArea->verticalScrollBar()->value(); };
+    void setScrollBarPosition(int n) { textArea->verticalScrollBar()->setValue(n); };
 
     QString smartFontFamily(QString fontName); // Умное преобразование имени шрифта
-    int smartFontSize(int fontSize);           // Умное преобразование размера шрифта
+    int smartFontSize(int fontSize) { return fontSize ? editorConfig->get_default_font_size() : fontSize; };
 
-    void switchAttachIconExists(bool isExists);
+    void switchAttachIconExists(bool isExists) { editorToolBarAssistant->switchAttachIconExists(isExists); };
 
     enum {
         SAVE_IMAGES_SIMPLE = 0,       // Простое сохранение картинок, встречающихся в тексте
@@ -198,7 +196,7 @@ class Editor : public QWidget {
     void setupEditorTextArea(void);
     void setupCursorPositionDetector(void);
     void setupFormatters(void);
-    void assembly(void);
+    void assembly();
 
     // Устанавка размера табуляции для клавиши Tab
     void setTabSize();

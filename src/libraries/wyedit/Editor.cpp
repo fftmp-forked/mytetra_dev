@@ -4,30 +4,24 @@
 #include <QDir>
 #include <QLayout>
 #include <QMessageBox>
-#include <QScrollBar>
 #include <QStyle>
 #include <QTextCursor>
 
 #include "Editor.h"
-#include "EditorConfig.h"
 #include "EditorConfigDialog.h"
 #include "EditorContextMenu.h"
 #include "EditorCursorPositionDetector.h"
 #include "EditorIndentSliderAssistant.h"
 #include "EditorShowTextDispatcher.h"
-#include "EditorTextArea.h"
-#include "EditorToolBarAssistant.h"
 #include "formatters/Formatter.h"
-#include "indentslider/IndentSlider.h"
 
 #include "../../views/mainWindow/MainWindow.h"
 #include "../helpers/DebugHelper.h"
 #include "../helpers/MultiLineInputDialog.h"
-#include "../helpers/ObjectHelper.h"
 
 // Максимально возможная длина выделения текста (в символах) при которой
 // происходит проверка, есть ли в выделенном тексте различные шрифты, размеры текста, BUI форматирование
-// с соответствующем изменением панели кнопок и другоих элементов форматированиятекста
+// с соответствующем изменением панели кнопок и других элементов форматирования текста
 // Если выделено текста больше, такая проверка не происходит
 #define WYEDIT_MAX_SELECTION_SIZE_WHILE_CHECK_TOOLBAR_ITEM 4096
 
@@ -41,12 +35,7 @@ Editor::Editor(QWidget *parent) : QWidget(parent) {
     dirFileEmptyReaction = DIRFILEEMPTY_REACTION_SHOW_ERROR;
 }
 
-Editor::~Editor(void) {
-    delete editorConfig;
-    // delete editorToolBarAssistant; // Закомментировано, т. к. объект удалится автоматически
-    delete buttonsAndEditLayout;
-    delete editorContextMenu;
-    delete textArea;
+Editor::~Editor() {
     delete cursorPositionDetector;
 
     delete typefaceFormatter;
@@ -90,10 +79,9 @@ void Editor::init() {
     editorConfig = new EditorConfig(initDataConfigFileName, this);
     editorConfig->setObjectName("editorconfig");
 
-    // Создается виджет поиска, обязательно нужно указать parent чтобы
-    // могли применяться флаги окна.
+    // Создается виджет поиска; обязательно нужно указать parent, чтобы могли применяться флаги окна.
     // Виджет будет постоянно включен параллельно с работой редактора.
-    // Только будет либо виден, либо невиден.
+    // Только будет либо виден, либо не виден.
     findDialog = new EditorFindDialog(this);
     findDialog->hide();
 
@@ -127,7 +115,7 @@ void Editor::setupEditorToolBarAssistant(EditorTextArea *textArea, QStringList d
 
 // Создание и настройка ассистента линейки отступов
 void Editor::setupIndentSliderAssistant(void) {
-    indentSliderAssistant = new EditorIndentSliderAssistant(qobject_cast<QObject *>(this), textArea);
+    indentSliderAssistant = new EditorIndentSliderAssistant(this, textArea);
     indentSliderAssistant->setObjectName("indentSliderAssistant");
 }
 
@@ -304,12 +292,12 @@ void Editor::setupSignals(void) {
             Qt::DirectConnection);
 
     // Глобальное нажатие клавиш
-    connect(find_object<MainWindow>("mainwindow"), &MainWindow::globalPressKey,
+    connect(&MainWindow::get(), &MainWindow::globalPressKey,
             textArea, &EditorTextArea::onGlobalPressKey,
             Qt::DirectConnection);
 
     // Глобальное отжатие клавиш
-    connect(find_object<MainWindow>("mainwindow"), &MainWindow::globalReleaseKey,
+    connect(&MainWindow::get(), &MainWindow::globalReleaseKey,
             textArea, &EditorTextArea::onGlobalReleaseKey,
             Qt::DirectConnection);
 
@@ -482,14 +470,9 @@ void Editor::setupToolsSignals(void) {
     connect(editorToolBarAssistant->reference, &QAction::triggered,
             referenceFormatter, &ReferenceFormatter::onReferenceClicked);
 
-    connect(editorToolBarAssistant->showHtml, &QAction::triggered,
-            this, &Editor::onShowhtmlClicked);
-
-    connect(editorToolBarAssistant->findText, &QAction::triggered,
-            this, &Editor::onFindtextClicked);
-
-    connect(editorToolBarAssistant->settings, &QAction::triggered,
-            this, &Editor::onSettingsClicked);
+    connect(editorToolBarAssistant->showHtml, &QAction::triggered, this, &Editor::onShowhtmlClicked);
+    connect(editorToolBarAssistant->findText, &QAction::triggered, this, &Editor::onFindtextClicked);
+    connect(editorToolBarAssistant->settings, &QAction::triggered, this, &Editor::onSettingsClicked);
 
     connect(editorToolBarAssistant->showFormatting, &QAction::toggled, // Это не клик а переключение
             this, &Editor::onShowformattingClicked);
@@ -504,24 +487,17 @@ void Editor::setupToolsSignals(void) {
     connect(editorToolBarAssistant->mathExpression, &QAction::triggered,
             mathExpressionFormatter, &MathExpressionFormatter::onMathExpressionClicked);
 
-    connect(editorToolBarAssistant->expandEditArea, &QAction::triggered,
-            this, &Editor::onExpandEditAreaClicked);
-
-    connect(editorToolBarAssistant->save, &QAction::triggered,
-            this, &Editor::onSaveClicked);
-
-    connect(editorToolBarAssistant->showText, &QAction::triggered,
-            this, &Editor::onShowTextClicked);
-
-    connect(editorToolBarAssistant->toAttach, &QAction::triggered,
-            this, &Editor::onToAttachClicked);
+    connect(editorToolBarAssistant->expandEditArea, &QAction::triggered, this, &Editor::onExpandEditAreaClicked);
+    connect(editorToolBarAssistant->save, &QAction::triggered, this, &Editor::onSaveClicked);
+    connect(editorToolBarAssistant->showText, &QAction::triggered, this, &Editor::onShowTextClicked);
+    connect(editorToolBarAssistant->toAttach, &QAction::triggered, this, &Editor::onToAttachClicked);
 }
 
 // Сборка редактора и его активизация
-void Editor::assembly(void) {
+void Editor::assembly() {
     // Создается вертикальная область, которая должна объединить
     // линейку кнопок редактирования и область редактирования текста
-    buttonsAndEditLayout = new QVBoxLayout(this);
+    auto buttonsAndEditLayout = new QVBoxLayout(this);
     buttonsAndEditLayout->setObjectName("buttons_and_edit_layout");
 
     // Добавляется виджет с кнопками редактора
@@ -539,9 +515,7 @@ void Editor::assembly(void) {
     setLayout(buttonsAndEditLayout);
 
     // Границы убираются, так как данный объект будет использоваться как виджет
-    QLayout *lt;
-    lt = layout();
-    lt->setContentsMargins(0, 2, 0, 0);
+    layout()->setContentsMargins(0, 2, 0, 0);
 }
 
 // Установка текста области редактирования
@@ -550,20 +524,6 @@ void Editor::setTextarea(QString text) {
 
     // Очищается URL документа, так как документ создается "из ничего"
     textArea->document()->setMetaInformation(QTextDocument::DocumentUrl, "");
-}
-
-/// @brief Установка запрета или разрешения редактирования в области редактирования текста
-void Editor::setTextareaEditable(bool editable) {
-    textArea->setReadOnly(!editable);
-}
-
-// Получение текста области редактирования в формате HTML
-QString Editor::getTextarea(void) {
-    return textArea->document()->toHtml();
-}
-
-QTextDocument *Editor::getTextareaDocument(void) {
-    return textArea->document();
 }
 
 bool Editor::setWorkDirectory(QString dirName) {
@@ -576,18 +536,6 @@ bool Editor::setWorkDirectory(QString dirName) {
         criticalError("WyEdit: Can not set work directory to " + dirName + ". Directory not exists.");
         return false;
     }
-}
-
-QString Editor::getWorkDirectory(void) {
-    return workDirectory;
-}
-
-void Editor::setFileName(QString fileName) {
-    workFileName = fileName;
-}
-
-QString Editor::getFileName(void) {
-    return workFileName;
 }
 
 // Сохранение HTML кода документа в файл
@@ -683,11 +631,11 @@ bool Editor::saveTextareaImages(int mode = SAVE_IMAGES_SIMPLE) {
     return true;
 }
 
-void Editor::saveTextarea(void) {
+void Editor::saveTextarea() {
     qDebug() << "Save textarea...";
 
     // Если запись была открыта на просмотр и изменена
-    if (getWorkDirectory().length() != 0 && getFileName().length() != 0 && getTextareaModified() == true) {
+    if (getWorkDirectory().length() != 0 && getFileName().length() != 0 && getTextareaModified()) {
         // Перенос текущего файла записи в корзину
         qDebug() << "Try remove file " << getFileName() << " from directory " << getWorkDirectory();
         if (!QDir(getWorkDirectory()).remove(getFileName()))
@@ -786,16 +734,6 @@ bool Editor::loadTextarea() {
     return true;
 }
 
-void Editor::setTextareaModified(bool modify) {
-    qDebug() << "Editor::set_textarea_modified() :" << modify;
-    textArea->document()->setModified(modify);
-}
-
-bool Editor::getTextareaModified(void) {
-    qDebug() << "Editor::get_textarea_modified() :" << textArea->document()->isModified();
-    return textArea->document()->isModified();
-}
-
 // Умное преобразование имени шрифта
 QString Editor::smartFontFamily(QString fontName) {
     // Коррекция имен шрифтов
@@ -809,15 +747,6 @@ QString Editor::smartFontFamily(QString fontName) {
         fontName = "Sans Serif";
 
     return fontName;
-}
-
-// Умное преобразование размера шрифта
-int Editor::smartFontSize(int fontSize) {
-    if (fontSize == 0) {
-        return editorConfig->get_default_font_size();
-    }
-
-    return fontSize;
 }
 
 /////////////////////////////////////////////////
@@ -1189,18 +1118,6 @@ void Editor::setTabSize() {
         editorConfig->get_tab_size());
 }
 
-void Editor::setSaveCallback(void (*func)(QObject *editor, QString saveString)) {
-    saveCallbackFunc = func;
-}
-
-void Editor::setLoadCallback(void (*func)(QObject *editor, QString &String)) {
-    loadCallbackFunc = func;
-}
-
-void Editor::setAttachCallback(void (*func)(void)) {
-    attachCallbackFunc = func;
-}
-
 void Editor::setMiscField(QString name, QString value) {
     miscFields[name] = value;
 }
@@ -1224,30 +1141,10 @@ void Editor::setDirFileEmptyReaction(int mode) {
         criticalError("Editor::setDirFileEmptyReaction() : Unsupport mode " + QString::number(mode));
 }
 
-int Editor::getDirFileEmptyReaction(void) {
-    return dirFileEmptyReaction;
-}
-
-int Editor::getCursorPosition(void) {
-    return textArea->textCursor().position();
-}
-
 void Editor::setCursorPosition(int n) {
     QTextCursor cursor = textArea->textCursor();
 
     cursor.setPosition(n);
 
     textArea->setTextCursor(cursor);
-}
-
-int Editor::getScrollBarPosition(void) {
-    return textArea->verticalScrollBar()->value();
-}
-
-void Editor::setScrollBarPosition(int n) {
-    textArea->verticalScrollBar()->setValue(n);
-}
-
-void Editor::switchAttachIconExists(bool isExists) {
-    editorToolBarAssistant->switchAttachIconExists(isExists);
 }

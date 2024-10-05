@@ -1,17 +1,14 @@
 #include "ShortcutSettingsView.h"
 
-#include "libraries/helpers/ObjectHelper.h"
+#include "libraries/helpers/DebugHelper.h"
 #include "views/mainWindow/MainWindow.h"
 
 ShortcutSettingsView::ShortcutSettingsView(QWidget *parent) : QTreeView(parent) {
-    int dialogWidth = int(0.64 * static_cast<double>(find_object<MainWindow>("mainwindow")->width()));
-    int dialogHeight = int(0.5 * static_cast<double>(find_object<MainWindow>("mainwindow")->height()));
+    int dialogWidth = MainWindow::get().width() * 0.64;
+    int dialogHeight = MainWindow::get().height() / 2;
     this->setMinimumWidth(dialogWidth);
     this->setMinimumHeight(dialogHeight);
     this->resize(this->size()); // Обновление размеров виджета
-}
-
-ShortcutSettingsView::~ShortcutSettingsView() {
 }
 
 void ShortcutSettingsView::init() {

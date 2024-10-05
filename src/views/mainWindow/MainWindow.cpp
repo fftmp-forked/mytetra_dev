@@ -2,7 +2,6 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QMenuBar>
-#include <QMessageBox>
 #include <QPrintDialog>
 #include <QString>
 
@@ -10,8 +9,8 @@
 #include "libraries/GlobalParameters.h"
 #include "libraries/ShortcutManager/ShortcutManager.h"
 #include "libraries/helpers/ObjectHelper.h"
+#include "libraries/WalkHistory.h"
 #include "libraries/wyedit/EditorShowTextDispatcher.h"
-#include "models/appConfig/AppConfig.h"
 #include "models/tree/KnowTreeModel.h"
 #include "models/tree/TreeItem.h"
 #include "views/appConfigWindow/AppConfigDialog.h"
@@ -19,9 +18,7 @@
 #include "views/databasesManagement/DatabasesManagementScreen.h"
 #include "views/findInBaseScreen/FindScreen.h"
 #include "views/printPreview/PrintPreview.h"
-#include "views/record/MetaEditor.h"
-#include "views/recordTable/RecordTableScreen.h"
-#include "views/tree/TreeScreen.h"
+
 
 void MainWindow::init() {
     setObjectName("mainwindow");
@@ -53,7 +50,7 @@ MainWindow::~MainWindow() {
     delete synchroCommandRun;
 }
 
-void MainWindow::setupUI(void) {
+void MainWindow::setupUI() {
     // При создании объектов не указывается parent, так как он буден задан в момент вставки в layout в методе assembly()
 
     treeScreen = new TreeScreen(this);
@@ -78,13 +75,11 @@ void MainWindow::setupUI(void) {
     synchroCommandRun = new CommandRun(this);
 }
 
-void MainWindow::setupSignals(void) {
+void MainWindow::setupSignals() {
     connect(editorScreen, &MetaEditor::send_expand_edit_area, this, &MainWindow::onExpandEditArea);
 
     // Сигнал, генерирующийся при выходе из оконных систем X11 и Windows
     connect(qApp, &QApplication::commitDataRequest, this, &MainWindow::commitData);
-
-    connect(qApp, &QApplication::focusChanged, this, &MainWindow::onFocusChanged);
 
     // Сигналы пунктов меню
     connect(actionFileMenuPrint, &QAction::triggered, this, &MainWindow::filePrint);
@@ -111,7 +106,7 @@ void MainWindow::setupSignals(void) {
     connect(&ShortcutManager::get(), &ShortcutManager::updateWidgetShortcut, this, &MainWindow::setupShortcuts);
 }
 
-void MainWindow::assembly(void) {
+void MainWindow::assembly() {
     vSplitter = new QSplitter(Qt::Vertical, this);
     vSplitter->addWidget(recordTableScreen); // Список конечных записей
     vSplitter->addWidget(editorScreen);      // Текст записи
@@ -134,7 +129,7 @@ void MainWindow::assembly(void) {
     setCentralWidget(findSplitter);
 }
 
-void MainWindow::saveAllState(void) {
+void MainWindow::saveAllState() {
     // Сохранение данных в поле редактирования
     saveTextarea();
 
@@ -202,7 +197,7 @@ void MainWindow::messageHandler(QString message) {
 }
 
 // Восстанавливается геометрия окна и позиции основных разделителей
-void MainWindow::restoreWindowGeometry(void) {
+void MainWindow::restoreWindowGeometry() {
     restoreGeometry(AppConfig::get().get_mainwingeometry());
 
     vSplitter->setSizes(AppConfig::get().get_vspl_size_list());
@@ -211,7 +206,7 @@ void MainWindow::restoreWindowGeometry(void) {
 }
 
 /// @brief Запоминается геометрия окна и позиции основных разделителей
-void MainWindow::saveWindowGeometry(void) {
+void MainWindow::saveWindowGeometry() {
     qDebug() << "Save window geometry and splitter sizes";
 
     AppConfig::get().set_mainwingeometry(saveGeometry());
@@ -230,21 +225,19 @@ void MainWindow::saveWindowGeometry(void) {
         AppConfig::get().set_findsplitter_size_list(findSplitter->sizes());
 }
 
-void MainWindow::restoreTreePosition(void) {
+void MainWindow::restoreTreePosition() {
     // Путь к последнему выбранному в дереве элементу
-    QStringList path = AppConfig::get().get_tree_position();
-
+    auto path = AppConfig::get().get_tree_position();
     qDebug() << "MainWindow::restoreTreePosition() : " << path;
-
     setTreePosition(path);
 }
 
-void MainWindow::saveTreePosition(void) {
+void MainWindow::saveTreePosition() {
     // Получение QModelIndex выделенного в дереве элемента
-    QModelIndex index = treeScreen->getCurrentItemIndex();
+    auto index = treeScreen->getCurrentItemIndex();
 
     // Получаем указатель вида TreeItem
-    TreeItem *item = treeScreen->knowTreeModel->getItem(index);
+    auto item = treeScreen->knowTreeModel->getItem(index);
 
     // Сохраняем путь к элементу item
     AppConfig::get().set_tree_position(item->getPath());
@@ -255,59 +248,23 @@ void MainWindow::setTreePosition(QStringList path) {
         return;
 
     // Получаем указатель на элемент вида TreeItem, используя путь, этот указатель может вернуть и корень (если путь пустой)
-    TreeItem *item = treeScreen->knowTreeModel->getItem(path);
-
-    // qDebug() << "Set tree position to " << item->getField("name") << " id " << item->getField("id");
+    auto item = treeScreen->knowTreeModel->getItem(path);
 
     // Из указателя на элемент TreeItem получаем QModelIndex
-    QModelIndex setto = treeScreen->knowTreeModel->getIndexByItem(item);
+    auto setto = treeScreen->knowTreeModel->getIndexByItem(item);
 
     // Курсор устанавливается в нужную позицию
     treeScreen->setCursorToIndex(setto);
 }
 
-void MainWindow::restoreRecordTablePosition(void) {
-    QString id = AppConfig::get().get_recordtable_selected_record_id();
+void MainWindow::restoreRecordTablePosition() {
+    auto id = AppConfig::get().get_recordtable_selected_record_id();
 
     if (id.length() > 0)
         setRecordtablePositionById(id);
 }
 
-void MainWindow::saveRecordTablePosition(void) {
-    QString id = recordTableScreen->getFirstSelectionId();
-
-    AppConfig::get().set_recordtable_selected_record_id(id);
-}
-
-void MainWindow::setRecordtablePositionById(QString id) {
-    recordTableScreen->setSelectionToId(id);
-}
-
-void MainWindow::saveEditorCursorPosition(void) {
-    int n = editorScreen->getCursorPosition();
-
-    AppConfig::get().setEditorCursorPosition(n);
-}
-
-void MainWindow::restoreEditorCursorPosition(void) {
-    int n = AppConfig::get().getEditorCursorPosition();
-
-    editorScreen->setCursorPosition(n);
-}
-
-void MainWindow::saveEditorScrollBarPosition(void) {
-    int n = editorScreen->getScrollBarPosition();
-
-    AppConfig::get().setEditorScrollBarPosition(n);
-}
-
-void MainWindow::restoreEditorScrollBarPosition(void) {
-    int n = AppConfig::get().getEditorScrollBarPosition();
-
-    editorScreen->setScrollBarPosition(n);
-}
-
-void MainWindow::restoreFindOnBaseVisible(void) {
+void MainWindow::restoreFindOnBaseVisible() {
     bool n = AppConfig::get().get_findscreen_show();
 
     // Определяется ссылка на виджет поиска
@@ -319,7 +276,7 @@ void MainWindow::restoreFindOnBaseVisible(void) {
         findScreenRel->hide();
 }
 
-void MainWindow::restoreAllWindowState(void) {
+void MainWindow::restoreAllWindowState() {
     restoreFindOnBaseVisible();
     restoreWindowGeometry();
     restoreTreePosition();
@@ -334,7 +291,7 @@ void MainWindow::restoreDockableWindowsState() {
 }
 
 // Создание раздела меню File
-void MainWindow::initFileMenu(void) {
+void MainWindow::initFileMenu() {
     auto menu = this->menuBar()->addMenu(tr("&File"));
 
     auto databasesManagement = menu->addAction(tr("Databases management"));
@@ -364,7 +321,7 @@ void MainWindow::initFileMenu(void) {
 }
 
 // Создание раздела меню Tools
-void MainWindow::initToolsMenu(void) {
+void MainWindow::initToolsMenu() {
     auto menu = this->menuBar()->addMenu(tr("&Tools"));
 
     actionToolsMenuFindInBase = new QAction(this); // Так как есть this, указатель не будет потерян основным окном
@@ -377,7 +334,7 @@ void MainWindow::initToolsMenu(void) {
 }
 
 // Создание раздела меню Help
-void MainWindow::initHelpMenu(void) {
+void MainWindow::initHelpMenu() {
     auto menu = this->menuBar()->addMenu(tr("&Help"));
 
     auto aboutMyTetra = menu->addAction(tr("About MyTetra"));
@@ -388,7 +345,7 @@ void MainWindow::initHelpMenu(void) {
 }
 
 // Создание скрытых действий для работы прочих шорткатов уровня приложения
-void MainWindow::initHiddenActions(void) {
+void MainWindow::initHiddenActions() {
     // Действия добавляются в сам виджет
     // Для таких действий нет визуального представления, но горячие клавиши для них работают
     actionFocusTree = new QAction(this);
@@ -401,7 +358,7 @@ void MainWindow::initHiddenActions(void) {
     this->addAction(actionFocusEditor);
 }
 
-void MainWindow::setupShortcuts(void) {
+void MainWindow::setupShortcuts() {
     qDebug() << "Setup shortcut for" << staticMetaObject.className();
     QList<QPair<QString, QAction *>> miscActions{
         {"print", actionFileMenuPrint},
@@ -415,21 +372,8 @@ void MainWindow::setupShortcuts(void) {
     ShortcutManager::get().initActions(ShortcutManager::SECTION_MISC, miscActions);
 }
 
-// Сохранить текущую статью
-bool MainWindow::fileSave(void) {
-    /// @todo: сделать функционал
-
-    return true;
-}
-
-// Сохранить текущую статью как файл
-bool MainWindow::fileSaveAs(void) {
-    /// @todo: сделать функционал
-    return true;
-}
-
 // Напечатать текущую статью
-void MainWindow::filePrint(void) {
+void MainWindow::filePrint() {
 #ifndef QT_NO_PRINTER
     QPrinter printer(QPrinter::HighResolution);
     printer.setFullPage(true);
@@ -445,8 +389,8 @@ void MainWindow::filePrint(void) {
 }
 
 // Предпросмотр печати текущей статьи
-void MainWindow::filePrintPreview(void) {
-    PrintPreview *preview = new PrintPreview(editorScreen->getTextareaDocument(), this);
+void MainWindow::filePrintPreview() {
+    auto preview = new PrintPreview(editorScreen->getTextareaDocument(), this);
 
     preview->setModal(true);
     preview->setAttribute(Qt::WA_DeleteOnClose);
@@ -454,7 +398,7 @@ void MainWindow::filePrintPreview(void) {
 }
 
 // Вывод текущей статьи в PDF файл
-void MainWindow::filePrintPdf(void) {
+void MainWindow::filePrintPdf() {
 #ifndef QT_NO_PRINTER
     QString fileName = QFileDialog::getSaveFileName(this, "Export PDF", QString(), "*.pdf");
     if (!fileName.isEmpty()) {
@@ -470,13 +414,13 @@ void MainWindow::filePrintPdf(void) {
 }
 
 // Раздел меню File, управление базами данных
-void MainWindow::fileDatabasesManagement(void) {
+void MainWindow::fileDatabasesManagement() {
     DatabasesManagementScreen databasesManagementScreen(this);
     databasesManagementScreen.exec();
 }
 
 // Раздел меню File, экспорт текущей ветки и всех ее подветок
-void MainWindow::fileExportBranch(void) {
+void MainWindow::fileExportBranch() {
     // Создается окно выбора директории назначения
     QFileDialog directorySelectDialog(this);
     directorySelectDialog.setFileMode(QFileDialog::Directory);
@@ -488,7 +432,7 @@ void MainWindow::fileExportBranch(void) {
             treeScreen->exportBranchToDirectory(directorySelectDialog.directory().absolutePath());
 }
 
-void MainWindow::fileImportBranch(void) {
+void MainWindow::fileImportBranch() {
     // Создается окно выбора директории, откуда необходимо сделать импорт
     QFileDialog directorySelectDialog(this);
     directorySelectDialog.setFileMode(QFileDialog::Directory);
@@ -501,7 +445,7 @@ void MainWindow::fileImportBranch(void) {
 }
 
 /// @brief Слот - Нормальный выход из программы
-void MainWindow::applicationExit(void) {
+void MainWindow::applicationExit() {
     saveAllState();
 
     // Если происходит первая инициализация выхода из программы
@@ -518,7 +462,7 @@ void MainWindow::applicationExit(void) {
 }
 
 // Быстрый выход из программы, без возможности синхронизации
-void MainWindow::applicationFastExit(void) {
+void MainWindow::applicationFastExit() {
     saveAllState();
 
     // Запуск выхода из программы
@@ -526,9 +470,9 @@ void MainWindow::applicationFastExit(void) {
     close();
 }
 
-void MainWindow::toolsFindInBase(void) {
+void MainWindow::toolsFindInBase() {
     // Определяется ссылка на виджет поиска
-    FindScreen *findScreenRel = find_object<FindScreen>("findScreenDisp");
+    auto findScreenRel = find_object<FindScreen>("findScreenDisp");
 
     if (!(findScreenRel->isVisible()))
         findScreenRel->widgetShow();
@@ -536,7 +480,7 @@ void MainWindow::toolsFindInBase(void) {
         findScreenRel->widgetHide();
 }
 
-void MainWindow::toolsPreferences(void) {
+void MainWindow::toolsPreferences() {
     AppConfigDialog dialog("", this); // this нужен чтобы пробрасывать иконку приложения
     dialog.exec();
 }
@@ -553,7 +497,7 @@ void MainWindow::onExpandEditArea(bool flag) {
     }
 }
 
-void MainWindow::onClickHelpAboutMyTetra(void) {
+void MainWindow::onClickHelpAboutMyTetra() {
     QString description = "<b>MyTetra</b> - smart manager for information collecting<br/><br/>";
     auto version = "Version: " APPLICATION_VERSION "<br/>";
     auto config_dir = "Config directory: " + GlobalParameters::get().get_cfg_dir() + "<br/>";
@@ -566,24 +510,8 @@ void MainWindow::onClickHelpAboutMyTetra(void) {
     QMessageBox(this).about(this, "about" , info);
 }
 
-void MainWindow::onClickHelpAboutQt(void) {
-    QMessageBox(this).aboutQt(this);
-}
-
-void MainWindow::onClickFocusTree(void) {
-    treeScreen->setFocusToBaseWidget();
-}
-
-void MainWindow::onClickFocusNoteTable(void) {
-    recordTableScreen->setFocusToBaseWidget();
-}
-
-void MainWindow::onClickFocusEditor(void) {
-    editorScreen->setFocusToBaseWidget();
-}
-
 // Перечитывание всей базы знаний
-void MainWindow::reload(void) {
+void MainWindow::reload() {
     reloadSaveStage();
 
     // Стадия Load идет сразу после стадии Save, флаг о наличии задержки не выставляется
@@ -591,7 +519,7 @@ void MainWindow::reload(void) {
 }
 
 // Перечитывание дерева знаний, стадия Save
-void MainWindow::reloadSaveStage(void) {
+void MainWindow::reloadSaveStage() {
     // Сохраняются данные в поле редактирования
     saveTextarea();
 
@@ -605,7 +533,7 @@ void MainWindow::reloadSaveStage(void) {
 // Перечитывание дерева знаний, стадия Load
 void MainWindow::reloadLoadStage(bool isLongTimeReload) {
     // Блокируется история
-    walkHistory->setDrop(true);
+    WalkHistory::get().setDrop(true);
 
     // Стадия Load может запуститься сильно позже по времени после стадии Save.
     // И пользователь можейт уйти с записи, которую он редактировал на стадии Save.
@@ -631,7 +559,7 @@ void MainWindow::reloadLoadStage(bool isLongTimeReload) {
     }
 
     // Разблокируется история посещений элементов
-    walkHistory->setDrop(false);
+    WalkHistory::get().setDrop(false);
 }
 
 /// @brief Старт синхронизации
@@ -727,7 +655,7 @@ void MainWindow::createTrayIcon() {
     trayIcon->setContextMenu(m);
 }
 
-void MainWindow::setIcon(void) {
+void MainWindow::setIcon() {
     connect(trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::iconActivated);
 
     QIcon icon = QIcon(":/resource/pic/logo.svg");
@@ -841,42 +769,42 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     QMainWindow::keyReleaseEvent(event);
 }
 
-void MainWindow::goWalkHistoryPrevious(void) {
+void MainWindow::goWalkHistoryPrevious() {
     editorScreen->saveTextarea();
 
     // Идентификатор текущей записи запоминается в историю
-    QString id = editorScreen->getMiscField("id");
-    walkHistory->add(id, editorScreen->getCursorPosition(), editorScreen->getScrollBarPosition(), WALK_HISTORY_GO_PREVIOUS);
+    auto id = editorScreen->getMiscField("id");
+    WalkHistory::get().add(id, editorScreen->getCursorPosition(), editorScreen->getScrollBarPosition(), WalkHistoryMode::GO_PREVIOUS);
 
     goWalkHistory();
 }
 
-void MainWindow::goWalkHistoryNext(void) {
+void MainWindow::goWalkHistoryNext() {
     editorScreen->saveTextarea();
 
     // Идентификатор текущей записи запоминается в историю
-    QString id = editorScreen->getMiscField("id");
-    walkHistory->add(id, editorScreen->getCursorPosition(), editorScreen->getScrollBarPosition(), WALK_HISTORY_GO_NEXT);
+    auto id = editorScreen->getMiscField("id");
+    WalkHistory::get().add(id, editorScreen->getCursorPosition(), editorScreen->getScrollBarPosition(), WalkHistoryMode::GO_NEXT);
 
     goWalkHistory();
 }
 
-void MainWindow::goWalkHistory(void) {
+void MainWindow::goWalkHistory() {
     // Выясняется идентификатор записи, на которую надо переключиться
-    QString id = walkHistory->getId();
+    auto id = WalkHistory::get().getId();
 
     if (id.length() == 0)
         return;
 
     // Выясняется путь к ветке, где находится данная запись
-    QStringList path = treeScreen->knowTreeModel->getRecordPath(id);
+    auto path = treeScreen->knowTreeModel->getRecordPath(id);
 
     // Проверяем, есть ли такая ветка
     if (treeScreen->knowTreeModel->isItemValid(path) == false)
         return;
 
     // Выясняется позицию записи в таблице конечных записей
-    TreeItem *item = treeScreen->knowTreeModel->getItem(path);
+    auto item = treeScreen->knowTreeModel->getItem(path);
 
     // Проверяем, есть ли такая позиция
     if (item->recordtableGetTableData()->isRecordExists(id) == false)
@@ -886,32 +814,19 @@ void MainWindow::goWalkHistory(void) {
     setRecordtablePositionById(id);
 
     if (AppConfig::get().getRememberCursorAtHistoryNavigation()) {
-        editorScreen->setCursorPosition(walkHistory->getCursorPosition(id));
-        editorScreen->setScrollBarPosition(walkHistory->getScrollBarPosition(id));
+        editorScreen->setCursorPosition(WalkHistory::get().getCursorPosition(id));
+        editorScreen->setScrollBarPosition(WalkHistory::get().getScrollBarPosition(id));
     }
 }
 
-// Метод, вызываемый из всех точек интерфейса, в которых происходит
-// переход к другой записи. Метод вызывается до перехода, чтобы сохранить
-// текст редактируемой записи
-void MainWindow::saveTextarea(void) {
-    QString id = editorScreen->getMiscField("id");
+// Метод, вызываемый из всех точек интерфейса, в которых происходит переход к другой записи.
+// Вызывается до перехода, чтобы сохранить текст редактируемой записи
+void MainWindow::saveTextarea() {
+    auto id = editorScreen->getMiscField("id");
 
     qDebug() << "MainWindow::saveTextarea() : id :" << id;
 
     editorScreen->saveTextarea();
 
-    walkHistory->add(id, editorScreen->getCursorPosition(), editorScreen->getScrollBarPosition());
-}
-
-// Слот, обрабатывающий смену фокуса на виджетах
-void MainWindow::onFocusChanged(QWidget *widgetFrom, QWidget *widgetTo) {
-    Q_UNUSED(widgetFrom)
-
-    if (widgetTo == nullptr)
-        return;
-
-    qDebug() << "MainWindow::onFocusChanged() to " << widgetTo->objectName();
-
-    return; // Временно ничего не делает
+    WalkHistory::get().add(id, editorScreen->getCursorPosition(), editorScreen->getScrollBarPosition());
 }

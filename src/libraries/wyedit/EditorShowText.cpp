@@ -171,11 +171,11 @@ void EditorShowText::onGotoNote() {
     qDebug() << "Goto note: " << mNoteId;
 
     // Выясняется ссылка на модель дерева данных
-    KnowTreeModel *knowTreeModel = static_cast<KnowTreeModel *>(find_object<KnowTreeView>("knowTreeView")->model());
+    auto knowTreeModel = static_cast<KnowTreeModel *>(find_object<KnowTreeView>("knowTreeView")->model());
 
     // Нахождение ветки, в которой лежит запись с указанным идентификатором
-    QStringList path = knowTreeModel->getRecordPath(mNoteId);
+    auto path = knowTreeModel->getRecordPath(mNoteId);
 
-    find_object<MainWindow>("mainwindow")->setTreePosition(path);
-    find_object<MainWindow>("mainwindow")->setRecordtablePositionById(mNoteId);
+    MainWindow::get().setTreePosition(path);
+    MainWindow::get().setRecordtablePositionById(mNoteId);
 }

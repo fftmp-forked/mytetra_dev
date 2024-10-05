@@ -3,9 +3,6 @@
 #include "../EditorConfig.h"
 #include "../EditorTextArea.h"
 
-PlacementFormatter::PlacementFormatter() {
-}
-
 /// @brief Добавление отступа
 void PlacementFormatter::onIndentplusClicked(void) {
     // Выяснение текущего отступа

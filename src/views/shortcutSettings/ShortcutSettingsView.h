@@ -6,7 +6,6 @@ class ShortcutSettingsView : public QTreeView {
     Q_OBJECT
   public:
     ShortcutSettingsView(QWidget *parent = nullptr);
-    ~ShortcutSettingsView();
 
     void init();
 

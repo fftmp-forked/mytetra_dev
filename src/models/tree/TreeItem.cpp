@@ -14,11 +14,6 @@ TreeItem::TreeItem(const QMap<QString, QString> &data, TreeItem *parent) {
     fieldsTable = data;
 }
 
-TreeItem::~TreeItem() {
-    // Вызывается процедура очищения ветки без физического удаления данных на диске
-    empty();
-}
-
 // Возвращает номер, под которым данный объект хранится
 // в массиве childItems своего родителя
 int TreeItem::childNumber() const {
@@ -31,7 +26,7 @@ int TreeItem::childNumber() const {
 // Метод мягкого удаления всех данных из узла
 // При таком удалении полностью очищается сам узел,
 // а физические данные на диске не затрагиваются
-void TreeItem::empty(void) {
+void TreeItem::empty() {
     fieldsTable.clear();
 
     recordsTable.empty();
@@ -163,9 +158,7 @@ bool TreeItem::insertChildren(int position, int count, int columns) {
     return true;
 }
 
-// Добавление нового пустого подчиненного элемента
-// в конец списка подчиненных элементов
-bool TreeItem::addChildrenEmpty(void) {
+bool TreeItem::addChildrenEmpty() {
     QMap<QString, QString> data;
 
     TreeItem *item = new TreeItem(data, this); // Создается объект item
@@ -207,7 +200,7 @@ bool TreeItem::removeChildrenLink(int position, int count) {
     return true;
 }
 
-bool TreeItem::moveUp(void) {
+bool TreeItem::moveUp() {
     // Выясняется номер данного элемента в списке родителя
     int num = childNumber();
 
@@ -221,7 +214,7 @@ bool TreeItem::moveUp(void) {
     return true;
 }
 
-bool TreeItem::moveDn(void) {
+bool TreeItem::moveDn() {
     // Выясняется номер данного элемента в списке родителя
     int num = childNumber();
 
@@ -264,7 +257,7 @@ QStringList TreeItem::getPathAsField(QString fieldName) {
 }
 
 // Возвращает массив путей всех подветок, которые содержит ветка
-QList<QStringList> TreeItem::getAllChildrenPath(void) {
+QList<QStringList> TreeItem::getAllChildrenPath() {
     // Очищение списка путей
     getAllChildrenPathAsFieldRecurse(this, "", 0);
 

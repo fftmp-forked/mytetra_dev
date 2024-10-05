@@ -135,8 +135,8 @@ void ReferenceFormatter::onClickedGotoReference(QString href) {
         // Нахождение ветки, в которой лежит данная запись
         QStringList pathToRecord = static_cast<KnowTreeModel *>(find_object<KnowTreeView>("knowTreeView")->model())->getRecordPath(recordId);
 
-        find_object<MainWindow>("mainwindow")->setTreePosition(pathToRecord);
-        find_object<MainWindow>("mainwindow")->setRecordtablePositionById(recordId);
+        MainWindow::get().setTreePosition(pathToRecord);
+        MainWindow::get().setRecordtablePositionById(recordId);
     }
 }
 

@@ -5,7 +5,6 @@
 
 #include "CommandRun.h"
 #include "ConsoleEmulator.h"
-#include "libraries/helpers/ObjectHelper.h"
 #include "views/mainWindow/MainWindow.h"
 
 CommandRun::~CommandRun() {
@@ -61,7 +60,7 @@ void CommandRun::createProcessAndConsole() {
     // иконка устанавливается отдельной командой.
     // Это нужно из-за того, что окно консоли модальное, а если
     // указать родителя, то окно не сможет спрятаться за родительское окно
-    m_console->setWindowIcon(find_object<MainWindow>("mainwindow")->windowIcon());
+    m_console->setWindowIcon(MainWindow::get().windowIcon());
 
     m_console->setWindowTitle(m_windowTitle);
     m_console->setMessageText(m_messageText);

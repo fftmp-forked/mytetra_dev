@@ -14,7 +14,7 @@
 class TreeItem {
   public:
     TreeItem(const QMap<QString, QString> &data, TreeItem *parent = nullptr);
-    ~TreeItem();
+    ~TreeItem() { empty(); /* очищение ветки без физического удаления данных на диске */ };
 
     TreeItem *child(int number) { return childItems.value(number); }
 
@@ -44,7 +44,7 @@ class TreeItem {
     bool insertChildren(int position, int count, int columns);
 
     // Добавление нового пустого подчиненного элемента в конец списка подчиненных элементов
-    bool addChildrenEmpty(void);
+    bool addChildrenEmpty();
 
     // Добавление уже существующего Item-элемента
     bool addChildrenItem(TreeItem *item);
@@ -62,14 +62,14 @@ class TreeItem {
     // в массиве childItems своего родителя
     int childNumber() const;
 
-    bool moveUp(void);
-    bool moveDn(void);
+    bool moveUp();
+    bool moveDn();
 
     // Возвращает id путь (список идентификаторов от корня до текущего элемента)
-    QStringList getPath(void) { return getPathAsField("id"); }
+    QStringList getPath() { return getPathAsField("id"); }
 
     // Возвращает путь в виде названий веток дерева
-    QStringList getPathAsName(void) { return getPathAsField("name"); }
+    QStringList getPathAsName() { return getPathAsField("name"); }
 
     QString getPathAsNameWithDelimeter(QString delimeter);
 
@@ -77,7 +77,7 @@ class TreeItem {
     QStringList getPathAsField(QString fieldName);
 
     // Возвращает массив путей всех подветок, которые содержит ветка
-    QList<QStringList> getAllChildrenPath(void);
+    QList<QStringList> getAllChildrenPath();
 
     // Возвращает набор значений указанного поля для подветок
     QList<QStringList> getAllChildrenPathAsField(QString fieldName);
@@ -95,17 +95,17 @@ class TreeItem {
     void recordtableInit(QDomElement domModel) { recordsTable.init(this, domModel); }
 
     // Взятие количества записей в таблице конечных записей, "промежуточный" метод
-    int recordtableGetRowCount(void) const { return recordsTable.size(); }
+    int recordtableGetRowCount() const { return recordsTable.size(); }
 
     // Удаление всех элементов в таблице конечных записей, "промежуточный" метод
-    void recordtableDeleteAllRecords(void) { recordsTable.deleteAllRecords(); }
+    void recordtableDeleteAllRecords() { recordsTable.deleteAllRecords(); }
 
     // Преобразование таблицы конечных записей в DOM представление, "промежуточный" метод
     QDomElement recordtableExportDataToDom(QDomDocument *doc) const { return recordsTable.exportDataToDom(doc); }
     void recordtableExportDataToStreamWriter(QXmlStreamWriter *xmlWriter) const { recordsTable.exportDataToStreamWriter(xmlWriter); }
 
     // Взятие ссылки на данные конечных записей
-    RecordTableData *recordtableGetTableData(void) { return &recordsTable; }
+    RecordTableData *recordtableGetTableData() { return &recordsTable; }
 
     void setDetached(bool state) { detachedState = state; }
     bool isDetached() const { return detachedState; }
@@ -113,7 +113,7 @@ class TreeItem {
   private:
     bool removeChildrenLink(int position, int count);
 
-    void empty(void);
+    void empty();
 
     QList<QStringList> getAllChildrenPathAsFieldRecurse(TreeItem *item, QString fieldName, int mode);
 

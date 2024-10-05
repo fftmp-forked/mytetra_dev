@@ -1,31 +1,20 @@
 #include <QDir>
-#include <QDomElement>
-#include <QMap>
 #include <QMessageBox>
-#include <QString>
 
 #include "Record.h"
 #include "RecordTableData.h"
 
+#include "libraries/GlobalParameters.h"
 #include "libraries/helpers/DiskHelper.h"
+#include "libraries/helpers/ObjectHelper.h"
+#include "libraries/helpers/UniqueIdHelper.h"
+#include "libraries/wyedit/Editor.h"
+#include "libraries/WalkHistory.h"
 #include "models/appConfig/AppConfig.h"
 #include "models/tree/KnowTreeModel.h"
 #include "models/tree/TreeItem.h"
 #include "views/tree/KnowTreeView.h"
 
-#include "libraries/GlobalParameters.h"
-#include "libraries/helpers/ObjectHelper.h"
-#include "libraries/helpers/UniqueIdHelper.h"
-#include "libraries/wyedit/Editor.h"
-
-RecordTableData::RecordTableData(void) {
-    treeItem = nullptr;
-    workPos = -1;
-}
-
-RecordTableData::~RecordTableData() {
-    this->empty();
-}
 
 // Получение значения указанного поля для указанного имени поля
 // Имя поля - все возможные имена полей, кроме text (такого поля теперь вообще нет, текст запрашивается как отдельное свойство)
@@ -54,7 +43,7 @@ void RecordTableData::setField(QString name, QString value, int pos) {
 
 // Получение значения текста указанной записи
 // Если возникнет проблема, что файла с текстом записи нет, будет создан пустой файл
-QString RecordTableData::getText(int pos) {
+QString RecordTableData::getText(int pos) const {
     // Если индекс недопустимый, возвращается пустая строка
     if (pos < 0 || pos >= (int)size())
         return QString();
@@ -113,7 +102,7 @@ void RecordTableData::editorSaveCallback(QObject *editor, QString saveText) {
 
 // Получение копии легкого образа записи
 // Эти образы используются для хранения в дереве знаний
-Record RecordTableData::getRecordLite(int pos) {
+Record RecordTableData::getRecordLite(int pos) const {
     // Если индекс недопустимый, возвращается пустая запись
     if (pos < 0 || pos >= (int)size())
         return Record();
@@ -129,7 +118,7 @@ Record RecordTableData::getRecordLite(int pos) {
 // Возвращается запись с "сырыми" данными.
 Record RecordTableData::getRecordFat(int pos) {
     // Копия записи из дерева
-    Record resultRecord = getRecordLite(pos);
+    auto resultRecord = getRecordLite(pos);
 
     // Переключение копии записи на режим с хранением полного содержимого
     resultRecord.switchToFat();
@@ -318,7 +307,7 @@ int RecordTableData::insertNewRecord(int mode,
     qDebug() << "RecordTableData::insert_new_record() : New record pos" << QString::number(insertPos);
 
     // В историю перемещений по записям добавляется только что созданная запись
-    walkHistory->add(record.getNaturalFieldSource("id"), 0, 0);
+    WalkHistory::get().add(record.getNaturalFieldSource("id"), 0, 0);
 
     // Возвращается номера строки, на которую должна быть установлена засветка после выхода из данного метода
     return insertPos;
@@ -352,7 +341,7 @@ void RecordTableData::deleteRecord(int i) {
     // Удаление позиции курсора из истории
     QString id = getField("id", i);
     if (id.length() > 0)
-        walkHistory->removeHistoryData(id);
+        WalkHistory::get().removeHistoryData(id);
 
     // Удаляется элемент
     tableData.removeAt(i); // Было takeAt
@@ -366,7 +355,7 @@ void RecordTableData::deleteRecordById(QString id) {
 }
 
 // Удаление всех элементов таблицы конечных записей
-void RecordTableData::deleteAllRecords(void) {
+void RecordTableData::deleteAllRecords() {
     int tableSize = size(); // Запоминается размер таблицы, так как он при удалении меняется
 
     for (int i = 0; i < tableSize; ++i)
@@ -376,7 +365,7 @@ void RecordTableData::deleteAllRecords(void) {
 // Метод мягкого удаления данных
 // Данные очищаются только у объекта
 // а физически данные на диске не затрагиваются
-void RecordTableData::empty(void) {
+void RecordTableData::empty() {
     tableData.clear();
     treeItem = nullptr;
 }
@@ -409,11 +398,6 @@ int RecordTableData::getPosById(QString id) {
     return -1;
 }
 
-// Количество записей в таблице данных
-unsigned int RecordTableData::size(void) const {
-    return tableData.size();
-}
-
 // Перемещение записи вверх на одну строку
 void RecordTableData::moveUp(int pos) {
     if (pos > 0) {
@@ -438,18 +422,4 @@ void RecordTableData::moveDn(int pos) {
         // QModelIndex to=index(pos+1);
         // emit dataChanged(from,to); // Посылается сигнал что данные были изменены
     }
-}
-
-// Получение ссылки на объект ветки, которой принадлежит таблица
-TreeItem *RecordTableData::getItem(void) {
-    return treeItem;
-}
-
-int RecordTableData::getWorkPos(void) {
-    return workPos;
-}
-
-void RecordTableData::setWorkPos(int pos) {
-    qDebug() << "RecordTableData save work cursor position as " << pos;
-    workPos = pos;
 }

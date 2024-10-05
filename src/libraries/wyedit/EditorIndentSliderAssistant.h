@@ -1,20 +1,19 @@
 #pragma once
 
-#include <QObject>
+#include <QWidget>
 
-class IndentSlider;
+#include "indentslider/IndentSlider.h"
+
 class EditorTextArea;
 
 class EditorIndentSliderAssistant : public QObject {
     Q_OBJECT
   public:
-    explicit EditorIndentSliderAssistant(QObject *parent, EditorTextArea *iTextArea);
-    ~EditorIndentSliderAssistant();
+    explicit EditorIndentSliderAssistant(QWidget *parent, EditorTextArea *iTextArea);
 
-    IndentSlider *getIndentSlider();
-    void clear();
-    void setVisible(bool flag);
-
+    IndentSlider *getIndentSlider() const { return indentSlider; };
+    void clear() { currentTextIndent = currentLeftIndent = currentRightIndent = 0; };
+    void setVisible(bool flag) { indentSlider->setVisible(flag); };
   signals:
 
     // Сигналы установки отступов на линейке с движками согласно текущему форматированию

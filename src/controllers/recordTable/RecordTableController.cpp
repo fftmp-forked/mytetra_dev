@@ -11,6 +11,7 @@
 #include "libraries/GlobalParameters.h"
 #include "libraries/helpers/DiskHelper.h"
 #include "libraries/helpers/ObjectHelper.h"
+#include "libraries/WalkHistory.h"
 #include "libraries/wyedit/EditorShowTextDispatcher.h"
 #include "models/appConfig/AppConfig.h"
 #include "models/recordTable/Record.h"
@@ -102,7 +103,7 @@ void RecordTableController::initMetaEditorAtClickToRecord(const int pos) {
     edView->setSaveCallback(table->editorSaveCallback);
 
     // Сохраняется текст и картинки в окне редактирования
-    find_object<MainWindow>("mainwindow")->saveTextarea();
+    MainWindow::get().saveTextarea();
 
     // Для новой выбраной записи выясняется директория и основной файл
     auto currentDir = table->getField("dir", pos);
@@ -150,8 +151,8 @@ void RecordTableController::initMetaEditorAtClickToRecord(const int pos) {
 
     // В редакторе восстанавливается позиция курсора и прокрутки если это необходимо
     if (AppConfig::get().getRememberCursorAtOrdinarySelection()) {
-        edView->setCursorPosition(walkHistory->getCursorPosition(id));
-        edView->setScrollBarPosition(walkHistory->getScrollBarPosition(id));
+        edView->setCursorPosition(WalkHistory::get().getCursorPosition(id));
+        edView->setScrollBarPosition(WalkHistory::get().getScrollBarPosition(id));
     }
 
     // Обновление иконки аттачей
@@ -191,9 +192,7 @@ void RecordTableController::setTableData(RecordTableData *rtData) {
 
     // Обновление набора данных с последующим выбором первой строки
     // может быть очень длительным, поэтому показывается что процесс выполняется
-    // QCursor cursor_wait=QCursor(Qt::BusyCursor);
-    // qApp->setOverrideCursor(cursor_wait);
-    find_object<MainWindow>("mainwindow")->setCursor(Qt::BusyCursor);
+    MainWindow::get().setCursor(Qt::BusyCursor);
 
     // Указатель на данные сообщается источнику данных
     recordSourceModel->setTableData(rtData);
@@ -231,8 +230,7 @@ void RecordTableController::setTableData(RecordTableData *rtData) {
         qobject_cast<RecordTableScreen *>(parent())->toolsUpdate();
     }
 
-    // qApp->restoreOverrideCursor();
-    find_object<MainWindow>("mainwindow")->unsetCursor();
+    MainWindow::get().unsetCursor();
 
     qDebug() << "In RecordTableView set new model stop";
 }

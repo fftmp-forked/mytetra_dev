@@ -294,7 +294,7 @@ void FindScreen::findClicked(void) {
 void FindScreen::findStart(void) {
     // Сохраняется текущая редактируемая запись, чтобы и в ней
     // были найдены введенные перед нажатием Find данные, если они есть
-    find_object<MainWindow>("mainwindow")->saveTextarea();
+    MainWindow::get().saveTextarea();
 
     // Очищается таблица результата поиска
     findTable->clearAll();

@@ -64,7 +64,7 @@ void EditorShowTextDispatcher::createWindow(const QString &noteId, int x, int y,
     if (AppConfig::get().getDockableWindowsBehavior() == "single") {
         editorShowText = new EditorShowText(nullptr, Qt::Window);
     } else if (AppConfig::get().getDockableWindowsBehavior() == "together") {
-        editorShowText = new EditorShowText(find_object<MainWindow>("mainwindow"), Qt::Dialog);
+        editorShowText = new EditorShowText(&MainWindow::get(), Qt::Dialog);
     }
 
     // Устанавливается идентификатор записи, которое отображает данное окно
@@ -268,7 +268,7 @@ void EditorShowTextDispatcher::switchBehavior(const QString &mode) {
             widgetWindow->setParent(nullptr);
             widgetWindow->setWindowFlags(Qt::Window);
         } else if (mode == "together") {
-            MainWindow *mainWindow = find_object<MainWindow>("mainwindow");
+            auto & mainWindow = MainWindow::get();
             // Если идет переключение режима single->together,
             // и это не первое переключение (когда поведение еще не было установлено)
             if (mBehavior != mode && mBehavior != "") {
@@ -276,11 +276,11 @@ void EditorShowTextDispatcher::switchBehavior(const QString &mode) {
                 // Ранее виджет не имел родительский виджет, и его координаты были абсолютными
                 // и для вычисления новых относительных координат требуются координаты
                 // устанавливаемого родительского виджета
-                x -= mainWindow->geometry().x();
-                y -= mainWindow->geometry().y();
+                x -= mainWindow.geometry().x();
+                y -= mainWindow.geometry().y();
             }
 
-            widgetWindow->setParent(mainWindow);
+            widgetWindow->setParent(&mainWindow);
             widgetWindow->setWindowFlags(Qt::Dialog);
         }
 
