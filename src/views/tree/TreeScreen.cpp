@@ -205,7 +205,7 @@ void TreeScreen::setupModels(void) {
     // Загрузка данных
     knowTreeModel->initFromXML(AppConfig::get().get_tetradir() + "/mytetra.xml");
 
-    // Модель подключется к виду
+    // Модель подключается к виду
     knowTreeView->setModel(knowTreeModel);
 }
 
@@ -264,8 +264,8 @@ void TreeScreen::setupSignals(void) {
     connect(&ShortcutManager::get(), &ShortcutManager::updateWidgetShortcut, this, &TreeScreen::setupShortcuts);
 }
 
-void TreeScreen::assembly(void) {
-    treeScreenLayout = new QVBoxLayout();
+void TreeScreen::assembly() {
+    auto treeScreenLayout = new QVBoxLayout(this);
     treeScreenLayout->setObjectName("treescreen_QVBoxLayout");
 
     treeScreenLayout->addWidget(toolsLine);
@@ -274,9 +274,7 @@ void TreeScreen::assembly(void) {
     setLayout(treeScreenLayout);
 
     // Границы убираются, так как данный объект будет использоваться как виджет
-    QLayout *lt;
-    lt = layout();
-    lt->setContentsMargins(0, 2, 0, 0);
+    layout()->setContentsMargins(0, 2, 0, 0);
 }
 
 void TreeScreen::expandAllSubbranch(void) {

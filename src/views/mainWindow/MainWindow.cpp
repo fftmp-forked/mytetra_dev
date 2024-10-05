@@ -38,7 +38,6 @@ void MainWindow::init() {
 
     setupShortcuts();
 
-    setupIconActions();
     createTrayIcon();
     setIcon();
     if (QSystemTrayIcon::isSystemTrayAvailable())
@@ -51,7 +50,6 @@ void MainWindow::init() {
 MainWindow::~MainWindow() {
     saveAllState();
     delete trayIcon;
-    delete trayIconMenu;
     delete synchroCommandRun;
 }
 
@@ -89,22 +87,12 @@ void MainWindow::setupSignals(void) {
     connect(qApp, &QApplication::focusChanged, this, &MainWindow::onFocusChanged);
 
     // Сигналы пунктов меню
-    connect(actionFileMenuDatabasesManagement, &QAction::triggered, this, &MainWindow::fileDatabasesManagement);
-    connect(actionFileMenuExportTreeItem, &QAction::triggered, this, &MainWindow::fileExportBranch);
-    connect(actionFileMenuImportTreeItem, &QAction::triggered, this, &MainWindow::fileImportBranch);
     connect(actionFileMenuPrint, &QAction::triggered, this, &MainWindow::filePrint);
-    connect(actionFileMenuPrintPreview, &QAction::triggered, this, &MainWindow::filePrintPreview);
     connect(actionFileMenuExportPdf, &QAction::triggered, this, &MainWindow::filePrintPdf);
     connect(actionFileMenuQuit, &QAction::triggered, this, &MainWindow::applicationExit);
 
     // Поиск по базе в стандартном меню
     connect(actionToolsMenuFindInBase, &QAction::triggered, this, &MainWindow::toolsFindInBase);
-
-    connect(actionToolsMenuPreferences, &QAction::triggered, this, &MainWindow::toolsPreferences);
-
-    connect(actionHelpMenuAboutMyTetra, &QAction::triggered, this, &MainWindow::onClickHelpAboutMyTetra);
-    connect(actionHelpMenuAboutQt, &QAction::triggered, this, &MainWindow::onClickHelpAboutQt);
-
     connect(actionFocusTree, &QAction::triggered, this, &MainWindow::onClickFocusTree);
     connect(actionFocusNoteTable, &QAction::triggered, this, &MainWindow::onClickFocusNoteTable);
     connect(actionFocusEditor, &QAction::triggered, this, &MainWindow::onClickFocusEditor);
@@ -124,19 +112,19 @@ void MainWindow::setupSignals(void) {
 }
 
 void MainWindow::assembly(void) {
-    vSplitter = new QSplitter(Qt::Vertical);
+    vSplitter = new QSplitter(Qt::Vertical, this);
     vSplitter->addWidget(recordTableScreen); // Список конечных записей
     vSplitter->addWidget(editorScreen);      // Текст записи
     vSplitter->setCollapsible(0, false);     // Список конечных записей не может смыкаться
     vSplitter->setCollapsible(1, false);     // Содержимое записи не может смыкаться
 
-    hSplitter = new QSplitter(Qt::Horizontal);
+    hSplitter = new QSplitter(Qt::Horizontal, this);
     hSplitter->addWidget(treeScreen); // Дерево веток
     hSplitter->addWidget(vSplitter);
     hSplitter->setCollapsible(0, false); // Дерево веток не может смыкаться
     hSplitter->setCollapsible(1, false); // Столбец со списком и содержимым записи не может смыкаться
 
-    findSplitter = new QSplitter(Qt::Vertical);
+    findSplitter = new QSplitter(Qt::Vertical, this);
     findSplitter->addWidget(hSplitter);
     findSplitter->addWidget(findScreenDisp);
     findSplitter->setCollapsible(0, false); // Верхняя часть не должна смыкаться
@@ -347,26 +335,24 @@ void MainWindow::restoreDockableWindowsState() {
 
 // Создание раздела меню File
 void MainWindow::initFileMenu(void) {
-    // Создание меню
-    QMenu *menu = new QMenu(tr("&File"), this);
-    this->menuBar()->addMenu(menu);
+    auto menu = this->menuBar()->addMenu(tr("&File"));
 
-    actionFileMenuDatabasesManagement = new QAction(tr("Databases management"), this);
-    menu->addAction(actionFileMenuDatabasesManagement);
+    auto databasesManagement = menu->addAction(tr("Databases management"));
+    connect(databasesManagement, &QAction::triggered, this, &MainWindow::fileDatabasesManagement);
 
-    actionFileMenuExportTreeItem = new QAction(tr("Export tree item"), this);
-    menu->addAction(actionFileMenuExportTreeItem);
+    auto exportTreeItem = menu->addAction(tr("Export tree item"));
+    connect(exportTreeItem, &QAction::triggered, this, &MainWindow::fileExportBranch);
 
-    actionFileMenuImportTreeItem = new QAction(tr("Import tree item"), this);
-    menu->addAction(actionFileMenuImportTreeItem);
+    auto importTreeItem = menu->addAction(tr("Import tree item"));
+    connect(importTreeItem, &QAction::triggered, this, &MainWindow::fileImportBranch);
 
     menu->addSeparator();
 
     actionFileMenuPrint = new QAction(tr("&Print..."), this);
     menu->addAction(actionFileMenuPrint);
 
-    actionFileMenuPrintPreview = new QAction(tr("Print Preview..."), this);
-    menu->addAction(actionFileMenuPrintPreview);
+    auto printPreview = menu->addAction(tr("Print Preview..."));
+    connect(printPreview, &QAction::triggered, this, &MainWindow::filePrintPreview);
 
     actionFileMenuExportPdf = new QAction(tr("&Export PDF..."), this);
     menu->addAction(actionFileMenuExportPdf);
@@ -379,30 +365,26 @@ void MainWindow::initFileMenu(void) {
 
 // Создание раздела меню Tools
 void MainWindow::initToolsMenu(void) {
-    // Создание меню
-    QMenu *menu = new QMenu(tr("&Tools"), this);
-    this->menuBar()->addMenu(menu);
+    auto menu = this->menuBar()->addMenu(tr("&Tools"));
 
     actionToolsMenuFindInBase = new QAction(this); // Так как есть this, указатель не будет потерян основным окном
     menu->addAction(actionToolsMenuFindInBase);
 
     menu->addSeparator();
 
-    actionToolsMenuPreferences = new QAction(tr("&Preferences"), this);
-    menu->addAction(actionToolsMenuPreferences);
+    auto preferences = menu->addAction(tr("&Preferences"));
+    connect(preferences, &QAction::triggered, this, &MainWindow::toolsPreferences);
 }
 
 // Создание раздела меню Help
 void MainWindow::initHelpMenu(void) {
-    // Создание меню
-    QMenu *menu = new QMenu(tr("&Help"), this);
-    this->menuBar()->addMenu(menu);
+    auto menu = this->menuBar()->addMenu(tr("&Help"));
 
-    actionHelpMenuAboutMyTetra = new QAction(tr("About MyTetra"), this);
-    menu->addAction(actionHelpMenuAboutMyTetra);
+    auto aboutMyTetra = menu->addAction(tr("About MyTetra"));
+    connect(aboutMyTetra, &QAction::triggered, this, &MainWindow::onClickHelpAboutMyTetra);
 
-    actionHelpMenuAboutQt = new QAction(tr("About Qt"), this);
-    menu->addAction(actionHelpMenuAboutQt);
+    auto aboutQt = menu->addAction(tr("About Qt"));
+    connect(aboutQt, &QAction::triggered, this, &MainWindow::onClickHelpAboutQt);
 }
 
 // Создание скрытых действий для работы прочих шорткатов уровня приложения
@@ -430,7 +412,7 @@ void MainWindow::setupShortcuts(void) {
         {"focusNoteTable", actionFocusNoteTable},
         {"focusEditor", actionFocusEditor},
     };
-    ShortcutManager ::get().initActions(ShortcutManager::SECTION_MISC, miscActions);
+    ShortcutManager::get().initActions(ShortcutManager::SECTION_MISC, miscActions);
 }
 
 // Сохранить текущую статью
@@ -716,20 +698,6 @@ void MainWindow::onSynchroCommandFinishWork() {
     }
 }
 
-void MainWindow::setupIconActions(void) {
-    actionTrayRestore = new QAction(tr("&Restore window"), this);
-    connect(actionTrayRestore, &QAction::triggered, this, &MainWindow::showWindow);
-
-    actionTrayMaximize = new QAction(tr("Ma&ximize window"), this);
-    connect(actionTrayMaximize, &QAction::triggered, this, &MainWindow::showMaximized);
-
-    actionTrayMinimize = new QAction(tr("Mi&nimize window"), this);
-    connect(actionTrayMinimize, &QAction::triggered, this, &MainWindow::hide);
-
-    actionTrayQuit = new QAction(tr("&Quit"), this);
-    connect(actionTrayQuit, &QAction::triggered, this, &MainWindow::applicationExit);
-}
-
 void MainWindow::showWindow() {
     activateWindow();
     showNormal();
@@ -739,16 +707,24 @@ void MainWindow::showWindow() {
     EditorShowTextDispatcher::instance()->restoreBehavior();
 }
 
-void MainWindow::createTrayIcon(void) {
-    trayIconMenu = new QMenu(this);
-    trayIconMenu->addAction(actionTrayRestore);
-    trayIconMenu->addAction(actionTrayMaximize);
-    trayIconMenu->addAction(actionTrayMinimize);
-    trayIconMenu->addSeparator();
-    trayIconMenu->addAction(actionTrayQuit);
+void MainWindow::createTrayIcon() {
+    auto m = new QMenu(this);
+
+    auto restore = m->addAction(tr("&Restore window"));
+    connect(restore, &QAction::triggered, this, &MainWindow::showWindow);
+
+    auto maximize = m->addAction(tr("Ma&ximize window"));
+    connect(maximize, &QAction::triggered, this, &MainWindow::showMaximized);
+
+    auto minimize = m->addAction(tr("Mi&nimize window"));
+    connect(minimize, &QAction::triggered, this, &MainWindow::hide);
+
+    m->addSeparator();
+    auto quit = m->addAction(tr("&Quit"));
+    connect(quit, &QAction::triggered, this, &MainWindow::applicationExit);
 
     trayIcon = new QSystemTrayIcon(this);
-    trayIcon->setContextMenu(trayIconMenu);
+    trayIcon->setContextMenu(m);
 }
 
 void MainWindow::setIcon(void) {

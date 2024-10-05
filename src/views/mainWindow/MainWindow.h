@@ -117,8 +117,7 @@ class MainWindow : public QMainWindow {
 
     void initRecordTableActions(void);
 
-    void setupIconActions(void);
-    void createTrayIcon(void);
+    void createTrayIcon();
     void setIcon(void);
 
     void saveWindowGeometry(void);
@@ -130,31 +129,17 @@ class MainWindow : public QMainWindow {
     void reloadSaveStage(void);
     void reloadLoadStage(bool isLongTimeReload);
 
-    QAction *actionFileMenuDatabasesManagement;
-    QAction *actionFileMenuExportTreeItem;
-    QAction *actionFileMenuImportTreeItem;
     QAction *actionFileMenuPrint;
-    QAction *actionFileMenuPrintPreview;
     QAction *actionFileMenuExportPdf;
     QAction *actionFileMenuQuit;
 
     QAction *actionToolsMenuFindInBase;
-    QAction *actionToolsMenuPreferences; // Вызов окна настроек, используется в десктопе
-
-    QAction *actionHelpMenuAboutMyTetra;
-    QAction *actionHelpMenuAboutQt;
-
-    QAction *actionTrayRestore;
-    QAction *actionTrayMaximize;
-    QAction *actionTrayMinimize;
-    QAction *actionTrayQuit;
 
     QAction *actionFocusTree;
     QAction *actionFocusNoteTable;
     QAction *actionFocusEditor;
 
     QSystemTrayIcon *trayIcon;
-    QMenu *trayIconMenu;
 
     QSplitter *vSplitter;
     QSplitter *hSplitter;

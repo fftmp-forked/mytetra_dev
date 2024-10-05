@@ -13,7 +13,7 @@ class TreeModel : public QAbstractItemModel {
     Q_OBJECT
 
   public:
-    TreeModel(QObject *parent = nullptr) { Q_UNUSED(parent); };
+    TreeModel(QObject *parent = nullptr) : QAbstractItemModel(parent) {};
     ~TreeModel(void){};
 
     QVariant data(const QModelIndex &index, int role) const;

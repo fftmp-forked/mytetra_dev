@@ -16,7 +16,6 @@ class TreeScreen : public QWidget {
 
   public:
     TreeScreen(QWidget *parent = nullptr);
-    virtual ~TreeScreen() {}
 
     KnowTreeModel *knowTreeModel;
 
@@ -81,8 +80,6 @@ class TreeScreen : public QWidget {
 
     KnowTreeView *knowTreeView;
 
-    QVBoxLayout *treeScreenLayout;
-
     QDateTime lastKnowTreeModifyDateTime;
     qint64 lastKnowTreeSize;
 
@@ -90,7 +87,7 @@ class TreeScreen : public QWidget {
     void setupModels(void);
     void setupSignals(void);
     void setupActions(void);
-    void assembly(void);
+    void assembly();
 
     void moveUpDownBranch(int direction);
     bool moveCheckEnable(void);
