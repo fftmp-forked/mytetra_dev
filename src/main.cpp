@@ -11,7 +11,6 @@
 #include <QScroller>
 #include <QScrollerProperties>
 
-#include "main.h"
 #include "views/mainWindow/MainWindow.h"
 
 #include "../thirdParty/qtSingleApplication/qtsingleapplication.h"

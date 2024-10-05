@@ -105,7 +105,7 @@ void EditorAbsTableCell::print_cell(void) {
         type = 'U';
         break;
     default:
-        __builtin_unreachable();
+        std::unreachable();
     }
 
     QString val = value.simplified().trimmed();

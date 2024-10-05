@@ -9,7 +9,6 @@
 #include "EditorAbsTable.h"
 #include "EditorAbsTableCell.h"
 
-#include "../../main.h" // for __builtin_unreachable() on windows
 #include "../helpers/DebugHelper.h"
 
 // Конструктор пустой таблицы
@@ -359,7 +358,7 @@ void EditorAbsTable::split_single_cell_by_horisontal(int x, int y, int div) {
 
                 switch (cells[x][i].get_cell_type()) {
                 case EditorAbsTableCell::IS_NULL_CELL:
-                    __builtin_unreachable();
+                    std::unreachable();
 
                 // Если это обычная ячейка
                 case EditorAbsTableCell::IS_NORMAL_CELL: {
@@ -565,7 +564,7 @@ void EditorAbsTable::split_single_cell_by_vertical(int x1, int x2, int y, int di
 
                 switch (cells[i][y].get_cell_type()) {
                 case EditorAbsTableCell::IS_NULL_CELL:
-                    __builtin_unreachable();
+                    std::unreachable();
 
                 // Если это обычная ячейка
                 case EditorAbsTableCell::IS_NORMAL_CELL: {
