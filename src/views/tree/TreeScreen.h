@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #include <QDateTime>
 #include <QFileInfo>
 #include <QItemSelectionModel>
@@ -74,7 +76,25 @@ class TreeScreen : public QWidget {
     void onCustomContextMenuRequested(const QPoint &pos);
 
   private:
-    QMap<QString, QAction *> actionList;
+    enum {
+        A_expandAllSubbranch = 0,
+        A_collapseAllSubbranch,
+        A_moveUpBranch,
+        A_moveDownBranch,
+        A_insSubbranch,
+        A_insBranch,
+        A_editBranch,
+        A_delBranch,
+        A_cutBranch,
+        A_copyBranch,
+        A_pasteBranch,
+        A_pasteSubbranch,
+        A_setIcon,
+        A_findInBase,
+        A_total,
+    };
+
+    std::array<QAction*, A_total> actions;
 
     QToolBar *toolsLine;
 

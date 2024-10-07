@@ -35,8 +35,7 @@ void AttachTableView::assemblyContextMenu(void) {
     contextMenu = new QMenu(this);
 
     // find_object() не работает, потому что при инициализации еще не вызван метод assembly() у attachTableScreen, и этому объекту не задан родитель layout
-    // AttachTableScreen *screenPointer=find_object<AttachTableScreen>("attachTableScreen");
-    AttachTableScreen *screenPointer = qobject_cast<AttachTableScreen *>(controller->parent());
+    auto screenPointer = qobject_cast<AttachTableScreen *>(controller->parent());
 
     contextMenu->addAction(screenPointer->actionAddAttach);
     contextMenu->addAction(screenPointer->actionAddAttachFromUrl);

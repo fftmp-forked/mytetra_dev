@@ -28,6 +28,7 @@
 #include "views/mainWindow/MainWindow.h"
 #include "views/recordTable/RecordTableScreen.h"
 
+
 TreeScreen::TreeScreen(QWidget *parent) : QWidget(parent) {
     lastKnowTreeModifyDateTime = QDateTime();
     lastKnowTreeSize = 0;
@@ -44,93 +45,79 @@ void TreeScreen::setupActions() {
     QAction *ac;
 
     // Разворачивание всех подветок
-    ac = new QAction(QIcon(":/resource/pic/expand_all_subbranch.svg"), "", this);
+    actions[A_expandAllSubbranch] = ac = new QAction(QIcon(":/resource/pic/expand_all_subbranch.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::expandAllSubbranch);
-    actionList["expandAllSubbranch"] = ac;
 
     // Сворачивание всех подветок
-    ac = new QAction(QIcon(":/resource/pic/collapse_all_subbranch.svg"), "", this);
+    actions[A_collapseAllSubbranch] = ac = new QAction(QIcon(":/resource/pic/collapse_all_subbranch.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::collapseAllSubbranch);
-    actionList["collapseAllSubbranch"] = ac;
 
     // Перемещение ветки вверх
-    ac = new QAction(QIcon(":/resource/pic/move_up.svg"), "", this);
+    actions[A_moveUpBranch] = ac = new QAction(QIcon(":/resource/pic/move_up.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::moveUpBranch);
-    actionList["moveUpBranch"] = ac;
 
     // Перемещение ветки вниз
-    ac = new QAction(QIcon(":/resource/pic/move_dn.svg"), "", this);
+    actions[A_moveDownBranch] = ac = new QAction(QIcon(":/resource/pic/move_dn.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::moveDownBranch);
-    actionList["moveDownBranch"] = ac;
 
     // Вставка новой подветки
-    ac = new QAction(QIcon(":/resource/pic/add_subbranch.svg"), "", this);
+    actions[A_insSubbranch] = ac = new QAction(QIcon(":/resource/pic/add_subbranch.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::insSubbranch);
-    actionList["insSubbranch"] = ac;
 
     // Вставка новой ветки
-    ac = new QAction(QIcon(":/resource/pic/add_branch.svg"), "", this);
+    actions[A_insBranch] = ac = new QAction(QIcon(":/resource/pic/add_branch.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::insBranch);
-    actionList["insBranch"] = ac;
 
     // Редактирование ветки
-    ac = new QAction(QIcon(":/resource/pic/note_edit.svg"), "", this);
+    actions[A_editBranch] = ac = new QAction(QIcon(":/resource/pic/note_edit.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::editBranch);
-    actionList["editBranch"] = ac;
 
     // Удаление ветки
-    ac = new QAction(QIcon(":/resource/pic/note_delete.svg"), "", this);
+    actions[A_delBranch] = ac = new QAction(QIcon(":/resource/pic/note_delete.svg"), "", this);
     connect(ac, &QAction::triggered, this, [this]() { delBranch(); });
-    actionList["delBranch"] = ac;
 
     // Удаление ветки с сохранением копии в буфер обмена
-    ac = new QAction(QIcon(":/resource/pic/branch_cut.svg"), "", this);
+    actions[A_cutBranch] = ac = new QAction(QIcon(":/resource/pic/branch_cut.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::cutBranch);
-    actionList["cutBranch"] = ac;
 
     // Копирование ветки в буфер обмена
-    ac = new QAction(QIcon(":/resource/pic/branch_copy.svg"), "", this);
+    actions[A_copyBranch] = ac = new QAction(QIcon(":/resource/pic/branch_copy.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::copyBranch);
-    actionList["copyBranch"] = ac;
 
     // Вставка ветки из буфера обмена
-    ac = new QAction(QIcon(":/resource/pic/branch_paste.svg"), "", this);
+    actions[A_pasteBranch] = ac = new QAction(QIcon(":/resource/pic/branch_paste.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::pasteBranch);
-    actionList["pasteBranch"] = ac;
 
     // Вставка ветки из буфера обмена в виде подветки
-    ac = new QAction(QIcon(":/resource/pic/branch_paste.svg"), "", this);
+    actions[A_pasteSubbranch] = ac = new QAction(QIcon(":/resource/pic/branch_paste.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::pasteSubbranch);
-    actionList["pasteSubbranch"] = ac;
 
     // Добавление иконки к ветке
-    ac = new QAction(QIcon(":/resource/pic/set_icon.svg"), "", this);
+    actions[A_setIcon] = ac = new QAction(QIcon(":/resource/pic/set_icon.svg"), "", this);
     connect(ac, &QAction::triggered, this, &TreeScreen::setIcon);
-    actionList["setIcon"] = ac;
 
-    // Открытие поиска по базе (связывание клика происходит в MainWindows)
-    ac = new QAction(QIcon(":/resource/pic/find_in_base.svg"), tr("Find in base"), this);
+    // Открытие поиска по базе (связывание клика происходит в MainWindow)
+    actions[A_findInBase] = ac = new QAction(QIcon(":/resource/pic/find_in_base.svg"), tr("Find in base"), this);
     ac->setStatusTip(tr("Find in base"));
     connect(ac, &QAction::triggered, this, &TreeScreen::treeScreenFindInBaseClicked);
-    actionList["findInBase"] = ac;
 }
 
 void TreeScreen::setupShortcuts() {
     qDebug() << "Setup shortcut for" << staticMetaObject.className();
-    QList<QPair<QString, QAction *>> treeActions{
-        {"expandAllSubbranch", actionList["expandAllSubbranch"]},
-        {"collapseAllSubbranch", actionList["collapseAllSubbranch"]},
-        {"moveUpBranch", actionList["moveUpBranch"]},
-        {"moveDownBranch", actionList["moveDownBranch"]},
-        {"insSubbranch", actionList["insSubbranch"]},
-        {"insBranch", actionList["insBranch"]},
-        {"editBranch", actionList["editBranch"]},
-        {"delBranch", actionList["delBranch"]},
-        {"cutBranch", actionList["cutBranch"]},
-        {"copyBranch", actionList["copyBranch"]},
-        {"pasteBranch", actionList["pasteBranch"]},
-        {"pasteSubbranch", actionList["pasteSubbranch"]},
-        {"setIcon", actionList["setIcon"]},
+    QList<QPair<QString, QAction *>> treeActions {
+        {"expandAllSubbranch", actions[A_expandAllSubbranch]},
+        {"collapseAllSubbranch", actions[A_collapseAllSubbranch]},
+        {"moveUpBranch", actions[A_moveUpBranch]},
+        {"moveDownBranch", actions[A_moveDownBranch]},
+        {"insSubbranch", actions[A_insSubbranch]},
+        {"insBranch", actions[A_insBranch]},
+        {"editBranch", actions[A_editBranch]},
+        {"delBranch", actions[A_delBranch]},
+        {"cutBranch", actions[A_cutBranch]},
+        {"copyBranch", actions[A_copyBranch]},
+        {"pasteBranch", actions[A_pasteBranch]},
+        {"pasteSubbranch", actions[A_pasteSubbranch]},
+        {"setIcon", actions[A_setIcon]},
     };
     ShortcutManager::get().initActions(ShortcutManager::SECTION_TREE, treeActions);
 }
@@ -139,29 +126,22 @@ void TreeScreen::setupUI() {
     // Наполнение панели инструментов
     toolsLine = new QToolBar(this);
 
-    insertActionAsButton(toolsLine, actionList["insSubbranch"]);
-    insertActionAsButton(toolsLine, actionList["insBranch"]);
+    toolsLine->addActions({actions[A_insSubbranch], actions[A_insBranch], actions[A_editBranch], actions[A_delBranch]});
 
-    insertActionAsButton(toolsLine, actionList["editBranch"]);
-    insertActionAsButton(toolsLine, actionList["delBranch"]);
+    toolsLine->addSeparator();
+    toolsLine->addActions({actions[A_expandAllSubbranch], actions[A_collapseAllSubbranch]});
 
     toolsLine->addSeparator();
 
-    insertActionAsButton(toolsLine, actionList["expandAllSubbranch"]);
-    insertActionAsButton(toolsLine, actionList["collapseAllSubbranch"]);
-
-    toolsLine->addSeparator();
-
-    insertActionAsButton(toolsLine, actionList["moveUpBranch"]);
-    insertActionAsButton(toolsLine, actionList["moveDownBranch"]);
+    toolsLine->addActions({actions[A_moveUpBranch], actions[A_moveDownBranch]});
 
     // Добавление скрытых действий, которые не видны на тулбаре, но видны на контекстном меню
-    insertActionAsButton(toolsLine, actionList["cutBranch"], false);
-    insertActionAsButton(toolsLine, actionList["copyBranch"], false);
-    insertActionAsButton(toolsLine, actionList["pasteBranch"], false);
-    insertActionAsButton(toolsLine, actionList["pasteSubbranch"], false);
+    insertActionAsButton(toolsLine, actions[A_cutBranch], false);
+    insertActionAsButton(toolsLine, actions[A_copyBranch], false);
+    insertActionAsButton(toolsLine, actions[A_pasteBranch], false);
+    insertActionAsButton(toolsLine, actions[A_pasteSubbranch], false);
 
-    insertActionAsButton(toolsLine, actionList["setIcon"], false);
+    insertActionAsButton(toolsLine, actions[A_setIcon], false);
 
     knowTreeView = new KnowTreeView(this);
     knowTreeView->setObjectName("knowTreeView");
@@ -201,22 +181,13 @@ void TreeScreen::onCustomContextMenuRequested(const QPoint &pos) {
 
     // Конструирование меню
     QMenu menu(this);
-    menu.addAction(actionList["insSubbranch"]);
-    menu.addAction(actionList["insBranch"]);
-    menu.addAction(actionList["editBranch"]);
-    menu.addAction(actionList["delBranch"]);
-    menu.addAction(actionList["setIcon"]);
+    menu.addActions({actions[A_insSubbranch], actions[A_insBranch], actions[A_editBranch], actions[A_delBranch], actions[A_setIcon]});
     menu.addSeparator();
-    menu.addAction(actionList["expandAllSubbranch"]);
-    menu.addAction(actionList["collapseAllSubbranch"]);
+    menu.addActions({actions[A_expandAllSubbranch], actions[A_collapseAllSubbranch]});
     menu.addSeparator();
-    menu.addAction(actionList["moveUpBranch"]);
-    menu.addAction(actionList["moveDownBranch"]);
+    menu.addActions({actions[A_moveUpBranch], actions[A_moveDownBranch]});
     menu.addSeparator();
-    menu.addAction(actionList["cutBranch"]);
-    menu.addAction(actionList["copyBranch"]);
-    menu.addAction(actionList["pasteBranch"]);
-    menu.addAction(actionList["pasteSubbranch"]);
+    menu.addActions({actions[A_cutBranch], actions[A_copyBranch], actions[A_pasteBranch], actions[A_pasteSubbranch]});
 
     // Если в буфере есть ветки, соответствующие пункты становятся активными
     bool isBranch = false;
@@ -224,13 +195,8 @@ void TreeScreen::onCustomContextMenuRequested(const QPoint &pos) {
     if (mimeData && mimeData->hasFormat(FixedParameters::appTextId + "/branch"))
         isBranch = true;
 
-    if (isBranch) {
-        actionList["pasteBranch"]->setEnabled(true);
-        actionList["pasteSubbranch"]->setEnabled(true);
-    } else {
-        actionList["pasteBranch"]->setEnabled(false);
-        actionList["pasteSubbranch"]->setEnabled(false);
-    }
+    actions[A_pasteBranch]->setEnabled(isBranch);
+    actions[A_pasteSubbranch]->setEnabled(isBranch);
 
     // Включение отображения меню на экране
     // menu.exec(event->globalPos());
@@ -239,12 +205,10 @@ void TreeScreen::onCustomContextMenuRequested(const QPoint &pos) {
 
 void TreeScreen::setupSignals() {
     // Соединение сигнал-слот чтобы показать контекстное меню по правому клику на ветке
-    connect(knowTreeView, &KnowTreeView::customContextMenuRequested,
-            this, &TreeScreen::onCustomContextMenuRequested);
+    connect(knowTreeView, &KnowTreeView::customContextMenuRequested, this, &TreeScreen::onCustomContextMenuRequested);
 
     // Соединение сигнал-слот что ветка выбрана мышкой или стрелками на клавиатуре (через selection-модель)
-    connect(knowTreeView->selectionModel(), &QItemSelectionModel::currentRowChanged,
-            this, &TreeScreen::onKnowtreeClicked);
+    connect(knowTreeView->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &TreeScreen::onKnowtreeClicked);
 
     // Обновление горячих клавиш, если они были изменены
     connect(&ShortcutManager::get(), &ShortcutManager::updateWidgetShortcut, this, &TreeScreen::setupShortcuts);
@@ -898,11 +862,8 @@ void TreeScreen::onKnowtreeClicked(const QModelIndex &index) {
     find_object<RecordTableScreen>("recordTableScreen")->disableAllActions();
 
     // Вначале все инструменты работы с веткой включаются
-    QMapIterator<QString, QAction *> i(actionList);
-    while (i.hasNext()) {
-        i.next();
-        i.value()->setEnabled(true);
-    }
+    for(auto a : actions)
+        a->setEnabled(true);
 
     // Получаем указатель на данные таблицы конечных записей
     auto rtdata = item->recordtableGetTableData();

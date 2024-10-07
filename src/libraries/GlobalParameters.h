@@ -10,9 +10,10 @@ class FindScreen;
 class GlobalParameters : public Singleton<GlobalParameters> {
     friend class Singleton<GlobalParameters>;
   public:
+    ~GlobalParameters() { qInfo() << " GP DTOR"; };
     bool init(QString config_dir);
 
-    QString get_cfg_dir(void) const { return cfg_dir; }
+    QString get_cfg_dir() const { return cfg_dir; }
 
     void setFindScreen(FindScreen *point) { pointFindScreen = point; }
     FindScreen *getFindScreen() const { return pointFindScreen; }

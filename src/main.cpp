@@ -131,31 +131,20 @@ int main(int argc, char **argv) {
     // чтобы были переведены все действия по горячим клавишам
     ShortcutManager::get().init(cfg_dir + "/shortcut.ini");
 
+    srand(time(NULL));
+
     // Создание объекта главного окна
     auto & win = MainWindow::get();
     win.init();
 
-    srand(time(NULL));
-
-    // Сразу восстанавливается вид окна в предыдущий запуск
-    // Эти действия нельзя делать в конструкторе главного окна, т.к. окно еще не создано
-    // Эти действия надо делать до установки заголовка. В некоторых оконных средах,
-    // если сделать после setWindowTitle(), геометрия восстановится некорректно, окно съедет вверх на толщину заголовка
-    win.restoreAllWindowState();
-
-    // Настройка объекта главного окна
-    win.setWindowTitle("MyTetra");
     if (!cfg.get_runinminimizedwindow())
         win.show();
     else
         win.hide();
 
-    // Восстанавливаются открепляемые окна
-    win.restoreDockableWindowsState();
-
     qDebug() << "Restore session succesfull";
 
-    if (cfg.get_synchroonstartup() && cfg.get_synchrocommand().trimmed().length() > 0)
+    if (cfg.get_synchroonstartup() && !cfg.get_synchrocommand().trimmed().isEmpty())
         win.synchronization();
 
     // Инициалиация периодической проверки изменения базы сторонними программами

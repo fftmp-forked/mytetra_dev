@@ -13,6 +13,7 @@ class AttachTableScreen : public QWidget {
     Q_OBJECT
   public:
     AttachTableScreen(QWidget *parent = nullptr);
+    virtual ~AttachTableScreen() { qInfo() << "AttachTableScreen DTOR"; }
 
     void clear(void);
 
@@ -34,7 +35,6 @@ class AttachTableScreen : public QWidget {
 
   protected:
     void setupActions(void);
-    void setupUI();
     void setupSignals(void);
     void assembly();
 
@@ -43,8 +43,6 @@ class AttachTableScreen : public QWidget {
 
     // Указатель на таблицу приаттаченных файлов (представление)
     AttachTableView *attachTableView;
-
-    // Экранные элементы
-    QToolBar *toolsLine;
-
+  private:
+    QToolBar * create_toolbar();
 };

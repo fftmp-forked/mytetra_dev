@@ -20,6 +20,11 @@
 #include "views/printPreview/PrintPreview.h"
 
 
+MainWindow & MainWindow::get() {
+    static MainWindow instance;
+    return instance;
+}
+
 void MainWindow::init() {
     setObjectName("mainwindow");
 
@@ -42,11 +47,20 @@ void MainWindow::init() {
 
     // Закрывать ли по-настоящему окно при обнаружении сигнала closeEvent
     enableRealClose = false;
+
+    // Сразу восстанавливается вид окна в предыдущий запуск
+    // Эти действия нельзя делать в конструкторе главного окна, т.к. окно еще не создано
+    // Эти действия надо делать до установки заголовка. В некоторых оконных средах,
+    // если сделать после setWindowTitle(), геометрия восстановится некорректно, окно съедет вверх на толщину заголовка
+    restoreAllWindowState();
+
+    setWindowTitle("MyTetra");
+
+    // Восстанавливаются открепляемые окна
+    restoreDockableWindowsState();
 }
 
 MainWindow::~MainWindow() {
-    saveAllState();
-    delete trayIcon;
     delete synchroCommandRun;
 }
 
@@ -217,11 +231,7 @@ void MainWindow::saveWindowGeometry() {
     // Запоминается размер сплиттера только при видимом виджете поиска,
     // т.к. если виджета поиска не видно, будет запомнен нулевой размер
 
-    // if(findScreenDisp->isVisible()) - так делать нельзя, т.к.
-    // данный метод вызывается из декструктора главного окна, и к этому моменту
-    // виджет уже не виден
-
-    if (AppConfig::get().get_findscreen_show())
+    if (findScreenDisp->isVisible())
         AppConfig::get().set_findsplitter_size_list(findSplitter->sizes());
 }
 
@@ -268,7 +278,7 @@ void MainWindow::restoreFindOnBaseVisible() {
     bool n = AppConfig::get().get_findscreen_show();
 
     // Определяется ссылка на виджет поиска
-    FindScreen *findScreenRel = find_object<FindScreen>("findScreenDisp");
+    auto findScreenRel = find_object<FindScreen>("findScreenDisp");
 
     if (n)
         findScreenRel->show();
@@ -664,47 +674,23 @@ void MainWindow::setIcon() {
 }
 
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
-    if (QSystemTrayIcon::isSystemTrayAvailable() == false)
+    if (!QSystemTrayIcon::isSystemTrayAvailable())
         return;
 
     qDebug() << "Click on tray icon";
-
-    switch (reason) {
-    case QSystemTrayIcon::Trigger:
-    case QSystemTrayIcon::DoubleClick:
-        // Если окно видно
-        if (isVisible()) {
-            // Если окно неактивно, значит активно другое (и возможно оно перекрывает окно MyTetra)
-            // Не работает в Windows, в Linux не проверял
-            // Причина неработоспособности - при клике на иконку, окно MyTetra всегда становится неактивным (т.к. активен систрей)
-            // И условие срабатывает всегда. Доделать или отказаться
-            // if(QGuiApplication::applicationState() == Qt::ApplicationInactive)
-            // {
-            //   activateWindow();
-            //   return;
-            // }
-
-            if (isMinimized()) {
-                qDebug() << "If visible and minimized";
-                showWindow();
-                return;
-            } else {
-                qDebug() << "Hide";
-                hide();
-                return;
-            }
-        } else {
-            qDebug() << "If not visible";
-            showWindow();
-            return;
-        }
-    default:;
-    }
+    if(reason != QSystemTrayIcon::Trigger and reason != QSystemTrayIcon::DoubleClick)
+        return;
+    if (!isVisible())
+        showWindow();
+    else if (isMinimized())
+        showWindow();
+    else
+        hide();
 }
 
 // Слот закрытия окна
 void MainWindow::closeEvent(QCloseEvent *event) {
-    if (enableRealClose == false) {
+    if (!enableRealClose) {
         if (!QSystemTrayIcon::isSystemTrayAvailable())
             return;
 
@@ -722,10 +708,10 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     // Так как закрытие программы может происходить не с первого раза, например при
     // настройке синхронизации при закрытии программы, то действия
     // которые должны выполняться при закрытии должны срабатывать только единожды
-    if (exitCounter == 0) {
+    if (!got_close_event) {
         // Запоминается список и состояния открепляемых окон,
         // данное действие нельзя делать в saveAllState(), вызываемое из деструктора, так как если
-        // все открепляемые окна не будут закрыты (см. следующею команду), то деструктор
+        // все открепляемые окна не будут закрыты (см. следующую команду), то деструктор
         // главного окна не будет вызываться объектом приложения
         EditorShowTextDispatcher::instance()->saveOpenWindows();
 
@@ -733,8 +719,8 @@ void MainWindow::closeEvent(QCloseEvent *event) {
         // открепляемых окон, чтобы не осталось "висячих" открепляемых окон, которые
         // не будут давать закрыться приложению
         EditorShowTextDispatcher::instance()->closeAllWindowsForExit();
-
-        exitCounter++;
+        saveAllState();
+        got_close_event = true;
     }
     qApp->exit();
 }

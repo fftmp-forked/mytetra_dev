@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDebug>
 #include <QSettings>
 #include "../../libraries/Singleton.h"
 
@@ -7,7 +8,7 @@ class AppConfig : public Singleton<AppConfig> {
     friend class Singleton<AppConfig>;
   public:
 
-    ~AppConfig() { sync(); delete conf; }
+    ~AppConfig() { qInfo() << " APPCONFIG DTOR"; sync(); delete conf; }
 
     void init();
 

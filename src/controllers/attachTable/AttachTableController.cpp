@@ -37,6 +37,7 @@ AttachTableController::AttachTableController(QObject *parent, QObject *iMetaEdit
 }
 
 AttachTableController::~AttachTableController() {
+    qInfo() << "AttachTableController DTOR";
     delete view;
     delete model;
 }

@@ -6,7 +6,6 @@
 #include "DatabasesManagementScreen.h"
 #include "DatabasesManagementTable.h"
 #include "controllers/databasesManagement/DatabasesManagementController.h"
-#include "libraries/helpers/ActionHelper.h"
 
 DatabasesManagementScreen::DatabasesManagementScreen(QWidget *parent) : QDialog(parent) {
     // По факту этот класс - синглтон. Синглтон сам задает себе имя
@@ -35,11 +34,9 @@ DatabasesManagementScreen::DatabasesManagementScreen(QWidget *parent) : QDialog(
 
     // Создание тулбара
     auto toolBar = new QToolBar(this);
-    insertActionAsButton(toolBar, actionSelect);
-    insertActionAsButton(toolBar, actionCreate);
-    insertActionAsButton(toolBar, actionAdd);
+    toolBar->addActions({actionSelect, actionCreate, actionAdd});
     toolBar->addSeparator();
-    insertActionAsButton(toolBar, actionCopy);
+    toolBar->addAction(actionCopy);
 
     // Создание набора диалоговых кнопок
     auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Cancel, this);

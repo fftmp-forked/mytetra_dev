@@ -12,7 +12,6 @@
 #include <QTextList>
 #include <QWidget>
 
-#include "../../libraries/Singleton.h"
 #include "../../models/appConfig/AppConfig.h"
 #include "../record/MetaEditor.h"
 #include "../recordTable/RecordTableScreen.h"
@@ -21,12 +20,15 @@
 class FindScreen;
 class CommandRun;
 
-class MainWindow : public QMainWindow, public Singleton<MainWindow> {
+
+class MainWindow : public QMainWindow {
     Q_OBJECT
-    friend class Singleton<MainWindow>;
+  private:
+    MainWindow() = default;
   public:
-    virtual ~MainWindow();
+    ~MainWindow();
     void init();
+    static MainWindow & get();
 
     TreeScreen *treeScreen = nullptr;
     RecordTableScreen *recordTableScreen = nullptr;
@@ -40,9 +42,6 @@ class MainWindow : public QMainWindow, public Singleton<MainWindow> {
     void restoreEditorCursorPosition() { editorScreen->setCursorPosition(AppConfig::get().getEditorCursorPosition()); };
     void restoreEditorScrollBarPosition() { editorScreen->setScrollBarPosition(AppConfig::get().getEditorScrollBarPosition()); };
     void restoreFindOnBaseVisible();
-    void restoreAllWindowState();
-
-    void restoreDockableWindowsState();
 
     void setTreePosition(QStringList path);
 
@@ -105,6 +104,8 @@ class MainWindow : public QMainWindow, public Singleton<MainWindow> {
     void setupUI();
     void setupSignals();
     void assembly();
+    void restoreAllWindowState();
+    void restoreDockableWindowsState();
 
     void initFileMenu();
     void initToolsMenu();
@@ -152,5 +153,5 @@ class MainWindow : public QMainWindow, public Singleton<MainWindow> {
     void goWalkHistory();
 
     bool enableRealClose;
-    int exitCounter = 0;
+    bool got_close_event = false;
 };

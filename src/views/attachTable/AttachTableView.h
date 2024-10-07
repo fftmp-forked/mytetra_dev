@@ -13,7 +13,7 @@ class AttachTableView : public QTableView {
 
   public:
     AttachTableView(QWidget *parent = nullptr);
-
+    ~AttachTableView() { qInfo() << "AttachTableView DTOR"; }
     void init(void);
 
     void setController(AttachTableController *pController) { controller = pController; }

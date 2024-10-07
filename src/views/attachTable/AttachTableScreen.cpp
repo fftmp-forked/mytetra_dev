@@ -4,7 +4,6 @@
 #include "AttachTableView.h"
 #include "controllers/attachTable/AttachTableController.h"
 #include "libraries/ShortcutManager/ShortcutManager.h"
-#include "libraries/helpers/ActionHelper.h"
 
 AttachTableScreen::AttachTableScreen(QWidget *parent) : QWidget(parent) {
     // По факту этот класс - синглтон. Синглтон сам задает себе имя
@@ -18,7 +17,6 @@ AttachTableScreen::AttachTableScreen(QWidget *parent) : QWidget(parent) {
     attachTableController = new AttachTableController(this, parent);
     attachTableController->setObjectName("attachTableController");
 
-    setupUI();
     setupSignals();
     assembly();
 }
@@ -52,23 +50,19 @@ void AttachTableScreen::setupShortcuts(void) {
     ShortcutManager::get().initActions(ShortcutManager::SECTION_ATTACH, attachActions);
 }
 
-void AttachTableScreen::setupUI() {
-    // Создание тулбара
-    toolsLine = new QToolBar(this);
+QToolBar * AttachTableScreen::create_toolbar() {
+    auto toolsLine = new QToolBar();
 
     // Создание кнопок на тулбаре
-    insertActionAsButton(toolsLine, actionAddAttach);
-    insertActionAsButton(toolsLine, actionAddAttachFromUrl);
-    insertActionAsButton(toolsLine, actionAddLink);
-    insertActionAsButton(toolsLine, actionEditFileName);
-    insertActionAsButton(toolsLine, actionDeleteAttach);
-    insertActionAsButton(toolsLine, actionSaveAsAttach);
-    insertActionAsButton(toolsLine, actionOpenAttach);
-    insertActionAsButton(toolsLine, actionShowAttachInfo);
+    toolsLine->addActions(
+        {actionAddAttach, actionAddAttachFromUrl, actionAddLink, actionEditFileName,
+         actionDeleteAttach, actionSaveAsAttach, actionOpenAttach, actionShowAttachInfo}
+    );
 
     toolsLine->addSeparator();
 
-    insertActionAsButton(toolsLine, actionSwitchToEditor);
+    toolsLine->addAction(actionSwitchToEditor);
+    return toolsLine;
 }
 
 void AttachTableScreen::setupSignals(void) {
@@ -91,9 +85,9 @@ void AttachTableScreen::setupSignals(void) {
 
 void AttachTableScreen::assembly() {
 
-    auto screenLayout = new QVBoxLayout(this);
+    auto screenLayout = new QVBoxLayout();
 
-    screenLayout->addWidget(toolsLine);
+    screenLayout->addWidget(create_toolbar());
     screenLayout->addWidget(attachTableController->getView());
 
     setLayout(screenLayout);
