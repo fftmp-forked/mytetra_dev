@@ -33,7 +33,7 @@ MetaEditor::MetaEditor(QWidget *parent) : Editor(parent) {
     emit updateIndentSliderGeometry();
 }
 
-void MetaEditor::setupLabels(void) {
+void MetaEditor::setupLabels() {
     // Название записи
     recordName = new QLabel(this);
     recordName->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
@@ -66,7 +66,7 @@ void MetaEditor::setupLabels(void) {
     labelTags->setVisible(false);
 }
 
-void MetaEditor::setupUI(void) {
+void MetaEditor::setupUI() {
     // Область текстовых меток, которые выглядят на экране как [метка1] [метка2] [метка3] ...
     recordTagsLayout = new QHBoxLayout();
     recordTagsLayout->setAlignment(Qt::AlignLeft);
@@ -86,10 +86,10 @@ void MetaEditor::setupUI(void) {
     recordTagsScrollArea->setFrameShape(QFrame::NoFrame);                       // Убирается тонкая линия вокруг QScrollArea
     recordTagsScrollArea->setWidget(recordTagsContainer);
 
-    attachTableScreen = new AttachTableScreen(this);
+    attachTableScreen = new AttachTableScreen();
 }
 
-void MetaEditor::metaAssembly(void) {
+void MetaEditor::metaAssembly() {
     // Сборка виджета редактирования текста (основной виджет)
     editorMainScreen = new QWidget(this);
     editorMainLayer = new QGridLayout(editorMainScreen);
@@ -120,26 +120,24 @@ void MetaEditor::metaAssembly(void) {
     this->setLayout(metaEditorJoinLayer);
 
     // Границы убираются, так как данный объект будет использоваться как виджет
-    QLayout *lt;
-    lt = layout();
-    lt->setContentsMargins(0, 2, 0, 0);
+    layout()->setContentsMargins(0, 2, 0, 0);
 
     // По-умолчанию отображается слой редактирования
     switchToEditorLayout();
 }
 
-void MetaEditor::switchToEditorLayout(void) {
+void MetaEditor::switchToEditorLayout() {
     attachTableScreen->hide(); // Чтобы не было мерцания, вначале нужно делать сокрытие текущего виджета
     editorMainScreen->show();
 }
 
-void MetaEditor::switchToAttachLayout(void) {
+void MetaEditor::switchToAttachLayout() {
     editorMainScreen->hide();
     attachTableScreen->show();
 }
 
 // Статическая функция, обрабатывает клик в редакторе по кнопке переключения на список прикрепляемых файлов
-void MetaEditor::toAttachCallback(void) {
+void MetaEditor::toAttachCallback() {
     // Так как функция статическая, у нее нет this-указателя на объект данного класса, его нужно получить поиском
     MetaEditor *edView = find_object<MetaEditor>("editorScreen");
     edView->switchToAttachLayout();
@@ -159,7 +157,7 @@ void MetaEditor::setField(QString n, QString v) {
         criticalError("metaeditor.set_field Undestand field " + n + " with value " + v);
 }
 
-void MetaEditor::clearAll(void) {
+void MetaEditor::clearAll() {
     qDebug() << "MetaEditor::clearAll()";
 
     // Очистка для слоя редактора

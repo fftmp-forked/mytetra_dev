@@ -18,7 +18,7 @@ class MetaEditor : public Editor {
   public slots:
 
     void setField(QString n, QString v);
-    void clearAll(void);
+    void clearAll();
     void onClickToTag(const QString &text);
 
   signals:
@@ -27,7 +27,6 @@ class MetaEditor : public Editor {
 
   public:
     MetaEditor(QWidget *parent = nullptr);
-    ~MetaEditor(void){};
 
     void setName(QString name);
     void setAuthor(QString author);
@@ -35,19 +34,19 @@ class MetaEditor : public Editor {
     void setTags(QString tags);
     void setFindScreenSignal(FindScreen *findScreenObj);
 
-    static void toAttachCallback(void);
+    static void toAttachCallback();
 
-    void switchToEditorLayout(void);
-    void switchToAttachLayout(void);
+    void switchToEditorLayout();
+    void switchToAttachLayout();
 
     void setReadOnly(bool state);
 
     void setFocusToBaseWidget();
 
   private:
-    void setupLabels(void);
-    void setupUI(void);
-    void metaAssembly(void);
+    void setupLabels();
+    void setupUI();
+    void metaAssembly();
 
     QLabel *recordName;   // Надпись Title
     QLabel *recordAuthor; // Надпись Author(s)

@@ -2,6 +2,7 @@
 
 #include "EditorToolBar.h"
 #include <QWidget>
+#include <qtextformat.h>
 
 
 class Editor;
@@ -16,7 +17,6 @@ class EditorToolBarAssistant : public EditorToolBar {
 
   public:
     EditorToolBarAssistant(QWidget *parent, EditorTextArea *iTextArea, QStringList iDisableToolList);
-    ~EditorToolBarAssistant();
 
     void reload();
 
@@ -26,7 +26,7 @@ class EditorToolBarAssistant : public EditorToolBar {
     // Параметр -1 - выключить полную видимость
     void switchExpandToolsLines(int flag = 0);
 
-    void updateToActualFormat(void);
+    void updateToActualFormat();
     void setOutlineButtonHiglight(int button, bool active);
     void setShowFormattingButtonHiglight(bool active);
     bool isKeyForToolLineUpdate(QKeyEvent *event);
@@ -50,22 +50,22 @@ class EditorToolBarAssistant : public EditorToolBar {
 
   signals:
 
-    void updateIndentSliderGeometry(void);
+    void updateIndentSliderGeometry();
     void changeIndentSliderVisible(bool);
 
   public slots:
 
-    void onExpandToolsLinesClicked(void);
+    void onExpandToolsLinesClicked() { switchExpandToolsLines(); };
     void onUpdateAlignButtonHiglight(bool activate);
-    void onUpdateOutlineButtonHiglight(void);
+    void onUpdateOutlineButtonHiglight();
     void onChangeFontselectOnDisplay(QString fontName);
     void onChangeFontsizeOnDisplay(int n);
-    void onChangeFontFamily(QString fontFamily);
-    void onChangeFontPointSize(int n);
+    void onChangeFontFamily(QString fontFamily) {currentFontFamily = fontFamily; };
+    void onChangeFontPointSize(int n) { currentFontSize = n; };
     void onChangeFontcolor(const QColor &color);
-    void onChangeIconFontColor(const QTextCharFormat &format);
+    void onChangeIconFontColor(const QTextCharFormat &format) { onChangeFontcolor(format.foreground().color()); };
     void onChangeBackgroundColor(const QColor &color);
-    void onChangeIconBackgroundColor(const QTextCharFormat &format);
+    void onChangeIconBackgroundColor(const QTextCharFormat &format) { onChangeBackgroundColor(format.background().color()); };
     void onCursorPositionChanged(); // Слот, вызываемый при изменение позиции курсора
 
   protected:

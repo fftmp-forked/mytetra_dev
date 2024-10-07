@@ -17,7 +17,7 @@
 EditorToolBarAssistant::EditorToolBarAssistant(QWidget *parent,
                                                EditorTextArea *iTextArea,
                                                QStringList iDisableToolList) : EditorToolBar(parent) {
-    if (parent == nullptr)
+    if (!parent)
         criticalError("Call " + QString(__FUNCTION__) + " with NULL of parent.");
 
     editor = qobject_cast<Editor *>(parent);
@@ -28,9 +28,9 @@ EditorToolBarAssistant::EditorToolBarAssistant(QWidget *parent,
     flagSetFontParametersEnabled = true;
 
     // Настройка списков кнопок на панелях инструментов редактора
-    this->init(iDisableToolList);
+    init(iDisableToolList);
 
-    this->setupSignals();
+    setupSignals();
 
     // Устанавливается состояние распахнута или нет панель инструментов
     if (editor->editorConfig->get_expand_tools_lines())
@@ -39,12 +39,9 @@ EditorToolBarAssistant::EditorToolBarAssistant(QWidget *parent,
         switchExpandToolsLines(-1);
 }
 
-EditorToolBarAssistant::~EditorToolBarAssistant() {
-}
-
 void EditorToolBarAssistant::init(const QStringList &iDisableToolList) {
     // Установка списков инструментов, считываемых из конфига
-    this->initToolsLists(iDisableToolList);
+    initToolsLists(iDisableToolList);
 
     // Инициализация панели инструментов, согласно установленным спискам инструментов
     EditorToolBar::init();
@@ -56,7 +53,7 @@ void EditorToolBarAssistant::initToolsLists(const QStringList &iDisableToolList)
     EditorToolBar::initDisableToolList(iDisableToolList);
 
     // Выясняется перечень кнопок в первой строке на панели инструментов
-    QStringList toolsList = editor->editorConfig->get_tools_line_1().split(",");
+    auto toolsList = editor->editorConfig->get_tools_line_1().split(",");
 
     // Устанавливается перечень кнопок на панели инструментов
     EditorToolBar::initToolsLine1(toolsList);                                           // Первая строка
@@ -69,7 +66,7 @@ void EditorToolBarAssistant::reload() {
 
     // Из слоя с виджетами линеек панели инструментов убираются все виджеты (тулбары)
     QLayoutItem *item;
-    while ((item = textformatButtonsLayout.takeAt(0)) != nullptr) {
+    while ((item = textformatButtonsLayout.takeAt(0))) {
         textformatButtonsLayout.removeItem(item);
     }
 
@@ -90,7 +87,7 @@ void EditorToolBarAssistant::setupSignals() {
 
 // Метод только меняет значение, показываемое списком шрифтов
 void EditorToolBarAssistant::onChangeFontselectOnDisplay(QString fontName) {
-    if (flagSetFontParametersEnabled == false)
+    if (!flagSetFontParametersEnabled)
         return;
 
     flagSetFontParametersEnabled = false;
@@ -110,11 +107,12 @@ void EditorToolBarAssistant::onChangeFontselectOnDisplay(QString fontName) {
             // Иначе шрифт с указанным названием не найден в списке шрифтов,
             // и надо попробовать выставить комбобоксе стандартный похожий шрифт
 
-            QList<QPair<QString, QString>> sameFonts;
-            sameFonts << QPair<QString, QString>("Sans Serif", "MS Sans Serif");
-            sameFonts << QPair<QString, QString>("Sans Serif", "Microsoft Sans Serif");
-            sameFonts << QPair<QString, QString>("MS Sans Serif", "Sans Serif");
-            sameFonts << QPair<QString, QString>("Microsoft Sans Serif", "Sans Serif");
+            QList<QPair<QString, QString>> sameFonts = {
+                {"Sans Serif", "MS Sans Serif"},
+                {"Sans Serif", "Microsoft Sans Serif"},
+                {"MS Sans Serif", "Sans Serif"},
+                {"Microsoft Sans Serif", "Sans Serif"}
+            };
 
             // Перебираются пары похожих шрифтов
             for (auto currentFontPair = sameFonts.cbegin(); currentFontPair != sameFonts.cend(); ++currentFontPair) {
@@ -154,18 +152,10 @@ void EditorToolBarAssistant::onChangeFontsizeOnDisplay(int n) {
     flagSetFontParametersEnabled = true;
 }
 
-void EditorToolBarAssistant::onChangeFontFamily(QString fontFamily) {
-    currentFontFamily = fontFamily;
-}
-
-void EditorToolBarAssistant::onChangeFontPointSize(int n) {
-    currentFontSize = n;
-}
-
 // Изменение цвета иконки выделения цвета шрифта
 void EditorToolBarAssistant::onChangeFontcolor(const QColor &color) {
     // Формат символов под курсором
-    QTextCharFormat textAreaFormat = textArea->currentCharFormat();
+    auto textAreaFormat = textArea->currentCharFormat();
 
     // Есть ли ForegroundBrush под курсором
     bool hasForegroundBrush = textAreaFormat.hasProperty(QTextFormat::ForegroundBrush);
@@ -185,12 +175,6 @@ void EditorToolBarAssistant::onChangeFontcolor(const QColor &color) {
     fontColor->setIcon(drawIconOverColor(fillColor, QIcon(":/resource/pic/edit_fontcolor.svg")));
 }
 
-// Изменение цвета иконки цвета шрифта, в зависимости от положения курсора
-void EditorToolBarAssistant::onChangeIconFontColor(const QTextCharFormat &format) {
-    QColor color = format.foreground().color();
-    onChangeFontcolor(color);
-}
-
 // Изменение цвета иконки для фона текста
 void EditorToolBarAssistant::onChangeBackgroundColor(const QColor &color) {
     // Формат символов под курсором
@@ -208,15 +192,15 @@ void EditorToolBarAssistant::onChangeBackgroundColor(const QColor &color) {
         fillColor = color;
     } else {
         // Проверка, есть ли таблица под курсором и/или подключены стили из stylesheet.css
-        QTextCursor txtCursor = textArea->textCursor();
-        QTextTable *textTable = txtCursor.currentTable();
+        auto txtCursor = textArea->textCursor();
+        auto textTable = txtCursor.currentTable();
         if (textTable != nullptr) {
             // Если курсор находится в таблице
-            QTextTableFormat textTableFormat = textTable->format();
-            QTextTableCell tableCell = textTable->cellAt(txtCursor);
-            QTextCharFormat tableCellFormat = tableCell.format();
-            QColor tableColor = textTableFormat.background().color();
-            QColor charColor = tableCellFormat.background().color();
+            auto textTableFormat = textTable->format();
+            auto tableCell = textTable->cellAt(txtCursor);
+            auto tableCellFormat = tableCell.format();
+            auto tableColor = textTableFormat.background().color();
+            auto charColor = tableCellFormat.background().color();
 
             // Есть ли BackgroundBrush в таблице под курсором
             bool hasTableBackgroundBrush = textTableFormat.hasProperty(QTextFormat::BackgroundBrush);
@@ -250,12 +234,6 @@ void EditorToolBarAssistant::onChangeBackgroundColor(const QColor &color) {
     }
 
     backgroundColor->setIcon(drawIconOverColor(fillColor, QIcon(":/resource/pic/edit_fontbackgroundcolor.svg")));
-}
-
-// Изменение цвета иконки выделения фона текста, в зависимости от положения курсора
-void EditorToolBarAssistant::onChangeIconBackgroundColor(const QTextCharFormat &format) {
-    QColor color = format.background().color();
-    onChangeBackgroundColor(color);
 }
 
 QPixmap EditorToolBarAssistant::drawIconOverColor(const QColor &fillColor, const QIcon &icon) const {
@@ -304,7 +282,7 @@ void EditorToolBarAssistant::onUpdateAlignButtonHiglight(bool activate) {
 }
 
 // Обновление подсветки клавиш начертания текста
-void EditorToolBarAssistant::onUpdateOutlineButtonHiglight(void) {
+void EditorToolBarAssistant::onUpdateOutlineButtonHiglight() {
     bold->setChecked(false);
     italic->setChecked(false);
     underline->setChecked(false);
@@ -314,9 +292,9 @@ void EditorToolBarAssistant::onUpdateOutlineButtonHiglight(void) {
 
     if (textArea->fontWeight() == QFont::Bold)
         bold->setChecked(true);
-    if (textArea->fontItalic() == true)
+    if (textArea->fontItalic())
         italic->setChecked(true);
-    if (textArea->fontUnderline() == true)
+    if (textArea->fontUnderline())
         underline->setChecked(true);
     if (textArea->textCursor().charFormat().fontStrikeOut())
         strikeout->setChecked(true);
@@ -330,58 +308,17 @@ void EditorToolBarAssistant::onUpdateOutlineButtonHiglight(void) {
 }
 
 void EditorToolBarAssistant::setOutlineButtonHiglight(int button, bool active) {
-    if (button == BT_BOLD) {
-        if (active == false)
-            bold->setChecked(false);
-        else
-            bold->setChecked(true);
-        return;
-    }
-
-    if (button == BT_ITALIC) {
-        if (active == false)
-            italic->setChecked(false);
-        else
-            italic->setChecked(true);
-        return;
-    }
-
-    if (button == BT_UNDERLINE) {
-        if (active == false)
-            underline->setChecked(false);
-        else
-            underline->setChecked(true);
-        return;
-    }
-
-    if (button == BT_STRIKEOUT) {
-        if (active == false)
-            strikeout->setChecked(false);
-        else
-            strikeout->setChecked(true);
-        return;
-    }
-
-    if (button == BT_SUPERSCRIPT) {
-        if (active == false)
-            superscript->setChecked(false);
-        else
-            superscript->setChecked(true);
-        return;
-    }
-
-    if (button == BT_SUBSCRIPT) {
-        if (active == false)
-            subscript->setChecked(false);
-        else
-            subscript->setChecked(true);
-        return;
-    }
+         if (button == BT_BOLD) bold->setChecked(active);
+    else if (button == BT_ITALIC) italic->setChecked(active);
+    else if (button == BT_UNDERLINE) underline->setChecked(active);
+    else if (button == BT_STRIKEOUT) strikeout->setChecked(active);
+    else if (button == BT_SUPERSCRIPT) superscript->setChecked(active);
+    else if (button == BT_SUBSCRIPT) subscript->setChecked(active);
 }
 
-void EditorToolBarAssistant::updateToActualFormat(void) {
+void EditorToolBarAssistant::updateToActualFormat() {
     // Текущий шрифт позиции, где находится курсор
-    QString actualFontFamily = editor->smartFontFamily(textArea->fontFamily());
+    auto actualFontFamily = editor->smartFontFamily(textArea->fontFamily());
     if (currentFontFamily != actualFontFamily)
         onChangeFontselectOnDisplay(actualFontFamily);
 
@@ -398,10 +335,6 @@ void EditorToolBarAssistant::updateToActualFormat(void) {
     onUpdateAlignButtonHiglight(true);
 }
 
-void EditorToolBarAssistant::onExpandToolsLinesClicked(void) {
-    switchExpandToolsLines();
-}
-
 // Метод, переключающий состояние видимости полной панели инструментов
 // Если вызывается без параметра (по умолчанию 0), метод сам переключает
 // Параметр 1 - включить полную видимость
@@ -412,11 +345,7 @@ void EditorToolBarAssistant::switchExpandToolsLines(int flag) {
     // Если метод был вызван без параметра
     if (flag == 0) {
         bool is_expand = editor->editorConfig->get_expand_tools_lines();
-
-        if (is_expand)
-            setFlag = false; // Если панель инструментов распахнута, надо сомкнуть
-        else
-            setFlag = true; // Иначе распахнуть
+        setFlag = !is_expand; // Если панель инструментов распахнута, надо сомкнуть, иначе распахнуть
     } else {
         // Иначе метод вызывался с каким-то параметром
         if (flag == 1)
