@@ -15,7 +15,6 @@
 
 #include "FindScreen.h"
 #include "FindTableWidget.h"
-#include "libraries/helpers/CssHelper.h"
 #include "libraries/helpers/ObjectHelper.h"
 #include "models/appConfig/AppConfig.h"
 #include "models/tree/KnowTreeModel.h"
@@ -163,61 +162,38 @@ void FindScreen::assemblyWhereFindLine(void) {
 
 void FindScreen::setupSignals(void) {
     // При каждом изменении текста в строке запроса
-    connect(findText, &QLineEdit::textChanged,
-            this, &FindScreen::enableFindButton);
+    connect(findText, &QLineEdit::textChanged, this, &FindScreen::enableFindButton);
 
     // При каждом изменении текста извне может вырабатыватся этот сигнал
     // Он вырабатывается в слоте setFindText()
-    connect(this, &FindScreen::textChangedFromAnother,
-            this, &FindScreen::enableFindButton);
+    connect(this, &FindScreen::textChangedFromAnother, this, &FindScreen::enableFindButton);
 
     // При нажатии Enter в строке запроса
-    connect(findText, &QLineEdit::returnPressed,
-            this, &FindScreen::findClicked);
+    connect(findText, &QLineEdit::returnPressed, this, &FindScreen::findClicked);
 
     // При нажатии кнопки Find
-    connect(findStartButton, &QPushButton::clicked,
-            this, &FindScreen::findClicked);
+    connect(findStartButton, &QPushButton::clicked, this, &FindScreen::findClicked);
 
     // При нажатии кнопки разворачивания/сворачивания инструментов поиска
-    connect(toolsExpand, &QToolButton::clicked,
-            this, &FindScreen::toolsExpandClicked);
+    connect(toolsExpand, &QToolButton::clicked, this, &FindScreen::toolsExpandClicked);
 
     // После установки текста извне, вырабатывается этот сигнал
-    connect(this, &FindScreen::findClickedAfterAnotherTextChanged,
-            this, &FindScreen::findClicked);
+    connect(this, &FindScreen::findClickedAfterAnotherTextChanged, this, &FindScreen::findClicked);
 
     // При нажатии кнопки закрытия
-    connect(closeButton, &QToolButton::clicked,
-            this, &FindScreen::widgetHide);
+    connect(closeButton, &QToolButton::clicked, this, &FindScreen::widgetHide);
 
     // Сигналы для запоминания состояния интерфейса
-    connect(wordRegard, qOverload<int>(&QComboBox::currentIndexChanged),
-            this, &FindScreen::changedWordRegard);
+    connect(wordRegard, qOverload<int>(&QComboBox::currentIndexChanged), this, &FindScreen::changedWordRegard);
 
-    connect(howExtract, qOverload<int>(&QComboBox::currentIndexChanged),
-            this, &FindScreen::changedHowExtract);
-
-    connect(treeSearchArea, qOverload<int>(&QComboBox::currentIndexChanged),
-            this, &FindScreen::changedTreeSearchArea);
-
-    connect(findInName, &QCheckBox::stateChanged,
-            this, &FindScreen::changedFindInName);
-
-    connect(findInAuthor, &QCheckBox::stateChanged,
-            this, &FindScreen::changedFindInAuthor);
-
-    connect(findInUrl, &QCheckBox::stateChanged,
-            this, &FindScreen::changedFindInUrl);
-
-    connect(findInTags, &QCheckBox::stateChanged,
-            this, &FindScreen::changedFindInTags);
-
-    connect(findInText, &QCheckBox::stateChanged,
-            this, &FindScreen::changedFindInText);
-
-    connect(findInNameItem, &QCheckBox::stateChanged,
-            this, &FindScreen::changedFindInNameItem);
+    connect(howExtract, qOverload<int>(&QComboBox::currentIndexChanged), this, &FindScreen::changedHowExtract);
+    connect(treeSearchArea, qOverload<int>(&QComboBox::currentIndexChanged), this, &FindScreen::changedTreeSearchArea);
+    connect(findInName, &QCheckBox::checkStateChanged, this, &FindScreen::changedFindInName);
+    connect(findInAuthor, &QCheckBox::checkStateChanged, this, &FindScreen::changedFindInAuthor);
+    connect(findInUrl, &QCheckBox::checkStateChanged, this, &FindScreen::changedFindInUrl);
+    connect(findInTags, &QCheckBox::checkStateChanged, this, &FindScreen::changedFindInTags);
+    connect(findInText, &QCheckBox::checkStateChanged, this, &FindScreen::changedFindInText);
+    connect(findInNameItem, &QCheckBox::checkStateChanged, this, &FindScreen::changedFindInNameItem);
 }
 
 void FindScreen::setupUI(void) {

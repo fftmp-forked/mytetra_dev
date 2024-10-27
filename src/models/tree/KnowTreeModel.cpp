@@ -34,15 +34,13 @@ QDomDocument * KnowTreeModel::read_xml_file(QString file) {
 
     auto d = new QDomDocument();
 
-    QString errorStr;
-    int errorLine;
-    int errorColumn;
-    if (!d->setContent(&xmlFile, true, &errorStr, &errorLine, &errorColumn)) {
+    auto res = d->setContent(&xmlFile);
+    if(!res) {
         QMessageBox::information(nullptr, tr("Error converting to DOM"),
                                  tr("Parse error at line %1, column %2:\n%3")
-                                     .arg(errorLine)
-                                     .arg(errorColumn)
-                                     .arg(errorStr));
+                                     .arg(res.errorLine)
+                                     .arg(res.errorColumn)
+                                     .arg(res.errorMessage));
         delete d;
         return nullptr;
     }
