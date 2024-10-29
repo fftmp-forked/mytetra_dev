@@ -36,11 +36,8 @@ void EditorFindDialog::setup_ui(void) {
 }
 
 void EditorFindDialog::setup_signals(void) {
-    connect(lineEdit, &QLineEdit::textChanged,
-            this, &EditorFindDialog::enable_find_button);
-
-    connect(findButton, &QPushButton::clicked,
-            this, &EditorFindDialog::find_clicked);
+    connect(lineEdit, &QLineEdit::textChanged, this, &EditorFindDialog::enable_find_button);
+    connect(findButton, &QPushButton::clicked, this, &EditorFindDialog::find_clicked);
 }
 
 void EditorFindDialog::assembly(void) {

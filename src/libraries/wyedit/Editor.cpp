@@ -886,10 +886,7 @@ void Editor::onSelectionChanged() {
         editorToolBarAssistant->setOutlineButtonHiglight(EditorToolBarAssistant::BT_STRIKEOUT, true);
 
     // Кнопки выравнивания
-    if (differentAlignFlag == true)
-        emit updateAlignButtonHiglight(false);
-    else
-        emit updateAlignButtonHiglight(true);
+    emit updateAlignButtonHiglight(!differentAlignFlag);
 }
 
 // Слот вызывается при каждом перемещении курсора
@@ -938,11 +935,8 @@ void Editor::onCut() {
 }
 
 void Editor::onCopy() {
-    // qDebug() << "Editor::onCopy()" << sender()->objectName() << sender()->metaObject()->className();
-    // qDebug() << "Editor::onCopy() textArea has focus:" << textArea->hasFocus();
-
     // Если текущий виджет не основной виджет редактирования текста
-    if (textArea->hasFocus() == false) {
+    if (!textArea->hasFocus()) {
 
         QWidget *focusWidget = qApp->focusWidget(); // Выясняется, какой виджет выбран
 
@@ -1079,14 +1073,9 @@ void Editor::onShowformattingClicked(bool ok) {
     textArea->setShowFormatting(ok);
 }
 
-void Editor::onExpandEditAreaClicked(void) {
-    if (expandEditAreaFlag == false) {
-        expandEditAreaFlag = true;
-        emit send_expand_edit_area(expandEditAreaFlag);
-    } else {
-        expandEditAreaFlag = false;
-        emit send_expand_edit_area(expandEditAreaFlag);
-    }
+void Editor::onExpandEditAreaClicked() {
+    expandEditAreaFlag = !expandEditAreaFlag;
+    emit send_expand_edit_area(expandEditAreaFlag);
 }
 
 void Editor::onSaveClicked() {
