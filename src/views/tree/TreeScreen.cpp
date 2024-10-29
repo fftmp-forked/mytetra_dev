@@ -510,10 +510,7 @@ void TreeScreen::delBranch(QString mode) {
         text = tr("Are you sure you wish to cut item <b>") + branchesName.join(", ") + tr("</b> and all sub items?");
         del_button = tr("Cut");
 
-        if (AppConfig::get().get_cutbranchconfirm())
-            enable_question = true;
-        else
-            enable_question = false;
+        enable_question = AppConfig::get().get_cutbranchconfirm();
     }
 
     bool enable_del = true;
@@ -525,10 +522,7 @@ void TreeScreen::delBranch(QString mode) {
         QAbstractButton *deleteButton = messageBox.addButton(del_button, QMessageBox::AcceptRole);
         messageBox.exec();
 
-        if (messageBox.clickedButton() == deleteButton)
-            enable_del = true;
-        else
-            enable_del = false;
+        enable_del = (messageBox.clickedButton() == deleteButton);
     }
 
     // Если удаление подтверждено

@@ -41,7 +41,7 @@ class MetaEditor : public Editor {
 
     void setReadOnly(bool state);
 
-    void setFocusToBaseWidget();
+    void setFocusToBaseWidget() { textArea->setFocus(); };
 
   private:
     void setupLabels();

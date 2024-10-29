@@ -152,11 +152,11 @@ void EditorTextArea::paintEvent(QPaintEvent *event) {
     QTextEdit::paintEvent(event);
 
     // В заблокированном виджете ничего дополнительного не рисуется
-    if (isEnabled() == false)
+    if (!isEnabled())
         return;
 
     // Если нужно нарисовать линию какого-нибудь отступа
-    if (flagShowIndentEdge == true) {
+    if (flagShowIndentEdge) {
         QPainter p(viewport());
         p.setRenderHint(QPainter::Antialiasing, false);
 
@@ -164,12 +164,11 @@ void EditorTextArea::paintEvent(QPaintEvent *event) {
         pen.setStyle(Qt::SolidLine);
         p.setPen(pen);
 
-        p.drawLine(posIndentEdge, 1,
-                   posIndentEdge, this->height() - 1);
+        p.drawLine(posIndentEdge, 1, posIndentEdge, this->height() - 1);
     }
 
     // Если символы форматирования не нужно рисовать
-    if (flagShowFormatting == false)
+    if (!flagShowFormatting)
         return;
 
     // Начало области поиска

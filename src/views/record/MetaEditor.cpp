@@ -264,8 +264,7 @@ void MetaEditor::setTags(QString tags) {
 
         // Клик по метке будет вызывать сигнал, слот будет принимать Url метки,
         // то есть в данном случае строку с номером метки
-        connect(tempLabel, &QLabel::linkActivated,
-                this, &MetaEditor::onClickToTag);
+        connect(tempLabel, &QLabel::linkActivated, this, &MetaEditor::onClickToTag);
 
         // Метка запоминается в список меток
         recordTagsLabels << tempLabel;
@@ -327,8 +326,4 @@ void MetaEditor::setReadOnly(bool state) {
 
     // Слой прикрепленных файлов
     attachTableScreen->setReadOnly(state);
-}
-
-void MetaEditor::setFocusToBaseWidget() {
-    textArea->setFocus();
 }

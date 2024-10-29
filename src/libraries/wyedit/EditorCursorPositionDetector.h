@@ -8,8 +8,6 @@ class EditorTextArea;
 class EditorCursorPositionDetector {
 
   public:
-    EditorCursorPositionDetector(){};
-
     void setTextArea(EditorTextArea *iTextArea) { textArea = iTextArea; }
 
     bool isCursorOnImage();
