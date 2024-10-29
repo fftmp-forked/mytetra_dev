@@ -59,14 +59,14 @@ void EditorTextArea::keyReleaseEvent(QKeyEvent *event) {
     QTextEdit::keyReleaseEvent(event);
 }
 
-// Слот принимает глобальные нажатия клавиш. Это позволяет отслеживать нажатия даже если виджет неактивени (не в фокусе)
+// Слот принимает глобальные нажатия клавиш. Это позволяет отслеживать нажатия даже если виджет неактивен (не в фокусе)
 void EditorTextArea::onGlobalPressKey(int key) {
     // Если нажата клавиша Ctrl
     if (key == Qt::Key_Control)
         switchReferenceClickMode(true);
 }
 
-// Слот принимает глобальные отжатия клавиш. Это позволяет отслеживать отжатия даже если виджет неактивени (не в фокусе)
+// Слот принимает глобальные отжатия клавиш. Это позволяет отслеживать отжатия даже если виджет неактивен (не в фокусе)
 void EditorTextArea::onGlobalReleaseKey(int key) {
     // Если отжата клавиша Ctrl
     if (key == Qt::Key_Control)
@@ -114,7 +114,7 @@ void EditorTextArea::mouseMoveEvent(QMouseEvent *event) {
             }
         } else {
             if (mouseCursorOverriden) {
-                qApp->restoreOverrideCursor(); // Воостанавливается обычный курсор
+                qApp->restoreOverrideCursor(); // Восстанавливается обычный курсор
                 mouseCursorOverriden = false;
                 GlobalParameters::get().getStatusBar()->showMessage("");
             }

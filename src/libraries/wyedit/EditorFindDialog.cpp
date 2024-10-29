@@ -115,7 +115,7 @@ void EditorFindDialog::showEvent(QShowEvent *event) {
         // int h=geometry_split.at(3).toInt();
         this->move(x, y);
     } else
-        qDebug() << "Previos geometry of find dialog is not setted";
+        qDebug() << "Previous geometry of find dialog is not set";
 
     QWidget::showEvent(event);
 }
