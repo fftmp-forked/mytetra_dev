@@ -20,7 +20,7 @@ EditorFindDialog::EditorFindDialog(QWidget *parent) : QDialog(parent) {
     EditorFindDialog::showEvent(&event);
 }
 
-void EditorFindDialog::setup_ui(void) {
+void EditorFindDialog::setup_ui() {
     lineEdit = new QLineEdit();
     lineEdit->setMinimumWidth(120);
 
@@ -35,12 +35,12 @@ void EditorFindDialog::setup_ui(void) {
     this->setWindowTitle(tr("Find in the text"));
 }
 
-void EditorFindDialog::setup_signals(void) {
+void EditorFindDialog::setup_signals() {
     connect(lineEdit, &QLineEdit::textChanged, this, &EditorFindDialog::enable_find_button);
     connect(findButton, &QPushButton::clicked, this, &EditorFindDialog::find_clicked);
 }
 
-void EditorFindDialog::assembly(void) {
+void EditorFindDialog::assembly() {
     auto findLineLayout = new QHBoxLayout();
     findLineLayout->addWidget(lineEdit);
     findLineLayout->addWidget(findButton);
@@ -57,7 +57,7 @@ void EditorFindDialog::assembly(void) {
 }
 
 // Действия при нажатии кнопки Find
-void EditorFindDialog::find_clicked(void) {
+void EditorFindDialog::find_clicked() {
     QString text = lineEdit->text();
 
     QTextDocument::FindFlags flags;

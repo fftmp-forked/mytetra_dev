@@ -10,7 +10,7 @@
 #include "EditorTextArea.h"
 
 // Проверка, находится ли курсор на позиции, где находится картинка
-bool EditorCursorPositionDetector::isCursorOnImage(void) {
+bool EditorCursorPositionDetector::isCursorOnImage() {
     // Проверка срабатывает только если нет выделения
     if (textArea->textCursor().hasSelection() == false) {
         QTextImageFormat imageFormat = textArea->textCursor().charFormat().toImageFormat();
@@ -23,7 +23,7 @@ bool EditorCursorPositionDetector::isCursorOnImage(void) {
 }
 
 /// @brief Метод, определяющий, выбрана ли только одна картинка
-bool EditorCursorPositionDetector::isImageSelect(void) {
+bool EditorCursorPositionDetector::isImageSelect() {
     QTextImageFormat format = getImageSelectFormat();
 
     if (format.isImageFormat() && format.isValid() && format.name().size() > 0) {
@@ -34,7 +34,7 @@ bool EditorCursorPositionDetector::isImageSelect(void) {
 }
 
 /// @brief Метод, получающий информацию о выбранной выделением одной картинке
-QTextImageFormat EditorCursorPositionDetector::getImageSelectFormat(void) {
+QTextImageFormat EditorCursorPositionDetector::getImageSelectFormat() {
     // Происходит анализ, выделена ли картинка
 
     // Блок, в пределах которого находится курсор
@@ -71,7 +71,7 @@ QTextImageFormat EditorCursorPositionDetector::getImageSelectFormat(void) {
 }
 
 // Где находится картинка относительно курсора (-1 - слева, 0 - курсор не на картинке, 1 - справа)
-int EditorCursorPositionDetector::whereImageAtCursor(void) {
+int EditorCursorPositionDetector::whereImageAtCursor() {
     if (isCursorOnImage() == false) {
         return 0;
     }
@@ -87,7 +87,7 @@ int EditorCursorPositionDetector::whereImageAtCursor(void) {
 }
 
 // Проверка, находится ли курсор на позиции, где находится математическое выражение (формула)
-bool EditorCursorPositionDetector::isCursorOnMathExpression(void) {
+bool EditorCursorPositionDetector::isCursorOnMathExpression() {
     // Если курсор не находится возле картинки
     if (!isCursorOnImage()) {
         return false;
@@ -99,7 +99,7 @@ bool EditorCursorPositionDetector::isCursorOnMathExpression(void) {
 }
 
 // Проверка, выделено ли математическое выражение (формула)
-bool EditorCursorPositionDetector::isMathExpressionSelect(void) {
+bool EditorCursorPositionDetector::isMathExpressionSelect() {
     // Если картинка не выделена
     if (!isImageSelect()) {
         return false;
@@ -124,7 +124,7 @@ bool EditorCursorPositionDetector::isMathExpressionSmartDetect(QString &resource
     return false;
 }
 
-bool EditorCursorPositionDetector::isCursorOnSpaceLine(void) {
+bool EditorCursorPositionDetector::isCursorOnSpaceLine() {
     // Если есть выделение, функция работать не должна
     if (textArea->textCursor().hasSelection())
         return false;
@@ -146,7 +146,7 @@ bool EditorCursorPositionDetector::isCursorOnSpaceLine(void) {
 
 // Стоит ли курсор на пустой строке (т.е. в строке есть только символ
 // перевода на новую строку)
-bool EditorCursorPositionDetector::isCursorOnEmptyLine(void) {
+bool EditorCursorPositionDetector::isCursorOnEmptyLine() {
     if (!textArea->textCursor().atBlockStart())
         return false;
 
@@ -167,7 +167,7 @@ bool EditorCursorPositionDetector::isCursorOnEmptyLine(void) {
 
 // Выбран ли блок текста (т.е. находятся ли начало и конец выделения
 // точно на границах блока)
-bool EditorCursorPositionDetector::isBlockSelect(void) {
+bool EditorCursorPositionDetector::isBlockSelect() {
     // Выясняются позиции начала и конца выделения
     int start = textArea->textCursor().selectionStart();
     int stop = textArea->textCursor().selectionEnd();
@@ -191,13 +191,13 @@ bool EditorCursorPositionDetector::isBlockSelect(void) {
 }
 
 // Проверка, находится ли курсор на ссылке
-bool EditorCursorPositionDetector::isCursorOnReference(void) {
+bool EditorCursorPositionDetector::isCursorOnReference() {
     QString href = "";
     return isCursorOnReferenceSmart(href);
 }
 
 // Текст ссылки, на которой стоит курсор
-QString EditorCursorPositionDetector::referenceHref(void) {
+QString EditorCursorPositionDetector::referenceHref() {
     QString href = "";
 
     if (isCursorOnReferenceSmart(href))

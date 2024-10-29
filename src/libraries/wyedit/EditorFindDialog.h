@@ -18,7 +18,7 @@ class EditorFindDialog : public QDialog {
     void find_text(const QString &text, QTextDocument::FindFlags flags);
 
   private slots:
-    void find_clicked(void);
+    void find_clicked();
     void enable_find_button(const QString &text);
 
   private:
@@ -28,9 +28,9 @@ class EditorFindDialog : public QDialog {
     QCheckBox *searchBackward;
     QPushButton *findButton;
 
-    void setup_ui(void);
-    void setup_signals(void);
-    void assembly(void);
+    void setup_ui();
+    void setup_signals();
+    void assembly();
 
     void hideEvent(QHideEvent *event);
     void showEvent(QShowEvent *event);

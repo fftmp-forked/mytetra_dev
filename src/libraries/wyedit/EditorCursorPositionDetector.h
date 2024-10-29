@@ -12,20 +12,20 @@ class EditorCursorPositionDetector {
 
     void setTextArea(EditorTextArea *iTextArea) { textArea = iTextArea; }
 
-    bool isCursorOnImage(void);
-    bool isImageSelect(void);
-    QTextImageFormat getImageSelectFormat(void);
-    int whereImageAtCursor(void);
+    bool isCursorOnImage();
+    bool isImageSelect();
+    QTextImageFormat getImageSelectFormat();
+    int whereImageAtCursor();
 
-    bool isCursorOnMathExpression(void);
-    bool isMathExpressionSelect(void);
+    bool isCursorOnMathExpression();
+    bool isMathExpressionSelect();
 
-    bool isCursorOnSpaceLine(void);
-    bool isCursorOnEmptyLine(void);
-    bool isBlockSelect(void);
+    bool isCursorOnSpaceLine();
+    bool isCursorOnEmptyLine();
+    bool isBlockSelect();
 
-    bool isCursorOnReference(void);
-    QString referenceHref(void);
+    bool isCursorOnReference();
+    QString referenceHref();
 
   private:
     EditorTextArea *textArea;
