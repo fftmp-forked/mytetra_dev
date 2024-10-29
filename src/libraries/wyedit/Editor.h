@@ -105,7 +105,7 @@ class Editor : public QWidget {
     // Имя файла, куда должен сохраняться текст
     // Без пути, только имя
     void setFileName(QString fileName) { workFileName = fileName; };
-    QString getFileName(void) const { return workFileName; };
+    QString getFileName() const { return workFileName; };
 
     void saveTextarea();
     bool saveTextareaText();
@@ -123,7 +123,7 @@ class Editor : public QWidget {
     // которые может хранить объект редактора
     void setMiscField(QString name, QString value);
     QString getMiscField(QString name);
-    void clearAllMiscField(void);
+    void clearAllMiscField();
 
     void setDirFileEmptyReaction(int mode);
     int getDirFileEmptyReaction() const { return dirFileEmptyReaction; };
@@ -163,25 +163,25 @@ class Editor : public QWidget {
 
   private slots:
 
-    void onShowhtmlClicked(void);
-    void onFindtextClicked(void);
-    void onSettingsClicked(void);
+    void onShowhtmlClicked();
+    void onFindtextClicked();
+    void onSettingsClicked();
     void onShowformattingClicked(bool);
 
-    void onExpandEditAreaClicked(void);
-    void onSaveClicked(void);
-    void onShowTextClicked(void);
-    void onToAttachClicked(void);
+    void onExpandEditAreaClicked();
+    void onSaveClicked();
+    void onShowTextClicked();
+    void onToAttachClicked();
 
-    void onCursorPositionChanged(void); // Слот, контролирущий перемещение курсора
-    void onSelectionChanged(void);
-    void onUndo(void);
-    void onRedo(void);
-    void onCut(void);
-    void onCopy(void);
-    void onPaste(void);
-    void onPasteAsPlainText(void);
-    void onSelectAll(void);
+    void onCursorPositionChanged(); // Слот, контролирущий перемещение курсора
+    void onSelectionChanged();
+    void onUndo();
+    void onRedo();
+    void onCut();
+    void onCopy();
+    void onPaste();
+    void onPasteAsPlainText();
+    void onSelectAll();
 
     void onFindtextSignalDetect(const QString &text, QTextDocument::FindFlags flags);
 
@@ -189,13 +189,13 @@ class Editor : public QWidget {
     void onCustomContextMenuRequested(const QPoint &pos);
 
   private:
-    void setupSignals(void);
-    void setupToolsSignals(void);
+    void setupSignals();
+    void setupToolsSignals();
     void setupEditorToolBarAssistant(EditorTextArea *textArea, QStringList disableToolList);
-    void setupIndentSliderAssistant(void);
-    void setupEditorTextArea(void);
-    void setupCursorPositionDetector(void);
-    void setupFormatters(void);
+    void setupIndentSliderAssistant();
+    void setupEditorTextArea();
+    void setupCursorPositionDetector();
+    void setupFormatters();
     void assembly();
 
     // Устанавка размера табуляции для клавиши Tab

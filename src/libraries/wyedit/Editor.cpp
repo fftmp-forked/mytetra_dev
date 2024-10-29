@@ -114,13 +114,13 @@ void Editor::setupEditorToolBarAssistant(EditorTextArea *textArea, QStringList d
 }
 
 // Создание и настройка ассистента линейки отступов
-void Editor::setupIndentSliderAssistant(void) {
+void Editor::setupIndentSliderAssistant() {
     indentSliderAssistant = new EditorIndentSliderAssistant(this, textArea);
     indentSliderAssistant->setObjectName("indentSliderAssistant");
 }
 
 // Создание и настройка области редактирования
-void Editor::setupEditorTextArea(void) {
+void Editor::setupEditorTextArea() {
     // Создается область редактирования
     textArea = new EditorTextArea(this);
     textArea->setObjectName("textArea");
@@ -137,12 +137,12 @@ void Editor::setupEditorTextArea(void) {
     setTabSize();
 }
 
-void Editor::setupCursorPositionDetector(void) {
+void Editor::setupCursorPositionDetector() {
     cursorPositionDetector = new EditorCursorPositionDetector();
     cursorPositionDetector->setTextArea(textArea);
 }
 
-void Editor::setupFormatters(void) {
+void Editor::setupFormatters() {
     // Форматирование начертания текста
     typefaceFormatter = new TypefaceFormatter();
     typefaceFormatter->setEditor(this);
@@ -179,7 +179,7 @@ void Editor::setupFormatters(void) {
     referenceFormatter->setTextArea(textArea);
 }
 
-void Editor::setupSignals(void) {
+void Editor::setupSignals() {
     setupToolsSignals();
 
     // Обратка для typefaceFormatter
@@ -358,7 +358,7 @@ void Editor::setupSignals(void) {
             Qt::DirectConnection);
 }
 
-void Editor::setupToolsSignals(void) {
+void Editor::setupToolsSignals() {
     // Создание сигналов, генерируемых кнопками Undo / Redo
     connect(textArea->document(), &QTextDocument::undoAvailable,
             editorToolBarAssistant->undo, &QAction::setEnabled);
@@ -754,7 +754,7 @@ QString Editor::smartFontFamily(QString fontName) {
 /////////////////////////////////////////////////
 
 // Слот вызывается при каждом движении курсора в момент выделения текста
-void Editor::onSelectionChanged(void) {
+void Editor::onSelectionChanged() {
     // Если выделения нет
     if (!textArea->textCursor().hasSelection())
         return;
@@ -893,7 +893,7 @@ void Editor::onSelectionChanged(void) {
 }
 
 // Слот вызывается при каждом перемещении курсора
-void Editor::onCursorPositionChanged(void) {
+void Editor::onCursorPositionChanged() {
     // Если одновременно идет режим выделения
     // то обслуживание текущего шрифта и размера идет в on_selection_changed()
     if (textArea->textCursor().hasSelection())
@@ -920,24 +920,24 @@ void Editor::keyReleaseEvent(QKeyEvent *event) {
     QWidget::keyReleaseEvent(event);
 }
 
-void Editor::onUndo(void) {
+void Editor::onUndo() {
     qDebug() << "Undo slot normal running ";
     textArea->undo();
     editorToolBarAssistant->updateToActualFormat(); // Обновляется панель с кнопками
 }
 
-void Editor::onRedo(void) {
+void Editor::onRedo() {
     qDebug() << "Redo slot normal running ";
     textArea->redo();
     editorToolBarAssistant->updateToActualFormat(); // Обновляется панель с кнопками
 }
 
-void Editor::onCut(void) {
+void Editor::onCut() {
     textArea->cut();
     editorToolBarAssistant->updateToActualFormat(); // Обновляется панель с кнопками
 }
 
-void Editor::onCopy(void) {
+void Editor::onCopy() {
     // qDebug() << "Editor::onCopy()" << sender()->objectName() << sender()->metaObject()->className();
     // qDebug() << "Editor::onCopy() textArea has focus:" << textArea->hasFocus();
 
@@ -992,7 +992,7 @@ void Editor::onCopy(void) {
 }
 
 // Обработка команды Paste контекстного меню
-void Editor::onPaste(void) {
+void Editor::onPaste() {
     // В Qt обнаружен баг, заключающийся в том, что при установке ReadOnly на область редактирования,
     // все равно можно сделать вставку текста (и замену выделенного текста на вставляемый) через контекстное меню.
     // Здесь происходит блокировка этого действия
@@ -1004,7 +1004,7 @@ void Editor::onPaste(void) {
 }
 
 // Обработка команды PasteAsPlainText контекстного меню
-void Editor::onPasteAsPlainText(void) {
+void Editor::onPasteAsPlainText() {
     // В Qt обнаружен баг, заключающийся в том, что при установке ReadOnly на область редактирование,
     // все равно можно сделать вставку текста (и замену выделенного текста на вставляемый) через контекстное меню.
     // Здесь происходит блокировка этого действия
@@ -1015,13 +1015,13 @@ void Editor::onPasteAsPlainText(void) {
     editorToolBarAssistant->updateToActualFormat(); // Обновляется панель с кнопками
 }
 
-void Editor::onSelectAll(void) {
+void Editor::onSelectAll() {
     textArea->selectAll();
     editorToolBarAssistant->updateToActualFormat(); // Обновляется панель с кнопками
 }
 
 // Показывание окна с исходным текстом HTML
-void Editor::onShowhtmlClicked(void) {
+void Editor::onShowhtmlClicked() {
     MultiLineInputDialog dialog(this);
 
     dialog.setText(textArea->toHtml());
@@ -1037,7 +1037,7 @@ void Editor::onShowhtmlClicked(void) {
         textArea->document()->setModified(true);
 }
 
-void Editor::onFindtextClicked(void) {
+void Editor::onFindtextClicked() {
     findDialog->show();
     findDialog->activateWindow();
 }
@@ -1066,7 +1066,7 @@ void Editor::onCustomContextMenuRequested(const QPoint &pos) {
     editorContextMenu->exec(textArea->viewport()->mapToGlobal(pos));
 }
 
-void Editor::onSettingsClicked(void) {
+void Editor::onSettingsClicked() {
     // Создается окно настроек, после выхода из этой функции окно удалится
     EditorConfigDialog dialog;
     dialog.show();
@@ -1089,16 +1089,16 @@ void Editor::onExpandEditAreaClicked(void) {
     }
 }
 
-void Editor::onSaveClicked(void) {
+void Editor::onSaveClicked() {
     saveTextarea();
 }
 
-void Editor::onToAttachClicked(void) {
+void Editor::onToAttachClicked() {
     attachCallbackFunc();
 }
 
 // Слот нажатия кнопки показа текста в отдельном открепляемом окне
-void Editor::onShowTextClicked(void) {
+void Editor::onShowTextClicked() {
     if (textArea->toPlainText().length() == 0) {
         QMessageBox msgBox;
         msgBox.setText("Can't show empty text in detached window");
@@ -1129,7 +1129,7 @@ QString Editor::getMiscField(QString name) {
         return QString();
 }
 
-void Editor::clearAllMiscField(void) {
+void Editor::clearAllMiscField() {
     miscFields.clear();
 }
 
