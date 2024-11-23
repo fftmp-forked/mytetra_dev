@@ -408,7 +408,7 @@ void TreeScreen::editBranch() {
     qDebug() << "In edit_branch()";
 
     // Получение списка индексов QModelIndex выделенных элементов
-    QModelIndexList selectitems = knowTreeView->selectionModel()->selectedIndexes();
+    auto selectitems = knowTreeView->selectionModel()->selectedIndexes();
 
     // Если выбрано более одной ветки
     if (selectitems.size() > 1) {
@@ -421,22 +421,17 @@ void TreeScreen::editBranch() {
     }
 
     // Получение индекса выделенной строки
-    QModelIndex index = getCurrentItemIndex();
+    auto index = getCurrentItemIndex();
 
     // Получение ссылки на узел, который соответствует выделенной строке
-    TreeItem *item = knowTreeModel->getItem(index);
+    auto item = knowTreeModel->getItem(index);
 
     // Получение имени ветки
-    QString name = item->getField("name");
+    auto name = item->getField("name");
 
     // Создается окно ввода данных
     bool ok;
-    QString newname = QInputDialog::getText(this,
-                                            tr("Edit item name"),
-                                            tr("Item name:"),
-                                            QLineEdit::Normal,
-                                            name,
-                                            &ok);
+    auto newname = QInputDialog::getText(this, tr("Edit item name"), tr("Item name:"), QLineEdit::Normal, name, &ok);
 
     // Если была нажата отмена
     if (!(ok && !newname.isEmpty()))
@@ -461,21 +456,21 @@ void TreeScreen::delBranch(QString mode) {
     MainWindow::get().blockSignals(true);
 
     // Получение списка индексов QModelIndex выделенных элементов
-    QModelIndexList selectItems = knowTreeView->selectionModel()->selectedIndexes();
+    auto selectItems = knowTreeView->selectionModel()->selectedIndexes();
 
     // Список имен веток, которые нужно удалить
     QStringList branchesName;
     for (int i = 0; i < selectItems.size(); ++i) {
-        QModelIndex index = selectItems.at(i);
-        TreeItem *item = knowTreeModel->getItem(index);
+        auto index = selectItems.at(i);
+        auto item = knowTreeModel->getItem(index);
         branchesName << item->getField("name");
     }
 
     // Перебираются ветки, которые нужно удалить, и в них проверяется наличие заблокированных записей
     bool isSelectionContainBlockRecords = false;
     for (int i = 0; i < selectItems.size(); ++i) {
-        QModelIndex index = selectItems.at(i);
-        TreeItem *item = knowTreeModel->getItem(index);
+        auto index = selectItems.at(i);
+        auto item = knowTreeModel->getItem(index);
 
         if (knowTreeModel->isItemContainsBlockRecords(item)) {
             isSelectionContainBlockRecords = true;
@@ -572,7 +567,7 @@ bool TreeScreen::copyBranch() {
     MainWindow::get().saveTextarea();
 
     // Получение списка индексов QModelIndex выделенных элементов
-    QModelIndexList selectitems = knowTreeView->selectionModel()->selectedIndexes();
+    auto selectitems = knowTreeView->selectionModel()->selectedIndexes();
 
     // Если выбрано более одной ветки
     if (selectitems.size() > 1) {
@@ -585,13 +580,13 @@ bool TreeScreen::copyBranch() {
     }
 
     // Получение индекса выделенной ветки
-    QModelIndex index = getCurrentItemIndex();
+    auto index = getCurrentItemIndex();
 
     // Получение ссылки на узел, который соответствует выделенной ветке
-    TreeItem *item = knowTreeModel->getItem(index);
+    auto item = knowTreeModel->getItem(index);
 
     // Получение пути к выделенной ветке
-    QStringList path = item->getPath();
+    auto path = item->getPath();
 
     // Получение путей ко всем подветкам
     const auto subbranchespath = item->getAllChildrenPath();
@@ -695,7 +690,7 @@ void TreeScreen::pasteBranchSmart(bool is_branch) {
     MainWindow::get().setDisabled(true);
 
     // Создается ссылка на буфер обмена
-    QClipboard *cbuf = QApplication::clipboard();
+    auto cbuf = QApplication::clipboard();
 
     // Извлечение объекта из буфера обмена
     const ClipboardBranch *branch = qobject_cast<const ClipboardBranch *>(cbuf->mimeData());
@@ -804,10 +799,10 @@ void TreeScreen::importBranchFromDirectory(QString importDir) {
         return;
     }
 
-    TreeItem *startItem = knowTreeModel->getItem(getCurrentItemIndex());
+    auto startItem = knowTreeModel->getItem(getCurrentItemIndex());
 
     // Импорт данных
-    QString importNodeId = knowTreeModel->importBranchFromDirectory(startItem, importDir);
+    auto importNodeId = knowTreeModel->importBranchFromDirectory(startItem, importDir);
 
     // Если импорт данных был успешным
     if (importNodeId.size() > 0)

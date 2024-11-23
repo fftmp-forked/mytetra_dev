@@ -938,7 +938,7 @@ void Editor::onCopy() {
     // Если текущий виджет не основной виджет редактирования текста
     if (!textArea->hasFocus()) {
 
-        QWidget *focusWidget = qApp->focusWidget(); // Выясняется, какой виджет выбран
+        auto focusWidget = qApp->focusWidget(); // Выясняется, какой виджет выбран
 
         // Если это надпись QLabel
         // Для виджетов, существующих рядом с textArea в рамках виджета Editor,

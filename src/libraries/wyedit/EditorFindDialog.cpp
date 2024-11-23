@@ -41,11 +41,11 @@ void EditorFindDialog::setup_signals(void) {
 }
 
 void EditorFindDialog::assembly(void) {
-    QHBoxLayout *findLineLayout = new QHBoxLayout();
+    auto findLineLayout = new QHBoxLayout();
     findLineLayout->addWidget(lineEdit);
     findLineLayout->addWidget(findButton);
 
-    QVBoxLayout *centralLayout = new QVBoxLayout();
+    auto centralLayout = new QVBoxLayout();
     centralLayout->addLayout(findLineLayout);
     centralLayout->addWidget(mathCase);
     centralLayout->addWidget(wholeWords);

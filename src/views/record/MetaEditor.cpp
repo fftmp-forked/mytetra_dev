@@ -259,7 +259,7 @@ void MetaEditor::setTags(QString tags) {
 
         // Метке задается текст
         // В Url указывается порядковый номер метки
-        QString labelText = "<a href=\"" + QString::number(i) + "\">" + recordTagsTextList.at(i) + "</a>";
+        auto labelText = "<a href=\"" + QString::number(i) + "\">" + recordTagsTextList.at(i) + "</a>";
         tempLabel->setText(labelText);
 
         // Клик по метке будет вызывать сигнал, слот будет принимать Url метки,
