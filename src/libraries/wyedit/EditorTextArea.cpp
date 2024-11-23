@@ -183,7 +183,6 @@ void EditorTextArea::paintEvent(QPaintEvent *event) {
     // qDebug() << "Document lenght " << text_lenght;
 
     int analysePoint = 0;
-    int startFrameIterationCount = 0;
 
     while (true) {
         // Новая проверяемая позиция курсора устанавливается в середину области поиска
@@ -223,8 +222,6 @@ void EditorTextArea::paintEvent(QPaintEvent *event) {
             cur.setPosition(documentStartFrameSearch);
             break;
         }
-
-        startFrameIterationCount++;
     }
 
     // qDebug() << "Found vision area at position " << cur.position() << " Iterations " << start_frame_iteration_count;
