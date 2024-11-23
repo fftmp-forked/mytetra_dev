@@ -4,6 +4,10 @@
 
 // based on https://stackoverflow.com/a/34519373
 
+
+// Seems unable to use it with QWidget-based classes, don't understand why exactly.
+// Conflict is between Qt's ownership model (parent automatically destroys childs in dtor)
+// and static allocation from this singleton.
 template<typename T>
 class Singleton
 {

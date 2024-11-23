@@ -19,10 +19,12 @@
 #include "views/findInBaseScreen/FindScreen.h"
 #include "views/printPreview/PrintPreview.h"
 
+static MainWindow * instance;
 
 MainWindow & MainWindow::get() {
-    static MainWindow instance;
-    return instance;
+    if(!instance)
+        instance = new MainWindow;
+    return *instance;
 }
 
 void MainWindow::init() {

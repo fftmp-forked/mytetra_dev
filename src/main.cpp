@@ -166,5 +166,7 @@ int main(int argc, char **argv) {
     // Прием сообщений, испускаемых другим экземпляром MyTetra с помощью консольных команд "--control"
     app.connect(&app, &QtSingleApplication::messageReceived, &win, &MainWindow::messageHandler);
 
-    return app.exec();
+    auto rv = app.exec();
+    delete &win;
+    return rv;
 }
