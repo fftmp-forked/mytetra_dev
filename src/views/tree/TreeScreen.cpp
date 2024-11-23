@@ -451,9 +451,10 @@ void TreeScreen::editBranch() {
 void TreeScreen::delBranch(QString mode) {
     qDebug() << "In del_branch()";
 
+    auto & win = MainWindow::get();
     // На время удаления блокируется главное окно
-    MainWindow::get().setDisabled(true);
-    MainWindow::get().blockSignals(true);
+    win.setDisabled(true);
+    win.blockSignals(true);
 
     // Получение списка индексов QModelIndex выделенных элементов
     auto selectItems = knowTreeView->selectionModel()->selectedIndexes();
@@ -490,8 +491,8 @@ void TreeScreen::delBranch(QString mode) {
 
         if (ret == QMessageBox::Cancel) {
             // Разблокируется главное окно
-            MainWindow::get().setEnabled(true);
-            MainWindow::get().blockSignals(false);
+            win.setEnabled(true);
+            win.blockSignals(false);
             return;
         }
     }
@@ -530,7 +531,7 @@ void TreeScreen::delBranch(QString mode) {
         // Сохраняется текст в окне редактирования
         // Нужно, чтобы нормально удалилась текущая редактируемая запись,
         // если она находится в удаляемой ветке
-        MainWindow::get().saveTextarea();
+        win.saveTextarea();
 
         knowTreeModel->deleteItemsByModelIndexList(selectItems);
 
@@ -543,8 +544,8 @@ void TreeScreen::delBranch(QString mode) {
     }
 
     // Разблокируется главное окно
-    MainWindow::get().setEnabled(true);
-    MainWindow::get().blockSignals(false);
+    win.setEnabled(true);
+    win.blockSignals(false);
 
     treeEmptyControl();
 }
