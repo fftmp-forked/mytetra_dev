@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <utility>
 
 #include <QTextCursor>
 #include <QTextDocument>
