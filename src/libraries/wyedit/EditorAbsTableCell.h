@@ -12,11 +12,11 @@ class EditorAbsTableCell {
     EditorAbsTableCell(QString init_value) { clear(); value = init_value; }
 
     void set_value(QString init_value) { value = init_value; }
-    QString get_value() { return value; }
+    QString get_value() const { return value; }
 
     void set_html_property(QString propName, QString propValue) { htmlProperty[propName] = propValue; }
-    QString get_html_property(QString propName) { return htmlProperty[propName]; }
-    QMap<QString, QString> get_html_property_map() { return htmlProperty; }
+    QString get_html_property(QString propName) const { return htmlProperty[propName]; }
+    QMap<QString, QString> get_html_property_map() const { return htmlProperty; }
 
     void clear();
 
@@ -28,13 +28,13 @@ class EditorAbsTableCell {
     };
 
     void set_cell_type(EditorAbsTableCell::CELL_TYPE i) { cellType = i; }
-    EditorAbsTableCell::CELL_TYPE get_cell_type() { return cellType; }
+    EditorAbsTableCell::CELL_TYPE get_cell_type() const { return cellType; }
 
     void set_ref_super_cell_xy(int x, int y) { refSuperCellX = x; refSuperCellY = y; }
     void set_ref_super_cell_x(int x) { refSuperCellX = x; }
     void set_ref_super_cell_y(int y) { refSuperCellY = y; }
-    int get_ref_super_cell_x() { return refSuperCellX; }
-    int get_ref_super_cell_y() { return refSuperCellY; }
+    int get_ref_super_cell_x() const { return refSuperCellX; }
+    int get_ref_super_cell_y() const { return refSuperCellY; }
 
     void set_supercell_size_is_modify(bool i);
     bool get_supercell_size_is_modify();
