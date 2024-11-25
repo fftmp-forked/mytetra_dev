@@ -1,9 +1,9 @@
 #pragma once
 
 #include <QDialog>
+#include <QSpinBox>
 
 class QLabel;
-class QSpinBox;
 class QDialogButtonBox;
 
 class EditorAddTableForm : public QDialog {
@@ -12,9 +12,9 @@ class EditorAddTableForm : public QDialog {
   public:
     EditorAddTableForm();
 
-    int get_columns(void);
-    int get_rows(void);
-    int get_width(void);
+    int get_columns() { return spinColumns->value(); }
+    int get_rows() { return spinRows->value(); }
+    int get_width() { return spinWidth->value(); }
 
   private:
     QLabel *labelColumns;

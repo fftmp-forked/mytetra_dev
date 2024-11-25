@@ -1,8 +1,6 @@
 #pragma once
 
 #include <QMap>
-#include <QObject>
-#include <QTextDocumentFragment>
 
 // Этот класс нельзя унаследовать от QObject, так как в этом случае
 // при вставке ячейки в вектор потребуется конструктор копирования
@@ -10,17 +8,17 @@
 class EditorAbsTableCell {
 
   public:
-    EditorAbsTableCell();
-    EditorAbsTableCell(QString init_value);
+    EditorAbsTableCell() {  clear(); }
+    EditorAbsTableCell(QString init_value) { clear(); value = init_value; }
 
-    void set_value(QString init_value);
-    QString get_value(void);
+    void set_value(QString init_value) { value = init_value; }
+    QString get_value() { return value; }
 
-    void set_html_property(QString propName, QString propValue);
-    QString get_html_property(QString propName);
-    QMap<QString, QString> get_html_property_map(void);
+    void set_html_property(QString propName, QString propValue) { htmlProperty[propName] = propValue; }
+    QString get_html_property(QString propName) { return htmlProperty[propName]; }
+    QMap<QString, QString> get_html_property_map() { return htmlProperty; }
 
-    void clear(void);
+    void clear();
 
     enum CELL_TYPE {
         IS_NULL_CELL,
@@ -29,19 +27,19 @@ class EditorAbsTableCell {
         IS_SUB_CELL
     };
 
-    void set_cell_type(EditorAbsTableCell::CELL_TYPE i);
-    EditorAbsTableCell::CELL_TYPE get_cell_type(void);
+    void set_cell_type(EditorAbsTableCell::CELL_TYPE i) { cellType = i; }
+    EditorAbsTableCell::CELL_TYPE get_cell_type() { return cellType; }
 
-    void set_ref_super_cell_xy(int x, int y);
-    void set_ref_super_cell_x(int x);
-    void set_ref_super_cell_y(int y);
-    int get_ref_super_cell_x(void);
-    int get_ref_super_cell_y(void);
+    void set_ref_super_cell_xy(int x, int y) { refSuperCellX = x; refSuperCellY = y; }
+    void set_ref_super_cell_x(int x) { refSuperCellX = x; }
+    void set_ref_super_cell_y(int y) { refSuperCellY = y; }
+    int get_ref_super_cell_x() { return refSuperCellX; }
+    int get_ref_super_cell_y() { return refSuperCellY; }
 
     void set_supercell_size_is_modify(bool i);
-    bool get_supercell_size_is_modify(void);
+    bool get_supercell_size_is_modify();
 
-    void print_cell(void);
+    void print_cell();
 
   private:
     // Свойства ячейки, заполняются из свойств тега <td>

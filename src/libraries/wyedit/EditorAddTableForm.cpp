@@ -2,7 +2,6 @@
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QLabel>
-#include <QSpinBox>
 #include <QVBoxLayout>
 #include <QWidget>
 
@@ -33,12 +32,10 @@ EditorAddTableForm::EditorAddTableForm() {
     buttonBox = new QDialogButtonBox(Qt::Horizontal);
     buttonBox->addButton(tr("OK"), QDialogButtonBox::AcceptRole);
     buttonBox->addButton(tr("Cancel"), QDialogButtonBox::RejectRole);
-    connect(buttonBox, &QDialogButtonBox::accepted,
-            this, &EditorAddTableForm::accept);
-    connect(buttonBox, &QDialogButtonBox::rejected,
-            this, &EditorAddTableForm::reject);
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &EditorAddTableForm::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &EditorAddTableForm::reject);
 
-    QGridLayout *gridLayout = new QGridLayout();
+    auto gridLayout = new QGridLayout();
 
     gridLayout->addWidget(labelColumns, 0, 0);
     gridLayout->addWidget(spinColumns, 0, 1);
@@ -53,29 +50,7 @@ EditorAddTableForm::EditorAddTableForm() {
     // Максимально растягивается по ширине первый столбец
     gridLayout->setColumnStretch(0, 1);
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    auto mainLayout = new QVBoxLayout(this);
     mainLayout->addLayout(gridLayout);
     mainLayout->addWidget(buttonBox);
 }
-
-int EditorAddTableForm::get_columns(void) {
-    return spinColumns->value();
-}
-
-int EditorAddTableForm::get_rows(void) {
-    return spinRows->value();
-}
-
-int EditorAddTableForm::get_width(void) {
-    return spinWidth->value();
-}
-
-/*
-bool EditorAddTableForm::get_show_border(void)
-{
- if(show_border->checkState()==Qt::Unchecked)
-  return false;
- else
-  return true;
-}
-*/

@@ -8,27 +8,9 @@
 #include <QtDebug>
 
 #include "EditorAbsTable.h"
-#include "EditorAbsTableCell.h"
 
 #include "../helpers/DebugHelper.h"
 
-// Конструктор пустой таблицы
-EditorAbsTable::EditorAbsTable(int x, int y, QObject *parent) : QObject(parent) {
-    columns = x;
-    rows = y;
-    create_cells_array(columns, rows);
-}
-
-// Конструктор таблицы
-EditorAbsTable::EditorAbsTable(int x, int y, QString tableText, QObject *parent) : QObject(parent) {
-    columns = x;
-    rows = y;
-    create_cells_array(x, y);
-    convert_table_to_internal(tableText);
-}
-
-EditorAbsTable::~EditorAbsTable(void) {
-}
 
 // Заполнение внутреннего представления таблицы из переданной таблицы
 void EditorAbsTable::set_table(int x, int y, QString tableText) {
@@ -50,14 +32,14 @@ void EditorAbsTable::create_cells_array(int x, int y) {
 }
 
 // Очистка таблицы
-void EditorAbsTable::clear_table(void) {
+void EditorAbsTable::clear_table() {
     for (int i = 0; i < columns; i++)
         for (int j = 0; j < rows; j++)
             cells[i][j].clear();
 }
 
 // Очистка для суперячеек флага, информирующего что был изменен размер
-void EditorAbsTable::clear_supercell_size_is_modify(void) {
+void EditorAbsTable::clear_supercell_size_is_modify() {
     for (int i = 0; i < columns; i++)
         for (int j = 0; j < rows; j++)
             if (cells[i][j].get_cell_type() == EditorAbsTableCell::IS_SUPER_CELL)
@@ -237,7 +219,7 @@ void EditorAbsTable::convert_table_to_internal(QString tableText) {
 }
 
 // Метод собирает таблицу из внутреннего представления в HTML строку
-QString EditorAbsTable::get_table(void) {
+QString EditorAbsTable::get_table() {
     // Создается элемент table
     QString table = "<table ";
 
@@ -288,20 +270,12 @@ QString EditorAbsTable::get_table(void) {
     return table;
 }
 
-void EditorAbsTable::print_internal_table(void) {
+void EditorAbsTable::print_internal_table() {
     for (int y = 0; y < rows; y++) {
         for (int x = 0; x < columns; x++)
             cells[x][y].print_cell();
         printf("\n");
     }
-}
-
-int EditorAbsTable::get_cell_colspan(int x, int y) {
-    return get_cell_col_or_row_span(x, y, "colspan");
-}
-
-int EditorAbsTable::get_cell_rowspan(int x, int y) {
-    return get_cell_col_or_row_span(x, y, "rowspan");
 }
 
 int EditorAbsTable::get_cell_col_or_row_span(int x, int y, QString propName) {

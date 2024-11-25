@@ -7,16 +7,16 @@ class TableFormatter : public Formatter {
     Q_OBJECT
 
   public:
-    TableFormatter();
+    TableFormatter() {};
 
   public slots:
 
-    void onCreatetableClicked(void);
-    void onTableRemoveRowClicked(void);
-    void onTableRemoveColClicked(void);
-    void onTableAddRowClicked(void);
-    void onTableAddColClicked(void);
-    void onTableMergeCellsClicked(void);
-    void onTableSplitCellClicked(void);
-    void onTablePropertiesClicked(void);
+    void onCreatetableClicked();
+    void onTableRemoveRowClicked();
+    void onTableRemoveColClicked();
+    void onTableAddRowClicked();
+    void onTableAddColClicked();
+    void onTableMergeCellsClicked();
+    void onTableSplitCellClicked();
+    void onTablePropertiesClicked();
 };

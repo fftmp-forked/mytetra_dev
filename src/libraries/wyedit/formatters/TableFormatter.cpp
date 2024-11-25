@@ -13,11 +13,9 @@
 #include "../EditorTablePropertiesForm.h"
 #include "../EditorTextArea.h"
 
-TableFormatter::TableFormatter() {
-}
 
 /// @brief Действия при нажатии кнопки создания новой таблицы
-void TableFormatter::onCreatetableClicked(void) {
+void TableFormatter::onCreatetableClicked() {
     // Создается и запускается диалог создания новой таблицы
     EditorAddTableForm dialog;
     if (dialog.exec() != QDialog::Accepted)
@@ -44,12 +42,10 @@ void TableFormatter::onCreatetableClicked(void) {
     // Добавляется таблица с нужными размерами и форматированием
     // QTextTable *table=textarea->textCursor().insertTable(table_rows, table_columns, table_format);
     textArea->textCursor().insertTable(tableRows, tableColumns, tableFormat);
-
-    return;
 }
 
 /// @brief Удаление строк из таблицы
-void TableFormatter::onTableRemoveRowClicked(void) {
+void TableFormatter::onTableRemoveRowClicked() {
     QTextCursor cursor(textArea->textCursor());
     QTextTable *table = cursor.currentTable();
     if (table != 0) {
@@ -60,7 +56,7 @@ void TableFormatter::onTableRemoveRowClicked(void) {
 }
 
 /// @brief Удаление столбцов из таблицы
-void TableFormatter::onTableRemoveColClicked(void) {
+void TableFormatter::onTableRemoveColClicked() {
     QTextCursor cursor(textArea->textCursor());
     QTextTable *table = cursor.currentTable();
     if (table != 0) {
@@ -71,7 +67,7 @@ void TableFormatter::onTableRemoveColClicked(void) {
 }
 
 /// @brief Добавление строк в таблицу
-void TableFormatter::onTableAddRowClicked(void) {
+void TableFormatter::onTableAddRowClicked() {
     QTextCursor cursor(textArea->textCursor());
     QTextTable *table = cursor.currentTable();
     if (table) {
@@ -87,7 +83,7 @@ void TableFormatter::onTableAddRowClicked(void) {
 }
 
 /// @brief Добавление столбцов в таблицу
-void TableFormatter::onTableAddColClicked(void) {
+void TableFormatter::onTableAddColClicked() {
     QTextCursor cursor(textArea->textCursor());
     QTextTable *table = cursor.currentTable();
     if (table) {
@@ -103,14 +99,14 @@ void TableFormatter::onTableAddColClicked(void) {
 }
 
 /// @brief Объединение ячеек таблицы
-void TableFormatter::onTableMergeCellsClicked(void) {
+void TableFormatter::onTableMergeCellsClicked() {
     QTextCursor cursor(textArea->textCursor());
     QTextTable *table = cursor.currentTable();
     if (table)
         table->mergeCells(cursor);
 }
 
-void TableFormatter::onTableSplitCellClicked(void) {
+void TableFormatter::onTableSplitCellClicked() {
     QTextCursor cursor(textArea->textCursor());
     QTextTable *table = cursor.currentTable();
 

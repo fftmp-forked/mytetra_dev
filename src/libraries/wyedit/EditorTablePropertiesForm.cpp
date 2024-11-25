@@ -17,9 +17,6 @@ EditorTablePropertiesForm::EditorTablePropertiesForm() {
     assembly();
 }
 
-EditorTablePropertiesForm::~EditorTablePropertiesForm() {
-}
-
 void EditorTablePropertiesForm::setupUi() {
     this->setWindowTitle(tr("Table properties"));
 
@@ -66,7 +63,7 @@ void EditorTablePropertiesForm::setupSignals() {
 }
 
 void EditorTablePropertiesForm::assembly() {
-    QGridLayout *gridLayout = new QGridLayout();
+    auto gridLayout = new QGridLayout();
 
     gridLayout->addWidget(&labelTableWidth, 0, 0);
     gridLayout->addWidget(&spinTableWidth, 0, 1);
@@ -81,13 +78,7 @@ void EditorTablePropertiesForm::assembly() {
 
     gridLayout->addWidget(&labelAlign, 3, 0);
 
-    /*
-    gridLayout->addWidget(&buttonAlignLeft,       3, 1);
-    gridLayout->addWidget(&buttonAlignCenter,     3, 2);
-    gridLayout->addWidget(&buttonAlignRight,      3, 3);
-    */
-
-    QHBoxLayout *alignBox = new QHBoxLayout();
+    auto alignBox = new QHBoxLayout();
     alignBox->addWidget(&buttonAlignLeft);
     alignBox->addWidget(&buttonAlignCenter);
     alignBox->addWidget(&buttonAlignRight);
@@ -96,33 +87,9 @@ void EditorTablePropertiesForm::assembly() {
     // Максимально растягивается по ширине первый столбец
     gridLayout->setColumnStretch(0, 1);
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    auto mainLayout = new QVBoxLayout(this);
     mainLayout->addLayout(gridLayout);
     mainLayout->addWidget(&buttonBox);
-}
-
-void EditorTablePropertiesForm::setTableWidth(int iWidth) {
-    spinTableWidth.setValue(iWidth);
-}
-
-int EditorTablePropertiesForm::getTableWidth(void) {
-    return spinTableWidth.value();
-}
-
-void EditorTablePropertiesForm::setBorderWidth(int iWidth) {
-    spinBorderWidth.setValue(iWidth);
-}
-
-int EditorTablePropertiesForm::getBorderWidth(void) {
-    return spinBorderWidth.value();
-}
-
-void EditorTablePropertiesForm::setBackgroundColor(QColor iColor) {
-    setColorForButtonBackgroundColor(iColor);
-}
-
-QColor EditorTablePropertiesForm::getBackgroundColor(void) {
-    return backgroundColor;
 }
 
 void EditorTablePropertiesForm::setTableAlign(TableAlign iAlign) {
@@ -146,10 +113,6 @@ void EditorTablePropertiesForm::setTableAlign(TableAlign iAlign) {
     directSetAlign = false;
 }
 
-int EditorTablePropertiesForm::getTableAlign(void) {
-    return tableAlign;
-}
-
 void EditorTablePropertiesForm::setColorForButtonBackgroundColor(QColor iColor) {
     // Квадратик на кнопке выбора цвета кода
     QPixmap pix(16, 16);
@@ -161,30 +124,9 @@ void EditorTablePropertiesForm::setColorForButtonBackgroundColor(QColor iColor) 
 
 void EditorTablePropertiesForm::onClickedButtonBackgroundColor() {
     // Диалог запроса цвета (доработать)
-    QColor selectedColor = QColorDialog::getColor(backgroundColor, this);
+    auto selectedColor = QColorDialog::getColor(backgroundColor, this);
 
     // Если цвет выбран, и он правильный
     if (selectedColor.isValid())
         setColorForButtonBackgroundColor(selectedColor);
-}
-
-void EditorTablePropertiesForm::onToggleButtonAlignLeft() {
-    if (directSetAlign) // Отключается обработка переключения если идет прямая установка из кода (а не пользолвателем)
-        return;
-
-    setTableAlign(Left);
-}
-
-void EditorTablePropertiesForm::onToggleButtonAlignCenter() {
-    if (directSetAlign) // Отключается обработка переключения если идет прямая установка из кода (а не пользолвателем)
-        return;
-
-    setTableAlign(Center);
-}
-
-void EditorTablePropertiesForm::onToggleButtonAlignRight() {
-    if (directSetAlign) // Отключается обработка переключения если идет прямая установка из кода (а не пользолвателем)
-        return;
-
-    setTableAlign(Right);
 }

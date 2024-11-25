@@ -16,27 +16,27 @@ class EditorTablePropertiesForm : public QDialog {
                       Right };
 
     EditorTablePropertiesForm();
-    virtual ~EditorTablePropertiesForm();
+    virtual ~EditorTablePropertiesForm() {}
 
-    void setTableWidth(int iWidth);
-    int getTableWidth(void);
+    void setTableWidth(int iWidth) { spinTableWidth.setValue(iWidth); }
+    int getTableWidth() { return spinTableWidth.value(); }
 
-    void setBorderWidth(int iWidth);
-    int getBorderWidth(void);
+    void setBorderWidth(int iWidth) { spinBorderWidth.setValue(iWidth); }
+    int getBorderWidth() { return spinBorderWidth.value(); }
 
-    void setBackgroundColor(QColor iColor);
-    QColor getBackgroundColor(void);
+    void setBackgroundColor(QColor iColor) { setColorForButtonBackgroundColor(iColor); }
+    QColor getBackgroundColor() { return backgroundColor; }
 
     void setTableAlign(TableAlign iAlign);
-    int getTableAlign();
+    int getTableAlign() { return tableAlign; }
 
   protected slots:
 
     void onClickedButtonBackgroundColor();
 
-    void onToggleButtonAlignLeft();
-    void onToggleButtonAlignCenter();
-    void onToggleButtonAlignRight();
+    void onToggleButtonAlignLeft() { if (!directSetAlign) setTableAlign(Left); }
+    void onToggleButtonAlignCenter() { if (!directSetAlign) setTableAlign(Center); }
+    void onToggleButtonAlignRight() { if (!directSetAlign) setTableAlign(Right); }
 
   private:
     // Ширина таблицы

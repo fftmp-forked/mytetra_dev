@@ -1,116 +1,24 @@
 #include <stdio.h>
-#include <utility>
 
 #include "EditorAbsTableCell.h"
 
 #include "../helpers/DebugHelper.h"
 
-// Конструктор по умолчанию пустой ячейки
-EditorAbsTableCell::EditorAbsTableCell() {
-    clear();
-    return;
-}
 
-// Конструктор ячейки с указанным содержимым
-EditorAbsTableCell::EditorAbsTableCell(QString init_value) {
-    clear();
-    value = init_value;
-}
-
-// Установка значения содержимого ячейки
-void EditorAbsTableCell::set_value(QString init_value) {
-    value = init_value;
-}
-
-QString EditorAbsTableCell::get_value(void) {
-    return value;
-}
-
-// Установка HTML-свойства ячейки (свойство в теге td)
-void EditorAbsTableCell::set_html_property(QString propName, QString propValue) {
-    htmlProperty[propName] = propValue;
-}
-
-// Получение HTML-свойства ячейки по имени
-QString EditorAbsTableCell::get_html_property(QString propName) {
-    return htmlProperty[propName];
-}
-
-// Получение всех HTML-свойств ячейки
-QMap<QString, QString> EditorAbsTableCell::get_html_property_map(void) {
-    return htmlProperty;
-}
-
-// Полная очистка ячейки
-void EditorAbsTableCell::clear(void) {
-    // Очистка свойств
+void EditorAbsTableCell::clear() {
     htmlProperty.clear();
-
-    // Очистка содержимого
     value = QString();
-
-    // Очистка типа ячейки
     cellType = IS_NULL_CELL;
-
-    // Очистка координат ведущей ячейки
     refSuperCellX = 0;
     refSuperCellY = 0;
-
-    // Очистка флага модификации суперячейки
     superCellSizeIsModify = false;
 }
 
-EditorAbsTableCell::CELL_TYPE EditorAbsTableCell::get_cell_type(void) {
-    return cellType;
-}
-
-void EditorAbsTableCell::set_cell_type(EditorAbsTableCell::CELL_TYPE i) {
-    cellType = i;
-}
-
-void EditorAbsTableCell::set_ref_super_cell_xy(int x, int y) {
-    refSuperCellX = x;
-    refSuperCellY = y;
-}
-
-void EditorAbsTableCell::set_ref_super_cell_x(int x) {
-    refSuperCellX = x;
-}
-
-void EditorAbsTableCell::set_ref_super_cell_y(int y) {
-    refSuperCellY = y;
-}
-
-int EditorAbsTableCell::get_ref_super_cell_x(void) {
-    return refSuperCellX;
-}
-
-int EditorAbsTableCell::get_ref_super_cell_y(void) {
-    return refSuperCellY;
-}
 
 /// @brief Вывод содержимого ячейки для отладки
-void EditorAbsTableCell::print_cell(void) {
-    char type;
-    switch (cellType) {
-    case IS_NULL_CELL:
-        type = 'O';
-        break;
-    case IS_NORMAL_CELL:
-        type = 'N';
-        break;
-    case IS_SUPER_CELL:
-        type = 'S';
-        break;
-    case IS_SUB_CELL:
-        type = 'U';
-        break;
-    default:
-        std::unreachable();
-    }
-
-    QString val = value.simplified().trimmed();
-    val = val.leftJustified(5, '.', true);
+void EditorAbsTableCell::print_cell() {
+    char type = "ONSU"[cellType];
+    auto val = value.simplified().trimmed().leftJustified(5, '.', true);
 
     printf("%c[%d,%d](%d,%d)%s ", type,
            htmlProperty["colspan"].toInt(),
@@ -128,7 +36,7 @@ void EditorAbsTableCell::set_supercell_size_is_modify(bool i) {
         superCellSizeIsModify = i;
 }
 
-bool EditorAbsTableCell::get_supercell_size_is_modify(void) {
+bool EditorAbsTableCell::get_supercell_size_is_modify() {
     if (cellType != IS_SUPER_CELL) {
         criticalError("Try get flag size_is_modify from not supercell");
         return false;

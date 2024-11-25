@@ -322,13 +322,13 @@ void EditorTextArea::resizeEvent(QResizeEvent *event) {
 
 // Метод возвращает X-координату курсора в "нулевой" позиции слева
 // Это значение используется для работы линейки отступов
-int EditorTextArea::getIndentStartedLeft(void) {
+int EditorTextArea::getIndentStartedLeft() {
     return this->lineWidth() + (int)this->document()->documentMargin() + 1;
 }
 
 // Метод возвращает X-координату курсора в самой крайней правой позиции
 // Это значение используется для работы линейки отступов
-int EditorTextArea::getIndentStartedRight(void) {
+int EditorTextArea::getIndentStartedRight() {
     return this->lineWidth() + this->viewport()->width() + 1 - (int)this->document()->documentMargin();
 }
 
@@ -520,8 +520,4 @@ void EditorTextArea::onChangeFontFamily(QString fontFamily) {
 
     cursor.mergeCharFormat(format);
     this->mergeCurrentCharFormat(format);
-}
-
-void EditorTextArea::onChangeFontPointSize(int n) {
-    setFontPointSize(n);
 }

@@ -26,11 +26,11 @@ class EditorTextArea : public QTextEdit {
     bool getShowFormatting() const { return flagShowFormatting; }
     void setShowFormatting(bool i);
 
-    int getIndentStartedLeft(void);
-    int getIndentStartedRight(void);
+    int getIndentStartedLeft();
+    int getIndentStartedRight();
 
   signals:
-    void updateIndentlineGeometry(void);
+    void updateIndentlineGeometry();
     void clickedOnReference(QString href);
 
     void downloadImages(const QString href);
@@ -43,7 +43,7 @@ class EditorTextArea : public QTextEdit {
     void onChangeFontcolor(const QColor &selectedColor);
     void onChangeBackgroundColor(const QColor &selectedColor);
     void onChangeFontFamily(QString fontFamily);
-    void onChangeFontPointSize(int n);
+    void onChangeFontPointSize(int n) { setFontPointSize(n); }
 
     void onGlobalPressKey(int key);
     void onGlobalReleaseKey(int key);
