@@ -42,7 +42,7 @@ void EditorAbsTable::clear_table() {
 void EditorAbsTable::clear_supercell_size_is_modify() {
     for (int i = 0; i < columns; i++)
         for (int j = 0; j < rows; j++)
-            if (cells[i][j].get_cell_type() == EditorAbsTableCell::IS_SUPER_CELL)
+            if (cells[i][j].get_type() == EditorAbsTableCell::IS_SUPER_CELL)
                 cells[i][j].set_supercell_size_is_modify(false);
 }
 
@@ -117,7 +117,7 @@ void EditorAbsTable::convert_table_to_internal(QString tableText) {
 
                     // Если текущая обрабатываемая ячейка уже занята
                     // (Это может произойти при rowspan>1 у каких-то предыдущих ячеек)
-                    while (cells[x][y].get_cell_type() != EditorAbsTableCell::IS_NULL_CELL)
+                    while (cells[x][y].get_type() != EditorAbsTableCell::IS_NULL_CELL)
                         x++;
 
                     // Получаем список атрибутов ячейки
@@ -236,8 +236,8 @@ QString EditorAbsTable::get_table() {
         table = table + "<tr>";
 
         for (int x = 0; x < columns; x++) {
-            if (cells[x][y].get_cell_type() == EditorAbsTableCell::IS_NORMAL_CELL ||
-                cells[x][y].get_cell_type() == EditorAbsTableCell::IS_SUPER_CELL) {
+            if (cells[x][y].get_type() == EditorAbsTableCell::IS_NORMAL_CELL ||
+                cells[x][y].get_type() == EditorAbsTableCell::IS_SUPER_CELL) {
                 table = table + "<td ";
 
                 QMap<QString, QString> cellProperty;
@@ -279,16 +279,16 @@ void EditorAbsTable::print_internal_table() {
 }
 
 int EditorAbsTable::get_cell_col_or_row_span(int x, int y, QString propName) {
-    if (cells[x][y].get_cell_type() == EditorAbsTableCell::IS_NULL_CELL)
+    if (cells[x][y].get_type() == EditorAbsTableCell::IS_NULL_CELL)
         criticalError("Detect bad table structure");
 
-    if (cells[x][y].get_cell_type() == EditorAbsTableCell::IS_NORMAL_CELL)
+    if (cells[x][y].get_type() == EditorAbsTableCell::IS_NORMAL_CELL)
         return 1;
 
-    if (cells[x][y].get_cell_type() == EditorAbsTableCell::IS_SUPER_CELL)
+    if (cells[x][y].get_type() == EditorAbsTableCell::IS_SUPER_CELL)
         return cells[x][y].get_html_property(propName).toInt();
 
-    if (cells[x][y].get_cell_type() == EditorAbsTableCell::IS_SUB_CELL) {
+    if (cells[x][y].get_type() == EditorAbsTableCell::IS_SUB_CELL) {
         int x_super = cells[x][y].get_ref_super_cell_x();
         int y_super = cells[x][y].get_ref_super_cell_y();
 
@@ -301,7 +301,7 @@ int EditorAbsTable::get_cell_col_or_row_span(int x, int y, QString propName) {
 void EditorAbsTable::split_single_cell_by_horisontal(int x, int y, int div) {
     // Проверка, можно ли разбивать ячейку
     bool splitEnable = false;
-    if (cells[x][y].get_cell_type() == EditorAbsTableCell::IS_NORMAL_CELL)
+    if (cells[x][y].get_type() == EditorAbsTableCell::IS_NORMAL_CELL)
         splitEnable = true;
     else if (cells[x][y].get_html_property("colspan").toInt() == 0 ||
              cells[x][y].get_html_property("colspan").toInt() == 1)
@@ -323,7 +323,7 @@ void EditorAbsTable::split_single_cell_by_horisontal(int x, int y, int div) {
         // Столбцы (основной и только что созданный) пробегаются сверху-вниз
         for (int i = 0; i < rows; i++) {
             // Если обнаружена нулевая ячейка
-            if (cells[x][i].get_cell_type() == EditorAbsTableCell::IS_NULL_CELL) {
+            if (cells[x][i].get_type() == EditorAbsTableCell::IS_NULL_CELL) {
                 // Значит что-то не так, нулевых ячеек в этом столбце быть не должно
                 criticalError("Detect null cell while split by horisontal cell " + QString::number(x) + " " + QString::number(i));
             }
@@ -331,7 +331,7 @@ void EditorAbsTable::split_single_cell_by_horisontal(int x, int y, int div) {
             // Если обрабатывается ячейка выше или ниже разбиваемой
             if (i != y) {
 
-                switch (cells[x][i].get_cell_type()) {
+                switch (cells[x][i].get_type()) {
                 case EditorAbsTableCell::IS_NULL_CELL:
                     std::unreachable();
 
@@ -408,35 +408,35 @@ void EditorAbsTable::split_single_cell_by_horisontal(int x, int y, int div) {
 
             } else {
                 // Иначе в данный момент обрабатывается разбиваемая ячейка
-
+                auto type = cells[x][i].get_type();
+                using enum EditorAbsTableCell::CELL_TYPE;
                 // Эта ячейка обязательно должна быть либо обычной
                 // Либо суперячейкой с rowspan>1 и colspan<2
-                if (!(cells[x][i].get_cell_type() == EditorAbsTableCell::IS_NORMAL_CELL ||
-                      cells[x][i].get_cell_type() == EditorAbsTableCell::IS_SUPER_CELL)) {
+                if (type != IS_NORMAL_CELL && type != IS_SUPER_CELL) {
                     criticalError("Detect splitting target null or sub cell while split by horisontal cell " + QString::number(x) + " " + QString::number(i));
                 }
 
                 // Проверяем суперячейку на colspan<2
-                if (cells[x][i].get_cell_type() == EditorAbsTableCell::IS_SUPER_CELL) {
+                if (type == IS_SUPER_CELL) {
                     int colspan = cells[x][i].get_html_property("colspan").toInt();
                     if (colspan >= 2)
                         criticalError("Detect splitting target super cell with colspan " + QString::number(colspan) + " while split by horisontal cell " + QString::number(x) + " " + QString::number(i));
                 }
 
                 // Если ячейка обычная
-                if (cells[x][i].get_cell_type() == EditorAbsTableCell::IS_NORMAL_CELL) {
+                if (type == IS_NORMAL_CELL) {
                     // Соседняя справа тоже становится обычной
-                    cells[x + 1][i].set_cell_type(EditorAbsTableCell::IS_NORMAL_CELL);
+                    cells[x + 1][i].set_cell_type(IS_NORMAL_CELL);
                 }
 
                 // Если суперячейка
-                if (cells[x][i].get_cell_type() == EditorAbsTableCell::IS_SUPER_CELL) {
+                if (type == IS_SUPER_CELL) {
                     // Выяснется rowspan (колько ячеек по высоте объединено)
                     int rowspan = cells[x][i].get_html_property("rowspan").toInt();
 
                     // Соседняя справа тоже становится суперячейкой
                     // и ей устанавливается такой же rowspan
-                    cells[x + 1][i].set_cell_type(EditorAbsTableCell::IS_SUPER_CELL);
+                    cells[x + 1][i].set_cell_type(IS_SUPER_CELL);
                     cells[x + 1][i].set_html_property("rowspan", QString::number(rowspan));
                 }
 
@@ -455,7 +455,7 @@ void EditorAbsTable::split_merged_cell_by_horisontal(int x, int y) {
     print_internal_table();
 
     // Проверка, можно ли разбивать ячейку
-    if (!(cells[x][y].get_cell_type() == EditorAbsTableCell::IS_SUPER_CELL &&
+    if (!(cells[x][y].get_type() == EditorAbsTableCell::IS_SUPER_CELL &&
           cells[x][y].get_html_property("colspan").toInt() >= 2))
         criticalError("Cell (" + QString::number(x) + "," + QString::number(y) + ") can not split by horisontal, this is not supercell with colspan>2");
 
@@ -506,7 +506,7 @@ void EditorAbsTable::split_single_cell_by_vertical(int x1, int x2, int y, int di
     // то есть иметь rowspan равный 0 или 1
     for (int x = x1; x <= x2; x++) {
         bool splitEnable = false;
-        if (cells[x][y].get_cell_type() == EditorAbsTableCell::IS_NORMAL_CELL)
+        if (cells[x][y].get_type() == EditorAbsTableCell::IS_NORMAL_CELL)
             splitEnable = true;
         else if (cells[x][y].get_html_property("rowspan").toInt() == 0 ||
                  cells[x][y].get_html_property("rowspan").toInt() == 1)
@@ -529,7 +529,7 @@ void EditorAbsTable::split_single_cell_by_vertical(int x1, int x2, int y, int di
         // Строки (основная и только что созданная) пробегаются слева-напрво
         for (int i = 0; i < columns; i++) {
             // Если обнаружена нулевая ячейка
-            if (cells[i][y].get_cell_type() == EditorAbsTableCell::IS_NULL_CELL) {
+            if (cells[i][y].get_type() == EditorAbsTableCell::IS_NULL_CELL) {
                 // Значит что-то не так, нулевых ячеек в этой строке быть не должно
                 criticalError("Detect null cell while split by vertical cell " + QString::number(i) + " " + QString::number(y));
             }
@@ -537,7 +537,7 @@ void EditorAbsTable::split_single_cell_by_vertical(int x1, int x2, int y, int di
             // Если обрабатывается ячейка левее или правее разбиваемых ячеек
             if (i < x1 || i > x2) {
 
-                switch (cells[i][y].get_cell_type()) {
+                switch (cells[i][y].get_type()) {
                 case EditorAbsTableCell::IS_NULL_CELL:
                     std::unreachable();
 
@@ -617,26 +617,26 @@ void EditorAbsTable::split_single_cell_by_vertical(int x1, int x2, int y, int di
 
                 // Эта ячейка обязательно должна быть либо обычной
                 // Либо суперячейкой с colspan>1 и rowspan<2
-                if (!(cells[i][y].get_cell_type() == EditorAbsTableCell::IS_NORMAL_CELL ||
-                      cells[i][y].get_cell_type() == EditorAbsTableCell::IS_SUPER_CELL)) {
+                if (!(cells[i][y].get_type() == EditorAbsTableCell::IS_NORMAL_CELL ||
+                      cells[i][y].get_type() == EditorAbsTableCell::IS_SUPER_CELL)) {
                     criticalError("Detect splitting target null or sub cell while split by vertical cell " + QString::number(i) + " " + QString::number(y));
                 }
 
                 // Проверяем суперячейку на rowspan<2
-                if (cells[i][y].get_cell_type() == EditorAbsTableCell::IS_SUPER_CELL) {
+                if (cells[i][y].get_type() == EditorAbsTableCell::IS_SUPER_CELL) {
                     int rowSpan = cells[i][y].get_html_property("rowspan").toInt();
                     if (rowSpan >= 2)
                         criticalError("Detect splitting target super cell with rowspan " + QString::number(rowSpan) + " while split by vertical cell " + QString::number(i) + " " + QString::number(y));
                 }
 
                 // Если ячейка обычная
-                if (cells[i][y].get_cell_type() == EditorAbsTableCell::IS_NORMAL_CELL) {
+                if (cells[i][y].get_type() == EditorAbsTableCell::IS_NORMAL_CELL) {
                     // Соседняя сснизу тоже становится обычной
                     cells[i][y + 1].set_cell_type(EditorAbsTableCell::IS_NORMAL_CELL);
                 }
 
                 // Если суперячейка
-                if (cells[i][y].get_cell_type() == EditorAbsTableCell::IS_SUPER_CELL) {
+                if (cells[i][y].get_type() == EditorAbsTableCell::IS_SUPER_CELL) {
                     // Выяснется colspan (колько ячеек по ширине объединено)
                     int colSpan = cells[i][y].get_html_property("colspan").toInt();
 
@@ -664,13 +664,13 @@ void EditorAbsTable::split_merged_cell_by_vertical(int x1, int x2, int y) {
 
     // Проверка, можно ли разбивать ячейки
     for (int x = x1; x <= x2; x++) {
-        if (!(cells[x][y].get_cell_type() == EditorAbsTableCell::IS_SUPER_CELL &&
+        if (!(cells[x][y].get_type() == EditorAbsTableCell::IS_SUPER_CELL &&
               cells[x][y].get_html_property("rowspan").toInt() >= 2))
             criticalError("Cell (" + QString::number(x) + "," + QString::number(y) + ") can not split by vertical, this is not supercell with rowspan>2");
     }
 
     for (int x = x1; x <= x2; x++)
-        if (cells[x][y].get_cell_type() == EditorAbsTableCell::IS_SUPER_CELL) {
+        if (cells[x][y].get_type() == EditorAbsTableCell::IS_SUPER_CELL) {
             // На сколько частей по вертикали можно разбить эту ячейку
             int div = cells[x][y].get_html_property("rowspan").toInt();
             qDebug() << "Split cell to" << div << "by vertical";
@@ -734,7 +734,7 @@ void EditorAbsTable::insert_column(int insX) {
     // если суперячейка оказалась справа от вставленного слобца
     for (int i = insX + 2; i < columns; i++)
         for (int j = 0; j < rows; j++)
-            if (cells[i][j].get_cell_type() == EditorAbsTableCell::IS_SUB_CELL) {
+            if (cells[i][j].get_type() == EditorAbsTableCell::IS_SUB_CELL) {
                 int superX = cells[i][j].get_ref_super_cell_x();
 
                 // qDebug()<<"For cell ("<<i<<","<<j<<"correct X ref to supercell from"<<super_x;
@@ -766,7 +766,7 @@ void EditorAbsTable::insert_row(int insY) {
     // если суперячейка оказалась снизу от вставленной строки
     for (int i = 0; i < columns; i++)
         for (int j = insY + 2; j < rows; j++)
-            if (cells[i][j].get_cell_type() == EditorAbsTableCell::IS_SUB_CELL) {
+            if (cells[i][j].get_type() == EditorAbsTableCell::IS_SUB_CELL) {
                 int superY = cells[i][j].get_ref_super_cell_y();
                 if (superY > insY)
                     cells[i][j].set_ref_super_cell_y(superY + 1);

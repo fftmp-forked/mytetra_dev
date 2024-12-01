@@ -28,7 +28,7 @@ class EditorAbsTableCell {
     };
 
     void set_cell_type(EditorAbsTableCell::CELL_TYPE i) { cellType = i; }
-    EditorAbsTableCell::CELL_TYPE get_cell_type() const { return cellType; }
+    EditorAbsTableCell::CELL_TYPE get_type() const { return cellType; }
 
     void set_ref_super_cell_xy(int x, int y) { refSuperCellX = x; refSuperCellY = y; }
     void set_ref_super_cell_x(int x) { refSuperCellX = x; }
