@@ -51,7 +51,7 @@ AttachTableData *AttachTableController::getAttachTableData() {
     return (model->data(QModelIndex(), ATTACHTABLE_ROLE_TABLE_DATA)).value<AttachTableData *>();
 }
 
-void AttachTableController::onAddAttachFromUrl(void) {
+void AttachTableController::onAddAttachFromUrl() {
     // Окно запроса URL
     QInputDialog inputDialog(view);
 
@@ -242,7 +242,7 @@ QStringList AttachTableController::selectFilesForAdding(Attach::Type attachType)
 }
 
 // Выбрано действие "Сохранить как..."
-void AttachTableController::onSaveAsAttach(void) {
+void AttachTableController::onSaveAsAttach() {
     const auto selectedId = getSelectedId();
 
     // Если ни один аттач не выбран
@@ -344,7 +344,7 @@ void AttachTableController::saveAttachToUserPlace(QString fromFullFileName, QStr
         showMessageBox(tr("Unable to save the file: file %1 not found in the database.").arg(fromFullFileName));
 }
 
-void AttachTableController::onEditFileName(void) {
+void AttachTableController::onEditFileName() {
     QList<QString> selectedId = getSelectedId();
 
     // Если ни один аттач не выбран
@@ -388,7 +388,7 @@ void AttachTableController::onEditFileName(void) {
     find_object<TreeScreen>("treeScreen")->saveKnowTree();
 }
 
-void AttachTableController::onDeleteAttach(void) {
+void AttachTableController::onDeleteAttach() {
     const auto selectedId = getSelectedId();
 
     // Если ни один аттач не выбран
@@ -421,7 +421,7 @@ void AttachTableController::onDeleteAttach(void) {
 }
 
 // Открытие аттача (аттачей) на просмотр
-void AttachTableController::onOpenAttach(void) {
+void AttachTableController::onOpenAttach() {
     AttachTableData *attachTableData = getAttachTableData();
 
     const auto selectedId = getSelectedId();
@@ -437,7 +437,7 @@ void AttachTableController::onOpenAttach(void) {
     }
 }
 
-void AttachTableController::onShowAttachInfo(void) {
+void AttachTableController::onShowAttachInfo() {
     const auto selectedId = getSelectedId();
 
     // Если ни один аттач не выбран
@@ -467,20 +467,20 @@ void AttachTableController::onShowAttachInfo(void) {
     messageBox.exec();
 }
 
-void AttachTableController::onSwitchToEditor(void) {
+void AttachTableController::onSwitchToEditor() {
     updateAttachListInEditor();
 
     metaEditor->switchToEditorLayout();
 }
 
-void AttachTableController::updateAttachListInEditor(void) {
+void AttachTableController::updateAttachListInEditor() {
     // В редакторе обновляется информация о приаттаченных к записи файлах
     metaEditor->setMiscField("attachFileNameList", getAttachTableData()->getInnerFileNameOnDiskList().join(","));
     qDebug() << "Set attach file name list to editor: " << metaEditor->getMiscField("attachFileNameList");
 }
 
 // Получение списка идентификаторов аттачей, выделенных в представлении
-QList<QString> AttachTableController::getSelectedId(void) {
+QList<QString> AttachTableController::getSelectedId() {
     QList<QString> selectedId;
 
     // Получение списка выделенных в таблице на экране Item-элементов

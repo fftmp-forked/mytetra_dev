@@ -15,24 +15,24 @@ class AttachTableController : public QObject {
     AttachTableController(QObject *parent, QObject *iMetaEditor);
     virtual ~AttachTableController();
 
-    AttachTableView *getView(void) const { return view; }
+    AttachTableView *getView() const { return view; }
     void setAttachTableData(AttachTableData *attachTableData);
     AttachTableData *getAttachTableData();
 
-    QList<QString> getSelectedId(void);
+    QList<QString> getSelectedId();
 
   public slots:
 
-    void onAddAttach(void) { addSmart(Attach::Type::file); }
-    void onAddAttachFromUrl(void);
-    void onAddLink(void) { addSmart(Attach::Type::link); }
-    void onEditFileName(void);
-    void onDeleteAttach(void);
-    void onOpenAttach(void);
-    void onShowAttachInfo(void);
-    void onSaveAsAttach(void);
+    void onAddAttach() { addSmart(Attach::Type::file); }
+    void onAddAttachFromUrl();
+    void onAddLink() { addSmart(Attach::Type::link); }
+    void onEditFileName();
+    void onDeleteAttach();
+    void onOpenAttach();
+    void onShowAttachInfo();
+    void onSaveAsAttach();
 
-    void onSwitchToEditor(void);
+    void onSwitchToEditor();
 
   protected:
     void addSmart(Attach::Type attachType);
@@ -40,7 +40,7 @@ class AttachTableController : public QObject {
     void saveState();
     QStringList selectFilesForAdding(Attach::Type attachType);
     void saveAttachToUserPlace(QString fromFullFileName, QString toFullFileName);
-    void updateAttachListInEditor(void);
+    void updateAttachListInEditor();
 
     AttachTableView *view;
     AttachTableModel *model;
