@@ -10,12 +10,12 @@ class ImageFormatter : public Formatter {
     Q_OBJECT
 
   public:
-    ImageFormatter();
+    ImageFormatter() {};
 
-    QTextImageFormat imageFormatOnSelect(void);
-    QTextImageFormat imageFormatOnCursor(void);
+    QTextImageFormat imageFormatOnSelect();
+    QTextImageFormat imageFormatOnCursor();
 
-    void editImageProperties(void);
+    void editImageProperties();
 
   signals:
 
@@ -25,10 +25,10 @@ class ImageFormatter : public Formatter {
 
   public slots:
 
-    void onInsertImageFromFileClicked(void);
-    void onContextMenuEditImageProperties(void);
+    void onInsertImageFromFileClicked();
+    void onContextMenuEditImageProperties();
 
     void onDownloadImages(const QString html);
 
-    void onDoubleClickOnImage(void);
+    void onDoubleClickOnImage() { onContextMenuEditImageProperties(); };
 };
