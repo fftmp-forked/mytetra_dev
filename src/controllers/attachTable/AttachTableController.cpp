@@ -108,7 +108,6 @@ void AttachTableController::onAddAttachFromUrl(void) {
     // Здесь закачка завершена, и надо сохранить файлы как Attach
     QMap<QString, QString> referencesAndFileNames = downloader.getReferencesAndFileNames();
 
-    int sucessLoadCount = 0;
     for (auto reference = referencesAndFileNames.keyBegin(); reference != referencesAndFileNames.keyEnd(); ++reference) {
         QString shortFileName = referencesAndFileNames.value(*reference);
         QString fullFileName = downloader.getSaveDirectory() + "/" + shortFileName;
@@ -116,8 +115,7 @@ void AttachTableController::onAddAttachFromUrl(void) {
         QUrl url(*reference);
         QString displayName = url.fileName();
 
-        if (addAttach(Attach::Type::file, fullFileName, displayName))
-            sucessLoadCount++;
+        addAttach(Attach::Type::file, fullFileName, displayName);
 
         // Исходный файл в директории закачки удаляется
         QFile(fullFileName).remove();
@@ -134,7 +132,6 @@ void AttachTableController::addSmart(Attach::Type attachType) {
         return; // Если ни один файл не выбран
 
     // Перебираются выбранные в диалоге файлы
-    int sucessLoadCount = 0;
     for (int i = 0; i < files.size(); ++i) {
         // Текущее полное имя файла
         QString currFullFileName = files.at(i);
@@ -153,9 +150,7 @@ void AttachTableController::addSmart(Attach::Type attachType) {
         QString currShortFileName = currFileInfo.fileName();
 
         // Добавляется файл аттача
-        if (addAttach(attachType, currFullFileName, currShortFileName))
-            sucessLoadCount++;
-        else
+        if (!addAttach(attachType, currFullFileName, currShortFileName))
             break;
     } // Закончился цикл перебора файлов
 
