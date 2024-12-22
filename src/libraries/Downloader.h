@@ -16,7 +16,7 @@ class Downloader : public QDialog {
     enum downloadModeType { disk,
                             memory };
 
-    void setDownloadMode(int iMode);
+    void setDownloadMode(downloadModeType iMode);
 
     void setSaveDirectory(QString iDir);
     QString getSaveDirectory();
@@ -50,7 +50,7 @@ class Downloader : public QDialog {
     void onCancelClicked();
 
   protected:
-    int downloadMode;
+    downloadModeType downloadMode;
     QString saveDirectory;
     QStringList referencesList;
 

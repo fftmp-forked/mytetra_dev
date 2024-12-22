@@ -11,9 +11,6 @@
 #include "libraries/helpers/ObjectHelper.h"
 #include "libraries/helpers/UniqueIdHelper.h"
 #include "models/appConfig/AppConfig.h"
-#include "models/attachTable/AttachTableData.h"
-#include "models/attachTable/AttachTableModel.h"
-#include "views/attachTable/AttachTableView.h"
 #include "views/dialog/ReduceMessageBox.h"
 #include "views/tree/TreeScreen.h"
 
@@ -56,7 +53,7 @@ void AttachTableController::onAddAttachFromUrl() {
     QInputDialog inputDialog(view);
 
     // Установка ширины окна запроса URL
-    int dialogWidth = int(0.9 * (float)view->width());
+    int dialogWidth = 0.9 * view->width();
     inputDialog.setMinimumWidth(dialogWidth);
     inputDialog.resize(inputDialog.size());
 
@@ -108,12 +105,9 @@ void AttachTableController::onAddAttachFromUrl() {
     // Здесь закачка завершена, и надо сохранить файлы как Attach
     auto referencesAndFileNames = downloader.getReferencesAndFileNames();
 
-    for (auto reference = referencesAndFileNames.keyBegin(); reference != referencesAndFileNames.keyEnd(); ++reference) {
-        auto shortFileName = referencesAndFileNames.value(*reference);
+    for (const auto [reference, shortFileName] : referencesAndFileNames.asKeyValueRange()) {
         auto fullFileName = downloader.getSaveDirectory() + "/" + shortFileName;
-
-        QUrl url(*reference);
-        auto displayName = url.fileName();
+        auto displayName = QUrl(reference).fileName();
 
         addAttach(Attach::Type::file, fullFileName, displayName);
 
@@ -128,31 +122,26 @@ void AttachTableController::onAddAttachFromUrl() {
 void AttachTableController::addSmart(Attach::Type attachType) {
     auto files = selectFilesForAdding(attachType);
 
-    if (files.size() == 0)
+    if (files.empty())
         return; // Если ни один файл не выбран
 
-    // Перебираются выбранные в диалоге файлы
-    for (int i = 0; i < files.size(); ++i) {
-        // Текущее полное имя файла
-        auto currFullFileName = files.at(i);
+    for (auto file : files) {
+        QFileInfo currFileInfo(file);
 
-        QFileInfo currFileInfo(currFullFileName);
-
-        // Если пользователь выбрал директорию (директорию выбирать нельзя, пока что можно выбирать только файлы)
         if (currFileInfo.isDir()) {
             showMessageBox(tr("Cannot add a directory. Please select a file(s)."));
             break;
         }
 
-        qDebug() << "Select file from disk: " << currFullFileName;
+        qDebug() << "Select file from disk: " << file;
 
         // Текущее короткое имя файла (имя файла без пути но с расширением или несколькими расширениями если их несколько)
         auto currShortFileName = currFileInfo.fileName();
 
         // Добавляется файл аттача
-        if (!addAttach(attachType, currFullFileName, currShortFileName))
+        if (!addAttach(attachType, file, currShortFileName))
             break;
-    } // Закончился цикл перебора файлов
+    }
 
     // Дерево записей сохраняется
     saveState();
@@ -164,7 +153,7 @@ void AttachTableController::addSmart(Attach::Type attachType) {
 bool AttachTableController::addAttach(Attach::Type attachType, QString currFullFileName, QString currShortFileName) {
     // Выясняется указатель на данные таблицы приаттаченных файлов
     auto attachTableData = getAttachTableData();
-    if (attachTableData == NULL)
+    if (!attachTableData)
         criticalError("Unset attach table data in AttachTableController::addAttach()");
 
     // Конструируется Attach, который нужно добавить
@@ -194,13 +183,10 @@ void AttachTableController::saveState() {
 
     // Указатель на данные таблицы приаттаченных файлов, чтобы обновить иконку аттачей в редакторе
     auto attachTableData = getAttachTableData();
-    if (attachTableData == NULL)
+    if (!attachTableData)
         criticalError("Unset attach table data in AttachTableController::addAttach()");
 
-    if (attachTableData->size() > 0)
-        metaEditor->switchAttachIconExists(true);
-    else
-        metaEditor->switchAttachIconExists(false);
+    metaEditor->switchAttachIconExists(!attachTableData->isEmpty());
 }
 
 QStringList AttachTableController::selectFilesForAdding(Attach::Type attachType) {
@@ -235,7 +221,7 @@ QStringList AttachTableController::selectFilesForAdding(Attach::Type attachType)
     auto files = fileSelectDialog.selectedFiles();
 
     // Запоминается директория, в которой был сделан выбор
-    if (files.size() > 0)
+    if (!files.empty())
         AppConfig::get().setAttachAppendDir(fileSelectDialog.directory().absolutePath());
 
     return files;
@@ -246,7 +232,7 @@ void AttachTableController::onSaveAsAttach() {
     const auto selectedId = getSelectedId();
 
     // Если ни один аттач не выбран
-    if (selectedId.size() == 0) {
+    if (selectedId.empty()) {
         showMessageBox(tr("Please, select at least one attached file to save."));
         return;
     }
@@ -274,8 +260,7 @@ void AttachTableController::onSaveAsAttach() {
         fileSelectDialog.selectFile(fileName);
 
         // Отрисовка диалога выбора
-        int dialogResult = fileSelectDialog.exec();
-        if (dialogResult == QDialog::Rejected)
+        if (fileSelectDialog.exec() == QDialog::Rejected)
             return;
 
         // Запоминается директория, в которой был сделан выбор
@@ -309,8 +294,7 @@ void AttachTableController::onSaveAsAttach() {
             fileSelectDialog.setDirectory(saveAsDir);
 
         // Отрисовка диалога выбора
-        int dialogResult = fileSelectDialog.exec();
-        if (dialogResult == QDialog::Rejected)
+        if (fileSelectDialog.exec() == QDialog::Rejected)
             return;
 
         // Запоминается директория, в которой был сделан выбор
@@ -348,7 +332,7 @@ void AttachTableController::onEditFileName() {
     auto selectedId = getSelectedId();
 
     // Если ни один аттач не выбран
-    if (selectedId.size() == 0)
+    if (selectedId.empty())
         return;
 
     // Если выбрано больше одного аттача
@@ -369,7 +353,7 @@ void AttachTableController::onEditFileName() {
     if (!isOk)
         return; // Была нажата кнопка Cancel
 
-    if (newFileName.size() == 0) {
+    if (newFileName.isEmpty()) {
         showMessageBox(tr("Can't save file with empty name."));
         return;
     }
@@ -436,7 +420,7 @@ void AttachTableController::onShowAttachInfo() {
     const auto selectedId = getSelectedId();
 
     // Если ни один аттач не выбран
-    if (selectedId.size() == 0)
+    if (selectedId.empty())
         return;
 
     // Если выбрано больше одного аттача

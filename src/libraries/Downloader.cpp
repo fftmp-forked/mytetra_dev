@@ -82,7 +82,7 @@ void Downloader::assembly() {
     setLayout(mainLayout);
 }
 
-void Downloader::setDownloadMode(int iMode) {
+void Downloader::setDownloadMode(downloadModeType iMode) {
     downloadMode = iMode;
 }
 

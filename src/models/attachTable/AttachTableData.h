@@ -54,7 +54,7 @@ class AttachTableData {
 
     qint64 getFileSize(int row) { return attachTable.at(row).getFileSize(); }
 
-    bool isEmpty() const { return attachTable.size() == 0; }
+    bool isEmpty() const { return attachTable.isEmpty(); }
     bool isLite() const { return liteFlag; }
 
     void switchToLite();
