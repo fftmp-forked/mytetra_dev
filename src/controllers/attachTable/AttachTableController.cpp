@@ -486,7 +486,7 @@ QList<QString> AttachTableController::getSelectedId() {
     for (int i = 0; i < selectItems.size(); i++) {
         int row = selectItems.at(i).row();
 
-        // Строка обратабывается только один раз (из-за того что для одной строки несколько QModelIndex)
+        // Строка обрабатывается только один раз (из-за того что для одной строки несколько QModelIndex)
         if (row != previousRow) {
             previousRow = row;
 
